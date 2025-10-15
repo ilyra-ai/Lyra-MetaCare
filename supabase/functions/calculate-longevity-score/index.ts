@@ -132,23 +132,24 @@ serve(async (req: Request) => {
       .limit(1)
       .single()
 
-    if (error) {
+    if (error && error.code !== 'PGRST116') { // PGRST116 = No rows found (expected single row)
         console.error("Database Error:", error);
-        return new Response(JSON.stringify({ error: 'Failed to fetch metrics' }), {
+        // Se for um erro real de DB (não apenas 'sem dados'), retorna 500
+        return new Response(JSON.stringify({ error: 'Failed to fetch metrics from DB' }), {
             status: 500,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         })
     }
     
     if (!metricsData) {
-        // Retorna scores base se não houver dados
+        // Retorna scores base se não houver dados (Status 200 OK)
         return new Response(JSON.stringify({ longevityScore: 5.0, readinessScore: 50, message: "No data found" }), {
             status: 200,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         })
     }
 
-    // 3. Chamar a API de IA externa (AGORA É UMA CHAMADA REAL, SE AS SECRETS ESTIVEREM CONFIGURADAS)
+    // 3. Chamar a API de IA externa
     const scores = await callExternalAI(metricsData as DailyMetric);
 
     // 4. Retornar o resultado

@@ -41,28 +41,29 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
-import { Heart, ArrowRight, User, Activity, CheckCircle, ArrowLeft, Calendar, Clock, MapPin, Dumbbell, Target, ShieldCheck, Scale, Moon, Utensils, Zap } from "lucide-react";
+import { Heart, ArrowRight, User, Activity, ArrowLeft, Calendar, Clock, MapPin, Dumbbell, Target, ShieldCheck, Scale, Moon, Utensils, Zap, Weight, Sun, BrainCircuit, TrendingUp, Droplet, Footprints, Rss, Globe } from "lucide-react";
 import { OnboardingNavigationDots } from "./OnboardingNavigationDots";
 import { cn } from "@/lib/utils";
 import { DatePicker } from "@/components/ui/date-picker";
 import { differenceInYears } from "date-fns";
 import { TimeInput } from "@/components/ui/time-input";
 
+// Mapeamento de objetivos para ícones únicos e relevantes
 const goalsList = [
-  { id: "lose_weight", label: "Perder Peso", icon: Scale },
+  { id: "lose_weight", label: "Perder Peso", icon: Weight },
   { id: "gain_muscle", label: "Ganhar Músculo", icon: Dumbbell },
-  { id: "improve_endurance", label: "Melhorar Resistência", icon: Activity },
+  { id: "improve_endurance", label: "Melhorar Resistência", icon: Footprints },
   { id: "reduce_stress", label: "Reduzir Estresse Crônico", icon: Heart },
   { id: "eat_healthier", label: "Comer de Forma Saudável", icon: Utensils },
   { id: "optimize_hrv", label: "Otimizar HRV (Resiliência)", icon: Zap },
   { id: "improve_readiness", label: "Melhorar Score de Prontidão", icon: ShieldCheck },
   { id: "regulate_sleep_duration", label: "Regular Duração do Sono", icon: Moon },
-  { id: "improve_sleep_efficiency", label: "Aumentar a Eficiência do Sono", icon: Moon },
-  { id: "reduce_social_jetlag", label: "Reduzir o Social Jetlag (Regularidade)", icon: Clock },
-  { id: "increase_vo2max", label: "Aumentar VO₂max", icon: Activity },
-  { id: "meet_activity_guidelines", label: "Cumprir Diretrizes de Atividade Moderada/Vigorosa", icon: Dumbbell },
+  { id: "improve_sleep_efficiency", label: "Aumentar a Eficiência do Sono", icon: Sun },
+  { id: "reduce_social_jetlag", label: "Reduzir o Social Jetlag (Regularidade)", icon: Rss },
+  { id: "increase_vo2max", label: "Aumentar VO₂max", icon: TrendingUp },
+  { id: "meet_activity_guidelines", label: "Cumprir Diretrizes de Atividade Moderada/Vigorosa", icon: Activity },
   { id: "optimize_protein", label: "Otimizar a Ingestão Diária de Proteínas", icon: Utensils },
-  { id: "manage_blood_glucose", label: "Gerenciar Picos de Glicose Pós-Prandial", icon: Zap },
+  { id: "manage_blood_glucose", label: "Gerenciar Picos de Glicose Pós-Prandial", icon: Droplet },
 ];
 
 // --- Zod Schema ---
@@ -270,7 +271,7 @@ export function OnboardingForm() {
                 </CardFooter>
             </OnboardingStep>
 
-            {/* Step 2: Personal Data */}
+            {/* Step 2: Personal Data - Sem imagem grande, com ícones nos campos */}
             <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Seus Dados Pessoais</CardTitle>
@@ -279,10 +280,6 @@ export function OnboardingForm() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
-                  {/* Ícone: Usuário (Verde 600) */}
-                  <div className="flex justify-center items-center mb-6">
-                    <User className="w-16 h-16 md:w-24 md:h-24 text-green-600/70" />
-                  </div>
                   
                   {/* Nome e Sobrenome */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -291,7 +288,9 @@ export function OnboardingForm() {
                       name="first_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nome</FormLabel>
+                          <FormLabel className="flex items-center">
+                            <User className="h-4 w-4 mr-1 text-green-600" /> Nome
+                          </FormLabel>
                           <FormControl>
                             <Input placeholder="Seu nome" {...field} />
                           </FormControl>
@@ -304,7 +303,9 @@ export function OnboardingForm() {
                       name="last_name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Sobrenome</FormLabel>
+                          <FormLabel className="flex items-center">
+                            <User className="h-4 w-4 mr-1 text-green-600" /> Sobrenome
+                          </FormLabel>
                           <FormControl>
                             <Input placeholder="Seu sobrenome" {...field} />
                           </FormControl>
@@ -321,8 +322,8 @@ export function OnboardingForm() {
                       name="birth_date"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel className="mb-2">
-                            <Calendar className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Data de Nascimento
+                          <FormLabel className="mb-2 flex items-center">
+                            <Calendar className="h-4 w-4 mr-1 text-green-600" /> Data de Nascimento
                           </FormLabel>
                           <FormControl>
                             <DatePicker
@@ -341,13 +342,15 @@ export function OnboardingForm() {
                       name="age"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Idade (Calculada)</FormLabel>
+                          <FormLabel className="flex items-center">
+                            <Scale className="h-4 w-4 mr-1 text-green-600" /> Idade
+                          </FormLabel>
                           <FormControl>
                             <Input 
                                 type="number" 
                                 placeholder="Idade" 
                                 {...field} 
-                                disabled={!!birthDate} // Desabilita se a data de nascimento estiver preenchida
+                                disabled={!!birthDate} 
                                 className={cn(!!birthDate && "bg-gray-100 cursor-not-allowed")}
                             />
                           </FormControl>
@@ -364,7 +367,9 @@ export function OnboardingForm() {
                       name="gender"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Gênero</FormLabel>
+                          <FormLabel className="flex items-center">
+                            <Globe className="h-4 w-4 mr-1 text-green-600" /> Gênero
+                          </FormLabel>
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
@@ -396,8 +401,8 @@ export function OnboardingForm() {
                       name="birth_time"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>
-                            <Clock className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Hora Exata (HH:MM)
+                          <FormLabel className="flex items-center">
+                            <Clock className="h-4 w-4 mr-1 text-green-600" /> Hora Exata (HH:MM)
                           </FormLabel>
                           <FormControl>
                             <TimeInput placeholder="12:00" {...field} />
@@ -414,8 +419,8 @@ export function OnboardingForm() {
                       name="birth_location"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>
-                            <MapPin className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Local de Nascimento
+                          <FormLabel className="flex items-center">
+                            <MapPin className="h-4 w-4 mr-1 text-green-600" /> Local de Nascimento
                           </FormLabel>
                           <FormControl>
                             <Input 
@@ -437,7 +442,7 @@ export function OnboardingForm() {
                   <div className="space-x-2 flex items-center">
                     <Button
                       type="button"
-                      variant="default"
+                      variant="outline"
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -452,7 +457,7 @@ export function OnboardingForm() {
                 </CardFooter>
             </OnboardingStep>
 
-            {/* Step 3: Activity Level */}
+            {/* Step 3: Activity Level - Centralizado e Mobile-First */}
             <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Nível de Atividade</CardTitle>
@@ -460,7 +465,7 @@ export function OnboardingForm() {
                     Quão ativo(a) você é no seu dia a dia?
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 flex flex-col items-center justify-center p-6 space-y-6 overflow-y-auto">
+                <CardContent className="flex-1 flex flex-col items-center justify-center p-6 space-y-8 overflow-y-auto">
                   {/* Ícone: Haltere (Verde 600) - Centralizado */}
                   <Dumbbell className="w-16 h-16 md:w-24 md:h-24 text-green-600/70" />
                   
@@ -470,7 +475,9 @@ export function OnboardingForm() {
                       name="activity_level"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nível Atual: {field.value}</FormLabel>
+                          <FormLabel className="text-lg font-semibold block text-center mb-4">
+                            Nível Atual: {field.value}
+                          </FormLabel>
                           <FormControl>
                             <Slider
                               min={1}
@@ -495,7 +502,7 @@ export function OnboardingForm() {
                   <div className="space-x-2 flex items-center">
                     <Button
                       type="button"
-                      variant="default"
+                      variant="outline"
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -510,7 +517,7 @@ export function OnboardingForm() {
                 </CardFooter>
             </OnboardingStep>
 
-            {/* Step 4: Goals */}
+            {/* Step 4: Goals - Ícones únicos e layout organizado */}
             <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Seus Objetivos</CardTitle>
@@ -519,13 +526,12 @@ export function OnboardingForm() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col items-center p-6 overflow-y-auto">
-                  {/* Ícone grande removido */}
                   <div className="w-full max-w-xl">
                     <FormField
                       control={form.control}
                       name="goals"
                       render={() => (
-                        <FormItem className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormItem className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {goalsList.map((item) => {
                             const GoalIcon = item.icon;
                             return (
@@ -534,7 +540,7 @@ export function OnboardingForm() {
                                 control={form.control}
                                 name="goals"
                                 render={({ field }) => (
-                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 border p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                  <FormItem className="flex flex-row items-center space-x-3 space-y-0 border p-3 rounded-lg hover:bg-green-50 transition-colors cursor-pointer">
                                     <FormControl>
                                       <Checkbox
                                         checked={field.value?.includes(item.id)}
@@ -552,9 +558,9 @@ export function OnboardingForm() {
                                         }}
                                       />
                                     </FormControl>
-                                    <div className="flex items-center space-x-2">
-                                        <GoalIcon className="h-4 w-4 text-green-600 flex-shrink-0" />
-                                        <FormLabel className="font-normal cursor-pointer">
+                                    <div className="flex items-center space-x-3">
+                                        <GoalIcon className="h-5 w-5 text-green-600 flex-shrink-0" />
+                                        <FormLabel className="font-medium cursor-pointer text-sm">
                                             {item.label}
                                         </FormLabel>
                                     </div>
@@ -574,7 +580,7 @@ export function OnboardingForm() {
                   <div className="space-x-2 flex items-center">
                     <Button
                       type="button"
-                      variant="default"
+                      variant="outline"
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -628,7 +634,7 @@ export function OnboardingForm() {
                   <div className="space-x-2 flex items-center">
                     <Button
                       type="button"
-                      variant="default"
+                      variant="outline"
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
