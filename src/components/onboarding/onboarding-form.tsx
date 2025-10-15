@@ -41,7 +41,8 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
-import { Heart, ArrowRight } from "lucide-react";
+import { Heart, ArrowRight, User, Activity, CheckCircle } from "lucide-react";
+import { OnboardingNavigationDots } from "./OnboardingNavigationDots";
 
 const goalsList = [
   { id: "lose_weight", label: "Perder Peso" },
@@ -61,7 +62,8 @@ const onboardingSchema = z.object({
   gender: z.enum(["male", "female", "other", "prefer_not_to_say"], {
     required_error: "Por favor, selecione um gênero.",
   }),
-  activity_level: z.number().min(1).max(5).default(3),
+  // REMOVED .default(3) to align type inference with useForm's defaultValues
+  activity_level: z.number().min(1).max(5), 
   goals: z
     .array(z.string())
     .refine((value) => value.some((item) => item), {
@@ -74,6 +76,8 @@ const onboardingSchema = z.object({
 
 type OnboardingValues = z.infer<typeof onboardingSchema>;
 
+const TOTAL_STEPS = 6;
+
 export function OnboardingForm() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -85,9 +89,9 @@ export function OnboardingForm() {
     defaultValues: {
       first_name: "",
       last_name: "",
-      age: 18, // Providing a valid default to satisfy the type
-      gender: "prefer_not_to_say", // Providing a valid default to satisfy the type
-      activity_level: 3,
+      age: 18,
+      gender: "prefer_not_to_say",
+      activity_level: 3, // Default value is provided here instead of in Zod schema
       goals: [],
       consent: false,
     },
@@ -137,9 +141,9 @@ export function OnboardingForm() {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Carousel setApi={setApi} className="w-full max-w-2xl">
           <CarouselContent>
-            {/* Step 1: Welcome */}
+            {/* Step 1: Welcome (Asymmetrical Layout) */}
             <CarouselItem>
-              <Card>
+              <Card className="h-[450px] flex flex-col">
                 <CardHeader>
                   <CardTitle className="text-2xl">
                     Bem-vindo(a) à sua Jornada
@@ -149,10 +153,22 @@ export function OnboardingForm() {
                     perguntas rápidas para começarmos.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex items-center justify-center p-16">
-                  <Heart className="w-24 h-24 text-green-500" />
+                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6">
+                  <div className="md:col-span-2 space-y-4">
+                    <p className="text-lg text-gray-700">
+                      O Lyra MetaCare usa inteligência artificial para criar um
+                      plano de longevidade exclusivo para você.
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Clique em "Começar" para iniciar a configuração do seu perfil.
+                    </p>
+                  </div>
+                  <div className="hidden md:flex justify-center items-center">
+                    <Heart className="w-24 h-24 text-green-500 animate-pulse" />
+                  </div>
                 </CardContent>
-                <CardFooter className="flex justify-end">
+                <CardFooter className="flex justify-between items-center border-t pt-4">
+                  <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
                   <Button type="button" onClick={() => api?.scrollNext()}>
                     Começar <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -162,263 +178,295 @@ export function OnboardingForm() {
 
             {/* Step 2: Name */}
             <CarouselItem>
-              <Card>
+              <Card className="h-[450px] flex flex-col">
                 <CardHeader>
                   <CardTitle>Como podemos te chamar?</CardTitle>
                   <CardDescription>
                     Nos diga seu nome para uma experiência mais pessoal.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="first_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nome</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Seu nome" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="last_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Sobrenome</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Seu sobrenome" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6">
+                  <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="first_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nome</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Seu nome" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="last_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Sobrenome</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Seu sobrenome" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="hidden md:flex justify-center items-center">
+                    <User className="w-24 h-24 text-blue-500/70" />
+                  </div>
                 </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => api?.scrollPrev()}
-                  >
-                    Voltar
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() => handleNext(["first_name", "last_name"])}
-                  >
-                    Próximo
-                  </Button>
+                <CardFooter className="flex justify-between items-center border-t pt-4">
+                  <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
+                  <div className="space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => api?.scrollPrev()}
+                    >
+                      Voltar
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => handleNext(["first_name", "last_name"])}
+                    >
+                      Próximo
+                    </Button>
+                  </div>
                 </CardFooter>
               </Card>
             </CarouselItem>
 
             {/* Step 3: Age & Gender */}
             <CarouselItem>
-              <Card>
+              <Card className="h-[450px] flex flex-col">
                 <CardHeader>
                   <CardTitle>Sobre Você</CardTitle>
                   <CardDescription>
                     Essas informações nos ajudam a adaptar o conteúdo.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="age"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Idade</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="Sua idade" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="gender"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Gênero</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6">
+                  <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="age"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Idade</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione..." />
-                            </SelectTrigger>
+                            <Input type="number" placeholder="Sua idade" {...field} />
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="male">Masculino</SelectItem>
-                            <SelectItem value="female">Feminino</SelectItem>
-                            <SelectItem value="other">Outro</SelectItem>
-                            <SelectItem value="prefer_not_to_say">
-                              Prefiro não dizer
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="gender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Gênero</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="male">Masculino</SelectItem>
+                              <SelectItem value="female">Feminino</SelectItem>
+                              <SelectItem value="other">Outro</SelectItem>
+                              <SelectItem value="prefer_not_to_say">
+                                Prefiro não dizer
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="hidden md:flex justify-center items-center">
+                    <User className="w-24 h-24 text-blue-500/70" />
+                  </div>
                 </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => api?.scrollPrev()}
-                  >
-                    Voltar
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() => handleNext(["age", "gender"])}
-                  >
-                    Próximo
-                  </Button>
+                <CardFooter className="flex justify-between items-center border-t pt-4">
+                  <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
+                  <div className="space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => api?.scrollPrev()}
+                    >
+                      Voltar
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => handleNext(["age", "gender"])}
+                    >
+                      Próximo
+                    </Button>
+                  </div>
                 </CardFooter>
               </Card>
             </CarouselItem>
 
             {/* Step 4: Activity Level */}
             <CarouselItem>
-              <Card>
+              <Card className="h-[450px] flex flex-col">
                 <CardHeader>
                   <CardTitle>Nível de Atividade</CardTitle>
                   <CardDescription>
                     Quão ativo(a) você é no seu dia a dia?
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <FormField
-                    control={form.control}
-                    name="activity_level"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Slider
-                            min={1}
-                            max={5}
-                            step={1}
-                            value={[field.value]}
-                            onValueChange={(vals) => field.onChange(vals[0])}
-                          />
-                        </FormControl>
-                        <div className="flex justify-between text-xs text-muted-foreground mt-2">
-                          <span>Sedentário</span>
-                          <span>Leve</span>
-                          <span>Moderado</span>
-                          <span>Ativo</span>
-                          <span>Muito Ativo</span>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
+                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6">
+                  <div className="md:col-span-2">
+                    <FormField
+                      control={form.control}
+                      name="activity_level"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Slider
+                              min={1}
+                              max={5}
+                              step={1}
+                              value={[field.value]}
+                              onValueChange={(vals) => field.onChange(vals[0])}
+                            />
+                          </FormControl>
+                          <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                            <span>Sedentário</span>
+                            <span>Leve</span>
+                            <span>Moderado</span>
+                            <span>Ativo</span>
+                            <span>Muito Ativo</span>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="hidden md:flex justify-center items-center">
+                    <Activity className="w-24 h-24 text-orange-500/70" />
+                  </div>
                 </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => api?.scrollPrev()}
-                  >
-                    Voltar
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() => handleNext("activity_level")}
-                  >
-                    Próximo
-                  </Button>
+                <CardFooter className="flex justify-between items-center border-t pt-4">
+                  <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
+                  <div className="space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => api?.scrollPrev()}
+                    >
+                      Voltar
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => handleNext("activity_level")}
+                    >
+                      Próximo
+                    </Button>
+                  </div>
                 </CardFooter>
               </Card>
             </CarouselItem>
 
             {/* Step 5: Goals */}
             <CarouselItem>
-              <Card>
+              <Card className="h-[450px] flex flex-col">
                 <CardHeader>
                   <CardTitle>Seus Objetivos</CardTitle>
                   <CardDescription>
                     O que você espera alcançar? (Selecione ao menos um)
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <FormField
-                    control={form.control}
-                    name="goals"
-                    render={() => (
-                      <FormItem className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {goalsList.map((item) => (
-                          <FormField
-                            key={item.id}
-                            control={form.control}
-                            name="goals"
-                            render={({ field }) => (
-                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value?.includes(item.id)}
-                                    onCheckedChange={(checked) => {
-                                      return checked
-                                        ? field.onChange([
-                                            ...(field.value || []),
-                                            item.id,
-                                          ])
-                                        : field.onChange(
-                                            field.value?.filter(
-                                              (value) => value !== item.id
-                                            )
-                                          );
-                                    }}
-                                  />
-                                </FormControl>
-                                <FormLabel className="font-normal">
-                                  {item.label}
-                                </FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                        ))}
-                        <FormMessage className="col-span-full" />
-                      </FormItem>
-                    )}
-                  />
+                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6">
+                  <div className="md:col-span-2">
+                    <FormField
+                      control={form.control}
+                      name="goals"
+                      render={() => (
+                        <FormItem className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {goalsList.map((item) => (
+                            <FormField
+                              key={item.id}
+                              control={form.control}
+                              name="goals"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(item.id)}
+                                      onCheckedChange={(checked) => {
+                                        return checked
+                                          ? field.onChange([
+                                              ...(field.value || []),
+                                              item.id,
+                                            ])
+                                          : field.onChange(
+                                              field.value?.filter(
+                                                (value) => value !== item.id
+                                              )
+                                            );
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="font-normal">
+                                    {item.label}
+                                  </FormLabel>
+                                </FormItem>
+                              )}
+                            />
+                          ))}
+                          <FormMessage className="col-span-full" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="hidden md:flex justify-center items-center">
+                    <CheckCircle className="w-24 h-24 text-green-600/70" />
+                  </div>
                 </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => api?.scrollPrev()}
-                  >
-                    Voltar
-                  </Button>
-                  <Button type="button" onClick={() => handleNext("goals")}>
-                    Próximo
-                  </Button>
+                <CardFooter className="flex justify-between items-center border-t pt-4">
+                  <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
+                  <div className="space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => api?.scrollPrev()}
+                    >
+                      Voltar
+                    </Button>
+                    <Button type="button" onClick={() => handleNext("goals")}>
+                      Próximo
+                    </Button>
+                  </div>
                 </CardFooter>
               </Card>
             </CarouselItem>
 
             {/* Step 6: Consent & Submit */}
             <CarouselItem>
-              <Card>
+              <Card className="h-[450px] flex flex-col">
                 <CardHeader>
                   <CardTitle>Quase lá!</CardTitle>
                   <CardDescription>
                     Revise e confirme para finalizar.
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-1 flex items-center justify-center p-6">
                   <FormField
                     control={form.control}
                     name="consent"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 w-full max-w-md">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
@@ -440,17 +488,20 @@ export function OnboardingForm() {
                     )}
                   />
                 </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => api?.scrollPrev()}
-                  >
-                    Voltar
-                  </Button>
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "Salvando..." : "Finalizar"}
-                  </Button>
+                <CardFooter className="flex justify-between items-center border-t pt-4">
+                  <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
+                  <div className="space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => api?.scrollPrev()}
+                    >
+                      Voltar
+                    </Button>
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? "Salvando..." : "Finalizar"}
+                    </Button>
+                  </div>
                 </CardFooter>
               </Card>
             </CarouselItem>
