@@ -261,7 +261,7 @@ export function ProfileForm() {
             <CardHeader>
               <CardTitle>Dados Pessoais</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6"> {/* Alterado para md:grid-cols-2 */}
               <FormField
                 control={form.control}
                 name="first_name"
