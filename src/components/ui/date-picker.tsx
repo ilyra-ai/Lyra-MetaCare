@@ -112,6 +112,7 @@ export function DatePicker({
       <PopoverTrigger asChild>
         <div className={cn("relative w-full", className)}>
           <Input
+            type="text" // Garantindo que é um input de texto para a máscara funcionar
             placeholder={placeholder}
             value={inputValue}
             onChange={handleInputChange}
