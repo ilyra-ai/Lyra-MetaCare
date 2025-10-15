@@ -42,8 +42,13 @@ const goalsList = [
   { id: "lose_weight", label: "Perder Peso" },
   { id: "gain_muscle", label: "Ganhar Músculo" },
   { id: "improve_endurance", label: "Melhorar Resistência" },
-  { id: "reduce_stress", "label": "Reduzir Estresse" },
+  { id: "reduce_stress", label: "Reduzir Estresse Crônico" },
   { id: "eat_healthier", label: "Comer de Forma Saudável" },
+  { id: "optimize_hrv", label: "Otimizar HRV (Resiliência)" },
+  { id: "improve_readiness", label: "Melhorar Score de Prontidão" },
+  { id: "regulate_sleep_duration", label: "Regular Duração do Sono" },
+  { id: "increase_vo2max", label: "Aumentar VO₂max" },
+  { id: "manage_blood_glucose", label: "Gerenciar Glicose Pós-Prandial" },
 ];
 
 const activityLevels = [
