@@ -94,7 +94,8 @@ const TOTAL_STEPS = 5;
 // Helper component for Carousel Item structure
 const OnboardingStep: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className }) => (
     <CarouselItem className={cn("animate-in fade-in duration-500", className)}>
-        <Card className="h-[550px] flex flex-col"> {/* Aumentei a altura para acomodar mais campos */}
+        {/* Removida a altura fixa h-[550px] e adicionado min-h para garantir espaço mínimo */}
+        <Card className="min-h-[550px] flex flex-col"> 
             {children}
         </Card>
     </CarouselItem>
@@ -203,7 +204,8 @@ export function OnboardingForm() {
                     perguntas rápidas para começarmos.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6">
+                {/* Adicionado overflow-y-auto para rolagem interna */}
+                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 overflow-y-auto">
                   <div className="md:col-span-2 space-y-4">
                     <p className="text-lg text-gray-700">
                       O Lyra MetaCare usa inteligência artificial para criar um
@@ -233,7 +235,8 @@ export function OnboardingForm() {
                     Nome, data de nascimento e gênero para personalização.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 p-6 space-y-6">
+                {/* Adicionado overflow-y-auto para rolagem interna */}
+                <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
                   {/* Nome e Sobrenome */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
@@ -384,7 +387,7 @@ export function OnboardingForm() {
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
                   <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <div className="space-x-2 flex items-center"> {/* Adicionado flex items-center */}
+                  <div className="space-x-2 flex items-center">
                     <Button
                       type="button"
                       variant="default"
@@ -410,7 +413,8 @@ export function OnboardingForm() {
                     Quão ativo(a) você é no seu dia a dia?
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6">
+                {/* Adicionado overflow-y-auto para rolagem interna */}
+                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 overflow-y-auto">
                   <div className="md:col-span-2">
                     <FormField
                       control={form.control}
@@ -442,7 +446,7 @@ export function OnboardingForm() {
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
                   <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <div className="space-x-2 flex items-center"> {/* Adicionado flex items-center */}
+                  <div className="space-x-2 flex items-center">
                     <Button
                       type="button"
                       variant="default"
@@ -468,7 +472,8 @@ export function OnboardingForm() {
                     O que você espera alcançar? (Selecione ao menos um)
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6">
+                {/* Adicionado overflow-y-auto para rolagem interna */}
+                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 overflow-y-auto">
                   <div className="md:col-span-2">
                     <FormField
                       control={form.control}
@@ -517,7 +522,7 @@ export function OnboardingForm() {
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
                   <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <div className="space-x-2 flex items-center"> {/* Adicionado flex items-center */}
+                  <div className="space-x-2 flex items-center">
                     <Button
                       type="button"
                       variant="default"
@@ -540,7 +545,8 @@ export function OnboardingForm() {
                     Revise e confirme para finalizar.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 flex items-center justify-center p-6">
+                {/* Adicionado overflow-y-auto para rolagem interna */}
+                <CardContent className="flex-1 flex items-center justify-center p-6 overflow-y-auto">
                   <FormField
                     control={form.control}
                     name="consent"
@@ -569,7 +575,7 @@ export function OnboardingForm() {
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
                   <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <div className="space-x-2 flex items-center"> {/* Adicionado flex items-center */}
+                  <div className="space-x-2 flex items-center">
                     <Button
                       type="button"
                       variant="default"
