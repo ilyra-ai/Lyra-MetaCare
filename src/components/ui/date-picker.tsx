@@ -31,37 +31,29 @@ const formatInputDate = (value: string): string => {
   // Limita a 8 dígitos (DDMMYYYY)
   digits = digits.substring(0, 8);
   
-  let formatted = '';
-  
-  if (digits.length > 0) {
-    formatted += digits.substring(0, 2); // DD
-  }
-  if (digits.length > 2) {
-    formatted += '/' + digits.substring(2, 4); // MM
-  }
-  if (digits.length > 4) {
-    formatted += '/' + digits.substring(4, 8); // YYYY
+  // Se não tiver 8 dígitos, retorna os dígitos brutos
+  if (digits.length < 8) {
+    return digits;
   }
   
-  return formatted;
+  // Se tiver 8 dígitos, aplica a máscara DD/MM/YYYY
+  return `${digits.substring(0, 2)}/${digits.substring(2, 4)}/${digits.substring(4, 8)}`;
 };
 
 // Função para tentar parsear a data a partir de DD/MM/YYYY ou DDMMYYYY
 const parseDateInput = (value: string): Date | undefined => {
-    // 1. Tenta parsear o formato DD/MM/YYYY
-    let parsedDate = parse(value, "dd/MM/yyyy", new Date());
+    // Remove caracteres não-dígitos para padronizar
+    const digits = value.replace(/\D/g, '');
+    
+    if (digits.length !== 8) {
+        return undefined;
+    }
+
+    // Tenta parsear o formato contínuo DDMMYYYY
+    const parsedDate = parse(digits, "ddMMyyyy", new Date());
     
     if (parsedDate instanceof Date && !isNaN(parsedDate.getTime())) {
         return parsedDate;
-    }
-
-    // 2. Tenta parsear o formato contínuo DDMMYYYY
-    const digits = value.replace(/\D/g, '');
-    if (digits.length === 8) {
-        parsedDate = parse(digits, "ddMMyyyy", new Date());
-        if (parsedDate instanceof Date && !isNaN(parsedDate.getTime())) {
-            return parsedDate;
-        }
     }
 
     return undefined;
@@ -75,31 +67,44 @@ export function DatePicker({
   placeholder = "DD/MM/AAAA",
   className,
 }: DatePickerProps) {
+  // Usamos o estado interno para armazenar a string bruta ou formatada
   const [inputValue, setInputValue] = React.useState(value ? format(value, "dd/MM/yyyy") : "");
 
   React.useEffect(() => {
     // Sincroniza o estado interno com o valor externo (do formulário)
+    // Se o valor externo mudar (ex: reset do form), atualiza o input
     setInputValue(value ? format(value, "dd/MM/yyyy") : "");
   }, [value]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
     
-    // 1. Formata a string de entrada para DD/MM/YYYY
-    const formattedValue = formatInputDate(rawValue);
-    setInputValue(formattedValue);
+    // 1. Remove caracteres não-dígitos para obter a string bruta
+    const digits = rawValue.replace(/\D/g, '');
+    
+    // 2. Limita a 8 dígitos
+    const limitedDigits = digits.substring(0, 8);
+    
+    // 3. Atualiza o input com os dígitos brutos (sem formatação)
+    setInputValue(limitedDigits);
 
-    // 2. Tenta parsear a data formatada
-    const parsedDate = parseDateInput(formattedValue);
-
-    if (parsedDate) {
-      // Se a data for válida, atualiza o valor do formulário
-      onChange(parsedDate);
-    } else if (formattedValue.length === 0) {
-      // Se o campo estiver vazio, limpa o valor do formulário
-      onChange(undefined);
+    // 4. Se atingiu 8 dígitos, tenta formatar e parsear
+    if (limitedDigits.length === 8) {
+        const formattedValue = formatInputDate(limitedDigits);
+        setInputValue(formattedValue); // Exibe a data formatada
+        
+        const parsedDate = parseDateInput(formattedValue);
+        
+        if (parsedDate) {
+            onChange(parsedDate); // Envia a data válida para o hook form
+        } else {
+            // Se 8 dígitos foram digitados mas o parse falhou (ex: 99/99/9999), limpa o valor do form
+            onChange(undefined);
+        }
+    } else {
+        // Se não tiver 8 dígitos, garante que o valor do form seja undefined
+        onChange(undefined);
     }
-    // Se for inválido e não vazio, o valor do formulário (value) permanece o último valor válido.
   };
 
   const handleSelect: SelectSingleEventHandler = (date) => {
@@ -112,12 +117,12 @@ export function DatePicker({
       <PopoverTrigger asChild>
         <div className={cn("relative w-full", className)}>
           <Input
-            type="text" // Garantindo que é um input de texto para a máscara funcionar
+            type="text"
             placeholder={placeholder}
             value={inputValue}
             onChange={handleInputChange}
             disabled={disabled}
-            className="pl-10" // Adiciona padding para o ícone
+            className="pl-10"
             maxLength={10} // Limita o tamanho máximo para DD/MM/YYYY
           />
           <CalendarIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
