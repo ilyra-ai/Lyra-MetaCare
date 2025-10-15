@@ -43,7 +43,8 @@ export function useLocationSearch() {
     const searchLower = query.toLowerCase();
     
     try {
-      // A query aninhada agora deve funcionar corretamente, pois as FKs foram definidas.
+      // Revertendo para a sintaxe padrão de aninhamento.
+      // Agora que as FKs estão definidas, o PostgREST deve inferir a relação.
       const { data, error: citiesError } = await supabase
         .from('cidade')
         .select(`
@@ -60,6 +61,7 @@ export function useLocationSearch() {
         throw citiesError;
       }
 
+      // Usando a tipagem padrão
       const citiesData = data as CidadeQueryResult[];
 
       const results: LocationResult[] = [];
@@ -87,12 +89,10 @@ export function useLocationSearch() {
       return results;
 
     } catch (error) {
-      // Logando o erro de forma mais detalhada
       console.error("Error searching locations:", error);
       
       let errorMessage = "Erro desconhecido na busca de localização.";
       
-      // Tentativa de extrair a mensagem de erro do Supabase
       if (error && typeof error === 'object' && 'message' in error) {
           errorMessage = (error as { message: string }).message;
       } else if (error instanceof Error) {
@@ -101,7 +101,6 @@ export function useLocationSearch() {
       
       toast.error("Erro na busca de localização.", { description: errorMessage });
       
-      // Retorna um array vazio em caso de erro para não quebrar a UI
       return [];
     } finally {
       setLoading(false);
