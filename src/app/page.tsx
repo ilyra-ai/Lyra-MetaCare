@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { SplashScreen } from "@/components/SplashScreen";
+import { Dashboard } from "@/components/dashboard/dashboard";
 
 export default function Home() {
   const { session } = useAuth();
@@ -45,11 +46,8 @@ export default function Home() {
         <Header />
         <div className="flex flex-col flex-1">
           <main className="flex-1 p-8">
-            <h1 className="text-3xl font-bold">Dashboard</h1>
-            <p className="text-gray-600 mt-2">
-              Welcome back, {session.user.email}. This is your personalized health dashboard.
-            </p>
-            {/* Dashboard content will go here */}
+            <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+            <Dashboard />
           </main>
           <MadeWithDyad />
         </div>
