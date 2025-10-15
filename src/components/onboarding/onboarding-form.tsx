@@ -337,6 +337,7 @@ export function OnboardingForm() {
                               value={field.value}
                               onChange={field.onChange}
                               placeholder="DD/MM/AAAA"
+                              id={field.name}
                             />
                           </FormControl>
                           <FormMessage />

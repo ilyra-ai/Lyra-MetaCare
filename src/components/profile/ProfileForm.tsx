@@ -308,6 +308,7 @@ export function ProfileForm() {
                         value={field.value || undefined}
                         onChange={field.onChange}
                         placeholder="DD/MM/AAAA"
+                        id={field.name}
                       />
                     </FormControl>
                     <FormMessage />
