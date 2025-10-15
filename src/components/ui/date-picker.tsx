@@ -26,21 +26,21 @@ interface DatePickerProps {
 // Função para formatar a string de entrada para DD/MM/YYYY
 const formatInputDate = (value: string): string => {
   // Remove todos os caracteres que não são dígitos
-  const digits = value.replace(/\D/g, '');
+  let digits = value.replace(/\D/g, '');
+  
+  // Limita a 8 dígitos (DDMMYYYY)
+  digits = digits.substring(0, 8);
   
   let formatted = '';
   
   if (digits.length > 0) {
-    // DD
-    formatted += digits.substring(0, 2);
+    formatted += digits.substring(0, 2); // DD
   }
   if (digits.length > 2) {
-    // DD/MM
-    formatted += '/' + digits.substring(2, 4);
+    formatted += '/' + digits.substring(2, 4); // MM
   }
   if (digits.length > 4) {
-    // DD/MM/YYYY
-    formatted += '/' + digits.substring(4, 8);
+    formatted += '/' + digits.substring(4, 8); // YYYY
   }
   
   return formatted;
