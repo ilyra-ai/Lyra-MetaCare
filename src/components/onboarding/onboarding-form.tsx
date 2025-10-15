@@ -387,10 +387,10 @@ export function OnboardingForm() {
                   <div className="space-x-2">
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="default" // Alterado para default
                       onClick={() => api?.scrollPrev()}
                     >
-                      <ArrowLeft className="ml-2 h-4 w-4" /> Voltar
+                      <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                     </Button>
                     <Button
                       type="button"
@@ -445,7 +445,7 @@ export function OnboardingForm() {
                   <div className="space-x-2">
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="default" // Alterado para default
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -520,7 +520,7 @@ export function OnboardingForm() {
                   <div className="space-x-2">
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="default" // Alterado para default
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -572,10 +572,10 @@ export function OnboardingForm() {
                   <div className="space-x-2">
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="default" // Alterado para default
                       onClick={() => api?.scrollPrev()}
                     >
-                      <ArrowLeft className="ml-2 h-4 w-4" /> Voltar
+                      <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                     </Button>
                     <Button type="submit" disabled={isSubmitting}>
                       {isSubmitting ? "Salvando..." : "Finalizar"}
