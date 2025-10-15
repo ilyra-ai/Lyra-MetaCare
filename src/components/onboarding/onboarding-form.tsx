@@ -41,7 +41,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
-import { Heart, ArrowRight, User, Activity, CheckCircle, ArrowLeft, Calendar, Clock, MapPin, Dumbbell, Target, ShieldCheck } from "lucide-react";
+import { Heart, ArrowRight, User, Activity, CheckCircle, ArrowLeft, Calendar, Clock, MapPin, Dumbbell, Target, ShieldCheck, Scale, Moon, Utensils, Zap } from "lucide-react";
 import { OnboardingNavigationDots } from "./OnboardingNavigationDots";
 import { cn } from "@/lib/utils";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -49,20 +49,20 @@ import { differenceInYears } from "date-fns";
 import { TimeInput } from "@/components/ui/time-input";
 
 const goalsList = [
-  { id: "lose_weight", label: "Perder Peso" },
-  { id: "gain_muscle", label: "Ganhar Músculo" },
-  { id: "improve_endurance", label: "Melhorar Resistência" },
-  { id: "reduce_stress", label: "Reduzir Estresse Crônico" },
-  { id: "eat_healthier", label: "Comer de Forma Saudável" },
-  { id: "optimize_hrv", label: "Otimizar HRV (Resiliência)" },
-  { id: "improve_readiness", label: "Melhorar Score de Prontidão" },
-  { id: "regulate_sleep_duration", label: "Regular Duração do Sono" },
-  { id: "improve_sleep_efficiency", label: "Aumentar a Eficiência do Sono" },
-  { id: "reduce_social_jetlag", label: "Reduzir o Social Jetlag (Regularidade)" },
-  { id: "increase_vo2max", label: "Aumentar VO₂max" },
-  { id: "meet_activity_guidelines", label: "Cumprir Diretrizes de Atividade Moderada/Vigorosa" },
-  { id: "optimize_protein", label: "Otimizar a Ingestão Diária de Proteínas" },
-  { id: "manage_blood_glucose", label: "Gerenciar Picos de Glicose Pós-Prandial" },
+  { id: "lose_weight", label: "Perder Peso", icon: Scale },
+  { id: "gain_muscle", label: "Ganhar Músculo", icon: Dumbbell },
+  { id: "improve_endurance", label: "Melhorar Resistência", icon: Activity },
+  { id: "reduce_stress", label: "Reduzir Estresse Crônico", icon: Heart },
+  { id: "eat_healthier", label: "Comer de Forma Saudável", icon: Utensils },
+  { id: "optimize_hrv", label: "Otimizar HRV (Resiliência)", icon: Zap },
+  { id: "improve_readiness", label: "Melhorar Score de Prontidão", icon: ShieldCheck },
+  { id: "regulate_sleep_duration", label: "Regular Duração do Sono", icon: Moon },
+  { id: "improve_sleep_efficiency", label: "Aumentar a Eficiência do Sono", icon: Moon },
+  { id: "reduce_social_jetlag", label: "Reduzir o Social Jetlag (Regularidade)", icon: Clock },
+  { id: "increase_vo2max", label: "Aumentar VO₂max", icon: Activity },
+  { id: "meet_activity_guidelines", label: "Cumprir Diretrizes de Atividade Moderada/Vigorosa", icon: Dumbbell },
+  { id: "optimize_protein", label: "Otimizar a Ingestão Diária de Proteínas", icon: Utensils },
+  { id: "manage_blood_glucose", label: "Gerenciar Picos de Glicose Pós-Prandial", icon: Zap },
 ];
 
 // --- Zod Schema ---
@@ -257,9 +257,9 @@ export function OnboardingForm() {
                       Clique em "Começar" para iniciar a configuração do seu perfil.
                     </p>
                   </div>
-                  {/* Ícone visível em mobile e desktop */}
+                  {/* Ícone: Coração (Verde 600) */}
                   <div className="flex justify-center items-center md:col-span-1">
-                    <Heart className="w-16 h-16 md:w-24 md:h-24 text-green-500 animate-pulse" />
+                    <Heart className="w-16 h-16 md:w-24 md:h-24 text-green-600 animate-pulse" />
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
@@ -279,9 +279,9 @@ export function OnboardingForm() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
-                  {/* Ícone visível em mobile e desktop */}
-                  <div className="flex justify-center items-center mb-6 md:hidden">
-                    <User className="w-16 h-16 text-blue-500/70" />
+                  {/* Ícone: Usuário (Verde 600) */}
+                  <div className="flex justify-center items-center mb-6">
+                    <User className="w-16 h-16 md:w-24 md:h-24 text-green-600/70" />
                   </div>
                   
                   {/* Nome e Sobrenome */}
@@ -431,10 +431,6 @@ export function OnboardingForm() {
                       )}
                     />
                   </div>
-                  {/* Ícone Desktop */}
-                  <div className="hidden md:flex justify-center items-center md:col-span-3 pt-4">
-                    <User className="w-24 h-24 text-blue-500/70" />
-                  </div>
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
                   <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
@@ -464,12 +460,11 @@ export function OnboardingForm() {
                     Quão ativo(a) você é no seu dia a dia?
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 overflow-y-auto">
-                  {/* Ícone visível em mobile e desktop */}
-                  <div className="flex justify-center items-center md:col-span-1">
-                    <Dumbbell className="w-16 h-16 md:w-24 md:h-24 text-orange-500/70" />
-                  </div>
-                  <div className="md:col-span-2">
+                <CardContent className="flex-1 flex flex-col items-center justify-center p-6 space-y-6 overflow-y-auto">
+                  {/* Ícone: Haltere (Verde 600) - Centralizado */}
+                  <Dumbbell className="w-16 h-16 md:w-24 md:h-24 text-green-600/70" />
+                  
+                  <div className="w-full max-w-md">
                     <FormField
                       control={form.control}
                       name="activity_level"
@@ -523,48 +518,51 @@ export function OnboardingForm() {
                     O que você espera alcançar? (Selecione ao menos um)
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 overflow-y-auto">
-                  {/* Ícone visível em mobile e desktop */}
-                  <div className="flex justify-center items-center md:col-span-1">
-                    <Target className="w-16 h-16 md:w-24 md:h-24 text-red-500/70" />
-                  </div>
-                  <div className="md:col-span-2">
+                <CardContent className="flex-1 flex flex-col items-center p-6 overflow-y-auto">
+                  {/* Ícone grande removido */}
+                  <div className="w-full max-w-xl">
                     <FormField
                       control={form.control}
                       name="goals"
                       render={() => (
                         <FormItem className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {goalsList.map((item) => (
-                            <FormField
-                              key={item.id}
-                              control={form.control}
-                              name="goals"
-                              render={({ field }) => (
-                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value?.includes(item.id)}
-                                      onCheckedChange={(checked) => {
-                                        return checked
-                                          ? field.onChange([
-                                              ...(field.value || []),
-                                              item.id,
-                                            ])
-                                          : field.onChange(
-                                              field.value?.filter(
-                                                (value) => value !== item.id
-                                              )
-                                            );
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <FormLabel className="font-normal">
-                                    {item.label}
-                                  </FormLabel>
-                                </FormItem>
-                              )}
-                            />
-                          ))}
+                          {goalsList.map((item) => {
+                            const GoalIcon = item.icon;
+                            return (
+                              <FormField
+                                key={item.id}
+                                control={form.control}
+                                name="goals"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 border p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value?.includes(item.id)}
+                                        onCheckedChange={(checked) => {
+                                          return checked
+                                            ? field.onChange([
+                                                ...(field.value || []),
+                                                item.id,
+                                              ])
+                                            : field.onChange(
+                                                field.value?.filter(
+                                                  (value) => value !== item.id
+                                                )
+                                              );
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <div className="flex items-center space-x-2">
+                                        <GoalIcon className="h-4 w-4 text-green-600 flex-shrink-0" />
+                                        <FormLabel className="font-normal cursor-pointer">
+                                            {item.label}
+                                        </FormLabel>
+                                    </div>
+                                  </FormItem>
+                                )}
+                              />
+                            );
+                          })}
                           <FormMessage className="col-span-full" />
                         </FormItem>
                       )}
@@ -597,7 +595,7 @@ export function OnboardingForm() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col items-center justify-center p-6 space-y-6 overflow-y-auto">
-                  {/* Ícone visível em mobile e desktop */}
+                  {/* Ícone: ShieldCheck (Verde 600) */}
                   <ShieldCheck className="w-16 h-16 md:w-24 md:h-24 text-green-600/70" />
                   <FormField
                     control={form.control}
