@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, User, Settings, BrainCircuit } from "lucide-react";
+import { LayoutDashboard, User, Settings, BrainCircuit, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Sidebar() {
@@ -19,6 +19,12 @@ export function Sidebar() {
           <Link href="/plan">
             <BrainCircuit className="mr-2 h-4 w-4" />
             Plano de IA
+          </Link>
+        </Button>
+        <Button asChild variant="ghost" className="w-full justify-start">
+          <Link href="/goals">
+            <Target className="mr-2 h-4 w-4" />
+            Metas
           </Link>
         </Button>
         <Button asChild variant="ghost" className="w-full justify-start">
