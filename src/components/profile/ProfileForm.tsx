@@ -136,19 +136,16 @@ export function ProfileForm() {
   const fetchProfile = React.useCallback(async () => {
     if (!session?.user) return;
 
-    const { data, error } = await supabase
+    const { data: profiles, error } = await supabase
       .from("profiles")
       .select("first_name, last_name, age, gender, activity_level, goals")
-      .eq("id", session.user.id)
-      .single();
+      .eq("id", session.user.id);
+      // Removed .single()
 
     if (error) {
-      // PGRST116: row not found (expected if profile trigger hasn't run or user is new)
-      if (error.code !== 'PGRST116') { 
-        console.error("Error fetching profile:", error);
-        toast.error("Erro ao carregar dados do perfil.");
-      }
-    } else if (data) {
+      console.error("Error fetching profile:", error);
+    } else if (profiles && profiles.length > 0) {
+      const data = profiles[0];
       // Ensure activity_level is a number (it's stored as smallint/number)
       const profileData = {
         ...data,

@@ -38,16 +38,16 @@ export default function Home() {
     if (session?.user) {
       const fetchProfile = async () => {
         setProfileLoading(true);
-        const { data, error } = await supabase
+        const { data: profiles, error } = await supabase
           .from("profiles")
           .select("first_name")
-          .eq("id", session.user.id)
-          .single();
+          .eq("id", session.user.id);
+          // Removed .single()
 
-        if (error && error.code !== 'PGRST116') { // PGRST116: row not found
+        if (error) {
           console.error("Error fetching profile:", error);
-        } else if (data) {
-          setProfile(data);
+        } else if (profiles && profiles.length > 0) {
+          setProfile(profiles[0]);
         }
         setProfileLoading(false);
       };

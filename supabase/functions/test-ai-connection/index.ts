@@ -42,8 +42,7 @@ serve(async (req: Request) => {
                 'Authorization': `Bearer ${key}`,
                 'Content-Type': 'application/json',
             },
-            // Adicionando um timeout para evitar que a função trave
-            signal: AbortSignal.timeout(5000) 
+            // Removido AbortSignal.timeout para evitar 503s prematuros
         });
     } catch (networkError) {
         // Captura erros de rede (DNS, timeout, etc.)

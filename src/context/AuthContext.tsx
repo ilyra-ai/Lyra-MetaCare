@@ -43,21 +43,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       // User is logged in, check if onboarding is complete
-      const { data: profile, error } = await supabase
+      const { data: profiles, error } = await supabase
         .from("profiles")
         .select("onboarding_completed")
-        .eq("id", currentSession.user.id)
-        .single();
+        .eq("id", currentSession.user.id);
+        // Removed .single() to avoid 406 errors
 
-      if (error && error.code !== 'PGRST116') { // PGRST116: row not found
-        console.error("Error fetching profile:", error);
+      if (error) {
+        console.error("Error fetching profile for redirect:", error);
         return;
       }
+      
+      const profile = profiles?.[0]; // Get the first profile if it exists
 
       const isOnboardingPage = window.location.pathname === "/onboarding";
       const isLoginPage = window.location.pathname === "/login";
 
-      if (profile && !profile.onboarding_completed) {
+      if (!profile || !profile.onboarding_completed) {
         if (!isOnboardingPage) {
           router.push("/onboarding");
         }
