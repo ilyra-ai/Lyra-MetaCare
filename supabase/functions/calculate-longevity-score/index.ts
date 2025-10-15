@@ -18,7 +18,18 @@ interface DailyMetric {
     hrv_ms: number | null;
     sleep_duration_minutes: number;
     steps: number;
-    // ... outras métricas
+    recovery_score: number | null;
+    readiness_score: number | null;
+    resting_heart_rate: number | null;
+    hrr_1min_bpm: number | null;
+    body_temperature_celsius: number | null;
+    spo2_average: number | null;
+    protein_grams: number;
+    carb_grams: number;
+    fat_grams: number;
+    water_liters: number;
+    mood_score: number | null;
+    meditation_minutes: number;
 }
 
 interface AIScores {
@@ -28,26 +39,37 @@ interface AIScores {
 
 /**
  * Função placeholder para chamar a API de IA externa.
- * Quando a API real for conectada, esta função deve ser substituída pela
- * chamada fetch() para o endpoint do modelo de IA (ex: OpenAI, Gemini).
+ * 
+ * ESTE É O PONTO DE INTEGRAÇÃO REAL:
+ * Substitua o bloco de SIMULAÇÃO pela chamada fetch() para o endpoint 
+ * do seu modelo de IA (ex: OpenAI, Gemini, ou modelo customizado).
+ * 
+ * O modelo de IA deve receber as 'metrics' e retornar 'longevityScore' e 'readinessScore'.
  */
 async function callExternalAI(metrics: DailyMetric): Promise<AIScores> {
-    // --- INÍCIO DO BLOCO DE INTEGRAÇÃO COM API EXTERNA ---
+    // --- INÍCIO DO BLOCO DE INTEGRAÇÃO COM API EXTERNA (SIMULAÇÃO) ---
     
     // Exemplo de como você enviaria os dados para a API externa:
-    // const aiResponse = await fetch('https://api.external-ai.com/calculate', {
-    //     method: 'POST',
-    //     headers: {
-    //         'Authorization': `Bearer ${Deno.env.get('EXTERNAL_AI_KEY')}`,
-    //         'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ user_metrics: metrics })
-    // });
-    // const result = await aiResponse.json();
-    // return { longevityScore: result.longevity, readinessScore: result.readiness };
+    /*
+    const externalApiKey = Deno.env.get('EXTERNAL_AI_KEY');
+    const aiResponse = await fetch('https://api.external-ai.com/calculate', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${externalApiKey}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_metrics: metrics })
+    });
+    
+    if (!aiResponse.ok) {
+        throw new Error(`External AI API failed with status: ${aiResponse.status}`);
+    }
+    
+    const result = await aiResponse.json();
+    return { longevityScore: result.longevity, readinessScore: result.readiness };
+    */
 
     // SIMULAÇÃO: Retornando valores fixos para manter a funcionalidade
-    // Estes valores devem ser substituídos pela resposta real da API de IA.
     const simulatedLongevity = 7.8;
     const simulatedReadiness = 85;
 
@@ -56,7 +78,7 @@ async function callExternalAI(metrics: DailyMetric): Promise<AIScores> {
         readinessScore: simulatedReadiness,
     };
     
-    // --- FIM DO BLOCO DE INTEGRAÇÃO COM API EXTERNA ---
+    // --- FIM DO BLOCO DE INTEGRAÇÃO COM API EXTERNA (SIMULAÇÃO) ---
 }
 
 
@@ -120,7 +142,7 @@ serve(async (req: Request) => {
         })
     }
 
-    // 3. Chamar a API de IA externa (Simulada)
+    // 3. Chamar a API de IA externa (Ponto de delegação para o modelo de IA)
     const scores = await callExternalAI(metricsData as DailyMetric);
 
     // 4. Retornar o resultado
