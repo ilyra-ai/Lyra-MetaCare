@@ -3,7 +3,7 @@
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { SplashScreen } from "@/components/SplashScreen";
@@ -11,28 +11,30 @@ import { SplashScreen } from "@/components/SplashScreen";
 export default function Home() {
   const { session } = useAuth();
   const router = useRouter();
+  const [isMinimumTimeElapsed, setIsMinimumTimeElapsed] = useState(false);
 
-  // The AuthProvider handles the initial loading state and redirects.
-  // We rely on the AuthProvider's internal loading state (which is hidden 
-  // by the AuthProvider itself) and the session status here.
+  // 1. Enforce minimum 3-second display time for the splash screen
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsMinimumTimeElapsed(true);
+    }, 3000); // 3 seconds
 
-  // If session is null, the AuthProvider is either loading or redirecting to /login.
-  // We show the splash screen until the session is definitively established or the redirect happens.
-  
-  // Note: Since AuthProvider handles the redirect, if session is null, we assume 
-  // the redirect to /login is imminent or already happening. We show the splash screen 
-  // to cover the transition.
+    return () => clearTimeout(timer);
+  }, []);
 
-  if (session === undefined) {
-    // This state shouldn't happen if AuthProvider is working correctly, 
-    // but we keep the loading state safe.
+  // 2. Determine if loading is complete
+  // We consider loading complete only if the session check is done AND 3 seconds have passed.
+  const isLoading = session === undefined || !isMinimumTimeElapsed;
+
+  if (isLoading) {
+    // Show the splash screen while waiting for session check AND minimum time
     return <SplashScreen />;
   }
 
   if (!session) {
-    // If session is null, the AuthContext useEffect should have already triggered 
-    // the router.push("/login"). We display the splash screen during this brief moment.
-    return <SplashScreen />;
+    // If session is null and loading is complete, the AuthContext should handle the redirect to /login.
+    // We return null here to prevent flickering, as the redirect is already in progress.
+    return null;
   }
 
   // If authenticated, show the main dashboard layout
