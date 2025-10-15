@@ -41,7 +41,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
-import { Heart, ArrowRight, User, Activity, CheckCircle, ArrowLeft, Calendar, Clock, MapPin } from "lucide-react";
+import { Heart, ArrowRight, User, Activity, CheckCircle, ArrowLeft, Calendar, Clock, MapPin, Dumbbell, Target, ShieldCheck } from "lucide-react";
 import { OnboardingNavigationDots } from "./OnboardingNavigationDots";
 import { cn } from "@/lib/utils";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -247,7 +247,6 @@ export function OnboardingForm() {
                     perguntas rápidas para começarmos.
                   </CardDescription>
                 </CardHeader>
-                {/* Adicionado overflow-y-auto para rolagem interna */}
                 <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 overflow-y-auto">
                   <div className="md:col-span-2 space-y-4">
                     <p className="text-lg text-gray-700">
@@ -258,8 +257,9 @@ export function OnboardingForm() {
                       Clique em "Começar" para iniciar a configuração do seu perfil.
                     </p>
                   </div>
-                  <div className="hidden md:flex justify-center items-center">
-                    <Heart className="w-24 h-24 text-green-500 animate-pulse" />
+                  {/* Ícone visível em mobile e desktop */}
+                  <div className="flex justify-center items-center md:col-span-1">
+                    <Heart className="w-16 h-16 md:w-24 md:h-24 text-green-500 animate-pulse" />
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
@@ -270,7 +270,7 @@ export function OnboardingForm() {
                 </CardFooter>
             </OnboardingStep>
 
-            {/* Step 2: Personal Data (Name, Birth Date, Age, Gender, Location, Time) - CONSOLIDADO */}
+            {/* Step 2: Personal Data */}
             <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Seus Dados Pessoais</CardTitle>
@@ -278,8 +278,12 @@ export function OnboardingForm() {
                     Nome, data de nascimento e gênero para personalização.
                   </CardDescription>
                 </CardHeader>
-                {/* Adicionado overflow-y-auto para rolagem interna */}
                 <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
+                  {/* Ícone visível em mobile e desktop */}
+                  <div className="flex justify-center items-center mb-6 md:hidden">
+                    <User className="w-16 h-16 text-blue-500/70" />
+                  </div>
+                  
                   {/* Nome e Sobrenome */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
@@ -427,6 +431,10 @@ export function OnboardingForm() {
                       )}
                     />
                   </div>
+                  {/* Ícone Desktop */}
+                  <div className="hidden md:flex justify-center items-center md:col-span-3 pt-4">
+                    <User className="w-24 h-24 text-blue-500/70" />
+                  </div>
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
                   <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
@@ -448,7 +456,7 @@ export function OnboardingForm() {
                 </CardFooter>
             </OnboardingStep>
 
-            {/* Step 3: Activity Level (Antigo Step 4) */}
+            {/* Step 3: Activity Level */}
             <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Nível de Atividade</CardTitle>
@@ -456,8 +464,11 @@ export function OnboardingForm() {
                     Quão ativo(a) você é no seu dia a dia?
                   </CardDescription>
                 </CardHeader>
-                {/* Adicionado overflow-y-auto para rolagem interna */}
                 <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 overflow-y-auto">
+                  {/* Ícone visível em mobile e desktop */}
+                  <div className="flex justify-center items-center md:col-span-1">
+                    <Dumbbell className="w-16 h-16 md:w-24 md:h-24 text-orange-500/70" />
+                  </div>
                   <div className="md:col-span-2">
                     <FormField
                       control={form.control}
@@ -483,9 +494,6 @@ export function OnboardingForm() {
                       )}
                     />
                   </div>
-                  <div className="hidden md:flex justify-center items-center">
-                    <Activity className="w-24 h-24 text-orange-500/70" />
-                  </div>
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
                   <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
@@ -507,7 +515,7 @@ export function OnboardingForm() {
                 </CardFooter>
             </OnboardingStep>
 
-            {/* Step 4: Goals (Antigo Step 5) */}
+            {/* Step 4: Goals */}
             <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Seus Objetivos</CardTitle>
@@ -515,8 +523,11 @@ export function OnboardingForm() {
                     O que você espera alcançar? (Selecione ao menos um)
                   </CardDescription>
                 </CardHeader>
-                {/* Adicionado overflow-y-auto para rolagem interna */}
                 <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 overflow-y-auto">
+                  {/* Ícone visível em mobile e desktop */}
+                  <div className="flex justify-center items-center md:col-span-1">
+                    <Target className="w-16 h-16 md:w-24 md:h-24 text-red-500/70" />
+                  </div>
                   <div className="md:col-span-2">
                     <FormField
                       control={form.control}
@@ -559,9 +570,6 @@ export function OnboardingForm() {
                       )}
                     />
                   </div>
-                  <div className="hidden md:flex justify-center items-center">
-                    <CheckCircle className="w-24 h-24 text-green-600/70" />
-                  </div>
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
                   <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
@@ -580,7 +588,7 @@ export function OnboardingForm() {
                 </CardFooter>
             </OnboardingStep>
 
-            {/* Step 5: Consent & Submit (Antigo Step 6) */}
+            {/* Step 5: Consent & Submit */}
             <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Quase lá!</CardTitle>
@@ -588,8 +596,9 @@ export function OnboardingForm() {
                     Revise e confirme para finalizar.
                   </CardDescription>
                 </CardHeader>
-                {/* Adicionado overflow-y-auto para rolagem interna */}
-                <CardContent className="flex-1 flex items-center justify-center p-6 overflow-y-auto">
+                <CardContent className="flex-1 flex flex-col items-center justify-center p-6 space-y-6 overflow-y-auto">
+                  {/* Ícone visível em mobile e desktop */}
+                  <ShieldCheck className="w-16 h-16 md:w-24 md:h-24 text-green-600/70" />
                   <FormField
                     control={form.control}
                     name="consent"
