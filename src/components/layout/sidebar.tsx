@@ -9,22 +9,22 @@ export function Sidebar() {
         <h1 className="text-2xl font-bold text-center">Health AI</h1>
       </div>
       <nav className="flex-1 p-4 space-y-2">
-        <Button asChild variant="secondary" className="w-full justify-start">
+        <Button asChild variant="ghost" className="w-full justify-start">
           <Link href="/">
             <LayoutDashboard className="mr-2 h-4 w-4" />
             Dashboard
           </Link>
         </Button>
-        <Button asChild variant="ghost" className="w-full justify-start">
-          <Link href="#">
+        <Button asChild variant="secondary" className="w-full justify-start">
+          <Link href="/profile">
             <User className="mr-2 h-4 w-4" />
-            Profile
+            Perfil
           </Link>
         </Button>
         <Button asChild variant="ghost" className="w-full justify-start">
           <Link href="#">
             <Settings className="mr-2 h-4 w-4" />
-            Settings
+            Configurações
           </Link>
         </Button>
       </nav>
