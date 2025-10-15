@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, User, Settings, BrainCircuit, Target } from "lucide-react";
+import { LayoutDashboard, User, Settings, BrainCircuit, Target, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Sidebar() {
@@ -25,6 +25,12 @@ export function Sidebar() {
           <Link href="/goals">
             <Target className="mr-2 h-4 w-4" />
             Metas
+          </Link>
+        </Button>
+        <Button asChild variant="ghost" className="w-full justify-start">
+          <Link href="/connect">
+            <Zap className="mr-2 h-4 w-4" />
+            Conexão de Dados
           </Link>
         </Button>
         <Button asChild variant="ghost" className="w-full justify-start">
