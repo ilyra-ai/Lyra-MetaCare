@@ -1,8 +1,11 @@
 import Link from "next/link";
-import { LayoutDashboard, User, Settings, BrainCircuit, Target, Zap } from "lucide-react";
+import { LayoutDashboard, User, Settings, BrainCircuit, Target, Zap, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useIsAdmin } from "@/hooks/use-is-admin"; // Importando o hook de admin
 
 export function Sidebar() {
+  const isAdmin = useIsAdmin();
+
   return (
     <aside className="hidden md:flex flex-col w-64 bg-white border-r">
       <div className="p-4 border-b">
@@ -39,6 +42,17 @@ export function Sidebar() {
             Perfil
           </Link>
         </Button>
+        
+        {/* Link de Administração visível apenas para o admin */}
+        {isAdmin && (
+            <Button asChild variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                <Link href="/admin/ai-config">
+                    <Shield className="mr-2 h-4 w-4" />
+                    Admin IA
+                </Link>
+            </Button>
+        )}
+
         <Button asChild variant="ghost" className="w-full justify-start">
           <Link href="#">
             <Settings className="mr-2 h-4 w-4" />
