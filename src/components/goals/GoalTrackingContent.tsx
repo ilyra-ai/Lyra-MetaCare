@@ -1,65 +1,89 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, Clock, XCircle, Target as TargetIcon } from "lucide-react";
+import { CheckCircle, Clock, XCircle, Target as TargetIcon, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
+import { UpdateGoalProgressModal } from "./UpdateGoalProgressModal";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type GoalStatus = "completed" | "in_progress" | "missed";
 
 interface Goal {
-  id: number;
+  id: string;
   title: string;
-  description: string;
-  category: string;
-  progress: number; // 0 to 100
-  status: GoalStatus;
+  description: string | null;
+  category: string | null;
+  target_value: number | null;
+  current_value: number;
+  unit: string | null;
+  status: string;
 }
 
-const mockGoals: Goal[] = [
-  {
-    id: 1,
-    title: "Otimizar Ciclo de Sono",
-    description: "Alcançar 7.5 horas de sono de qualidade por noite.",
-    category: "Sono",
-    progress: 85,
-    status: "in_progress",
-  },
-  {
-    id: 2,
-    title: "Caminhada Diária",
-    description: "Completar 8.000 passos por dia, 5 dias por semana.",
-    category: "Exercício",
-    progress: 100,
-    status: "completed",
-  },
-  {
-    id: 3,
-    title: "Redução de Açúcar",
-    description: "Limitar a ingestão de açúcares adicionados a 25g por dia.",
-    category: "Nutrição",
-    progress: 40,
-    status: "in_progress",
-  },
-  {
-    id: 4,
-    title: "Meditação Matinal",
-    description: "Praticar 10 minutos de atenção plena diariamente.",
-    category: "Estresse",
-    progress: 0,
-    status: "missed",
-  },
-];
-
-const statusMap: Record<GoalStatus, { icon: React.ElementType; color: string; label: string }> = {
+const statusMap: Record<string, { icon: React.ElementType; color: string; label: string }> = {
   completed: { icon: CheckCircle, color: "text-green-600", label: "Concluída" },
   in_progress: { icon: Clock, color: "text-blue-600", label: "Em Progresso" },
   missed: { icon: XCircle, color: "text-red-600", label: "Atrasada" },
 };
 
 export function GoalTrackingContent() {
+  const { supabase, session } = useAuth();
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchGoals = useCallback(async () => {
+    if (!session?.user) return;
+
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("goals")
+      .select("*")
+      .eq("user_id", session.user.id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast.error("Erro ao carregar metas.", { description: error.message });
+      console.error(error);
+      setGoals([]);
+    } else {
+      setGoals(data as Goal[]);
+    }
+    setLoading(false);
+  }, [session, supabase]);
+
+  useEffect(() => {
+    fetchGoals();
+  }, [fetchGoals]);
+
+  if (loading) {
+    return (
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+  }
+
+  if (goals.length === 0) {
+    return (
+      <Card className="text-center p-10">
+        <CardTitle className="text-xl mb-2">Nenhuma Meta Encontrada</CardTitle>
+        <CardDescription>
+          Suas metas de longevidade aparecerão aqui após serem definidas pelo Plano de IA.
+        </CardDescription>
+        {/* Placeholder for adding a goal manually, if needed later */}
+        <Button variant="outline" className="mt-4" disabled>
+            <Plus className="h-4 w-4 mr-2" /> Adicionar Meta Manualmente
+        </Button>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <Card>
@@ -69,21 +93,26 @@ export function GoalTrackingContent() {
             Acompanhamento de Metas
           </CardTitle>
           <CardDescription>
-            Visualize seu progresso nas metas de longevidade definidas pela IA.
+            Visualize e atualize seu progresso nas metas de longevidade.
           </CardDescription>
         </CardHeader>
       </Card>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {mockGoals.map((goal) => {
-          const { icon: StatusIcon, color, label } = statusMap[goal.status];
+        {goals.map((goal) => {
+          const statusKey = goal.status in statusMap ? goal.status : 'in_progress';
+          const { icon: StatusIcon, color, label } = statusMap[statusKey];
           
+          const progressPercentage = goal.target_value
+            ? Math.min(100, (goal.current_value / goal.target_value) * 100)
+            : 0;
+
           return (
             <Card key={goal.id} className="flex flex-col justify-between">
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-lg">{goal.title}</CardTitle>
-                  <Badge variant="secondary">{goal.category}</Badge>
+                  <Badge variant="secondary">{goal.category || 'Geral'}</Badge>
                 </div>
                 <CardDescription>{goal.description}</CardDescription>
               </CardHeader>
@@ -95,15 +124,17 @@ export function GoalTrackingContent() {
                 
                 <div className="space-y-1">
                     <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>Progresso</span>
-                        <span>{goal.progress}%</span>
+                        <span>Progresso ({goal.current_value} {goal.unit || ''} / {goal.target_value} {goal.unit || ''})</span>
+                        <span>{progressPercentage.toFixed(0)}%</span>
                     </div>
-                    <Progress value={goal.progress} className="h-2" />
+                    <Progress value={progressPercentage} className="h-2" />
                 </div>
 
-                <Button variant="outline" size="sm" className="w-full mt-2" disabled={goal.status === 'completed'}>
-                    {goal.status === 'completed' ? 'Meta Concluída' : 'Atualizar Progresso'}
-                </Button>
+                <UpdateGoalProgressModal goal={goal} onUpdate={fetchGoals}>
+                    <Button variant="outline" size="sm" className="w-full mt-2">
+                        Atualizar Progresso
+                    </Button>
+                </UpdateGoalProgressModal>
               </CardContent>
             </Card>
           );
