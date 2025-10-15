@@ -45,7 +45,11 @@ export function MetricGrid({ metrics }: MetricGridProps) {
     // Longevity Metric Calculations (Simulated based on data)
     const sleepQuality = metrics.sleep_duration_minutes >= 450 ? "Excelente" : (metrics.sleep_duration_minutes >= 360 ? "Bom" : "Abaixo da Meta");
     const hrvStatus = (metrics.hrv_ms || 0) >= 50 ? "Ótimo" : ((metrics.hrv_ms || 0) >= 30 ? "Bom" : "Baixo");
-    const recoveryStatus = (metrics.recovery_score || 0) >= 80 ? "Pronto para o dia" : "Priorize o descanso";
+    
+    // Using readiness_score for Prontidão
+    const readinessScore = metrics.readiness_score || metrics.recovery_score; // Fallback to recovery_score if readiness is null
+    const recoveryStatus = (readinessScore || 0) >= 80 ? "Pronto para o dia" : "Priorize o descanso";
+    
     const moodStatus = metrics.mood_score === 5 ? "Excelente" : (metrics.mood_score && metrics.mood_score >= 3 ? "Neutro" : "Baixo");
     const hrrStatus = (metrics.hrr_1min_bpm || 0) >= 30 ? "Excelente" : "Atenção";
     const spo2Status = (metrics.spo2_average || 0) >= 95 ? "Normal" : "Monitorar";
@@ -67,7 +71,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
                 },
                 { 
                     title: "Score de Prontidão", 
-                    value: metrics.recovery_score ? `${metrics.recovery_score}/100` : "N/A", 
+                    value: readinessScore ? `${readinessScore}/100` : "N/A", 
                     description: recoveryStatus, 
                     icon: TrendingUp, 
                     colorClass: "text-green-700" 
@@ -96,7 +100,8 @@ export function MetricGrid({ metrics }: MetricGridProps) {
                 { 
                     title: "SpO₂ Noturna (Média)", 
                     value: metrics.spo2_average ? `${metrics.spo2_average.toFixed(1)}%` : "N/A", 
-                    description: `Oxigenação do sangue: ${spo2Status}`, 
+                    // Ajustado para refletir que estamos usando a média, conforme o schema do DB
+                    description: `Oxigenação do sangue (Média): ${spo2Status}`, 
                     icon: Moon, 
                     colorClass: "text-indigo-600" 
                 },
