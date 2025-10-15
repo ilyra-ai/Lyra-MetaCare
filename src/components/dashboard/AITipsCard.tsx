@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Lightbulb, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 // Mock data for AI tips (simulando Hugging Face output)
 const mockTips = [
@@ -12,11 +13,15 @@ const mockTips = [
   { id: 3, title: "Alerta de Hidratação", detail: "Seu nível de atividade hoje exige 500ml extras de água para evitar fadiga." },
 ];
 
-export function AITipsCard() {
+interface AITipsCardProps {
+    className?: string;
+}
+
+export function AITipsCard({ className }: AITipsCardProps) {
   const currentTip = mockTips[Math.floor(Math.random() * mockTips.length)];
 
   return (
-    <Card className="bg-yellow-50 border-yellow-300 shadow-md hover:shadow-lg transition-shadow h-full">
+    <Card className={cn("bg-yellow-50 border-yellow-300 shadow-md hover:shadow-lg transition-shadow h-full", className)}>
       <CardHeader className="pb-2">
         <CardTitle className="text-xl text-yellow-800 flex items-center">
           <Lightbulb className="h-5 w-5 mr-2" />

@@ -11,6 +11,8 @@ export interface DailyMetric {
   sleep_duration_minutes: number;
   resting_heart_rate: number | null;
   calories_burned: number | null;
+  hrv_ms: number | null; // New metric: Heart Rate Variability
+  deep_sleep_minutes: number; // New metric: Deep Sleep
 }
 
 interface UseDailyMetricsResult {
@@ -38,7 +40,7 @@ export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
 
     const { data, error } = await supabase
       .from("daily_metrics")
-      .select("date, steps, sleep_duration_minutes, resting_heart_rate, calories_burned")
+      .select("date, steps, sleep_duration_minutes, resting_heart_rate, calories_burned, hrv_ms, deep_sleep_minutes") // Added new fields
       .eq("user_id", session.user.id)
       .gte("date", startDate)
       .lte("date", endDate)
@@ -63,6 +65,8 @@ export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
           sleep_duration_minutes: existingData?.sleep_duration_minutes || 0,
           resting_heart_rate: existingData?.resting_heart_rate || null,
           calories_burned: existingData?.calories_burned || null,
+          hrv_ms: existingData?.hrv_ms || null, // Default to null if missing
+          deep_sleep_minutes: existingData?.deep_sleep_minutes || 0, // Default to 0 if missing
         } as DailyMetric);
       }
       
