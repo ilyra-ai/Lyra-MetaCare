@@ -32,25 +32,50 @@ interface DailyMetric {
     meditation_minutes: number;
 }
 
+interface AIConfig {
+    weight_hrv: number;
+    weight_sleep: number;
+    weight_activity: number;
+    weight_nutrition: number;
+    model_name: string | null;
+}
+
 interface AIScores {
     longevityScore: number;
     readinessScore: number;
 }
 
 /**
+ * Função para buscar a configuração de IA usando a Service Role Key (ignora RLS).
+ */
+async function fetchAIConfig(serviceRoleSupabase: any): Promise<AIConfig | null> {
+    const { data, error } = await serviceRoleSupabase
+        .from('ai_config')
+        .select(`weight_hrv, weight_sleep, weight_activity, weight_nutrition, model_name`)
+        .limit(1)
+        .single();
+
+    if (error) {
+        console.error("Error fetching AI config with Service Role:", error);
+        return null;
+    }
+    return data as AIConfig;
+}
+
+
+/**
  * Função para chamar a API de IA externa de forma real.
  */
-async function callExternalAI(metrics: DailyMetric): Promise<AIScores> {
+async function callExternalAI(metrics: DailyMetric, config: AIConfig): Promise<AIScores> {
     
     // @ts-ignore: Deno is available in the Edge Function runtime
     const externalApiKey = Deno.env.get('EXTERNAL_AI_KEY');
     // @ts-ignore: Deno is available in the Edge Function runtime
     const externalApiEndpoint = Deno.env.get('EXTERNAL_AI_ENDPOINT');
     
-    if (!externalApiKey || !externalApiEndpoint) {
-        console.warn("EXTERNAL_AI_KEY or EXTERNAL_AI_ENDPOINT not set. Using simulated scores.");
-        // Fallback de simulação se a chave ou endpoint não estiverem configurados
-        // Isso garante que o Dashboard não quebre com um erro 500 se as secrets não estiverem prontas.
+    if (!externalApiKey || !externalApiEndpoint || !config.model_name) {
+        console.warn("External AI configuration missing (Key, Endpoint, or Model Name). Using simulated scores.");
+        // Fallback de simulação
         return { longevityScore: 5.0, readinessScore: 50 };
     }
 
@@ -61,7 +86,16 @@ async function callExternalAI(metrics: DailyMetric): Promise<AIScores> {
                 'Authorization': `Bearer ${externalApiKey}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ user_metrics: metrics })
+            body: JSON.stringify({ 
+                user_metrics: metrics, 
+                weights: {
+                    hrv: config.weight_hrv,
+                    sleep: config.weight_sleep,
+                    activity: config.weight_activity,
+                    nutrition: config.weight_nutrition,
+                },
+                model: config.model_name
+            })
         });
         
         if (!aiResponse.ok) {
@@ -93,8 +127,9 @@ serve(async (req: Request) => {
   }
   
   try {
+    // 1. Cliente Supabase com JWT do usuário (para RLS)
     // @ts-ignore
-    const supabaseClient = createClient(
+    const userSupabaseClient = createClient(
       // @ts-ignore
       Deno.env.get('SUPABASE_URL') ?? '',
       // @ts-ignore
@@ -105,9 +140,19 @@ serve(async (req: Request) => {
         },
       }
     )
+    
+    // 2. Cliente Supabase com Service Role Key (para ignorar RLS e ler ai_config)
+    // @ts-ignore
+    const serviceRoleSupabaseClient = createClient(
+      // @ts-ignore
+      Deno.env.get('SUPABASE_URL') ?? '',
+      // @ts-ignore
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
 
-    // 1. Autenticação Manual
-    const { data: { user } } = await supabaseClient.auth.getUser()
+
+    // 3. Autenticação Manual
+    const { data: { user } } = await userSupabaseClient.auth.getUser()
 
     if (!user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -116,8 +161,21 @@ serve(async (req: Request) => {
       })
     }
 
-    // 2. Buscar as métricas mais recentes do usuário
-    const { data: metricsData, error } = await supabaseClient
+    // 4. Buscar a configuração de IA (usando Service Role)
+    const aiConfig = await fetchAIConfig(serviceRoleSupabaseClient);
+    
+    // Se a configuração falhar, usamos valores padrão
+    const config = aiConfig || {
+        weight_hrv: 30,
+        weight_sleep: 30,
+        weight_activity: 25,
+        weight_nutrition: 15,
+        model_name: 'default-fallback-model',
+    };
+
+
+    // 5. Buscar as métricas mais recentes do usuário (usando JWT do usuário)
+    const { data: metricsData, error } = await userSupabaseClient
       .from('daily_metrics')
       .select(
         `
@@ -148,10 +206,10 @@ serve(async (req: Request) => {
         })
     }
 
-    // 3. Chamar a API de IA externa
-    const scores = await callExternalAI(metricsData as DailyMetric);
+    // 6. Chamar a API de IA externa, passando as métricas e a configuração
+    const scores = await callExternalAI(metricsData as DailyMetric, config);
 
-    // 4. Retornar o resultado
+    // 7. Retornar o resultado
     return new Response(JSON.stringify(scores), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
