@@ -13,7 +13,6 @@ export interface LocationResult {
 }
 
 // --- Interfaces para tipagem do resultado do Supabase ---
-// Simplificando as interfaces para refletir a estrutura de retorno do Supabase com arrays
 interface PaisResult {
   nome_pt: string | null;
 }
@@ -43,8 +42,8 @@ export function useLocationSearch() {
     const searchLower = query.toLowerCase();
     
     try {
-      // 1. Buscar Cidades (limitado a 10 resultados para performance)
       // A query busca a cidade, o estado relacionado e o país relacionado ao estado.
+      // Assumindo que a relação entre cidade e estado é feita pela coluna 'uf' em 'cidade'
       const { data, error: citiesError } = await supabase
         .from('cidade')
         .select(`
@@ -55,7 +54,10 @@ export function useLocationSearch() {
         .ilike('nome', `%${searchLower}%`)
         .limit(10);
 
-      if (citiesError) throw citiesError;
+      if (citiesError) {
+        // Lançar o erro do Supabase para ser capturado abaixo
+        throw citiesError;
+      }
 
       // Type assertion para garantir que o TypeScript entenda a estrutura
       const citiesData = data as CidadeQueryResult[];
@@ -84,7 +86,16 @@ export function useLocationSearch() {
       return results;
 
     } catch (error) {
+      // Logando o erro de forma mais detalhada
       console.error("Error searching locations:", error);
+      
+      // Se for um erro do Supabase, mostramos a mensagem
+      if (error && typeof error === 'object' && 'message' in error) {
+          toast.error("Erro na busca de localização.", { description: (error as { message: string }).message });
+      } else {
+          toast.error("Erro desconhecido na busca de localização.");
+      }
+      
       // Retorna um array vazio em caso de erro para não quebrar a UI
       return [];
     } finally {
