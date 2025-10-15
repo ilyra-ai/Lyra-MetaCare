@@ -34,7 +34,8 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { Line, LineChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { DatePicker } from "@/components/ui/date-picker";
 import { differenceInYears, parseISO } from "date-fns";
-import { cn } from "@/lib/utils"; // <-- Importação adicionada
+import { cn } from "@/lib/utils";
+import { TimeInput } from "@/components/ui/time-input"; // Importando TimeInput
 
 // --- Data Definitions ---
 const goalsList = [
@@ -60,6 +61,7 @@ const profileSchema = z.object({
   
   // Novos campos de nascimento
   birth_date: z.date().optional().nullable(),
+  // A validação Zod agora verifica o formato HH:MM
   birth_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Formato de hora inválido (HH:MM).").optional().or(z.literal('')),
   birth_location: z.string().optional().or(z.literal('')),
 
@@ -371,7 +373,7 @@ export function ProfileForm() {
                         <Clock className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Hora Exata (HH:MM)
                     </FormLabel>
                     <FormControl>
-                      <Input type="time" placeholder="12:00" {...field} />
+                      <TimeInput placeholder="12:00" {...field} />
                     </FormControl>
                     <FormDescription>
                         Usado para cronobiologia.
