@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Zap, Settings, Scale, ScrollText, Loader2, KeyRound, Search, UploadCloud } from "lucide-react";
+import { Zap, Settings, Scale, ScrollText, Loader2, Search, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { 
     Form, 
@@ -28,12 +28,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-// Mock Models
-const MOCK_MODELS = [
-    { id: "longevity-v3-stable", label: "Longevity Score v3 (Stable)" },
-    { id: "readiness-v1-beta", label: "Readiness Predictor v1 (Beta)" },
-    { id: "sleep-optimizer-2024", label: "Sleep Optimizer 2024" },
-];
+// URL da Edge Function de Teste
+const TEST_FUNCTION_URL = "https://gmrxhgcuwtghjskikfug.supabase.co/functions/v1/test-ai-connection";
 
 // --- Zod Schema for AI Configuration ---
 const aiConfigSchema = z.object({
@@ -49,7 +45,7 @@ const aiConfigSchema = z.object({
     // Integração (Campos de teste)
     training_endpoint: z.string().url("Deve ser uma URL válida.").optional().or(z.literal('')),
     service_key: z.string().optional(),
-    model_name: z.string().min(1, "Selecione um modelo de IA.").optional(), // Tornando opcional para permitir a seleção após o fetch
+    model_name: z.string().min(1, "Selecione um modelo de IA.").optional(),
 });
 
 type AIConfigValues = z.infer<typeof aiConfigSchema>;
@@ -66,7 +62,7 @@ const mockLogs = [
 export function AIConfigForm() {
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [isFetchingModels, setIsFetchingModels] = React.useState(false);
-    const [availableModels, setAvailableModels] = React.useState<typeof MOCK_MODELS>([]); 
+    const [availableModels, setAvailableModels] = React.useState<{ id: string, label: string }[]>([]); 
     
     const form = useForm<AIConfigValues>({
         resolver: zodResolver(aiConfigSchema),
@@ -83,58 +79,76 @@ export function AIConfigForm() {
         },
     });
 
-    // Carrega os modelos mockados na montagem para que o usuário possa selecionar um padrão
-    React.useEffect(() => {
-        // Inicialmente, a lista de modelos está vazia até que o teste de conexão seja feito
-        // setAvailableModels(MOCK_MODELS);
-        // form.setValue("model_name", MOCK_MODELS[0].id);
-    }, []);
-
-
+    // Função para testar a conexão de forma 'real' via Edge Function
     const handleFetchModels = async () => {
-        // 1. Validar campos de conexão (simulando a necessidade de dados válidos)
+        // 1. Validar campos de conexão
         const isValid = await form.trigger(["training_endpoint", "service_key"]);
         
         if (!isValid) {
-            toast.error("Por favor, preencha o Endpoint e a Chave de Serviço com valores válidos para simular a conexão.");
+            toast.error("Por favor, preencha o Endpoint e a Chave de Serviço com URLs e chaves válidas.");
             return;
         }
         
+        const endpoint = form.getValues("training_endpoint");
+        const key = form.getValues("service_key");
+
+        if (!endpoint || !key) {
+             toast.error("Endpoint e Chave de Serviço são obrigatórios para o teste.");
+             return;
+        }
+
         setIsFetchingModels(true);
         setAvailableModels([]);
         form.setValue("model_name", "");
 
-        // 2. SIMULAÇÃO: Chamada de API para listar modelos
-        setTimeout(() => {
+        try {
+            // 2. Chamar a Edge Function de teste
+            const response = await fetch(TEST_FUNCTION_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Não precisamos de token de auth aqui, pois a função de teste é pública
+                },
+                body: JSON.stringify({ endpoint, key })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                setAvailableModels(result.models);
+                form.setValue("model_name", result.models[0]?.id || "");
+                toast.success(`Conexão bem-sucedida! ${result.models.length} modelos disponíveis carregados.`);
+            } else {
+                // Tratar falha de conexão ou autenticação
+                toast.error("Falha no Teste de Conexão.", {
+                    description: result.error || "Erro desconhecido ao tentar listar modelos.",
+                });
+            }
+
+        } catch (error) {
+            console.error("Network Error during AI test:", error);
+            toast.error("Erro de Rede.", {
+                description: "Não foi possível alcançar a Edge Function de teste.",
+            });
+        } finally {
             setIsFetchingModels(false);
-            
-            // Simulação de sucesso: Carrega os modelos mockados
-            setAvailableModels(MOCK_MODELS);
-            
-            // Seleciona o primeiro modelo automaticamente
-            form.setValue("model_name", MOCK_MODELS[0].id);
-            
-            toast.success(`Conexão bem-sucedida! ${MOCK_MODELS.length} modelos disponíveis carregados.`);
-        }, 1500);
+        }
     };
 
     const onSubmit = (data: AIConfigValues) => {
         setIsSubmitting(true);
-        toast.info("Iniciando Treinamento...", {
+        
+        // Em um ambiente de produção real, esta função faria:
+        // 1. Chamar um Server Action/Route Handler para salvar as configurações (missão, pesos) no banco de dados.
+        // 2. Chamar um Server Action/Route Handler para salvar a chave de serviço (service_key) como uma Secret no Supabase (o que não podemos fazer aqui).
+
+        toast.info("Simulando Salvamento de Configurações...", {
             description: `Configurações e modelo ${data.model_name} sendo salvos.`,
         });
 
-        // Simulate API call to update AI configuration
         setTimeout(() => {
             setIsSubmitting(false);
-            console.log("Config Data:", data);
-            
-            if (data.service_key) {
-                toast.warning("Chave de Serviço Salva!", {
-                    description: "LEMBRETE: Mova esta chave para as Secrets do Supabase para garantir a segurança em produção.",
-                    duration: 8000
-                });
-            }
+            console.log("Config Data Saved:", data);
             
             toast.success("Configuração Salva e Modelo Selecionado!", {
                 description: `O modelo ${data.model_name} foi configurado com sucesso.`,
