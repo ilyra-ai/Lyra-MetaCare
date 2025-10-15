@@ -43,6 +43,9 @@ export interface DailyMetric {
   weight_kg: number | null;
   mood_score: number | null;
   meditation_minutes: number;
+  
+  // New metric: Heart Rate Recovery 1 min
+  hrr_1min_bpm: number | null;
 }
 
 interface UseDailyMetricsResult {
@@ -88,6 +91,8 @@ const defaultMetricValues = {
     blood_pressure_diastolic: null,
     weight_kg: null,
     mood_score: null,
+    // New metric default
+    hrr_1min_bpm: null,
 }
 
 export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
@@ -114,7 +119,8 @@ export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
         total_distance_km, active_minutes, workout_calories, vo2_max, sleep_latency_minutes, rem_sleep_minutes,
         light_sleep_minutes, sleep_efficiency, sleep_score, protein_grams, carb_grams, fat_grams, water_liters,
         caffeine_mg, stress_score, recovery_score, readiness_score, blood_glucose_mgdl, blood_pressure_systolic,
-        blood_pressure_diastolic, weight_kg, mood_score, meditation_minutes
+        blood_pressure_diastolic, weight_kg, mood_score, meditation_minutes,
+        hrr_1min_bpm
       `)
       .eq("user_id", session.user.id)
       .gte("date", startDate)
