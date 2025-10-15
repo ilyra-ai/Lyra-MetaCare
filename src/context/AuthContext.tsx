@@ -18,26 +18,62 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const getSession = async () => {
+    const getInitialSession = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
       setSession(session);
       setLoading(false);
+      // Initial check after loading session
+      if (session) {
+        handleRedirects(session);
+      } else {
+        if (window.location.pathname !== "/login") {
+          router.push("/login");
+        }
+      }
     };
 
-    getSession();
+    const handleRedirects = async (currentSession: Session | null) => {
+      if (!currentSession) {
+        if (window.location.pathname !== "/login") {
+          router.push("/login");
+        }
+        return;
+      }
+
+      // User is logged in, check if onboarding is complete
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("onboarding_completed")
+        .eq("id", currentSession.user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116: row not found
+        console.error("Error fetching profile:", error);
+        return;
+      }
+
+      const isOnboardingPage = window.location.pathname === "/onboarding";
+      const isLoginPage = window.location.pathname === "/login";
+
+      if (profile && !profile.onboarding_completed) {
+        if (!isOnboardingPage) {
+          router.push("/onboarding");
+        }
+      } else if (profile && profile.onboarding_completed) {
+        if (isLoginPage || isOnboardingPage) {
+          router.push("/");
+        }
+      }
+    };
+
+    getInitialSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
-        if (!session) {
-          router.push("/login");
-        } else {
-            if (window.location.pathname === "/login") {
-                router.push("/");
-            }
-        }
+        handleRedirects(session);
       }
     );
 
