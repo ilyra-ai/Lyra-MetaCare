@@ -99,7 +99,6 @@ const TOTAL_STEPS = 5;
 // Helper component for Carousel Item structure
 const OnboardingStep: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className }) => (
     <CarouselItem className={cn("animate-in fade-in duration-500", className)}>
-        {/* Removida a altura fixa h-[550px] e adicionado min-h para garantir espaço mínimo */}
         <Card className="min-h-[550px] flex flex-col"> 
             {children}
         </Card>
@@ -157,26 +156,41 @@ export function OnboardingForm() {
       return;
     }
     setIsSubmitting(true);
-    // Apenas desestruturamos 'consent' e o resto é 'profileData'
+    
+    // 1. Preparar dados
     const { consent, ...profileData } = data;
 
     // Format birth_date to ISO string (YYYY-MM-DD) for Supabase DATE type
     const formattedBirthDate = profileData.birth_date ? profileData.birth_date.toISOString().split('T')[0] : null;
+    
+    // Garantir que a idade seja um número inteiro (smallint)
+    const ageInt = Math.floor(profileData.age);
 
-    // Update profile data in Supabase
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        ...profileData,
+    // 2. Montar o objeto de atualização
+    const updatePayload = {
+        first_name: profileData.first_name,
+        last_name: profileData.last_name,
+        age: ageInt,
+        gender: profileData.gender,
+        activity_level: profileData.activity_level,
+        goals: profileData.goals,
         birth_date: formattedBirthDate,
+        birth_time: profileData.birth_time,
+        birth_location: profileData.birth_location,
         onboarding_completed: true,
         updated_at: new Date().toISOString(),
-      })
+    };
+
+    // 3. Atualizar perfil no Supabase
+    const { error } = await supabase
+      .from("profiles")
+      .update(updatePayload)
       .eq("id", session.user.id);
 
     setIsSubmitting(false);
 
     if (error) {
+      console.error("Supabase Update Error:", error);
       toast.error("Ocorreu um erro ao salvar seu perfil.", {
         description: error.message,
       });
