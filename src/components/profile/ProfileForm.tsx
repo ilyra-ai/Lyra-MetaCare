@@ -58,7 +58,7 @@ const profileSchema = z.object({
     .number({ required_error: "Idade é obrigatória." })
     .min(13, "Você deve ter pelo menos 13 anos.")
     .max(120, "Idade inválida."),
-  gender: z.enum(["male", "female", "other", "prefer_not_to_say"], {
+  gender: z.enum(["male", "female", "other", "prefer_not-to-say"], {
     required_error: "Por favor, selecione um gênero.",
   }),
   activity_level: z.number().min(1).max(5),
@@ -126,7 +126,7 @@ export function ProfileForm() {
       first_name: "",
       last_name: "",
       age: 18,
-      gender: "prefer_not_to_say",
+      gender: "prefer_not-to-say",
       activity_level: 3,
       goals: [],
     },
@@ -144,7 +144,10 @@ export function ProfileForm() {
 
     if (error) {
       console.error("Error fetching profile:", error);
-      toast.error("Erro ao carregar dados do perfil.");
+      // Only show error if it's not the expected 'row not found' error (PGRST116)
+      if (error.code !== 'PGRST116') {
+        toast.error("Erro ao carregar dados do perfil.");
+      }
     } else if (data) {
       // Ensure activity_level is a number (it's stored as smallint/number)
       const profileData = {
@@ -152,7 +155,7 @@ export function ProfileForm() {
         activity_level: data.activity_level || 3,
         goals: data.goals || [],
         // Ensure gender is correctly mapped if null or undefined
-        gender: data.gender || "prefer_not_to_say",
+        gender: data.gender || "prefer_not-to-say",
       };
       form.reset(profileData);
     }
@@ -285,7 +288,7 @@ export function ProfileForm() {
                         <SelectItem value="male">Masculino</SelectItem>
                         <SelectItem value="female">Feminino</SelectItem>
                         <SelectItem value="other">Outro</SelectItem>
-                        <SelectItem value="prefer_not_to_say">
+                        <SelectItem value="prefer_not-to-say">
                           Prefiro não dizer
                         </SelectItem>
                       </SelectContent>
