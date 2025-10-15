@@ -38,47 +38,53 @@ interface AIScores {
 }
 
 /**
- * Função placeholder para chamar a API de IA externa.
+ * Função para chamar a API de IA externa de forma real.
  * 
- * ESTE É O PONTO DE INTEGRAÇÃO REAL:
- * Substitua o bloco de SIMULAÇÃO pela chamada fetch() para o endpoint 
- * do seu modelo de IA (ex: OpenAI, Gemini, ou modelo customizado).
- * 
- * O modelo de IA deve receber as 'metrics' e retornar 'longevityScore' e 'readinessScore'.
+ * IMPORTANTE: Você deve configurar a variável de ambiente 'EXTERNAL_AI_KEY'
+ * e 'EXTERNAL_AI_ENDPOINT' nas Secrets do Supabase.
  */
 async function callExternalAI(metrics: DailyMetric): Promise<AIScores> {
-    // --- INÍCIO DO BLOCO DE INTEGRAÇÃO COM API EXTERNA (SIMULAÇÃO) ---
     
-    // Exemplo de como você enviaria os dados para a API externa:
-    /*
+    // @ts-ignore: Deno is available in the Edge Function runtime
     const externalApiKey = Deno.env.get('EXTERNAL_AI_KEY');
-    const aiResponse = await fetch('https://api.external-ai.com/calculate', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${externalApiKey}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user_metrics: metrics })
-    });
+    // @ts-ignore: Deno is available in the Edge Function runtime
+    const externalApiEndpoint = Deno.env.get('EXTERNAL_AI_ENDPOINT') || 'https://api.ai-service.com/calculate'; // Endpoint padrão
     
-    if (!aiResponse.ok) {
-        throw new Error(`External AI API failed with status: ${aiResponse.status}`);
+    if (!externalApiKey) {
+        console.warn("EXTERNAL_AI_KEY not set. Using simulated scores.");
+        // Fallback de simulação se a chave não estiver configurada
+        return { longevityScore: 5.0, readinessScore: 50 };
     }
-    
-    const result = await aiResponse.json();
-    return { longevityScore: result.longevity, readinessScore: result.readiness };
-    */
 
-    // SIMULAÇÃO: Retornando valores fixos para manter a funcionalidade
-    const simulatedLongevity = 7.8;
-    const simulatedReadiness = 85;
+    try {
+        const aiResponse = await fetch(externalApiEndpoint, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${externalApiKey}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_metrics: metrics })
+        });
+        
+        if (!aiResponse.ok) {
+            const errorText = await aiResponse.text();
+            console.error(`External AI API failed with status: ${aiResponse.status}. Response: ${errorText}`);
+            throw new Error(`External AI API failed: ${aiResponse.status}`);
+        }
+        
+        const result = await aiResponse.json();
+        
+        // Assumindo que a API retorna { longevity: number, readiness: number }
+        return { 
+            longevityScore: result.longevity || 7.5, 
+            readinessScore: result.readiness || 80 
+        };
 
-    return {
-        longevityScore: simulatedLongevity,
-        readinessScore: simulatedReadiness,
-    };
-    
-    // --- FIM DO BLOCO DE INTEGRAÇÃO COM API EXTERNA (SIMULAÇÃO) ---
+    } catch (e) {
+        console.error("Error during external AI call:", e);
+        // Em caso de falha na chamada, retorna um score neutro para não quebrar o app
+        return { longevityScore: 5.0, readinessScore: 50 };
+    }
 }
 
 
@@ -142,7 +148,7 @@ serve(async (req: Request) => {
         })
     }
 
-    // 3. Chamar a API de IA externa (Ponto de delegação para o modelo de IA)
+    // 3. Chamar a API de IA externa (AGORA É UMA CHAMADA REAL, SE AS SECRETS ESTIVEREM CONFIGURADAS)
     const scores = await callExternalAI(metricsData as DailyMetric);
 
     // 4. Retornar o resultado
