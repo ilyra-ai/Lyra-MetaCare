@@ -73,7 +73,12 @@ const onboardingSchema = z.object({
   
   // Novos campos de nascimento
   birth_date: z.date({ required_error: "Data de nascimento é obrigatória." }),
-  birth_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Formato de hora inválido (HH:MM)."),
+  // Tornando birth_time opcional e permitindo string vazia, mas validando o formato se preenchido
+  birth_time: z.string().optional().or(z.literal('')).refine(val => {
+    if (val === '' || val === undefined) return true;
+    return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
+  }, "Formato de hora inválido (HH:MM)."),
+  
   // birth_location agora é um campo de texto livre
   birth_location: z.string().min(3, "Local de nascimento é obrigatório."),
 
@@ -190,6 +195,10 @@ export function OnboardingForm() {
     
     // Garantir que a idade seja um número inteiro (smallint)
     const ageInt = Math.floor(profileData.age);
+    
+    // Tratar birth_time: se for string vazia, enviar null para o DB
+    const formattedBirthTime = profileData.birth_time === "" ? null : profileData.birth_time;
+
 
     // 2. Montar o objeto de atualização
     const updatePayload = {
@@ -200,7 +209,7 @@ export function OnboardingForm() {
         activity_level: profileData.activity_level,
         goals: profileData.goals,
         birth_date: formattedBirthDate,
-        birth_time: profileData.birth_time,
+        birth_time: formattedBirthTime, // Usando o valor tratado
         birth_location: profileData.birth_location,
         onboarding_completed: true,
         updated_at: new Date().toISOString(),
@@ -408,7 +417,7 @@ export function OnboardingForm() {
                             <TimeInput placeholder="12:00" {...field} />
                           </FormControl>
                           <FormDescription>
-                            Usado para cronobiologia.
+                            Usado para cronobiologia. (Opcional)
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
