@@ -42,20 +42,23 @@ export function useLocationSearch() {
     const searchLower = query.toLowerCase();
     
     try {
-      // A query busca a cidade, o estado relacionado e o país relacionado ao estado.
-      // Assumindo que a relação entre cidade e estado é feita pela coluna 'uf' em 'cidade'
+      // 1. Buscar Cidades com relações aninhadas
+      // Nota: A coluna 'uf' em 'cidade' provavelmente é a FK para 'estado.id'.
+      // Se a relação não for nomeada explicitamente, o Supabase usa o nome da tabela.
       const { data, error: citiesError } = await supabase
         .from('cidade')
         .select(`
           nome,
-          uf,
-          estado (uf, pais (nome_pt))
+          estado (
+            uf, 
+            pais (nome_pt)
+          )
         `)
         .ilike('nome', `%${searchLower}%`)
         .limit(10);
 
       if (citiesError) {
-        // Lançar o erro do Supabase para ser capturado abaixo
+        // Se houver um erro do Supabase, lançamos ele para o catch
         throw citiesError;
       }
 
@@ -71,7 +74,7 @@ export function useLocationSearch() {
         const countryData = stateData?.pais?.[0];
 
         // Ajustando a lógica de acesso e garantindo fallbacks
-        const state = stateData?.uf || city.uf || 'N/A';
+        const state = stateData?.uf || 'N/A';
         const country = countryData?.nome_pt || 'N/A';
         
         results.push({
@@ -89,12 +92,16 @@ export function useLocationSearch() {
       // Logando o erro de forma mais detalhada
       console.error("Error searching locations:", error);
       
-      // Se for um erro do Supabase, mostramos a mensagem
+      let errorMessage = "Erro desconhecido na busca de localização.";
+      
+      // Tentativa de extrair a mensagem de erro do Supabase
       if (error && typeof error === 'object' && 'message' in error) {
-          toast.error("Erro na busca de localização.", { description: (error as { message: string }).message });
-      } else {
-          toast.error("Erro desconhecido na busca de localização.");
+          errorMessage = (error as { message: string }).message;
+      } else if (error instanceof Error) {
+          errorMessage = error.message;
       }
+      
+      toast.error("Erro na busca de localização.", { description: errorMessage });
       
       // Retorna um array vazio em caso de erro para não quebrar a UI
       return [];
