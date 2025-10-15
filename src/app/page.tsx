@@ -8,49 +8,79 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { SplashScreen } from "@/components/SplashScreen";
 import { Dashboard } from "@/components/dashboard/dashboard";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Define a type for the user profile for better type safety
+type UserProfile = {
+  first_name: string | null;
+  // Add other profile fields as needed
+};
 
 export default function Home() {
-  const { session } = useAuth();
+  const { session, supabase } = useAuth();
   const router = useRouter();
   const [isMinimumTimeElapsed, setIsMinimumTimeElapsed] = useState(false);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
 
-  // 1. Enforce minimum 3-second display time for the splash screen
+  // Minimum splash screen time
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsMinimumTimeElapsed(true);
-    }, 3000); // 3 seconds
-
+    }, 1500); // Reduced time for better UX after first load
     return () => clearTimeout(timer);
   }, []);
 
-  // 2. Determine if loading is complete
-  // We consider loading complete only if the session check is done AND 3 seconds have passed.
-  const isLoading = session === undefined || !isMinimumTimeElapsed;
+  // Fetch user profile
+  useEffect(() => {
+    if (session?.user) {
+      const fetchProfile = async () => {
+        setProfileLoading(true);
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("first_name")
+          .eq("id", session.user.id)
+          .single();
+
+        if (error) {
+          console.error("Error fetching profile:", error);
+        } else {
+          setProfile(data);
+        }
+        setProfileLoading(false);
+      };
+      fetchProfile();
+    }
+  }, [session, supabase]);
+
+  const isLoading =
+    session === undefined || !isMinimumTimeElapsed || (session && profileLoading);
 
   if (isLoading) {
-    // Show the splash screen while waiting for session check AND minimum time
     return <SplashScreen />;
   }
 
   if (!session) {
-    // If session is null and loading is complete, the AuthContext should handle the redirect to /login.
-    // We return null here to prevent flickering, as the redirect is already in progress.
+    // AuthContext handles redirect, return null to avoid flicker
     return null;
   }
 
-  // If authenticated, show the main dashboard layout
   return (
     <div className="flex min-h-screen bg-gray-50/50 font-[family-name:var(--font-geist-sans)]">
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />
-        <div className="flex flex-col flex-1">
-          <main className="flex-1 p-8">
-            <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-            <Dashboard />
-          </main>
-          <MadeWithDyad />
-        </div>
+        <main className="flex-1 p-4 sm:p-6 md:p-8">
+          {profile ? (
+            <h1 className="text-3xl font-bold mb-8">
+              Olá, {profile.first_name}!
+            </h1>
+          ) : (
+            <Skeleton className="h-9 w-48 mb-8" />
+          )}
+          <Dashboard />
+        </main>
+        <MadeWithDyad />
       </div>
     </div>
   );

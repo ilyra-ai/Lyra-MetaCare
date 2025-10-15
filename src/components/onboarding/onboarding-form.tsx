@@ -11,8 +11,6 @@ import {
   CarouselApi,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import {
   Card,
@@ -43,7 +41,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
-import { User, Heart, Target, ShieldCheck, ArrowRight } from "lucide-react";
+import { Heart, ArrowRight } from "lucide-react";
 
 const goalsList = [
   { id: "lose_weight", label: "Perder Peso" },
@@ -54,6 +52,8 @@ const goalsList = [
 ];
 
 const onboardingSchema = z.object({
+  first_name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres."),
+  last_name: z.string().min(2, "O sobrenome deve ter pelo menos 2 caracteres."),
   age: z.coerce
     .number({ required_error: "Idade é obrigatória." })
     .min(13, "Você deve ter pelo menos 13 anos.")
@@ -67,8 +67,8 @@ const onboardingSchema = z.object({
     .refine((value) => value.some((item) => item), {
       message: "Você precisa selecionar pelo menos um objetivo.",
     }),
-  consent: z.literal(true, {
-    errorMap: () => ({ message: "Você deve aceitar os termos." }),
+  consent: z.boolean().refine((val) => val === true, {
+    message: "Você deve aceitar os termos.",
   }),
 });
 
@@ -76,7 +76,6 @@ type OnboardingValues = z.infer<typeof onboardingSchema>;
 
 export function OnboardingForm() {
   const [api, setApi] = React.useState<CarouselApi>();
-  const [current, setCurrent] = React.useState(0);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const router = useRouter();
   const { supabase, session } = useAuth();
@@ -84,16 +83,15 @@ export function OnboardingForm() {
   const form = useForm<OnboardingValues>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
+      first_name: "",
+      last_name: "",
+      age: 18, // Providing a valid default to satisfy the type
+      gender: "prefer_not_to_say", // Providing a valid default to satisfy the type
       activity_level: 3,
       goals: [],
+      consent: false,
     },
   });
-
-  React.useEffect(() => {
-    if (!api) return;
-    setCurrent(api.selectedScrollSnap());
-    api.on("select", () => setCurrent(api.selectedScrollSnap()));
-  }, [api]);
 
   const handleNext = async (
     fields: (keyof OnboardingValues)[] | keyof OnboardingValues
@@ -162,7 +160,62 @@ export function OnboardingForm() {
               </Card>
             </CarouselItem>
 
-            {/* Step 2: Age & Gender */}
+            {/* Step 2: Name */}
+            <CarouselItem>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Como podemos te chamar?</CardTitle>
+                  <CardDescription>
+                    Nos diga seu nome para uma experiência mais pessoal.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="first_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nome</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Seu nome" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="last_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sobrenome</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Seu sobrenome" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => api?.scrollPrev()}
+                  >
+                    Voltar
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => handleNext(["first_name", "last_name"])}
+                  >
+                    Próximo
+                  </Button>
+                </CardFooter>
+              </Card>
+            </CarouselItem>
+
+            {/* Step 3: Age & Gender */}
             <CarouselItem>
               <Card>
                 <CardHeader>
@@ -232,7 +285,7 @@ export function OnboardingForm() {
               </Card>
             </CarouselItem>
 
-            {/* Step 3: Activity Level */}
+            {/* Step 4: Activity Level */}
             <CarouselItem>
               <Card>
                 <CardHeader>
@@ -285,7 +338,7 @@ export function OnboardingForm() {
               </Card>
             </CarouselItem>
 
-            {/* Step 4: Goals */}
+            {/* Step 5: Goals */}
             <CarouselItem>
               <Card>
                 <CardHeader>
@@ -313,7 +366,7 @@ export function OnboardingForm() {
                                     onCheckedChange={(checked) => {
                                       return checked
                                         ? field.onChange([
-                                            ...field.value,
+                                            ...(field.value || []),
                                             item.id,
                                           ])
                                         : field.onChange(
@@ -351,7 +404,7 @@ export function OnboardingForm() {
               </Card>
             </CarouselItem>
 
-            {/* Step 5: Consent & Submit */}
+            {/* Step 6: Consent & Submit */}
             <CarouselItem>
               <Card>
                 <CardHeader>
