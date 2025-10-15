@@ -143,9 +143,9 @@ export function ProfileForm() {
       .single();
 
     if (error) {
-      console.error("Error fetching profile:", error);
-      // Only show error if it's not the expected 'row not found' error (PGRST116)
-      if (error.code !== 'PGRST116') {
+      // PGRST116: row not found (expected if profile trigger hasn't run or user is new)
+      if (error.code !== 'PGRST116') { 
+        console.error("Error fetching profile:", error);
         toast.error("Erro ao carregar dados do perfil.");
       }
     } else if (data) {

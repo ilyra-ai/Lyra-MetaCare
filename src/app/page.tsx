@@ -44,9 +44,9 @@ export default function Home() {
           .eq("id", session.user.id)
           .single();
 
-        if (error) {
+        if (error && error.code !== 'PGRST116') { // PGRST116: row not found
           console.error("Error fetching profile:", error);
-        } else {
+        } else if (data) {
           setProfile(data);
         }
         setProfileLoading(false);
