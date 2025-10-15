@@ -71,15 +71,12 @@ const onboardingSchema = z.object({
   first_name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres."),
   last_name: z.string().min(2, "O sobrenome deve ter pelo menos 2 caracteres."),
   
-  // Novos campos de nascimento
+  // Campos de nascimento (Obrigatórios, exceto birth_time que é opcional)
   birth_date: z.date({ required_error: "Data de nascimento é obrigatória." }),
-  // Tornando birth_time opcional e permitindo string vazia, mas validando o formato se preenchido
   birth_time: z.string().optional().or(z.literal('')).refine(val => {
     if (val === '' || val === undefined) return true;
     return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
   }, "Formato de hora inválido (HH:MM)."),
-  
-  // birth_location agora é um campo de texto livre
   birth_location: z.string().min(3, "Local de nascimento é obrigatório."),
 
   // A idade é calculada, mas mantemos a validação
@@ -90,12 +87,13 @@ const onboardingSchema = z.object({
   gender: z.enum(["male", "female", "other", "prefer_not-to-say"], {
     required_error: "Por favor, selecione um gênero.",
   }),
-  activity_level: z.number().min(1).max(5), 
+  
+  // Campos Opcionais (Passos 3 e 4)
+  activity_level: z.number().min(1).max(5).optional(), 
   goals: z
     .array(z.string())
-    .refine((value) => value.some((item) => item), {
-      message: "Você precisa selecionar pelo menos um objetivo.",
-    }),
+    .optional(), // Tornando goals opcional, permitindo array vazio
+    
   consent: z.boolean().refine((val) => val === true, {
     message: "Você deve aceitar os termos.",
   }),
@@ -207,7 +205,7 @@ export function OnboardingForm() {
         age: ageInt,
         gender: profileData.gender,
         activity_level: profileData.activity_level,
-        goals: profileData.goals,
+        goals: profileData.goals && profileData.goals.length > 0 ? profileData.goals : null, // Envia null se o array estiver vazio
         birth_date: formattedBirthDate,
         birth_time: formattedBirthTime, // Usando o valor tratado
         birth_location: profileData.birth_location,
@@ -492,7 +490,7 @@ export function OnboardingForm() {
                               min={1}
                               max={5}
                               step={1}
-                              value={[field.value]}
+                              value={[field.value || 3]} // Usando 3 como fallback visual
                               onValueChange={(vals) => field.onChange(vals[0])}
                             />
                           </FormControl>
@@ -518,7 +516,8 @@ export function OnboardingForm() {
                     </Button>
                     <Button
                       type="button"
-                      onClick={() => handleNext("activity_level")}
+                      // Não precisamos validar activity_level aqui, pois ele é opcional
+                      onClick={() => api?.scrollNext()}
                     >
                       Próximo <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
@@ -531,7 +530,7 @@ export function OnboardingForm() {
                 <CardHeader>
                   <CardTitle>Seus Objetivos</CardTitle>
                   <CardDescription>
-                    O que você espera alcançar? (Selecione ao menos um)
+                    O que você espera alcançar? (Opcional)
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col items-center p-6 overflow-y-auto">
@@ -594,7 +593,11 @@ export function OnboardingForm() {
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                     </Button>
-                    <Button type="button" onClick={() => handleNext("goals")}>
+                    <Button 
+                        type="button" 
+                        // Não precisamos validar goals aqui, pois ele é opcional
+                        onClick={() => api?.scrollNext()}
+                    >
                       Próximo <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
