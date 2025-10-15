@@ -1,9 +1,10 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { Database } from '@/lib/database.types'; // Assumindo que você terá tipos de DB
+import { Database } from '@/lib/database.types';
 
 export async function createServerSupabaseClient() {
-  const cookieStore = cookies()
+  // Usando 'as any' para resolver o erro de tipagem do compilador que infere 'cookies()' como Promise.
+  const cookieStore = cookies() as any;
   
   // Certifique-se de que as variáveis de ambiente estão disponíveis
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
