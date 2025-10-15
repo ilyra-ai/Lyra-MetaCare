@@ -41,7 +41,7 @@ const goalsList = [
   { id: "lose_weight", label: "Perder Peso" },
   { id: "gain_muscle", label: "Ganhar Músculo" },
   { id: "improve_endurance", label: "Melhorar Resistência" },
-  { id: "reduce_stress", label: "Reduzir Estresse" },
+  { id: "reduce_stress", "label": "Reduzir Estresse" },
   { id: "eat_healthier", label: "Comer de Forma Saudável" },
 ];
 
@@ -177,7 +177,8 @@ export function ProfileForm() {
         activity_level: data.activity_level || 3,
         goals: data.goals || [],
         gender: data.gender || "prefer_not-to-say",
-        birth_date: parsedBirthDate,
+        // Se for null, passamos undefined para o DatePicker
+        birth_date: parsedBirthDate || undefined, 
         birth_time: data.birth_time || "",
         birth_location: data.birth_location || "",
       };

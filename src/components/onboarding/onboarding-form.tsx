@@ -65,6 +65,7 @@ const onboardingSchema = z.object({
   birth_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Formato de hora inválido (HH:MM)."),
   birth_location: z.string().min(3, "Local de nascimento é obrigatório."),
 
+  // A idade é calculada, mas mantemos a validação
   age: z.coerce
     .number()
     .min(13, "Você deve ter pelo menos 13 anos.")
@@ -115,7 +116,7 @@ export function OnboardingForm() {
       consent: false,
       birth_time: "12:00", // Default time
       birth_location: "",
-      birth_date: undefined,
+      birth_date: undefined, // Usar undefined para DatePicker vazio
     },
   });
 
