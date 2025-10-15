@@ -49,7 +49,7 @@ const aiConfigSchema = z.object({
     // Integração (Campos de teste)
     training_endpoint: z.string().url("Deve ser uma URL válida.").optional().or(z.literal('')),
     service_key: z.string().optional(),
-    model_name: z.string().min(1, "Selecione um modelo de IA."),
+    model_name: z.string().min(1, "Selecione um modelo de IA.").optional(), // Tornando opcional para permitir a seleção após o fetch
 });
 
 type AIConfigValues = z.infer<typeof aiConfigSchema>;
@@ -66,7 +66,7 @@ const mockLogs = [
 export function AIConfigForm() {
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [isFetchingModels, setIsFetchingModels] = React.useState(false);
-    const [availableModels, setAvailableModels] = React.useState<typeof MOCK_MODELS>([]); // Começa vazio
+    const [availableModels, setAvailableModels] = React.useState<typeof MOCK_MODELS>([]); 
     
     const form = useForm<AIConfigValues>({
         resolver: zodResolver(aiConfigSchema),
@@ -78,24 +78,25 @@ export function AIConfigForm() {
             weight_activity: 25,
             weight_nutrition: 15,
             training_endpoint: "https://api.external-ai.com/v1",
-            service_key: "AIzaSyDyC0ga1UvSpn9wHwZhhW3fUs4KG835ZLg", // Chave de teste fornecida
+            service_key: "AIzaSyDyC0ga1UvSpn9wHwZhhW3fUs4KG835ZLg", 
             model_name: "",
         },
     });
 
     // Carrega os modelos mockados na montagem para que o usuário possa selecionar um padrão
     React.useEffect(() => {
-        setAvailableModels(MOCK_MODELS);
-        form.setValue("model_name", MOCK_MODELS[0].id);
-    }, [form]);
+        // Inicialmente, a lista de modelos está vazia até que o teste de conexão seja feito
+        // setAvailableModels(MOCK_MODELS);
+        // form.setValue("model_name", MOCK_MODELS[0].id);
+    }, []);
 
 
     const handleFetchModels = async () => {
-        const endpoint = form.getValues("training_endpoint");
-        const key = form.getValues("service_key");
-
-        if (!endpoint || !key) {
-            toast.error("Preencha o Endpoint e a Chave de Serviço para testar a conexão.");
+        // 1. Validar campos de conexão (simulando a necessidade de dados válidos)
+        const isValid = await form.trigger(["training_endpoint", "service_key"]);
+        
+        if (!isValid) {
+            toast.error("Por favor, preencha o Endpoint e a Chave de Serviço com valores válidos para simular a conexão.");
             return;
         }
         
@@ -103,13 +104,16 @@ export function AIConfigForm() {
         setAvailableModels([]);
         form.setValue("model_name", "");
 
-        // SIMULAÇÃO: Chamada de API para listar modelos
+        // 2. SIMULAÇÃO: Chamada de API para listar modelos
         setTimeout(() => {
             setIsFetchingModels(false);
             
-            // Simulação de sucesso
+            // Simulação de sucesso: Carrega os modelos mockados
             setAvailableModels(MOCK_MODELS);
+            
+            // Seleciona o primeiro modelo automaticamente
             form.setValue("model_name", MOCK_MODELS[0].id);
+            
             toast.success(`Conexão bem-sucedida! ${MOCK_MODELS.length} modelos disponíveis carregados.`);
         }, 1500);
     };
