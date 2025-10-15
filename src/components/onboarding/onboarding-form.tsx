@@ -41,9 +41,11 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
-import { Heart, ArrowRight, User, Activity, CheckCircle, ArrowLeft } from "lucide-react";
+import { Heart, ArrowRight, User, Activity, CheckCircle, ArrowLeft, Calendar, Clock, MapPin } from "lucide-react";
 import { OnboardingNavigationDots } from "./OnboardingNavigationDots";
 import { cn } from "@/lib/utils";
+import { DatePicker } from "@/components/ui/date-picker";
+import { differenceInYears } from "date-fns";
 
 const goalsList = [
   { id: "lose_weight", label: "Perder Peso" },
@@ -53,14 +55,21 @@ const goalsList = [
   { id: "eat_healthier", label: "Comer de Forma Saudável" },
 ];
 
+// --- Zod Schema ---
 const onboardingSchema = z.object({
   first_name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres."),
   last_name: z.string().min(2, "O sobrenome deve ter pelo menos 2 caracteres."),
+  
+  // Novos campos de nascimento
+  birth_date: z.date({ required_error: "Data de nascimento é obrigatória." }),
+  birth_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Formato de hora inválido (HH:MM)."),
+  birth_location: z.string().min(3, "Local de nascimento é obrigatório."),
+
   age: z.coerce
-    .number({ required_error: "Idade é obrigatória." })
+    .number()
     .min(13, "Você deve ter pelo menos 13 anos.")
     .max(120, "Idade inválida."),
-  gender: z.enum(["male", "female", "other", "prefer_not_to-say"], {
+  gender: z.enum(["male", "female", "other", "prefer_not-to-say"], {
     required_error: "Por favor, selecione um gênero.",
   }),
   activity_level: z.number().min(1).max(5), 
@@ -76,12 +85,13 @@ const onboardingSchema = z.object({
 
 type OnboardingValues = z.infer<typeof onboardingSchema>;
 
-const TOTAL_STEPS = 6;
+// O número total de passos diminuiu de 6 para 5
+const TOTAL_STEPS = 5; 
 
 // Helper component for Carousel Item structure
 const OnboardingStep: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className }) => (
     <CarouselItem className={cn("animate-in fade-in duration-500", className)}>
-        <Card className="h-[450px] flex flex-col">
+        <Card className="h-[550px] flex flex-col"> {/* Aumentei a altura para acomodar mais campos */}
             {children}
         </Card>
     </CarouselItem>
@@ -99,12 +109,26 @@ export function OnboardingForm() {
       first_name: "",
       last_name: "",
       age: 18,
-      gender: "prefer_not_to-say",
-      activity_level: 3, // Default value is provided here instead of in Zod schema
+      gender: "prefer_not-to-say",
+      activity_level: 3, 
       goals: [],
       consent: false,
+      birth_time: "12:00", // Default time
+      birth_location: "",
+      birth_date: undefined,
     },
   });
+
+  const birthDate = form.watch("birth_date");
+
+  // Efeito para calcular a idade automaticamente
+  React.useEffect(() => {
+    if (birthDate) {
+      const calculatedAge = differenceInYears(new Date(), birthDate);
+      form.setValue("age", calculatedAge, { shouldValidate: true });
+    }
+  }, [birthDate, form]);
+
 
   const handleNext = async (
     fields: (keyof OnboardingValues)[] | keyof OnboardingValues
@@ -124,13 +148,18 @@ export function OnboardingForm() {
       return;
     }
     setIsSubmitting(true);
+    // Apenas desestruturamos 'consent' e o resto é 'profileData'
     const { consent, ...profileData } = data;
+
+    // Format birth_date to ISO string (YYYY-MM-DD) for Supabase DATE type
+    const formattedBirthDate = profileData.birth_date ? profileData.birth_date.toISOString().split('T')[0] : null;
 
     // Update profile data in Supabase
     const { error } = await supabase
       .from("profiles")
       .update({
         ...profileData,
+        birth_date: formattedBirthDate,
         onboarding_completed: true,
         updated_at: new Date().toISOString(),
       })
@@ -153,7 +182,7 @@ export function OnboardingForm() {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Carousel setApi={setApi} className="w-full max-w-2xl">
           <CarouselContent>
-            {/* Step 1: Welcome (Asymmetrical Layout) */}
+            {/* Step 1: Welcome */}
             <OnboardingStep>
                 <CardHeader>
                   <CardTitle className="text-2xl">
@@ -186,16 +215,17 @@ export function OnboardingForm() {
                 </CardFooter>
             </OnboardingStep>
 
-            {/* Step 2: Name */}
+            {/* Step 2: Personal Data (Name, Birth Date, Age, Gender, Location, Time) - CONSOLIDADO */}
             <OnboardingStep>
                 <CardHeader>
-                  <CardTitle>Como podemos te chamar?</CardTitle>
+                  <CardTitle>Seus Dados Pessoais</CardTitle>
                   <CardDescription>
-                    Nos diga seu nome para uma experiência mais pessoal.
+                    Nome, data de nascimento e gênero para personalização.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6">
-                  <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <CardContent className="flex-1 p-6 space-y-6">
+                  {/* Nome e Sobrenome */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
                       name="first_name"
@@ -223,53 +253,52 @@ export function OnboardingForm() {
                       )}
                     />
                   </div>
-                  <div className="hidden md:flex justify-center items-center">
-                    <User className="w-24 h-24 text-blue-500/70" />
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between items-center border-t pt-4">
-                  <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <div className="space-x-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => api?.scrollPrev()}
-                    >
-                      <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() => handleNext(["first_name", "last_name"])}
-                    >
-                      Próximo <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardFooter>
-            </OnboardingStep>
 
-            {/* Step 3: Age & Gender */}
-            <OnboardingStep>
-                <CardHeader>
-                  <CardTitle>Sobre Você</CardTitle>
-                  <CardDescription>
-                    Essas informações nos ajudam a adaptar o conteúdo.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6">
-                  <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Data de Nascimento, Idade e Gênero */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <FormField
                       control={form.control}
-                      name="age"
+                      name="birth_date"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Idade</FormLabel>
+                        <FormItem className="flex flex-col">
+                          <FormLabel className="mb-2">
+                            <Calendar className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Data de Nascimento
+                          </FormLabel>
                           <FormControl>
-                            <Input type="number" placeholder="Sua idade" {...field} />
+                            <DatePicker
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="DD/MM/AAAA"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+                    
+                    <FormField
+                      control={form.control}
+                      name="age"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Idade (Calculada)</FormLabel>
+                          <FormControl>
+                            <Input 
+                                type="number" 
+                                placeholder="Idade" 
+                                {...field} 
+                                disabled={!!birthDate} // Desabilita se a data de nascimento estiver preenchida
+                                className={cn(!!birthDate && "bg-gray-100 cursor-not-allowed")}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Calculada automaticamente.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                     <FormField
                       control={form.control}
                       name="gender"
@@ -289,7 +318,7 @@ export function OnboardingForm() {
                               <SelectItem value="male">Masculino</SelectItem>
                               <SelectItem value="female">Feminino</SelectItem>
                               <SelectItem value="other">Outro</SelectItem>
-                              <SelectItem value="prefer_not_to-say">
+                              <SelectItem value="prefer_not-to-say">
                                 Prefiro não dizer
                               </SelectItem>
                             </SelectContent>
@@ -299,8 +328,45 @@ export function OnboardingForm() {
                       )}
                     />
                   </div>
-                  <div className="hidden md:flex justify-center items-center">
-                    <User className="w-24 h-24 text-blue-500/70" />
+
+                  {/* Hora e Local de Nascimento */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="birth_time"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            <Clock className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Hora Exata (HH:MM)
+                          </FormLabel>
+                          <FormControl>
+                            <Input type="time" placeholder="12:00" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Usado para cronobiologia.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="birth_location"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            <MapPin className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Local de Nascimento
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="Cidade, País" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Usado para cálculos astrológicos/cronobiológicos.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
@@ -315,7 +381,7 @@ export function OnboardingForm() {
                     </Button>
                     <Button
                       type="button"
-                      onClick={() => handleNext(["age", "gender"])}
+                      onClick={() => handleNext(["first_name", "last_name", "birth_date", "birth_time", "birth_location", "age", "gender"])}
                     >
                       Próximo <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
@@ -323,7 +389,7 @@ export function OnboardingForm() {
                 </CardFooter>
             </OnboardingStep>
 
-            {/* Step 4: Activity Level */}
+            {/* Step 3: Activity Level (Antigo Step 4) */}
             <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Nível de Atividade</CardTitle>
@@ -381,7 +447,7 @@ export function OnboardingForm() {
                 </CardFooter>
             </OnboardingStep>
 
-            {/* Step 5: Goals */}
+            {/* Step 4: Goals (Antigo Step 5) */}
             <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Seus Objetivos</CardTitle>
@@ -453,7 +519,7 @@ export function OnboardingForm() {
                 </CardFooter>
             </OnboardingStep>
 
-            {/* Step 6: Consent & Submit */}
+            {/* Step 5: Consent & Submit (Antigo Step 6) */}
             <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Quase lá!</CardTitle>

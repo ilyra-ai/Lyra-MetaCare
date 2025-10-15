@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, TrendingUp } from "lucide-react";
+import { User, TrendingUp, Calendar, Clock, MapPin } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -32,6 +32,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Line, LineChart, XAxis, YAxis, CartesianGrid } from "recharts";
+import { DatePicker } from "@/components/ui/date-picker";
+import { differenceInYears, parseISO } from "date-fns";
+import { cn } from "@/lib/utils"; // <-- Importação adicionada
 
 // --- Data Definitions ---
 const goalsList = [
@@ -54,6 +57,12 @@ const activityLevels = [
 const profileSchema = z.object({
   first_name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres."),
   last_name: z.string().min(2, "O sobrenome deve ter pelo menos 2 caracteres."),
+  
+  // Novos campos de nascimento
+  birth_date: z.date().optional().nullable(),
+  birth_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Formato de hora inválido (HH:MM).").optional().or(z.literal('')),
+  birth_location: z.string().optional().or(z.literal('')),
+
   age: z.coerce
     .number({ required_error: "Idade é obrigatória." })
     .min(13, "Você deve ter pelo menos 13 anos.")
@@ -129,30 +138,48 @@ export function ProfileForm() {
       gender: "prefer_not-to-say",
       activity_level: 3,
       goals: [],
+      birth_date: null,
+      birth_time: "",
+      birth_location: "",
     },
     mode: "onChange",
   });
+
+  const birthDateWatch = form.watch("birth_date");
+
+  // Efeito para calcular a idade automaticamente
+  React.useEffect(() => {
+    if (birthDateWatch) {
+      const calculatedAge = differenceInYears(new Date(), birthDateWatch);
+      form.setValue("age", calculatedAge, { shouldValidate: true });
+    }
+  }, [birthDateWatch, form]);
+
 
   const fetchProfile = React.useCallback(async () => {
     if (!session?.user) return;
 
     const { data: profiles, error } = await supabase
       .from("profiles")
-      .select("first_name, last_name, age, gender, activity_level, goals")
+      .select("first_name, last_name, age, gender, activity_level, goals, birth_date, birth_time, birth_location")
       .eq("id", session.user.id);
-      // Removed .single()
 
     if (error) {
       console.error("Error fetching profile:", error);
     } else if (profiles && profiles.length > 0) {
       const data = profiles[0];
-      // Ensure activity_level is a number (it's stored as smallint/number)
+      
+      // Parse birth_date string to Date object for the form
+      const parsedBirthDate = data.birth_date ? parseISO(data.birth_date) : null;
+
       const profileData = {
         ...data,
         activity_level: data.activity_level || 3,
         goals: data.goals || [],
-        // Ensure gender is correctly mapped if null or undefined
         gender: data.gender || "prefer_not-to-say",
+        birth_date: parsedBirthDate,
+        birth_time: data.birth_time || "",
+        birth_location: data.birth_location || "",
       };
       form.reset(profileData);
     }
@@ -166,10 +193,14 @@ export function ProfileForm() {
   const onSubmit = async (data: ProfileValues) => {
     if (!session?.user) return;
 
+    // Format birth_date to ISO string (YYYY-MM-DD) for Supabase DATE type
+    const formattedBirthDate = data.birth_date ? data.birth_date.toISOString().split('T')[0] : null;
+
     const { error } = await supabase
       .from("profiles")
       .update({
         ...data,
+        birth_date: formattedBirthDate,
         updated_at: new Date().toISOString(),
       })
       .eq("id", session.user.id);
@@ -253,19 +284,53 @@ export function ProfileForm() {
                   </FormItem>
                 )}
               />
+              
+              {/* Data de Nascimento */}
               <FormField
                 control={form.control}
-                name="age"
+                name="birth_date"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Idade</FormLabel>
+                  <FormItem className="flex flex-col">
+                    <FormLabel className="mb-2">
+                        <Calendar className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Data de Nascimento
+                    </FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="Sua idade" {...field} />
+                      <DatePicker
+                        value={field.value || undefined}
+                        onChange={field.onChange}
+                        placeholder="DD/MM/AAAA"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {/* Idade (Calculada) */}
+              <FormField
+                control={form.control}
+                name="age"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Idade (Calculada)</FormLabel>
+                    <FormControl>
+                      <Input 
+                          type="number" 
+                          placeholder="Idade" 
+                          {...field} 
+                          disabled={!!birthDateWatch}
+                          className={cn(!!birthDateWatch && "bg-gray-100 cursor-not-allowed")}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                        Calculada automaticamente pela data.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Gênero */}
               <FormField
                 control={form.control}
                 name="gender"
@@ -290,6 +355,46 @@ export function ProfileForm() {
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* Hora de Nascimento */}
+              <FormField
+                control={form.control}
+                name="birth_time"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                        <Clock className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Hora Exata (HH:MM)
+                    </FormLabel>
+                    <FormControl>
+                      <Input type="time" placeholder="12:00" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                        Usado para cronobiologia.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Local de Nascimento */}
+              <FormField
+                control={form.control}
+                name="birth_location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                        <MapPin className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Local de Nascimento
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="Cidade, País" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                        Usado para cálculos astrológicos/cronobiológicos.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
