@@ -21,16 +21,18 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full p-8 space-y-8 bg-white rounded-lg shadow-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-green-50 p-4">
+      <div className="max-w-md w-full p-8 space-y-8 bg-white rounded-xl shadow-2xl border border-gray-100/50 transition-all duration-500">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to your account
+          Acesse sua Jornada
         </h2>
         <Auth
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
           providers={[]}
           theme="light"
+          // Customização para alinhar com o design minimalista e calmo
+          // O ThemeSupa já é bem limpo, mas garantimos que o container se encaixe.
         />
       </div>
     </div>
