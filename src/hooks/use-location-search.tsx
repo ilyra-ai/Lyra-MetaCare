@@ -42,9 +42,7 @@ export function useLocationSearch() {
     const searchLower = query.toLowerCase();
     
     try {
-      // 1. Buscar Cidades com relações aninhadas
-      // Nota: A coluna 'uf' em 'cidade' provavelmente é a FK para 'estado.id'.
-      // Se a relação não for nomeada explicitamente, o Supabase usa o nome da tabela.
+      // A query aninhada agora deve funcionar corretamente, pois as FKs foram definidas.
       const { data, error: citiesError } = await supabase
         .from('cidade')
         .select(`
@@ -58,11 +56,9 @@ export function useLocationSearch() {
         .limit(10);
 
       if (citiesError) {
-        // Se houver um erro do Supabase, lançamos ele para o catch
         throw citiesError;
       }
 
-      // Type assertion para garantir que o TypeScript entenda a estrutura
       const citiesData = data as CidadeQueryResult[];
 
       const results: LocationResult[] = [];
