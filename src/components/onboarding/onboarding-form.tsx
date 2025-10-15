@@ -41,8 +41,9 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
-import { Heart, ArrowRight, User, Activity, CheckCircle } from "lucide-react";
+import { Heart, ArrowRight, User, Activity, CheckCircle, ArrowLeft } from "lucide-react";
 import { OnboardingNavigationDots } from "./OnboardingNavigationDots";
+import { cn } from "@/lib/utils";
 
 const goalsList = [
   { id: "lose_weight", label: "Perder Peso" },
@@ -59,10 +60,9 @@ const onboardingSchema = z.object({
     .number({ required_error: "Idade é obrigatória." })
     .min(13, "Você deve ter pelo menos 13 anos.")
     .max(120, "Idade inválida."),
-  gender: z.enum(["male", "female", "other", "prefer_not_to_say"], {
+  gender: z.enum(["male", "female", "other", "prefer_not_to-say"], {
     required_error: "Por favor, selecione um gênero.",
   }),
-  // REMOVED .default(3) to align type inference with useForm's defaultValues
   activity_level: z.number().min(1).max(5), 
   goals: z
     .array(z.string())
@@ -78,6 +78,15 @@ type OnboardingValues = z.infer<typeof onboardingSchema>;
 
 const TOTAL_STEPS = 6;
 
+// Helper component for Carousel Item structure
+const OnboardingStep: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className }) => (
+    <CarouselItem className={cn("animate-in fade-in duration-500", className)}>
+        <Card className="h-[450px] flex flex-col">
+            {children}
+        </Card>
+    </CarouselItem>
+);
+
 export function OnboardingForm() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -90,7 +99,7 @@ export function OnboardingForm() {
       first_name: "",
       last_name: "",
       age: 18,
-      gender: "prefer_not_to_say",
+      gender: "prefer_not_to-say",
       activity_level: 3, // Default value is provided here instead of in Zod schema
       goals: [],
       consent: false,
@@ -104,6 +113,8 @@ export function OnboardingForm() {
     const isValid = await form.trigger(fieldsToValidate as any);
     if (isValid) {
       api?.scrollNext();
+    } else {
+        toast.error("Por favor, preencha os campos obrigatórios corretamente antes de prosseguir.");
     }
   };
 
@@ -115,6 +126,7 @@ export function OnboardingForm() {
     setIsSubmitting(true);
     const { consent, ...profileData } = data;
 
+    // Update profile data in Supabase
     const { error } = await supabase
       .from("profiles")
       .update({
@@ -142,8 +154,7 @@ export function OnboardingForm() {
         <Carousel setApi={setApi} className="w-full max-w-2xl">
           <CarouselContent>
             {/* Step 1: Welcome (Asymmetrical Layout) */}
-            <CarouselItem>
-              <Card className="h-[450px] flex flex-col">
+            <OnboardingStep>
                 <CardHeader>
                   <CardTitle className="text-2xl">
                     Bem-vindo(a) à sua Jornada
@@ -173,12 +184,10 @@ export function OnboardingForm() {
                     Começar <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </CardFooter>
-              </Card>
-            </CarouselItem>
+            </OnboardingStep>
 
             {/* Step 2: Name */}
-            <CarouselItem>
-              <Card className="h-[450px] flex flex-col">
+            <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Como podemos te chamar?</CardTitle>
                   <CardDescription>
@@ -226,22 +235,20 @@ export function OnboardingForm() {
                       variant="outline"
                       onClick={() => api?.scrollPrev()}
                     >
-                      Voltar
+                      <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                     </Button>
                     <Button
                       type="button"
                       onClick={() => handleNext(["first_name", "last_name"])}
                     >
-                      Próximo
+                      Próximo <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </CardFooter>
-              </Card>
-            </CarouselItem>
+            </OnboardingStep>
 
             {/* Step 3: Age & Gender */}
-            <CarouselItem>
-              <Card className="h-[450px] flex flex-col">
+            <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Sobre Você</CardTitle>
                   <CardDescription>
@@ -282,7 +289,7 @@ export function OnboardingForm() {
                               <SelectItem value="male">Masculino</SelectItem>
                               <SelectItem value="female">Feminino</SelectItem>
                               <SelectItem value="other">Outro</SelectItem>
-                              <SelectItem value="prefer_not_to_say">
+                              <SelectItem value="prefer_not_to-say">
                                 Prefiro não dizer
                               </SelectItem>
                             </SelectContent>
@@ -304,22 +311,20 @@ export function OnboardingForm() {
                       variant="outline"
                       onClick={() => api?.scrollPrev()}
                     >
-                      Voltar
+                      <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                     </Button>
                     <Button
                       type="button"
                       onClick={() => handleNext(["age", "gender"])}
                     >
-                      Próximo
+                      Próximo <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </CardFooter>
-              </Card>
-            </CarouselItem>
+            </OnboardingStep>
 
             {/* Step 4: Activity Level */}
-            <CarouselItem>
-              <Card className="h-[450px] flex flex-col">
+            <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Nível de Atividade</CardTitle>
                   <CardDescription>
@@ -333,6 +338,7 @@ export function OnboardingForm() {
                       name="activity_level"
                       render={({ field }) => (
                         <FormItem>
+                          <FormLabel>Nível Atual: {field.value}</FormLabel>
                           <FormControl>
                             <Slider
                               min={1}
@@ -343,12 +349,10 @@ export function OnboardingForm() {
                             />
                           </FormControl>
                           <div className="flex justify-between text-xs text-muted-foreground mt-2">
-                            <span>Sedentário</span>
-                            <span>Leve</span>
-                            <span>Moderado</span>
-                            <span>Ativo</span>
-                            <span>Muito Ativo</span>
+                            <span>Sedentário (1)</span>
+                            <span>Muito Ativo (5)</span>
                           </div>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -365,22 +369,20 @@ export function OnboardingForm() {
                       variant="outline"
                       onClick={() => api?.scrollPrev()}
                     >
-                      Voltar
+                      <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                     </Button>
                     <Button
                       type="button"
                       onClick={() => handleNext("activity_level")}
                     >
-                      Próximo
+                      Próximo <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </CardFooter>
-              </Card>
-            </CarouselItem>
+            </OnboardingStep>
 
             {/* Step 5: Goals */}
-            <CarouselItem>
-              <Card className="h-[450px] flex flex-col">
+            <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Seus Objetivos</CardTitle>
                   <CardDescription>
@@ -442,19 +444,17 @@ export function OnboardingForm() {
                       variant="outline"
                       onClick={() => api?.scrollPrev()}
                     >
-                      Voltar
+                      <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                     </Button>
                     <Button type="button" onClick={() => handleNext("goals")}>
-                      Próximo
+                      Próximo <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </CardFooter>
-              </Card>
-            </CarouselItem>
+            </OnboardingStep>
 
             {/* Step 6: Consent & Submit */}
-            <CarouselItem>
-              <Card className="h-[450px] flex flex-col">
+            <OnboardingStep>
                 <CardHeader>
                   <CardTitle>Quase lá!</CardTitle>
                   <CardDescription>
@@ -496,15 +496,14 @@ export function OnboardingForm() {
                       variant="outline"
                       onClick={() => api?.scrollPrev()}
                     >
-                      Voltar
+                      <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                     </Button>
                     <Button type="submit" disabled={isSubmitting}>
                       {isSubmitting ? "Salvando..." : "Finalizar"}
                     </Button>
                   </div>
                 </CardFooter>
-              </Card>
-            </CarouselItem>
+            </OnboardingStep>
           </CarouselContent>
         </Carousel>
       </form>
