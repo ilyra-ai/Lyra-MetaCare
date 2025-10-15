@@ -384,10 +384,10 @@ export function OnboardingForm() {
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
                   <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <div className="space-x-2">
+                  <div className="space-x-2 flex items-center"> {/* Adicionado flex items-center */}
                     <Button
                       type="button"
-                      variant="default" // Alterado para default
+                      variant="default"
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -442,10 +442,10 @@ export function OnboardingForm() {
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
                   <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <div className="space-x-2">
+                  <div className="space-x-2 flex items-center"> {/* Adicionado flex items-center */}
                     <Button
                       type="button"
-                      variant="default" // Alterado para default
+                      variant="default"
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -517,10 +517,10 @@ export function OnboardingForm() {
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
                   <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <div className="space-x-2">
+                  <div className="space-x-2 flex items-center"> {/* Adicionado flex items-center */}
                     <Button
                       type="button"
-                      variant="default" // Alterado para default
+                      variant="default"
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -569,10 +569,10 @@ export function OnboardingForm() {
                 </CardContent>
                 <CardFooter className="flex justify-between items-center border-t pt-4">
                   <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <div className="space-x-2">
+                  <div className="space-x-2 flex items-center"> {/* Adicionado flex items-center */}
                     <Button
                       type="button"
-                      variant="default" // Alterado para default
+                      variant="default"
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
