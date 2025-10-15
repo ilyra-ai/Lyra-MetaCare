@@ -1,7 +1,11 @@
+// @ts-ignore
 /// <reference types="https://deno.land/std@0.190.0/http/server.ts" />
+// @ts-ignore
 /// <reference types="https://esm.sh/@supabase/supabase-js@2.45.0" />
 
+// @ts-ignore
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
+// @ts-ignore
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
 
 const corsHeaders = {
@@ -61,8 +65,11 @@ serve(async (req: Request) => {
   }
   
   try {
+    // @ts-ignore
     const supabaseClient = createClient(
+      // @ts-ignore
       Deno.env.get('SUPABASE_URL') ?? '',
+      // @ts-ignore
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
         global: {
@@ -84,11 +91,13 @@ serve(async (req: Request) => {
     // 2. Buscar as métricas mais recentes do usuário
     const { data: metricsData, error } = await supabaseClient
       .from('daily_metrics')
-      .select(`
+      .select(
+        `
         hrv_ms, sleep_duration_minutes, steps, recovery_score, readiness_score,
         resting_heart_rate, hrr_1min_bpm, body_temperature_celsius, spo2_average,
         protein_grams, carb_grams, fat_grams, water_liters, mood_score, meditation_minutes
-      `)
+        `
+      )
       .eq('user_id', user.id)
       .order('date', { ascending: false })
       .limit(1)
@@ -120,7 +129,6 @@ serve(async (req: Request) => {
 
   } catch (error) {
     console.error(error)
-    // Corrigido: Asserting 'error' as Error to access 'message'
     return new Response(JSON.stringify({ error: (error as Error).message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,
