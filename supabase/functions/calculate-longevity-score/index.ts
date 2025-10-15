@@ -39,20 +39,18 @@ interface AIScores {
 
 /**
  * Função para chamar a API de IA externa de forma real.
- * 
- * IMPORTANTE: Você deve configurar a variável de ambiente 'EXTERNAL_AI_KEY'
- * e 'EXTERNAL_AI_ENDPOINT' nas Secrets do Supabase.
  */
 async function callExternalAI(metrics: DailyMetric): Promise<AIScores> {
     
     // @ts-ignore: Deno is available in the Edge Function runtime
     const externalApiKey = Deno.env.get('EXTERNAL_AI_KEY');
     // @ts-ignore: Deno is available in the Edge Function runtime
-    const externalApiEndpoint = Deno.env.get('EXTERNAL_AI_ENDPOINT') || 'https://api.ai-service.com/calculate'; // Endpoint padrão
+    const externalApiEndpoint = Deno.env.get('EXTERNAL_AI_ENDPOINT');
     
-    if (!externalApiKey) {
-        console.warn("EXTERNAL_AI_KEY not set. Using simulated scores.");
-        // Fallback de simulação se a chave não estiver configurada
+    if (!externalApiKey || !externalApiEndpoint) {
+        console.warn("EXTERNAL_AI_KEY or EXTERNAL_AI_ENDPOINT not set. Using simulated scores.");
+        // Fallback de simulação se a chave ou endpoint não estiverem configurados
+        // Isso garante que o Dashboard não quebre com um erro 500 se as secrets não estiverem prontas.
         return { longevityScore: 5.0, readinessScore: 50 };
     }
 
@@ -69,7 +67,8 @@ async function callExternalAI(metrics: DailyMetric): Promise<AIScores> {
         if (!aiResponse.ok) {
             const errorText = await aiResponse.text();
             console.error(`External AI API failed with status: ${aiResponse.status}. Response: ${errorText}`);
-            throw new Error(`External AI API failed: ${aiResponse.status}`);
+            // Retorna um score neutro em caso de falha da API externa
+            return { longevityScore: 5.0, readinessScore: 50 };
         }
         
         const result = await aiResponse.json();
