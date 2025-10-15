@@ -31,37 +31,54 @@ serve(async (req: Request) => {
         });
     }
 
-    // --- SIMULAÇÃO DE CHAMADA REAL ---
-    // Em um cenário real, você faria uma chamada fetch para o endpoint de listagem de modelos.
-    // Exemplo: fetch(`${endpoint}/models`, { headers: { 'Authorization': `Bearer ${key}` } })
+    console.log(`Attempting real connection test to: ${endpoint}`);
     
-    // Como não podemos garantir que o endpoint fornecido seja real ou que a chave seja válida,
-    // simulamos o sucesso da chamada de rede, mas a estrutura é real.
+    // --- CHAMADA DE REDE REAL PARA O ENDPOINT FORNECIDO ---
+    // Esta chamada simula a tentativa de listar modelos ou verificar o status da API de IA.
     
-    console.log(`Attempting connection test to: ${endpoint}`);
-    
-    // Simulação de latência de rede
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Se a chave for a chave de teste, simulamos sucesso.
-    if (key.startsWith('AIzaSy')) {
-        return new Response(JSON.stringify({ 
-            success: true, 
-            models: MOCK_MODELS 
-        }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 200,
+    let aiResponse: Response;
+    try {
+        aiResponse = await fetch(endpoint, {
+            method: 'GET', // Assumindo que a listagem de modelos é um GET
+            headers: { 
+                'Authorization': `Bearer ${key}`,
+                'Content-Type': 'application/json',
+            },
         });
-    } else {
-        // Simulação de falha de autenticação
+    } catch (networkError) {
+        console.error("Network Error:", networkError);
         return new Response(JSON.stringify({ 
             success: false, 
-            error: "Falha na autenticação ou endpoint inválido. Verifique a chave e o URL." 
+            error: `Erro de rede ao tentar alcançar o endpoint: ${(networkError as Error).message}` 
         }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 401,
+            status: 500,
         });
     }
+
+    if (!aiResponse.ok) {
+        const errorText = await aiResponse.text();
+        console.error(`External AI API failed with status: ${aiResponse.status}. Response: ${errorText}`);
+        
+        return new Response(JSON.stringify({ 
+            success: false, 
+            error: `Falha na API externa. Status: ${aiResponse.status}. Mensagem: ${errorText.substring(0, 100)}...` 
+        }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: aiResponse.status,
+        });
+    }
+    
+    // Se a chamada for bem-sucedida (status 200-299), retornamos os modelos mockados
+    // (pois não podemos garantir o formato de resposta da API externa real).
+    return new Response(JSON.stringify({ 
+        success: true, 
+        models: MOCK_MODELS,
+        message: "Conexão HTTP bem-sucedida. Modelos mockados retornados."
+    }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+    });
 
   } catch (error) {
     console.error("Error in test-ai-connection:", error);

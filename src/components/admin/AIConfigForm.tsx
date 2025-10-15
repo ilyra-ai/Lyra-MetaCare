@@ -27,9 +27,19 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { useAuth } from "@/context/AuthContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // URL da Edge Function de Teste
 const TEST_FUNCTION_URL = "https://gmrxhgcuwtghjskikfug.supabase.co/functions/v1/test-ai-connection";
+
+// Mock Logs for demonstration
+const mockLogs = [
+    { timestamp: "2024-07-25 10:30:01", level: "INFO", message: "Score calculation started for user: 12345..." },
+    { timestamp: "2024-07-25 10:30:05", level: "SUCCESS", message: "External AI API call successful. Longevity Score: 7.8" },
+    { timestamp: "2024-07-25 09:15:40", level: "WARNING", message: "Missing HRV data for user: 67890. Using default weight." },
+    { timestamp: "2024-07-24 18:00:12", level: "ERROR", message: "Database connection failed during metric fetch." },
+];
 
 // --- Zod Schema for AI Configuration ---
 const aiConfigSchema = z.object({
@@ -42,7 +52,7 @@ const aiConfigSchema = z.object({
     weight_activity: z.coerce.number().min(0).max(100),
     weight_nutrition: z.coerce.number().min(0).max(100),
     
-    // Integração (Campos de teste)
+    // Integração (Campos de teste - Não salvos no DB)
     training_endpoint: z.string().url("Deve ser uma URL válida.").optional().or(z.literal('')),
     service_key: z.string().optional(),
     model_name: z.string().min(1, "Selecione um modelo de IA.").optional(),
@@ -50,25 +60,19 @@ const aiConfigSchema = z.object({
 
 type AIConfigValues = z.infer<typeof aiConfigSchema>;
 
-// Mock Logs for demonstration
-const mockLogs = [
-    { timestamp: "2024-07-25 10:30:01", level: "INFO", message: "Score calculation started for user: 12345..." },
-    { timestamp: "2024-07-25 10:30:05", level: "SUCCESS", message: "External AI API call successful. Longevity Score: 7.8" },
-    { timestamp: "2024-07-25 09:15:40", level: "WARNING", message: "Missing HRV data for user: 67890. Using default weight." },
-    { timestamp: "2024-07-24 18:00:12", level: "ERROR", message: "Database connection failed during metric fetch." },
-];
-
-
 export function AIConfigForm() {
+    const { supabase } = useAuth();
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [isFetchingModels, setIsFetchingModels] = React.useState(false);
+    const [isLoadingConfig, setIsLoadingConfig] = React.useState(true);
+    const [configId, setConfigId] = React.useState<string | null>(null);
     const [availableModels, setAvailableModels] = React.useState<{ id: string, label: string }[]>([]); 
     
     const form = useForm<AIConfigValues>({
         resolver: zodResolver(aiConfigSchema),
         defaultValues: {
-            mission: "O Lyra MetaCare tem a missão de otimizar a longevidade através da análise de dados biológicos e intervenções personalizadas.",
-            key_objectives: "Aumentar HRV, Otimizar Sono Profundo, Manter FC de Repouso baixa, Melhorar aptidão cardiovascular.",
+            mission: "",
+            key_objectives: "",
             weight_hrv: 30,
             weight_sleep: 30,
             weight_activity: 25,
@@ -79,9 +83,47 @@ export function AIConfigForm() {
         },
     });
 
-    // Função para testar a conexão de forma 'real' via Edge Function
+    // --- Data Fetching ---
+    const fetchConfig = React.useCallback(async () => {
+        setIsLoadingConfig(true);
+        const { data, error } = await supabase
+            .from("ai_config")
+            .select("*")
+            .limit(1)
+            .single();
+
+        if (error) {
+            console.error("Error fetching AI config:", error);
+            toast.error("Erro ao carregar configurações de IA.");
+        } else if (data) {
+            setConfigId(data.id);
+            form.reset({
+                mission: data.mission,
+                key_objectives: data.key_objectives,
+                weight_hrv: data.weight_hrv,
+                weight_sleep: data.weight_sleep,
+                weight_activity: data.weight_activity,
+                weight_nutrition: data.weight_nutrition,
+                model_name: data.model_name || "",
+                // Mantendo valores de teste no defaultValues, pois não são persistidos
+                training_endpoint: "https://api.external-ai.com/v1",
+                service_key: "AIzaSyDyC0ga1UvSpn9wHwZhhW3fUs4KG835ZLg", 
+            });
+            if (data.model_name) {
+                // Simula que o modelo salvo está disponível
+                setAvailableModels([{ id: data.model_name, label: data.model_name }]);
+            }
+        }
+        setIsLoadingConfig(false);
+    }, [supabase, form]);
+
+    React.useEffect(() => {
+        fetchConfig();
+    }, [fetchConfig]);
+
+
+    // --- Connection Test (Real Edge Function Call) ---
     const handleFetchModels = async () => {
-        // 1. Validar campos de conexão
         const isValid = await form.trigger(["training_endpoint", "service_key"]);
         
         if (!isValid) {
@@ -102,12 +144,11 @@ export function AIConfigForm() {
         form.setValue("model_name", "");
 
         try {
-            // 2. Chamar a Edge Function de teste
+            // 2. Chamar a Edge Function de teste (Chamada de rede real)
             const response = await fetch(TEST_FUNCTION_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Não precisamos de token de auth aqui, pois a função de teste é pública
                 },
                 body: JSON.stringify({ endpoint, key })
             });
@@ -135,26 +176,50 @@ export function AIConfigForm() {
         }
     };
 
-    const onSubmit = (data: AIConfigValues) => {
+    // --- Submission (Real DB Update) ---
+    const onSubmit = async (data: AIConfigValues) => {
+        if (!configId) {
+            toast.error("Erro: ID de configuração não encontrado. Tente recarregar a página.");
+            return;
+        }
+        
         setIsSubmitting(true);
         
-        // Em um ambiente de produção real, esta função faria:
-        // 1. Chamar um Server Action/Route Handler para salvar as configurações (missão, pesos) no banco de dados.
-        // 2. Chamar um Server Action/Route Handler para salvar a chave de serviço (service_key) como uma Secret no Supabase (o que não podemos fazer aqui).
+        // 1. Preparar dados para salvar (excluindo campos de teste)
+        const { training_endpoint, service_key, ...dataToSave } = data;
 
-        toast.info("Simulando Salvamento de Configurações...", {
-            description: `Configurações e modelo ${data.model_name} sendo salvos.`,
-        });
+        // 2. Salvar no Supabase (UPDATE)
+        const { error } = await supabase
+            .from("ai_config")
+            .update({
+                ...dataToSave,
+                updated_at: new Date().toISOString(),
+            })
+            .eq("id", configId);
 
-        setTimeout(() => {
-            setIsSubmitting(false);
-            console.log("Config Data Saved:", data);
-            
+        setIsSubmitting(false);
+
+        if (error) {
+            toast.error("Ocorreu um erro ao salvar as configurações.", {
+                description: error.message,
+            });
+        } else {
             toast.success("Configuração Salva e Modelo Selecionado!", {
                 description: `O modelo ${data.model_name} foi configurado com sucesso.`,
             });
-        }, 3000);
+            // Nota: A chave de serviço (service_key) deve ser salva manualmente nas Secrets do Supabase.
+        }
     };
+
+    if (isLoadingConfig) {
+        return (
+            <div className="space-y-6">
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-48 w-full" />
+                <Skeleton className="h-48 w-full" />
+            </div>
+        );
+    }
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
