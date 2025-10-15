@@ -85,8 +85,8 @@ export function OnboardingForm() {
     defaultValues: {
       first_name: "",
       last_name: "",
-      age: 18, // Providing a valid default to satisfy the type
-      gender: "prefer_not_to_say", // Providing a valid default to satisfy the type
+      age: 18, // Required default value
+      gender: "prefer_not_to_say", // Required default value
       activity_level: 3,
       goals: [],
       consent: false,
