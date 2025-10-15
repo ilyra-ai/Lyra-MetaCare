@@ -390,7 +390,7 @@ export function OnboardingForm() {
                       variant="ghost"
                       onClick={() => api?.scrollPrev()}
                     >
-                      <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
+                      <ArrowLeft className="ml-2 h-4 w-4" /> Voltar
                     </Button>
                     <Button
                       type="button"
