@@ -183,7 +183,14 @@ export function OnboardingForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Carousel setApi={setApi} className="w-full max-w-2xl">
+        <Carousel 
+            setApi={setApi} 
+            className="w-full max-w-2xl"
+            opts={{
+                // Desabilita o arrastar/swipe com o mouse/touch e, consequentemente, o teclado
+                watchDrag: false, 
+            }}
+        >
           <CarouselContent>
             {/* Step 1: Welcome */}
             <OnboardingStep>
