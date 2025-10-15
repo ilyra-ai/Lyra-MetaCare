@@ -33,30 +33,32 @@ serve(async (req: Request) => {
 
     console.log(`Attempting real connection test to: ${endpoint}`);
     
-    // --- CHAMADA DE REDE REAL PARA O ENDPOINT FORNECIDO ---
-    // Esta chamada simula a tentativa de listar modelos ou verificar o status da API de IA.
-    
     let aiResponse: Response;
     try {
+        // Tenta fazer a chamada real para o endpoint fornecido
         aiResponse = await fetch(endpoint, {
-            method: 'GET', // Assumindo que a listagem de modelos é um GET
+            method: 'GET', 
             headers: { 
                 'Authorization': `Bearer ${key}`,
                 'Content-Type': 'application/json',
             },
+            // Adicionando um timeout para evitar que a função trave
+            signal: AbortSignal.timeout(5000) 
         });
     } catch (networkError) {
+        // Captura erros de rede (DNS, timeout, etc.)
         console.error("Network Error:", networkError);
         return new Response(JSON.stringify({ 
             success: false, 
             error: `Erro de rede ao tentar alcançar o endpoint: ${(networkError as Error).message}` 
         }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 500,
+            status: 503, // Service Unavailable
         });
     }
 
     if (!aiResponse.ok) {
+        // Captura erros HTTP (401, 404, 500 da API externa)
         const errorText = await aiResponse.text();
         console.error(`External AI API failed with status: ${aiResponse.status}. Response: ${errorText}`);
         
@@ -70,7 +72,6 @@ serve(async (req: Request) => {
     }
     
     // Se a chamada for bem-sucedida (status 200-299), retornamos os modelos mockados
-    // (pois não podemos garantir o formato de resposta da API externa real).
     return new Response(JSON.stringify({ 
         success: true, 
         models: MOCK_MODELS,
@@ -81,7 +82,8 @@ serve(async (req: Request) => {
     });
 
   } catch (error) {
-    console.error("Error in test-ai-connection:", error);
+    // Captura erros internos da Edge Function (parsing JSON, etc.)
+    console.error("Internal Error in test-ai-connection:", error);
     return new Response(JSON.stringify({ error: (error as Error).message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500,
