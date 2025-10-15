@@ -13,22 +13,19 @@ export interface LocationResult {
 }
 
 // --- Interfaces para tipagem do resultado do Supabase ---
+// Simplificando as interfaces para refletir a estrutura de retorno do Supabase com arrays
 interface PaisResult {
   nome_pt: string | null;
 }
 
 interface EstadoResult {
-  nome: string | null;
   uf: string | null; // State abbreviation
-  // Corrigido: Supabase retorna relações aninhadas como arrays
   pais: PaisResult[]; 
 }
 
-// O resultado da query aninhada
 interface CidadeQueryResult {
   nome: string;
   uf: string | null; // UF da cidade (se existir)
-  // Corrigido: Supabase retorna 'estado' como array
   estado: EstadoResult[]; 
 }
 // -------------------------------------------------------
@@ -47,12 +44,13 @@ export function useLocationSearch() {
     
     try {
       // 1. Buscar Cidades (limitado a 10 resultados para performance)
+      // A query busca a cidade, o estado relacionado e o país relacionado ao estado.
       const { data, error: citiesError } = await supabase
         .from('cidade')
         .select(`
           nome,
           uf,
-          estado (nome, uf, pais (nome_pt))
+          estado (uf, pais (nome_pt))
         `)
         .ilike('nome', `%${searchLower}%`)
         .limit(10);
@@ -70,7 +68,7 @@ export function useLocationSearch() {
         // Acessa o primeiro país dentro do estado (se existir)
         const countryData = stateData?.pais?.[0];
 
-        // Ajustando a lógica de acesso
+        // Ajustando a lógica de acesso e garantindo fallbacks
         const state = stateData?.uf || city.uf || 'N/A';
         const country = countryData?.nome_pt || 'N/A';
         
@@ -87,7 +85,7 @@ export function useLocationSearch() {
 
     } catch (error) {
       console.error("Error searching locations:", error);
-      toast.error("Erro na busca de localização.", { description: (error as Error).message });
+      // Retorna um array vazio em caso de erro para não quebrar a UI
       return [];
     } finally {
       setLoading(false);
