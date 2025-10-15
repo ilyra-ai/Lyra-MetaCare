@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AITipsCard } from "./AITipsCard";
 import { MetricGrid } from "./MetricGrid";
+import { useAIScores } from "@/hooks/use-ai-scores"; // Importando o novo hook
 
 // --- Chart Configuration ---
 const stepsChartConfig = {
@@ -37,7 +38,10 @@ const sleepChartConfig = {
 
 // --- Main Dashboard Component ---
 export function Dashboard() {
-  const { metrics, todayMetrics, loading, refresh } = useDailyMetrics(7);
+  const { metrics, todayMetrics, loading: metricsLoading, refresh: refreshMetrics } = useDailyMetrics(7);
+  const { scores, loading: scoresLoading, refresh: refreshScores } = useAIScores();
+
+  const loading = metricsLoading || scoresLoading;
 
   if (loading) {
     return (
@@ -63,21 +67,7 @@ export function Dashboard() {
     sleep: m.sleep_duration_minutes / 60, // Convert minutes to hours for chart
   }));
 
-  // Longevity Score Calculation (Refined based on 30+ metrics)
-  const calculateLongevityScore = () => {
-      if (!todayMetrics) return "N/A";
-      
-      let score = 8.0;
-      // Weighting factors for 2025 trends: Recovery and Sleep Quality are paramount
-      if (todayMetrics.steps > 8000) score += 0.2;
-      if (todayMetrics.sleep_duration_minutes > 450) score += 0.3;
-      if ((todayMetrics.hrv_ms || 0) > 50) score += 0.5;
-      if ((todayMetrics.recovery_score || 0) > 85) score += 0.4;
-      if (todayMetrics.protein_grams > 100) score += 0.1;
-      
-      return Math.min(9.9, score).toFixed(1);
-  }
-  const longevityScore = calculateLongevityScore();
+  const longevityScore = scores?.longevityScore?.toFixed(1) || "N/A";
 
 
   return (
@@ -90,7 +80,7 @@ export function Dashboard() {
             <TrendingUp className="h-10 w-10 text-green-700 dark:text-green-400 mb-2" />
             <CardTitle className="text-4xl font-extrabold text-green-800 dark:text-green-300">{longevityScore}</CardTitle>
             <CardDescription className="text-green-700 dark:text-green-400 font-medium">Índice de Longevidade Otimizado</CardDescription>
-            <p className="text-xs text-muted-foreground mt-2">Baseado em 30+ métricas de saúde biológica e resiliência.</p>
+            <p className="text-xs text-muted-foreground mt-2">Calculado pela IA com base em métricas biológicas e de estilo de vida.</p>
         </Card>
         
         {/* Card 2: AI Tips (Spans 2 columns) */}
