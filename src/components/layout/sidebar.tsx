@@ -6,7 +6,7 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex flex-col w-64 bg-white border-r">
       <div className="p-4 border-b">
-        <h1 className="text-2xl font-bold text-center">Health AI</h1>
+        <h1 className="text-2xl font-bold text-center text-primary">Health AI</h1>
       </div>
       <nav className="flex-1 p-4 space-y-2">
         <Button asChild variant="ghost" className="w-full justify-start">
@@ -42,7 +42,7 @@ export function Sidebar() {
         <Button asChild variant="ghost" className="w-full justify-start">
           <Link href="#">
             <Settings className="mr-2 h-4 w-4" />
-            Configurações
+            Configurações (Em Breve)
           </Link>
         </Button>
       </nav>
