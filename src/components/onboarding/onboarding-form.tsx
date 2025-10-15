@@ -387,7 +387,7 @@ export function OnboardingForm() {
                   <div className="space-x-2">
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="ghost"
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -445,7 +445,7 @@ export function OnboardingForm() {
                   <div className="space-x-2">
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="ghost"
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -520,7 +520,7 @@ export function OnboardingForm() {
                   <div className="space-x-2">
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="ghost"
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
@@ -572,7 +572,7 @@ export function OnboardingForm() {
                   <div className="space-x-2">
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="ghost"
                       onClick={() => api?.scrollPrev()}
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
