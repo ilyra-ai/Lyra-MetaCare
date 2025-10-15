@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Zap, Settings, Scale, ScrollText, Loader2, KeyRound } from "lucide-react";
+import { Zap, Settings, Scale, ScrollText, Loader2, KeyRound, Search, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { 
     Form, 
@@ -46,11 +46,10 @@ const aiConfigSchema = z.object({
     weight_activity: z.coerce.number().min(0).max(100),
     weight_nutrition: z.coerce.number().min(0).max(100),
     
-    // Configuração do Modelo
+    // Integração (Campos de teste)
+    training_endpoint: z.string().url("Deve ser uma URL válida.").optional().or(z.literal('')),
+    service_key: z.string().optional(),
     model_name: z.string().min(1, "Selecione um modelo de IA."),
-    
-    // Chave de Serviço (Apenas para configuração inicial/teste)
-    external_service_key: z.string().optional(),
 });
 
 type AIConfigValues = z.infer<typeof aiConfigSchema>;
@@ -66,8 +65,9 @@ const mockLogs = [
 
 export function AIConfigForm() {
     const [isSubmitting, setIsSubmitting] = React.useState(false);
-    const [availableModels] = React.useState(MOCK_MODELS); // Modelos fixos no frontend
-
+    const [isFetchingModels, setIsFetchingModels] = React.useState(false);
+    const [availableModels, setAvailableModels] = React.useState<typeof MOCK_MODELS>([]); // Começa vazio
+    
     const form = useForm<AIConfigValues>({
         resolver: zodResolver(aiConfigSchema),
         defaultValues: {
@@ -77,10 +77,42 @@ export function AIConfigForm() {
             weight_sleep: 30,
             weight_activity: 25,
             weight_nutrition: 15,
-            model_name: MOCK_MODELS[0].id,
-            external_service_key: "AIzaSyDyC0ga1UvSpn9wHwZhhW3fUs4KG835ZLg", // Chave de teste fornecida
+            training_endpoint: "https://api.external-ai.com/v1",
+            service_key: "AIzaSyDyC0ga1UvSpn9wHwZhhW3fUs4KG835ZLg", // Chave de teste fornecida
+            model_name: "",
         },
     });
+
+    // Carrega os modelos mockados na montagem para que o usuário possa selecionar um padrão
+    React.useEffect(() => {
+        setAvailableModels(MOCK_MODELS);
+        form.setValue("model_name", MOCK_MODELS[0].id);
+    }, [form]);
+
+
+    const handleFetchModels = async () => {
+        const endpoint = form.getValues("training_endpoint");
+        const key = form.getValues("service_key");
+
+        if (!endpoint || !key) {
+            toast.error("Preencha o Endpoint e a Chave de Serviço para testar a conexão.");
+            return;
+        }
+        
+        setIsFetchingModels(true);
+        setAvailableModels([]);
+        form.setValue("model_name", "");
+
+        // SIMULAÇÃO: Chamada de API para listar modelos
+        setTimeout(() => {
+            setIsFetchingModels(false);
+            
+            // Simulação de sucesso
+            setAvailableModels(MOCK_MODELS);
+            form.setValue("model_name", MOCK_MODELS[0].id);
+            toast.success(`Conexão bem-sucedida! ${MOCK_MODELS.length} modelos disponíveis carregados.`);
+        }, 1500);
+    };
 
     const onSubmit = (data: AIConfigValues) => {
         setIsSubmitting(true);
@@ -88,12 +120,12 @@ export function AIConfigForm() {
             description: `Configurações e modelo ${data.model_name} sendo salvos.`,
         });
 
-        // Simulação de salvamento de configuração (incluindo a chave, que deve ser movida para Secrets)
+        // Simulate API call to update AI configuration
         setTimeout(() => {
             setIsSubmitting(false);
             console.log("Config Data:", data);
             
-            if (data.external_service_key) {
+            if (data.service_key) {
                 toast.warning("Chave de Serviço Salva!", {
                     description: "LEMBRETE: Mova esta chave para as Secrets do Supabase para garantir a segurança em produção.",
                     duration: 8000
@@ -231,60 +263,94 @@ export function AIConfigForm() {
 
                             <Separator />
 
-                            {/* Configuração do Modelo e Chave de Serviço */}
+                            {/* Integração */}
                             <div className="space-y-4">
                                 <h3 className="text-lg font-semibold border-b pb-2 flex items-center text-primary">
-                                    <KeyRound className="h-4 w-4 mr-2 text-muted-foreground" />
-                                    Seleção de Modelo e Chave de Teste
+                                    <UploadCloud className="h-4 w-4 mr-2 text-muted-foreground" />
+                                    Teste de Conexão e Seleção de Modelo
                                 </h3>
                                 
                                 <FormField
                                     control={form.control}
-                                    name="model_name"
+                                    name="training_endpoint"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Modelo de IA Selecionado</FormLabel>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                value={field.value}
-                                            >
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Selecione um modelo..." />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {availableModels.map((model) => (
-                                                        <SelectItem key={model.id} value={model.id}>
-                                                            {model.label}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <FormDescription>
-                                                Estes modelos são pré-carregados para simulação. Em produção, a lista seria buscada dinamicamente.
+                                            <FormLabel>Endpoint da API de Treinamento (Teste)</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="https://api.external-ai.com/v1" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                
+                                <FormField
+                                    control={form.control}
+                                    name="service_key"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Chave de Serviço (Teste)</FormLabel>
+                                            <FormControl>
+                                                <Input type="password" placeholder="********************" {...field} />
+                                            </FormControl>
+                                            <FormDescription className="text-red-500 dark:text-red-400">
+                                                ⚠️ **AVISO DE SEGURANÇA:** Use esta seção apenas para testar a conexão. A chave real deve ser configurada nas Secrets do Supabase.
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
 
-                                <FormField
-                                    control={form.control}
-                                    name="external_service_key"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Chave de Serviço Externa (Teste)</FormLabel>
-                                            <FormControl>
-                                                <Input type="password" placeholder="********************" {...field} />
-                                            </FormControl>
-                                            <FormDescription className="text-red-500 dark:text-red-400">
-                                                ⚠️ **AVISO DE SEGURANÇA:** Esta chave deve ser movida para as Secrets do Supabase (variáveis de ambiente) para uso em produção.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <div className="flex items-end space-x-4">
+                                    <Button 
+                                        type="button" 
+                                        onClick={handleFetchModels} 
+                                        disabled={isFetchingModels}
+                                        variant="secondary"
+                                        className="flex-shrink-0"
+                                    >
+                                        {isFetchingModels ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                Testando...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Search className="h-4 w-4 mr-2" />
+                                                Testar Conexão
+                                            </>
+                                        )}
+                                    </Button>
+                                    
+                                    <FormField
+                                        control={form.control}
+                                        name="model_name"
+                                        render={({ field }) => (
+                                            <FormItem className="flex-1">
+                                                <FormLabel>Modelo de IA Selecionado</FormLabel>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    value={field.value}
+                                                    disabled={availableModels.length === 0}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder={availableModels.length === 0 ? "Nenhum modelo carregado" : "Selecione um modelo..."} />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {availableModels.map((model) => (
+                                                            <SelectItem key={model.id} value={model.id}>
+                                                                {model.label}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                             </div>
 
                             <Button type="submit" disabled={isSubmitting} className="w-full">
