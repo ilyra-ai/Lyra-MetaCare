@@ -4,10 +4,11 @@ import { MadeWithDyad } from "@/components/made-with-dyad";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Sidebar } from "@/components/layout/sidebar";
+import { Header } from "@/components/layout/header";
 
 export default function Home() {
-  const { session, supabase } = useAuth();
+  const { session } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -15,11 +16,6 @@ export default function Home() {
       router.push("/login");
     }
   }, [session, router]);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-  };
 
   if (!session) {
     return (
@@ -30,17 +26,21 @@ export default function Home() {
   }
 
   return (
-    <div className="grid grid-rows-[1fr_auto] min-h-screen p-8 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col items-center gap-8">
-        <div className="w-full flex justify-between items-center">
-          <h1 className="text-2xl font-bold">
-            Welcome, {session.user.email}
-          </h1>
-          <Button onClick={handleSignOut}>Sign Out</Button>
+    <div className="flex min-h-screen bg-gray-50/50 font-[family-name:var(--font-geist-sans)]">
+      <Sidebar />
+      <div className="flex flex-col flex-1">
+        <Header />
+        <div className="flex flex-col flex-1">
+          <main className="flex-1 p-8">
+            <h1 className="text-3xl font-bold">Dashboard</h1>
+            <p className="text-gray-600 mt-2">
+              Welcome back, {session.user.email}. This is your personalized health dashboard.
+            </p>
+            {/* Dashboard content will go here */}
+          </main>
+          <MadeWithDyad />
         </div>
-        <p>This is your personalized health dashboard. More features coming soon!</p>
-      </main>
-      <MadeWithDyad />
+      </div>
     </div>
   );
 }
