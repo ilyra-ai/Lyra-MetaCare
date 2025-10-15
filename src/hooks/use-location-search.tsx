@@ -22,9 +22,10 @@ interface EstadoResult {
   pais: PaisResult[]; 
 }
 
+// Ajustando a tipagem para refletir a relação: cidade -> estado
 interface CidadeQueryResult {
   nome: string;
-  uf: string | null; // UF da cidade (se existir)
+  // O Supabase retorna a relação como um array com o nome da tabela de destino ('estado')
   estado: EstadoResult[]; 
 }
 // -------------------------------------------------------
@@ -66,10 +67,11 @@ export function useLocationSearch() {
       citiesData.forEach(city => {
         // Acessa o primeiro estado (se existir)
         const stateData = city.estado?.[0]; 
+        
         // Acessa o primeiro país dentro do estado (se existir)
         const countryData = stateData?.pais?.[0];
 
-        // Ajustando a lógica de acesso e garantindo fallbacks
+        // Se a relação falhar, stateData e countryData serão undefined, resultando em N/A.
         const state = stateData?.uf || 'N/A';
         const country = countryData?.nome_pt || 'N/A';
         
