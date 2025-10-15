@@ -57,8 +57,12 @@ const goalsList = [
   { id: "optimize_hrv", label: "Otimizar HRV (Resiliência)" },
   { id: "improve_readiness", label: "Melhorar Score de Prontidão" },
   { id: "regulate_sleep_duration", label: "Regular Duração do Sono" },
+  { id: "improve_sleep_efficiency", label: "Aumentar a Eficiência do Sono" },
+  { id: "reduce_social_jetlag", label: "Reduzir o Social Jetlag (Regularidade)" },
   { id: "increase_vo2max", label: "Aumentar VO₂max" },
-  { id: "manage_blood_glucose", label: "Gerenciar Glicose Pós-Prandial" },
+  { id: "meet_activity_guidelines", label: "Cumprir Diretrizes de Atividade Moderada/Vigorosa" },
+  { id: "optimize_protein", label: "Otimizar a Ingestão Diária de Proteínas" },
+  { id: "manage_blood_glucose", label: "Gerenciar Picos de Glicose Pós-Prandial" },
 ];
 
 // --- Zod Schema ---
@@ -136,6 +140,26 @@ export function OnboardingForm() {
       form.setValue("age", calculatedAge, { shouldValidate: true });
     }
   }, [birthDate, form]);
+
+  // Efeito para rolar a tela para o topo após a transição do carrossel
+  React.useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    const handleScrollToTop = () => {
+      // Rola a janela do navegador para o topo da página
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // Adiciona o listener para o evento 'select' (quando o slide muda)
+    api.on("select", handleScrollToTop);
+
+    // Limpeza do listener
+    return () => {
+      api.off("select", handleScrollToTop);
+    };
+  }, [api]);
 
 
   const handleNext = async (
