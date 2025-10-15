@@ -35,7 +35,8 @@ import { Line, LineChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { DatePicker } from "@/components/ui/date-picker";
 import { differenceInYears, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
-import { TimeInput } from "@/components/ui/time-input"; // Importando TimeInput
+import { TimeInput } from "@/components/ui/time-input";
+import { LocationCombobox } from "@/components/LocationCombobox"; // Importando LocationCombobox
 
 // --- Data Definitions ---
 const goalsList = [
@@ -63,7 +64,8 @@ const profileSchema = z.object({
   birth_date: z.date().optional().nullable(),
   // A validação Zod agora verifica o formato HH:MM
   birth_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Formato de hora inválido (HH:MM).").optional().or(z.literal('')),
-  birth_location: z.string().optional().or(z.literal('')),
+  // birth_location agora exige uma string formatada (selecionada)
+  birth_location: z.string().min(5, "Local de nascimento é obrigatório e deve ser selecionado na lista.").optional().or(z.literal('')),
 
   age: z.coerce
     .number({ required_error: "Idade é obrigatória." })
@@ -393,10 +395,14 @@ export function ProfileForm() {
                         <MapPin className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Local de Nascimento
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="Cidade, País" {...field} />
+                      <LocationCombobox 
+                          value={field.value || ""} 
+                          onSelect={field.onChange} 
+                          placeholder="Buscar cidade, estado ou país..."
+                      />
                     </FormControl>
                     <FormDescription>
-                        Usado para cálculos astrológicos/cronobiológicos.
+                        Selecione na lista para validar.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
