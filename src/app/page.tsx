@@ -9,6 +9,8 @@ import { Header } from "@/components/layout/header";
 import { SplashScreen } from "@/components/SplashScreen";
 import { Dashboard } from "@/components/dashboard/dashboard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { QuickScanFAB } from "@/components/dashboard/QuickScanFAB";
+import { MobileNavigation } from "@/components/layout/MobileNavigation";
 
 // Define a type for the user profile for better type safety
 type UserProfile = {
@@ -65,23 +67,23 @@ export default function Home() {
     return null;
   }
 
+  const firstName = profile?.first_name || "Usuário";
+
   return (
-    <div className="flex min-h-screen bg-gray-50/50 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex min-h-screen bg-gradient-to-t from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 font-[family-name:var(--font-geist-sans)]">
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />
-        <main className="flex-1 p-4 sm:p-6 md:p-8">
-          {profile ? (
-            <h1 className="text-3xl font-bold mb-8">
-              Olá, {profile.first_name}!
-            </h1>
-          ) : (
-            <Skeleton className="h-9 w-48 mb-8" />
-          )}
+        <main className="flex-1 p-4 sm:p-6 md:p-8 pb-20 md:pb-8"> {/* Added pb-20 for mobile nav clearance */}
+          <h1 className="text-3xl font-bold mb-8">
+            Olá, {firstName}!
+          </h1>
           <Dashboard />
         </main>
         <MadeWithDyad />
       </div>
+      <QuickScanFAB />
+      <MobileNavigation />
     </div>
   );
 }
