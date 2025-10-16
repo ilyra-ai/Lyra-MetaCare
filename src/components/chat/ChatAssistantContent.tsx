@@ -6,7 +6,9 @@ import { ChatInput } from './ChatInput';
 import { TypingIndicator } from './TypingIndicator';
 import { QuickReply } from './QuickReply';
 import { getMockAIResponse } from './mock-ai';
-import { Sparkles, Brain, TrendingUp, Zap, ChevronDown } from 'lucide-react';
+import { Sparkles, Brain, TrendingUp, Zap, ChevronDown, Cpu, Stethoscope, HeartPulse, Calendar, BookOpen } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
 
 export interface Message {
   id: number;
@@ -15,6 +17,15 @@ export interface Message {
 }
 
 const quickReplies = ["Como posso melhorar meu sono?", "Qual meu resumo de ontem?", "Agendar consulta"];
+
+const integrations = [
+    { icon: Cpu, title: "Dialogflow", description: "Processamento de Linguagem Natural (NLP) para entender suas perguntas." },
+    { icon: Stethoscope, title: "Google Med-PaLM 2", description: "Modelo de linguagem médica para insights de saúde seguros e precisos." },
+    { icon: HeartPulse, title: "Health Connect & HealthKit", description: "Integração em tempo real com dados de wearables (Apple, Google, etc.)." },
+    { icon: Brain, title: "Lyra's Longevity Engine", description: "Modelo proprietário para análise preditiva e criação de planos personalizados." },
+    { icon: Calendar, title: "Google Calendar API", description: "Agendamento inteligente de consultas e lembretes de saúde." },
+    { icon: BookOpen, title: "PubMed API", description: "Acesso a estudos científicos para fornecer as informações mais recentes." },
+];
 
 export function ChatAssistantContent() {
   const [messages, setMessages] = useState<Message[]>([
@@ -129,20 +140,38 @@ export function ChatAssistantContent() {
           </div>
         </div>
 
-        {/* Stats da conversa */}
+        {/* Stats e Integrações */}
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-violet-50/80 dark:bg-violet-900/20 rounded-xl border border-violet-100/50 dark:border-violet-800/30">
-            <TrendingUp className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
-            <span className="text-xs font-medium text-violet-700 dark:text-violet-300">
-              {messageCount} mensagens
-            </span>
-          </div>
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-fuchsia-50/80 dark:bg-fuchsia-900/20 rounded-xl border border-fuchsia-100/50 dark:border-fuchsia-800/30">
-            <Zap className="w-3.5 h-3.5 text-fuchsia-600 dark:text-fuchsia-400" />
-            <span className="text-xs font-medium text-fuchsia-700 dark:text-fuchsia-300">
-              {getSessionDuration()}
-            </span>
-          </div>
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-auto px-3 py-1.5 bg-violet-50/80 dark:bg-violet-900/20 rounded-xl border-violet-100/50 dark:border-violet-800/30 hover:bg-violet-100/90">
+                        <Cpu className="h-3.5 w-3.5 mr-2 text-violet-600 dark:text-violet-400" />
+                        <span className="text-xs font-medium text-violet-700 dark:text-violet-300">Tecnologias</span>
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                    <div className="space-y-4">
+                        <h4 className="font-medium leading-none">Integrações Ativas</h4>
+                        <p className="text-sm text-muted-foreground">
+                            Este assistente é alimentado por uma combinação de tecnologias de ponta.
+                        </p>
+                        <div className="space-y-3">
+                            {integrations.map((item) => {
+                                const Icon = item.icon;
+                                return (
+                                    <div key={item.title} className="flex items-start gap-3">
+                                        <Icon className="h-4 w-4 mt-1 text-violet-500 flex-shrink-0" />
+                                        <div>
+                                            <p className="text-sm font-semibold">{item.title}</p>
+                                            <p className="text-xs text-muted-foreground">{item.description}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </PopoverContent>
+            </Popover>
         </div>
       </div>
 
