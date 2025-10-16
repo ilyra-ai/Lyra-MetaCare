@@ -1,96 +1,55 @@
+"use client";
+
 import Link from "next/link";
 import { LayoutDashboard, User, Settings, BrainCircuit, Target, Zap, Shield, HeartPulse, MessageCircle, Calendar } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { Separator } from "@/components/ui/separator";
+import { SidebarLink } from "./SidebarLink";
 
 export function Sidebar() {
   const isAdmin = useIsAdmin();
 
   return (
     <aside className="hidden md:flex flex-col w-64 bg-white border-r dark:bg-gray-950 dark:border-gray-800">
-      <div className="p-4 border-b">
-        <h1 className="text-2xl font-bold text-center text-primary">Lyra MetaCare</h1>
+      <div className="p-4 border-b flex items-center justify-center gap-2">
+        <BrainCircuit className="h-6 w-6 text-primary" />
+        <h1 className="text-2xl font-bold text-primary">Lyra MetaCare</h1>
       </div>
       <nav className="flex-1 p-4 space-y-1">
         {/* Grupo: Análise */}
-        <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">Análise</div>
-        <Button asChild variant="ghost" className="w-full justify-start">
-          <Link href="/">
-            <LayoutDashboard className="mr-2 h-4 w-4" />
-            Dashboard
-          </Link>
-        </Button>
-        <Button asChild variant="ghost" className="w-full justify-start">
-          <Link href="/plan">
-            <BrainCircuit className="mr-2 h-4 w-4" />
-            Plano de IA
-          </Link>
-        </Button>
-        <Button asChild variant="ghost" className="w-full justify-start">
-          <Link href="/goals">
-            <Target className="mr-2 h-4 w-4" />
-            Metas
-          </Link>
-        </Button>
+        <div className="px-3 py-1 text-xs font-semibold text-muted-foreground">Análise</div>
+        <SidebarLink href="/" icon={LayoutDashboard}>Dashboard</SidebarLink>
+        <SidebarLink href="/plan" icon={BrainCircuit}>Plano de IA</SidebarLink>
+        <SidebarLink href="/goals" icon={Target}>Metas</SidebarLink>
 
         <Separator className="my-2" />
 
         {/* Grupo: Ferramentas */}
-        <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">Ferramentas</div>
-        <Button asChild variant="ghost" className="w-full justify-start">
-          <Link href="/appointments">
-            <Calendar className="mr-2 h-4 w-4" />
-            Agendamentos
-          </Link>
-        </Button>
-        <Button asChild variant="ghost" className="w-full justify-start">
-          <Link href="/monitoring">
-            <HeartPulse className="mr-2 h-4 w-4" />
-            Monitoramento
-          </Link>
-        </Button>
-        <Button asChild variant="ghost" className="w-full justify-start">
-          <Link href="/chat">
-            <MessageCircle className="mr-2 h-4 w-4" />
-            Assistente IA
-          </Link>
-        </Button>
+        <div className="px-3 py-1 text-xs font-semibold text-muted-foreground">Ferramentas</div>
+        <SidebarLink href="/appointments" icon={Calendar}>Agendamentos</SidebarLink>
+        <SidebarLink href="/monitoring" icon={HeartPulse}>Monitoramento</SidebarLink>
+        <SidebarLink href="/chat" icon={MessageCircle}>Assistente IA</SidebarLink>
         
         <Separator className="my-2" />
 
         {/* Grupo: Sua Conta */}
-        <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">Sua Conta</div>
-        <Button asChild variant="ghost" className="w-full justify-start">
-          <Link href="/connect">
-            <Zap className="mr-2 h-4 w-4" />
-            Conexão de Dados
-          </Link>
-        </Button>
-        <Button asChild variant="ghost" className="w-full justify-start">
-          <Link href="/profile">
-            <User className="mr-2 h-4 w-4" />
-            Perfil
-          </Link>
-        </Button>
-        <Button asChild variant="ghost" className="w-full justify-start">
-          <Link href="#">
-            <Settings className="mr-2 h-4 w-4" />
-            Configurações (Em Breve)
-          </Link>
-        </Button>
+        <div className="px-3 py-1 text-xs font-semibold text-muted-foreground">Sua Conta</div>
+        <SidebarLink href="/connect" icon={Zap}>Conexão de Dados</SidebarLink>
+        <SidebarLink href="/profile" icon={User}>Perfil</SidebarLink>
+        <SidebarLink href="#" icon={Settings} className="text-muted-foreground cursor-not-allowed">Configurações</SidebarLink>
         
         {/* Link de Administração visível apenas para o admin */}
         {isAdmin && (
           <>
             <Separator className="my-2" />
-            <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">Admin</div>
-            <Button asChild variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
-                <Link href="/admin/ai-config">
-                    <Shield className="mr-2 h-4 w-4" />
-                    Admin IA
-                </Link>
-            </Button>
+            <div className="px-3 py-1 text-xs font-semibold text-muted-foreground">Admin</div>
+            <SidebarLink 
+              href="/admin/ai-config" 
+              icon={Shield} 
+              className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+            >
+              Admin IA
+            </SidebarLink>
           </>
         )}
       </nav>
