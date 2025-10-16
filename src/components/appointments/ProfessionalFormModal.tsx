@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
+import { ProfessionalAvatarUploader } from "./ProfessionalAvatarUploader";
 
 // Tipos
 interface Professional {
@@ -30,6 +31,7 @@ interface Professional {
   name: string;
   specialty: string;
   contact?: string | null;
+  avatar_url?: string | null;
 }
 
 // Schema
@@ -37,6 +39,7 @@ const formSchema = z.object({
   name: z.string().min(2, "O nome é obrigatório."),
   specialty: z.string().min(2, "A especialidade é obrigatória."),
   contact: z.string().optional(),
+  avatar_url: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -58,8 +61,10 @@ export function ProfessionalFormModal({
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name: "", specialty: "", contact: "" },
+    defaultValues: { name: "", specialty: "", contact: "", avatar_url: "" },
   });
+
+  const professionalName = form.watch("name");
 
   React.useEffect(() => {
     if (professionalToEdit) {
@@ -67,9 +72,10 @@ export function ProfessionalFormModal({
         name: professionalToEdit.name,
         specialty: professionalToEdit.specialty,
         contact: professionalToEdit.contact || "",
+        avatar_url: professionalToEdit.avatar_url || "",
       });
     } else {
-      form.reset({ name: "", specialty: "", contact: "" });
+      form.reset({ name: "", specialty: "", contact: "", avatar_url: "" });
     }
   }, [professionalToEdit, open, form]);
 
@@ -90,6 +96,22 @@ export function ProfessionalFormModal({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="avatar_url"
+              render={({ field }) => (
+                <FormItem className="flex justify-center">
+                  <FormControl>
+                    <ProfessionalAvatarUploader
+                      currentAvatarUrl={field.value}
+                      professionalName={professionalName}
+                      onUploadSuccess={(url) => form.setValue("avatar_url", url, { shouldValidate: true })}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="name"
