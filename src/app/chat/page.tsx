@@ -43,12 +43,6 @@ export default function ChatPage() {
           {/* Content Wrapper with Max Width */}
           <div className="flex-1 flex flex-col max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
             
-            {/* Minimal Title */}
-            <div className="mb-8">
-              <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 tracking-tight">
-                Assistente de IA
-              </h1>
-            </div>
 
             {/* Clean Chat Interface */}
             <div className="flex-1 flex flex-col min-h-0 rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
