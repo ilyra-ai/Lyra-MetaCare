@@ -216,10 +216,11 @@ export function ProfileForm() {
       .from("profiles")
       .select("first_name, last_name, age, gender, activity_level, goals, birth_date, birth_time, birth_location, avatar_url")
       .eq("id", session.user.id)
-      .single();
+      .maybeSingle();
 
-    if (error && error.code !== 'PGRST116') {
+    if (error) {
       console.error("Error fetching profile:", error);
+      toast.error("Erro ao carregar perfil.", { description: error.message });
     } else if (data) {
       const parsedBirthDate = data.birth_date ? parseISO(data.birth_date) : null;
       const validBirthDate = parsedBirthDate && !isNaN(parsedBirthDate.getTime()) ? parsedBirthDate : undefined;

@@ -23,32 +23,19 @@ export function Header() {
   const fetchAvatar = React.useCallback(async () => {
     if (!session?.user) return;
 
-    try {
-        // Fetch avatar_url from the profiles table
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("avatar_url")
-          .eq("id", session.user.id)
-          .limit(1)
-          .single();
-    
-        if (error && error.code !== 'PGRST116') {
-            // Apenas loga erros que não sejam "No rows found"
-            console.error("Error fetching avatar:", error);
-            setAvatarUrl(null);
-            return;
-        }
-        
-        if (data) {
-          setAvatarUrl(data.avatar_url);
-        } else {
-          setAvatarUrl(null);
-        }
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("avatar_url")
+      .eq("id", session.user.id)
+      .maybeSingle();
 
-    } catch (e) {
-        // Silencia erros de console do Next.js/Supabase que ocorrem durante o .single()
-        setAvatarUrl(null);
+    if (error) {
+      console.error("Error fetching avatar:", error);
+      setAvatarUrl(null);
+      return;
     }
+
+    setAvatarUrl(data?.avatar_url || null);
   }, [session, supabase]);
 
   React.useEffect(() => {
