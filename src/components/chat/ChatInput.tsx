@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback, useId } from 'react';
-import { Input } from '@/components/ui/input';
+import TextareaAutosize from 'react-textarea-autosize';
 import { Button } from '@/components/ui/button';
 import { Send, Mic, MicOff, Sparkles, ArrowUp, Zap, Brain } from 'lucide-react';
 import { toast } from 'sonner';
@@ -87,7 +87,7 @@ export function ChatInput({
 
   // Refs
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const waveformIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const suggestionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -212,7 +212,7 @@ export function ChatInput({
     });
   }, [text, onSendMessage]);
 
-  const handleTextChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
   }, []);
 
@@ -259,7 +259,7 @@ export function ChatInput({
     handleRecognitionResult
   ]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !disabled && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -325,11 +325,10 @@ export function ChatInput({
         )}
 
         {/* Input */}
-        <div className="flex-1 min-h-[48px] relative z-10">
-          <Input
+        <div className="flex-1 relative z-10">
+          <TextareaAutosize
             ref={inputRef}
             id={inputId}
-            type="text"
             placeholder={isListening ? "Escutando..." : "Digite ou fale sua mensagem..."}
             value={text}
             onChange={handleTextChange}
@@ -338,11 +337,13 @@ export function ChatInput({
             onBlur={() => setIsFocused(false)}
             disabled={disabled}
             maxLength={maxLength}
+            minRows={1}
+            maxRows={5}
             aria-label="Campo de mensagem"
             aria-describedby={`${helperId} ${statusId}`}
             aria-invalid={false}
             className={`
-              w-full min-h-[48px] px-0 py-3 border-0 bg-transparent resize-none
+              w-full px-0 py-3 border-0 bg-transparent resize-none
               focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
               placeholder:text-neutral-400 placeholder:transition-all placeholder:duration-300
               ${isFocused ? 'placeholder:text-violet-400' : ''}
