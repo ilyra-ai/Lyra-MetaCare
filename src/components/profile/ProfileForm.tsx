@@ -220,7 +220,6 @@ export function ProfileForm() {
 
     // Corrigido: Checa se 'error' existe, em vez de 'error.code'
     if (error) {
-      console.error("Error fetching profile:", error);
       toast.error("Erro ao carregar perfil.", { description: error.message });
     } else if (data) {
       const parsedBirthDate = data.birth_date ? parseISO(data.birth_date) : null;
