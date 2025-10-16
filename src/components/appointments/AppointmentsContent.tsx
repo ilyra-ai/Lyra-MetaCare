@@ -110,10 +110,11 @@ export function AppointmentsContent() {
   };
 
   const handleSaveAppointment = async (data: any, appointmentId?: string) => {
-    if (!session?.user || !selectedDate) return;
+    if (!session?.user) return;
     
+    const appointmentDate = data.appointment_date;
     const [hours, minutes] = data.appointment_time.split(':').map(Number);
-    const appointmentDateTime = setMinutes(setHours(startOfDay(selectedDate), hours), minutes);
+    const appointmentDateTime = setMinutes(setHours(startOfDay(appointmentDate), hours), minutes);
 
     const payload = {
       user_id: session.user.id,
@@ -189,7 +190,7 @@ export function AppointmentsContent() {
                 <CardTitle>2. Próximas Consultas</CardTitle>
                 <CardDescription>Suas consultas agendadas.</CardDescription>
               </div>
-              <Button size="sm" onClick={() => { setAppointmentToEdit(null); setIsAppointmentModalOpen(true); }}>
+              <Button size="sm" onClick={() => { setAppointmentToEdit(null); setSelectedDate(new Date()); setIsAppointmentModalOpen(true); }}>
                 <Plus className="mr-2 h-4 w-4" /> Agendar
               </Button>
             </CardHeader>
@@ -287,13 +288,13 @@ export function AppointmentsContent() {
         </div>
       </div>
 
-      {isAppointmentModalOpen && selectedDate && (
+      {isAppointmentModalOpen && (
         <AppointmentFormModal
           open={isAppointmentModalOpen}
           onOpenChange={setIsAppointmentModalOpen}
           onSave={handleSaveAppointment}
           professionals={professionals}
-          selectedDate={selectedDate}
+          initialDate={selectedDate || new Date()}
           appointmentToEdit={appointmentToEdit}
         />
       )}

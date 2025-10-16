@@ -32,6 +32,7 @@ import {
 import { TimeInput } from "@/components/ui/time-input";
 import { Loader2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { DatePicker } from "@/components/ui/date-picker";
 
 // Tipos para os dados
 interface Professional {
@@ -49,6 +50,7 @@ interface Appointment {
 // Schema de validação
 const formSchema = z.object({
   professional_id: z.string({ required_error: "Selecione um profissional." }),
+  appointment_date: z.date({ required_error: "A data é obrigatória." }),
   appointment_time: z.string().refine(val => /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val), "Formato de hora inválido (HH:MM)."),
   notes: z.string().optional(),
 });
@@ -60,7 +62,7 @@ interface AppointmentFormModalProps {
   onOpenChange: (open: boolean) => void;
   onSave: (data: FormValues, appointmentId?: string) => Promise<void>;
   professionals: Professional[];
-  selectedDate: Date;
+  initialDate: Date;
   appointmentToEdit?: Appointment | null;
 }
 
@@ -69,7 +71,7 @@ export function AppointmentFormModal({
   onOpenChange,
   onSave,
   professionals,
-  selectedDate,
+  initialDate,
   appointmentToEdit,
 }: AppointmentFormModalProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -78,6 +80,7 @@ export function AppointmentFormModal({
     resolver: zodResolver(formSchema),
     defaultValues: {
       professional_id: "",
+      appointment_date: initialDate,
       appointment_time: "09:00",
       notes: "",
     },
@@ -85,20 +88,23 @@ export function AppointmentFormModal({
 
   React.useEffect(() => {
     if (appointmentToEdit) {
-      const time = new Date(appointmentToEdit.appointment_time).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const appointmentDate = new Date(appointmentToEdit.appointment_time);
+      const time = appointmentDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       form.reset({
         professional_id: appointmentToEdit.professional_id,
+        appointment_date: appointmentDate,
         appointment_time: time,
         notes: appointmentToEdit.notes || "",
       });
     } else {
       form.reset({
         professional_id: "",
+        appointment_date: initialDate,
         appointment_time: "09:00",
         notes: "",
       });
     }
-  }, [appointmentToEdit, open, form]);
+  }, [appointmentToEdit, open, form, initialDate]);
 
   const handleSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
@@ -117,7 +123,7 @@ export function AppointmentFormModal({
         <DialogHeader>
           <DialogTitle>{appointmentToEdit ? "Editar Consulta" : "Agendar Nova Consulta"}</DialogTitle>
           <DialogDescription>
-            Preencha os detalhes da sua consulta para o dia {selectedDate.toLocaleDateString('pt-BR')}.
+            Preencha os detalhes da sua consulta.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -144,19 +150,38 @@ export function AppointmentFormModal({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="appointment_time"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Horário (HH:MM)</FormLabel>
-                  <FormControl>
-                    <TimeInput {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="appointment_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Data</FormLabel>
+                    <FormControl>
+                      <DatePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Selecione uma data"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="appointment_time"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Horário (HH:MM)</FormLabel>
+                    <FormControl>
+                      <TimeInput {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="notes"
