@@ -17,15 +17,6 @@ interface Habit {
     frequency: string;
 }
 
-// Mock list of suggested habits for initial population
-const suggestedHabits = [
-    { name: "Meditar 10 minutos", frequency: "Diário" },
-    { name: "Beber 2L de água", frequency: "Diário" },
-    { name: "Caminhar 30 minutos", frequency: "Diário" },
-    { name: "Desligar telas 1h antes de dormir", frequency: "Diário" },
-    { name: "Treino de força", frequency: "Semanal (2x)" },
-];
-
 export function HabitList() {
     const { supabase, session } = useAuth();
     const [habits, setHabits] = React.useState<Habit[]>([]);
@@ -73,6 +64,25 @@ export function HabitList() {
         if (!session?.user) return;
         setIsInitializing(true);
 
+        // 1. Buscar hábitos sugeridos do banco de dados
+        const { data: suggestedHabits, error: fetchError } = await supabase
+            .from("suggested_habits")
+            .select("name, frequency")
+            .eq("is_active", true);
+
+        if (fetchError || !suggestedHabits) {
+            toast.error("Erro ao buscar sugestões de hábitos.", { description: fetchError?.message });
+            setIsInitializing(false);
+            return;
+        }
+
+        if (suggestedHabits.length === 0) {
+            toast.info("Nenhum hábito sugerido encontrado para adicionar.");
+            setIsInitializing(false);
+            return;
+        }
+
+        // 2. Preparar para inserção na tabela de hábitos do usuário
         const habitsToInsert = suggestedHabits.map(h => ({
             user_id: session.user.id,
             name: h.name,
@@ -80,14 +90,15 @@ export function HabitList() {
             is_active: true,
         }));
 
-        const { error } = await supabase
+        // 3. Inserir os hábitos
+        const { error: insertError } = await supabase
             .from("habits")
             .insert(habitsToInsert);
 
         setIsInitializing(false);
 
-        if (error) {
-            toast.error("Erro ao inicializar hábitos.", { description: error.message });
+        if (insertError) {
+            toast.error("Erro ao inicializar hábitos.", { description: insertError.message });
         } else {
             toast.success("Hábitos sugeridos adicionados!");
             fetchHabits();
