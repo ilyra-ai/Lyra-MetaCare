@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -17,8 +18,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { User, TrendingUp, Calendar, Clock, MapPin, ListChecks } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { User, TrendingUp, Calendar, Clock, MapPin, LogOut } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -26,8 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Line, LineChart, XAxis, YAxis, CartesianGrid } from "recharts";
@@ -40,19 +39,6 @@ import { HabitList } from "./HabitList";
 import { DailyMetric } from "@/hooks/use-daily-metrics";
 
 // --- Data Definitions ---
-const goalsList = [
-  { id: "lose_weight", label: "Perder Peso" },
-  { id: "gain_muscle", label: "Ganhar Músculo" },
-  { id: "improve_endurance", label: "Melhorar Resistência" },
-  { id: "reduce_stress", label: "Reduzir Estresse Crônico" },
-  { id: "eat_healthier", label: "Comer de Forma Saudável" },
-  { id: "optimize_hrv", label: "Otimizar HRV (Resiliência)" },
-  { id: "improve_readiness", label: "Melhorar Score de Prontidão" },
-  { id: "regulate_sleep_duration", label: "Regular Duração do Sono" },
-  { id: "increase_vo2max", label: "Aumentar VO₂max" },
-  { id: "manage_blood_glucose", label: "Gerenciar Glicose Pós-Prandial" },
-];
-
 const activityLevels = [
   "Sedentário",
   "Leve",
@@ -80,8 +66,6 @@ const profileSchema = z.object({
   gender: z.enum(["male", "female", "other", "prefer_not-to-say"], {
     required_error: "Por favor, selecione um gênero.",
   }),
-  activity_level: z.number().min(1).max(5),
-  goals: z.array(z.string()).optional(),
 });
 
 type ProfileValues = z.infer<typeof profileSchema>;
@@ -181,6 +165,7 @@ function ProgressChart({ userId, supabase }: { userId: string, supabase: any }) 
 // --- Main Component ---
 export function ProfileForm() {
   const { supabase, session } = useAuth();
+  const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(true);
   const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
 
@@ -191,8 +176,6 @@ export function ProfileForm() {
       last_name: "",
       age: 18,
       gender: "prefer_not-to-say",
-      activity_level: 3,
-      goals: [],
       birth_date: null,
       birth_time: "",
       birth_location: "",
@@ -214,11 +197,10 @@ export function ProfileForm() {
 
     const { data, error } = await supabase
       .from("profiles")
-      .select("first_name, last_name, age, gender, activity_level, goals, birth_date, birth_time, birth_location, avatar_url")
+      .select("first_name, last_name, age, gender, birth_date, birth_time, birth_location, avatar_url")
       .eq("id", session.user.id)
       .maybeSingle();
 
-    // Corrigido: Checa se 'error' existe, em vez de 'error.code'
     if (error) {
       toast.error("Erro ao carregar perfil.", { description: error.message });
     } else if (data) {
@@ -232,8 +214,6 @@ export function ProfileForm() {
         last_name: data.last_name ?? "",
         age: data.age ?? 18,
         gender: (data.gender as ProfileValues['gender']) ?? "prefer_not-to-say",
-        activity_level: data.activity_level ?? 3,
-        goals: data.goals ?? [],
         birth_date: validBirthDate,
         birth_time: data.birth_time ?? "",
         birth_location: data.birth_location ?? "",
@@ -271,286 +251,91 @@ export function ProfileForm() {
     }
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
+
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <Skeleton className="h-48 w-full" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Skeleton className="h-12" />
-          <Skeleton className="h-12" />
-          <Skeleton className="h-12" />
-          <Skeleton className="h-12" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <Skeleton className="h-48 w-full" />
+          <Skeleton className="h-64 w-full" />
         </div>
-        <Skeleton className="h-64 w-full" />
+        <div className="lg:col-span-1 space-y-6">
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-64 w-full" />
+        </div>
       </div>
     );
   }
 
-  const userEmail = session?.user.email || "";
   const firstName = form.getValues("first_name") || "Usuário";
-  const lastName = form.getValues("last_name") || "";
 
   return (
-    <div className="flex flex-col gap-8">
-      <Card className="w-full shadow-lg border-green-500/50">
-        <CardHeader>
-          <CardTitle className="text-2xl flex items-center">
-            <User className="h-6 w-6 mr-2 text-green-600" />
-            Informações Básicas
-          </CardTitle>
-          <CardDescription>Gerencie sua foto e dados de contato.</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
-          <AvatarUploader 
-            currentAvatarUrl={avatarUrl}
-            firstName={firstName}
-            onUploadSuccess={setAvatarUrl}
-          />
-          <div className="space-y-1 text-center md:text-left pt-4">
-            <p className="text-2xl font-bold">{firstName} {lastName}</p>
-            <p className="text-sm text-muted-foreground">{userEmail}</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 pt-2">
-                Idade: {form.getValues("age")} | Nível de Atividade: {activityLevels[form.getValues("activity_level") - 1]}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <Card className="lg:col-span-2">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="lg:col-span-2 space-y-8">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <Card>
               <CardHeader>
                 <CardTitle>Dados Pessoais e Cronobiologia</CardTitle>
                 <CardDescription>Informações essenciais para a análise de IA.</CardDescription>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="first_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Seu nome" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="last_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Sobrenome</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Seu sobrenome" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="birth_date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel className="mb-2">
-                          <Calendar className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Data de Nascimento
-                      </FormLabel>
-                      <FormControl>
-                        <DatePicker
-                          value={field.value || undefined}
-                          onChange={field.onChange}
-                          placeholder="DD/MM/AAAA"
-                          id={field.name}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="age"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Idade (Calculada)</FormLabel>
-                      <FormControl>
-                        <Input 
-                            type="number" 
-                            placeholder="Idade" 
-                            {...field} 
-                            disabled={!!birthDateWatch}
-                            className={cn(!!birthDateWatch && "bg-gray-100 cursor-not-allowed")}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                          Calculada automaticamente pela data.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="gender"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Gênero</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="male">Masculino</SelectItem>
-                          <SelectItem value="female">Feminino</SelectItem>
-                          <SelectItem value="other">Outro</SelectItem>
-                          <SelectItem value="prefer_not-to-say">
-                            Prefiro não dizer
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="birth_time"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                          <Clock className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Hora Exata (HH:MM)
-                      </FormLabel>
-                      <FormControl>
-                        <TimeInput placeholder="12:00" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                          Usado para cronobiologia.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="birth_location"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                          <MapPin className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Local de Nascimento
-                      </FormLabel>
-                      <FormControl>
-                        <Input 
-                            placeholder="Ex: São Paulo, SP, Brasil" 
-                            {...field} 
-                        />
-                      </FormControl>
-                      <FormDescription>
-                          Digite Cidade, Estado e País.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormField control={form.control} name="first_name" render={({ field }) => (
+                  <FormItem><FormLabel>Nome</FormLabel><FormControl><Input placeholder="Seu nome" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="last_name" render={({ field }) => (
+                  <FormItem><FormLabel>Sobrenome</FormLabel><FormControl><Input placeholder="Seu sobrenome" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="birth_date" render={({ field }) => (
+                  <FormItem className="flex flex-col"><FormLabel className="mb-2"><Calendar className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Data de Nascimento</FormLabel><FormControl><DatePicker value={field.value || undefined} onChange={field.onChange} placeholder="DD/MM/AAAA" id={field.name} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="age" render={({ field }) => (
+                  <FormItem><FormLabel>Idade (Calculada)</FormLabel><FormControl><Input type="number" placeholder="Idade" {...field} disabled={!!birthDateWatch} className={cn(!!birthDateWatch && "bg-gray-100 cursor-not-allowed")} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="gender" render={({ field }) => (
+                  <FormItem><FormLabel>Gênero</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger></FormControl><SelectContent><SelectItem value="male">Masculino</SelectItem><SelectItem value="female">Feminino</SelectItem><SelectItem value="other">Outro</SelectItem><SelectItem value="prefer_not-to-say">Prefiro não dizer</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="birth_time" render={({ field }) => (
+                  <FormItem><FormLabel><Clock className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Hora Exata (HH:MM)</FormLabel><FormControl><TimeInput placeholder="12:00" {...field} /></FormControl><FormDescription>Opcional.</FormDescription><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="birth_location" render={({ field }) => (
+                  <FormItem><FormLabel><MapPin className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Local de Nascimento</FormLabel><FormControl><Input placeholder="Ex: São Paulo, SP, Brasil" {...field} /></FormControl><FormDescription>Opcional.</FormDescription><FormMessage /></FormItem>
+                )} />
               </CardContent>
+              <CardFooter>
+                <Button type="submit" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? "Salvando..." : "Salvar Alterações"}
+                </Button>
+              </CardFooter>
             </Card>
-            <div className="lg:col-span-1">
-                <HabitList />
-            </div>
-          </div>
+          </form>
+        </Form>
+        {session?.user && <ProgressChart userId={session.user.id} supabase={supabase} />}
+      </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Metas e Atividade</CardTitle>
-              <CardDescription>Defina seus objetivos e nível de atividade.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <FormField
-                control={form.control}
-                name="activity_level"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nível de Atividade: {activityLevels[field.value - 1]}</FormLabel>
-                    <FormControl>
-                      <Slider
-                        min={1}
-                        max={5}
-                        step={1}
-                        value={[field.value]}
-                        onValueChange={(vals) => field.onChange(vals[0])}
-                      />
-                    </FormControl>
-                    <div className="flex justify-between text-xs text-muted-foreground mt-2">
-                      <span>Sedentário</span>
-                      <span>Muito Ativo</span>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="goals"
-                render={() => (
-                  <FormItem>
-                    <FormLabel className="flex items-center mb-2">
-                        <ListChecks className="h-4 w-4 mr-1 inline-block align-text-bottom" /> Seus Objetivos de Longevidade
-                    </FormLabel>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                      {goalsList.map((item) => (
-                        <FormField
-                          key={item.id}
-                          control={form.control}
-                          name="goals"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(item.id)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([
-                                          ...(field.value || []),
-                                          item.id,
-                                        ])
-                                      : field.onChange(
-                                          field.value?.filter(
-                                            (value) => value !== item.id
-                                          )
-                                        );
-                                  }}
-                                />
-                              </FormControl>
-                              <FormLabel className="font-normal">
-                                {item.label}
-                              </FormLabel>
-                            </FormItem>
-                          )}
-                        />
-                      ))}
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-          
-          {session?.user && <ProgressChart userId={session.user.id} supabase={supabase} />}
-
-          <Button type="submit" disabled={form.formState.isSubmitting} className="w-full md:w-auto">
-            {form.formState.isSubmitting ? "Salvando..." : "Salvar Alterações"}
-          </Button>
-        </form>
-      </Form>
+      <div className="lg:col-span-1 space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Ações da Conta</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col space-y-2">
+            <AvatarUploader 
+              currentAvatarUrl={avatarUrl}
+              firstName={firstName}
+              onUploadSuccess={setAvatarUrl}
+            />
+            <Button variant="outline" onClick={handleSignOut} className="w-full">
+              <LogOut className="mr-2 h-4 w-4" />
+              Sair do App
+            </Button>
+          </CardContent>
+        </Card>
+        <HabitList />
+      </div>
     </div>
   );
 }
