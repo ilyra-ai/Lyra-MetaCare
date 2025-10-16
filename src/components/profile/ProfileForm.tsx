@@ -226,22 +226,26 @@ export function ProfileForm() {
     } else if (profiles) {
       const data = profiles; // data já é o objeto do perfil
       
-      // Parse birth_date string to Date object for the form
-      // parseISO lida bem com o formato YYYY-MM-DD
+      // 1. Tratar birth_date: parseISO retorna Date ou Invalid Date.
       const parsedBirthDate = data.birth_date ? parseISO(data.birth_date) : null;
+      const validBirthDate = parsedBirthDate && !isNaN(parsedBirthDate.getTime()) ? parsedBirthDate : undefined;
+      
       setAvatarUrl(data.avatar_url); // Set avatar URL state
 
       const profileData: ProfileValues = {
-        first_name: data.first_name || "",
-        last_name: data.last_name || "",
-        age: data.age || 18,
-        gender: (data.gender as ProfileValues['gender']) || "prefer_not-to-say",
-        activity_level: data.activity_level || 3,
-        goals: data.goals || [],
-        // Se for null, passamos undefined para o DatePicker
-        birth_date: parsedBirthDate && !isNaN(parsedBirthDate.getTime()) ? parsedBirthDate : undefined, 
-        birth_time: data.birth_time || "",
-        birth_location: data.birth_location || "",
+        first_name: data.first_name ?? "",
+        last_name: data.last_name ?? "",
+        age: data.age ?? 18,
+        gender: (data.gender as ProfileValues['gender']) ?? "prefer_not-to-say",
+        activity_level: data.activity_level ?? 3,
+        goals: data.goals ?? [],
+        
+        // Passa Date ou undefined (para o DatePicker)
+        birth_date: validBirthDate, 
+        
+        // Garante que campos de texto nulos sejam strings vazias
+        birth_time: data.birth_time ?? "",
+        birth_location: data.birth_location ?? "",
       };
       
       // Resetar o formulário com os dados carregados
