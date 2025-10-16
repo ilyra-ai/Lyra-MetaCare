@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Dumbbell, Utensils, Moon, Zap, BrainCircuit, Heart, Leaf, Sun, ChevronRight, Clock, Activity } from "lucide-react";
+import { CheckCircle, Dumbbell, Utensils, Moon, Zap, BrainCircuit, Heart, Leaf, Sun, ChevronRight, Clock, Activity, RefreshCw, Droplet, Scale, Smile, Waves } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,9 +10,9 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-// --- Mock Data: Estrutura de Plano Gerado por IA ---
+// --- Mock Data: Estrutura de Plano Gerado por IA (6 Categorias) ---
 const mockPlanData = {
-  summary: "Seu plano de longevidade focado em otimizar o sono e aumentar a resistência cardiovascular, baseado em seus objetivos de 'Melhorar Resistência' e 'Reduzir Estresse'.",
+  summary: "Seu plano de longevidade focado em otimizar o sono, aumentar a resiliência ao estresse e estabilizar o metabolismo, baseado em seus dados biológicos recentes.",
   lastUpdated: "25 de Julho, 2024",
   
   categories: {
@@ -20,33 +20,66 @@ const mockPlanData = {
       title: "Nutrição",
       icon: Utensils,
       color: "text-green-600",
-      description: "Estratégias alimentares para otimizar o metabolismo e a saúde intestinal.",
+      description: "Estratégias alimentares para otimizar o metabolismo, composição corporal e saúde intestinal.",
       items: [
-        { id: 1, title: "Dieta Mediterrânea", details: "Foco em vegetais, azeite de oliva e peixes. Reduza carnes vermelhas e processados.", image: "/globe.svg" },
-        { id: 2, title: "Janela Alimentar 10h", details: "Limite a ingestão de alimentos a uma janela de 10 horas (ex: 9h às 19h).", image: "/clock.svg" },
-        { id: 3, title: "Aumento de Fibras", details: "Consuma 30g de fibras por dia para saúde intestinal e controle glicêmico.", image: "/leaf.svg" },
+        { id: 1, title: "Otimizar Proteína", details: "Aumente a ingestão para 1.2g/kg de peso corporal para suporte muscular e saciedade.", image: "protein" },
+        { id: 2, title: "Aumento de Fibras", details: "Consuma 30g de fibras por dia (vegetais, leguminosas) para saúde intestinal e controle glicêmico.", image: "fiber" },
+        { id: 3, title: "Hidratação Otimizada", details: "Beba 35ml de água por kg de peso corporal, focando em eletrólitos após exercícios.", image: "hydration" },
       ]
     },
     exercise: {
       title: "Exercícios",
       icon: Dumbbell,
       color: "text-orange-600",
-      description: "Rotina de atividades para força, resistência e saúde cardiovascular.",
+      description: "Rotina de atividades para força, resistência cardiovascular e longevidade muscular.",
       items: [
-        { id: 4, title: "Treino de Força (2x/semana)", details: "Sessões de 45 minutos focadas em exercícios compostos (agachamento, supino).", image: "/dumbbell.svg" },
-        { id: 5, title: "Caminhada Rápida Diária", details: "30 minutos de caminhada rápida para atingir 8.000 passos.", image: "/footprints.svg" },
-        { id: 6, title: "HIIT (1x/semana)", details: "Sessão curta de alta intensidade para otimizar o VO₂max.", image: "/zap.svg" },
+        { id: 4, title: "Treino de Força (3x/semana)", details: "Sessões de 45 minutos focadas em exercícios compostos (agachamento, supino) para manter a massa magra.", image: "strength" },
+        { id: 5, title: "Atividade Aeróbica", details: "Mantenha 150 minutos de atividade moderada semanalmente (caminhada rápida, bicicleta).", image: "cardio" },
+        { id: 6, title: "Reduzir Sedentarismo", details: "Faça uma pausa de 5 minutos a cada hora de trabalho sentado.", image: "sedentary" },
+      ]
+    },
+    recovery: {
+      title: "Recuperação & Estresse",
+      icon: RefreshCw,
+      color: "text-red-600",
+      description: "Técnicas para melhorar a resiliência autonômica (HRV) e gerenciar a carga de estresse diária.",
+      items: [
+        { id: 7, title: "Respiração 4-7-8", details: "Pratique 5 minutos de respiração lenta (4s inspira, 7s segura, 8s expira) antes de dormir.", image: "breath" },
+        { id: 8, title: "Exposição ao Frio", details: "Tome um banho frio de 30 segundos pela manhã para modular o sistema nervoso.", image: "cold" },
+        { id: 9, title: "Monitorar Strain", details: "Mantenha seu Daily Strain abaixo de 15 para evitar overtraining.", image: "strain" },
+      ]
+    },
+    sleep: {
+      title: "Sono & Cronobiologia",
+      icon: Moon,
+      color: "text-indigo-600",
+      description: "Otimização da higiene do sono, duração e alinhamento circadiano.",
+      items: [
+        { id: 10, title: "Janela de Sono Consistente", details: "Vá para a cama e acorde no mesmo horário, mesmo nos fins de semana, para reduzir o Social Jetlag.", image: "regularity" },
+        { id: 11, title: "Bloqueio de Luz Azul", details: "Use óculos bloqueadores de luz azul ou desligue telas 90 minutos antes de dormir.", image: "light" },
+        { id: 12, title: "Otimizar Sono Profundo", details: "Evite cafeína após as 14h e faça exercícios leves no final da tarde.", image: "deep_sleep" },
+      ]
+    },
+    metabolism: {
+      title: "Metabolismo & Glicose",
+      icon: Droplet,
+      color: "text-amber-600",
+      description: "Recomendações para estabilizar a glicemia e otimizar a sensibilidade à insulina.",
+      items: [
+        { id: 13, title: "Priorizar Fibras no Café", details: "Comece o dia com fibras e proteínas para achatar a curva glicêmica.", image: "glucose_control" },
+        { id: 14, title: "Caminhada Pós-Refeição", details: "Caminhe 10 minutos após as refeições principais para reduzir picos pós-prandiais.", image: "post_meal" },
+        { id: 15, title: "Aumentar TIR", details: "Mantenha seu Tempo em Faixa (TIR) acima de 80% através de lanches inteligentes.", image: "tir" },
       ]
     },
     mental_health: {
-      title: "Saúde Mental",
+      title: "Saúde Mental & Foco",
       icon: BrainCircuit,
-      color: "text-blue-600",
-      description: "Práticas para reduzir o estresse, melhorar o foco e a qualidade do sono.",
+      color: "text-blue-400",
+      description: "Estratégias para melhorar o humor, a performance cognitiva e a gestão emocional.",
       items: [
-        { id: 7, title: "Meditação Matinal", details: "10 minutos de mindfulness logo após acordar para definir o tom do dia.", image: "/sun.svg" },
-        { id: 8, title: "Rotina de Relaxamento Noturno", details: "Desligue telas 1 hora antes de dormir e leia um livro.", image: "/moon.svg" },
-        { id: 9, title: "Diário de Gratidão", details: "Escreva 3 coisas pelas quais você é grato antes de dormir.", image: "/heart.svg" },
+        { id: 16, title: "Meditação Diária", details: "15 minutos de meditação para melhorar o Mood Score e reduzir o estresse percebido.", image: "meditation" },
+        { id: 17, title: "Treino Cognitivo", details: "Use um aplicativo de treino cerebral por 10 minutos para manter o Score Cognitivo alto.", image: "cognition" },
+        { id: 18, title: "Conexão Social", details: "Reserve tempo para interações sociais significativas (2x/semana) para bem-estar geral.", image: "social" },
       ]
     }
   }
@@ -61,6 +94,29 @@ interface PlanItemProps {
 }
 
 const PlanItem: React.FC<PlanItemProps> = ({ title, details, image, color }) => {
+    // Mapeamento de ícones para os novos itens mockados
+    const IconMap: Record<string, React.ElementType> = {
+        protein: Utensils,
+        fiber: Leaf,
+        hydration: Droplet,
+        strength: Dumbbell,
+        cardio: Heart,
+        sedentary: Clock,
+        breath: Waves,
+        cold: Zap,
+        strain: Activity,
+        regularity: Sun,
+        light: Moon,
+        deep_sleep: BrainCircuit,
+        glucose_control: Droplet,
+        post_meal: Activity,
+        tir: Scale,
+        meditation: Smile,
+        cognition: BrainCircuit,
+        social: Heart,
+    };
+    const ItemIcon = IconMap[image] || CheckCircle;
+
     return (
         <Card className="flex flex-col sm:flex-row justify-between p-4 hover:shadow-md transition-shadow duration-300 animate-in fade-in scale-up-95">
             <div className="flex-1 space-y-2 pr-4">
@@ -70,18 +126,9 @@ const PlanItem: React.FC<PlanItemProps> = ({ title, details, image, color }) => 
                     Ver Detalhes <ChevronRight className="ml-1 h-3 w-3" />
                 </Button>
             </div>
-            {/* Imagem/Ícone (Simulando layout assimétrico com imagem à direita) */}
+            {/* Ícone (Simulando layout assimétrico com imagem à direita) */}
             <div className="w-full sm:w-24 h-24 flex items-center justify-center mt-4 sm:mt-0 bg-gray-50 dark:bg-gray-800 rounded-lg flex-shrink-0">
-                {/* Usando Lucide Icons como placeholders para as imagens mockadas */}
-                {image.includes("globe") && <Leaf className="h-10 w-10 text-green-500" />}
-                {image.includes("clock") && <Clock className="h-10 w-10 text-indigo-500" />}
-                {image.includes("leaf") && <Utensils className="h-10 w-10 text-green-500" />}
-                {image.includes("dumbbell") && <Dumbbell className="h-10 w-10 text-orange-500" />}
-                {image.includes("footprints") && <Zap className="h-10 w-10 text-orange-500" />}
-                {image.includes("zap") && <Activity className="h-10 w-10 text-red-500" />}
-                {image.includes("sun") && <Sun className="h-10 w-10 text-yellow-500" />}
-                {image.includes("moon") && <Moon className="h-10 w-10 text-blue-500" />}
-                {image.includes("heart") && <Heart className="h-10 w-10 text-pink-500" />}
+                <ItemIcon className={cn("h-10 w-10", color)} />
             </div>
         </Card>
     );
@@ -90,6 +137,10 @@ const PlanItem: React.FC<PlanItemProps> = ({ title, details, image, color }) => 
 export function AIPlanContent() {
   const categories = mockPlanData.categories;
   const firstCategoryKey = Object.keys(categories)[0];
+  const totalCategories = Object.keys(categories).length;
+
+  // Ajusta o grid para 3 colunas em telas maiores, mantendo a responsividade
+  const gridColsClass = totalCategories <= 3 ? "grid-cols-3" : "grid-cols-3 lg:grid-cols-6";
 
   return (
     <div className="space-y-8">
@@ -111,15 +162,16 @@ export function AIPlanContent() {
 
       {/* Tabs de Navegação */}
       <Tabs defaultValue={firstCategoryKey} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 h-auto p-1 bg-gray-100 dark:bg-gray-800">
+        <TabsList className={cn("grid w-full h-auto p-1 bg-gray-100 dark:bg-gray-800", gridColsClass)}>
           {Object.entries(categories).map(([key, category]) => (
             <TabsTrigger 
                 key={key} 
                 value={key}
-                className="flex items-center space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-foreground transition-all duration-300"
+                className="flex flex-col sm:flex-row items-center space-x-0 sm:space-x-2 p-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-foreground transition-all duration-300 text-xs sm:text-sm"
             >
-                <category.icon className={cn("h-4 w-4", category.color)} />
-                <span>{category.title}</span>
+                <category.icon className={cn("h-4 w-4 mb-1 sm:mb-0", category.color)} />
+                <span className="hidden sm:inline">{category.title}</span>
+                <span className="sm:hidden">{category.title.split(' ')[0]}</span> {/* Abreviação para mobile */}
             </TabsTrigger>
           ))}
         </TabsList>
