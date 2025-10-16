@@ -30,6 +30,51 @@ interface DailyMetric {
     water_liters: number;
     mood_score: number | null;
     meditation_minutes: number;
+    
+    // Novas Métricas (19-36)
+    resting_heart_rate_min: number | null;
+    resting_heart_rate_max: number | null;
+    respiratory_rate: number | null;
+    total_distance_km: number;
+    active_minutes: number;
+    workout_calories: number;
+    vo2_max: number | null;
+    sleep_latency_minutes: number | null;
+    rem_sleep_minutes: number;
+    light_sleep_minutes: number;
+    sleep_efficiency: number | null;
+    sleep_score: number | null;
+    caffeine_mg: number;
+    stress_score: number | null;
+    blood_glucose_mgdl: number | null;
+    blood_pressure_systolic: number | null;
+    blood_pressure_diastolic: number | null;
+    weight_kg: number | null;
+    sleep_regularity_index: number | null;
+    social_jetlag_hours: number | null;
+    waso_minutes: number | null;
+    training_load_epoc: number | null;
+    daily_strain: number | null;
+    sedentary_hours: number | null;
+    sedentary_breaks: number | null;
+    time_in_range_percent: number | null;
+    glycemic_variability_cv: number | null;
+    gmi_percent: number | null;
+    post_prandial_peak_mgdl: number | null;
+    time_below_range_percent: number | null;
+    iauc_per_meal_mgdl_h: number | null;
+    whtr_ratio: number | null;
+    protein_g_per_kg: number | null;
+    dietary_fiber_grams: number | null;
+    eating_window_hours: number | null;
+    sodium_potassium_ratio: number | null;
+    hydration_ml_per_kg: number | null;
+    reaction_time_pvt_ms: number | null;
+    pvt_lapses_count: number | null;
+    cognitive_test_score: number | null;
+    hrv_stress_index: number | null;
+    eda_tonic_microsiemens: number | null;
+    afib_history_percent: number | null;
 }
 
 interface AIConfig {
@@ -175,13 +220,25 @@ serve(async (req: Request) => {
 
 
     // 5. Buscar as métricas mais recentes do usuário (usando JWT do usuário)
+    // Incluindo todas as 36 métricas
     const { data: metricsData, error } = await userSupabaseClient
       .from('daily_metrics')
       .select(
         `
         hrv_ms, sleep_duration_minutes, steps, recovery_score, readiness_score,
         resting_heart_rate, hrr_1min_bpm, body_temperature_celsius, spo2_average,
-        protein_grams, carb_grams, fat_grams, water_liters, mood_score, meditation_minutes
+        protein_grams, carb_grams, fat_grams, water_liters, mood_score, meditation_minutes,
+        resting_heart_rate_min, resting_heart_rate_max, respiratory_rate, total_distance_km,
+        active_minutes, workout_calories, vo2_max, sleep_latency_minutes, rem_sleep_minutes,
+        light_sleep_minutes, sleep_efficiency, sleep_score, caffeine_mg, stress_score,
+        blood_glucose_mgdl, blood_pressure_systolic, blood_pressure_diastolic, weight_kg,
+        sleep_regularity_index, social_jetlag_hours, waso_minutes, training_load_epoc,
+        daily_strain, sedentary_hours, sedentary_breaks, time_in_range_percent,
+        glycemic_variability_cv, gmi_percent, post_prandial_peak_mgdl, time_below_range_percent,
+        iauc_per_meal_mgdl_h, whtr_ratio, protein_g_per_kg, dietary_fiber_grams,
+        eating_window_hours, sodium_potassium_ratio, hydration_ml_per_kg, reaction_time_pvt_ms,
+        pvt_lapses_count, cognitive_test_score, hrv_stress_index, eda_tonic_microsiemens,
+        afib_history_percent
         `
       )
       .eq('user_id', user.id)
