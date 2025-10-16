@@ -24,8 +24,7 @@ export default function ChatPage() {
       <div className="flex flex-col flex-1 min-w-0">
         <Header />
         <main className="flex-1 flex flex-col p-4 sm:p-6 md:p-8 animate-in fade-in duration-500">
-          <h1 className="text-3xl font-bold mb-8">Assistente de IA</h1>
-          <div className="flex-1 flex flex-col min-h-0">
+           <div className="flex-1 flex flex-col min-h-0">
             <ChatAssistantContent />
           </div>
         </main>
