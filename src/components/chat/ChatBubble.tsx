@@ -114,7 +114,7 @@ export function ChatBubble({ message, isUser }: ChatBubbleProps) {
         )}
 
         <Avatar className={cn(
-          "h-10 w-10 transition-all duration-300 relative z-10",
+          "h-8 w-8 transition-all duration-300 relative z-10",
           isHovering && "scale-110 shadow-lg",
           !isUser && isHovering && "shadow-violet-500/50"
         )}>
@@ -125,9 +125,9 @@ export function ChatBubble({ message, isUser }: ChatBubbleProps) {
               : "bg-gradient-to-br from-violet-600 via-fuchsia-600 to-purple-600 text-white"
           )}>
             {isUser ? (
-              <User size={18} className="transition-transform group-hover:scale-110" />
+              <User size={16} className="transition-transform group-hover:scale-110" />
             ) : (
-              <BrainCircuit size={18} className={cn(
+              <BrainCircuit size={16} className={cn(
                 "transition-transform",
                 isTyping && "animate-pulse"
               )} />
