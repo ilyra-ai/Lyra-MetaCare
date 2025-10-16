@@ -178,12 +178,13 @@ export function ChatAssistantContent() {
       {/* Área de Mensagens com scroll customizado */}
       <div 
         ref={messagesContainerRef}
-        className="relative flex-1 p-6 overflow-y-auto space-y-6 scroll-smooth"
+        className="relative flex-1 p-6 overflow-y-auto flex flex-col space-y-6 scroll-smooth"
         style={{
           scrollbarWidth: 'thin',
           scrollbarColor: 'rgba(139, 92, 246, 0.3) transparent'
         }}
       >
+        <div className="flex-grow" /> {/* Spacer to push content to the bottom */}
         {/* Mensagens */}
         {messages.map((msg, index) => (
           <div
