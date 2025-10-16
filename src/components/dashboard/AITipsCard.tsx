@@ -1,13 +1,19 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  Title,
+  Text,
+  Flex,
+  Badge,
+  Button,
+} from "@tremor/react";
 import { Lightbulb, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
 interface AITip {
   id: number;
@@ -20,6 +26,7 @@ interface AITipsCardProps {
 }
 
 export function AITipsCard({ className }: AITipsCardProps) {
+  const router = useRouter();
   const { supabase } = useAuth();
   const [tip, setTip] = React.useState<AITip | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -55,26 +62,43 @@ export function AITipsCard({ className }: AITipsCardProps) {
   }
 
   return (
-    <Card className={cn("bg-yellow-50 border-yellow-300 shadow-md hover:shadow-lg transition-shadow h-full", className)}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xl text-yellow-800 flex items-center">
-          <Lightbulb className="h-5 w-5 mr-2" />
-          Insight de IA
-        </CardTitle>
-        <CardDescription className="text-yellow-700">
-          Dica personalizada para o seu dia.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm font-medium text-gray-800">{tip.title}</p>
-        <p className="text-sm text-gray-600">{tip.detail}</p>
-        <Button asChild variant="link" className="p-0 h-auto text-yellow-700">
-            <Link href="/plan">
-                Ver Plano Completo
-                <ChevronRight className="ml-1 h-4 w-4" />
-            </Link>
+    <Card
+      className={cn(
+        "h-full bg-amber-50 text-amber-900 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-100",
+        className,
+      )}
+      decoration="top"
+      decorationColor="amber"
+    >
+      <Flex justifyContent="start" className="gap-3">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-200/80 dark:bg-amber-900/60">
+          <Lightbulb className="h-5 w-5" />
+        </span>
+        <div>
+          <Flex alignItems="center" className="gap-2">
+            <Title>Insight de IA</Title>
+            <Badge color="amber">Novo</Badge>
+          </Flex>
+          <Text className="text-sm text-amber-700 dark:text-amber-200">
+            Dica personalizada para o seu dia.
+          </Text>
+        </div>
+      </Flex>
+
+      <div className="mt-6 space-y-3">
+        <Text className="font-semibold text-amber-900 dark:text-amber-100">{tip.title}</Text>
+        <Text className="text-sm text-amber-700 dark:text-amber-200">{tip.detail}</Text>
+        <Button
+          className="w-fit"
+          size="sm"
+          variant="secondary"
+          icon={ChevronRight}
+          iconPosition="right"
+          onClick={() => router.push("/plan")}
+        >
+          Ver plano completo
         </Button>
-      </CardContent>
+      </div>
     </Card>
   );
 }

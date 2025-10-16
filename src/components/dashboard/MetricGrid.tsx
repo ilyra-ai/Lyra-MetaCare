@@ -1,492 +1,549 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  Title,
+  Text,
+  Flex,
+  Grid,
+  Divider,
+} from "@tremor/react";
 import { DailyMetric } from "@/hooks/use-daily-metrics";
-import { Activity, BedDouble, HeartPulse, Flame, TrendingUp, Zap, BrainCircuit, Utensils, Droplet, Thermometer, Gauge, Moon, Clock, Smile, Dumbbell, RefreshCw, Sun, Waves, Rss, Clock4, Pause, Scale, Heart, TrendingDown, AlertTriangle, Ruler, Soup, Clock3, GlassWater, Brain, Hand, AlertOctagon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Activity, BedDouble, Brain, Droplet, RefreshCw, Smile, Utensils } from "lucide-react";
 
-// --- Helper Functions ---
 const formatMinutesToHours = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours}h ${mins}m`;
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours}h ${mins}m`;
 };
 
-// --- Metric Card Component ---
-interface MetricCardProps {
-    title: string;
-    value: string;
-    description: string;
-    icon: React.ElementType;
-    colorClass: string;
-    className?: string;
+interface PillarMetric {
+  title: string;
+  value: string;
+  description: string;
 }
 
-function MetricCard({ title, value, description, icon: Icon, colorClass, className }: MetricCardProps) {
-    return (
-        <Card className={cn("h-full", className)}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{title}</CardTitle>
-                <Icon className={cn("h-4 w-4", colorClass)} />
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{value}</div>
-                <p className="text-xs text-muted-foreground">{description}</p>
-            </CardContent>
-        </Card>
-    );
+interface PillarConfig {
+  title: string;
+  description: string;
+  decorationColor:
+    | "emerald"
+    | "orange"
+    | "indigo"
+    | "rose"
+    | "amber"
+    | "violet";
+  icon: React.ElementType;
+  iconColor: string;
+  iconBackground: string;
+  metrics: PillarMetric[];
 }
 
 interface MetricGridProps {
-    metrics: DailyMetric;
+  metrics: DailyMetric;
 }
 
 export function MetricGrid({ metrics }: MetricGridProps) {
-    // Longevity Metric Calculations (Simulated based on data)
-    const sleepQuality = metrics.sleep_duration_minutes >= 450 ? "Excelente" : (metrics.sleep_duration_minutes >= 360 ? "Bom" : "Abaixo da Meta");
-    const hrvStatus = (metrics.hrv_ms || 0) >= 50 ? "Ótimo" : ((metrics.hrv_ms || 0) >= 30 ? "Bom" : "Baixo");
-    
-    // Using readiness_score for Prontidão
-    const readinessScore = metrics.readiness_score || metrics.recovery_score; // Fallback to recovery_score if readiness is null
-    const recoveryStatus = (readinessScore || 0) >= 80 ? "Pronto para o dia" : "Priorize o descanso";
-    
-    const moodStatus = metrics.mood_score === 5 ? "Excelente" : (metrics.mood_score && metrics.mood_score >= 3 ? "Neutro" : "Baixo");
-    const hrrStatus = (metrics.hrr_1min_bpm || 0) >= 30 ? "Excelente" : "Atenção";
-    const spo2Status = (metrics.spo2_average || 0) >= 95 ? "Normal" : "Monitorar";
-    
-    // Activity Metrics Status
-    const moderateVigorousGoal = 150;
-    const activeMinutesStatus = metrics.active_minutes >= moderateVigorousGoal ? "Meta semanal alcançada" : "Aumentar atividade";
-    const stepsStatus = metrics.steps >= 8000 ? "Meta de 8k passos alcançada" : "Continue se movendo";
-    const sedentaryStatus = (metrics.sedentary_hours || 0) < 8 ? "Baixo" : "Alto";
+  const sleepQuality =
+    metrics.sleep_duration_minutes >= 450
+      ? "Excelente"
+      : metrics.sleep_duration_minutes >= 360
+        ? "Bom"
+        : "Abaixo da Meta";
 
-    // Metabolism & Glucose Status
-    const tirStatus = (metrics.time_in_range_percent || 0) >= 70 ? "Meta alcançada" : "Aumentar TIR";
-    const cvStatus = (metrics.glycemic_variability_cv || 0) <= 36 ? "Estável" : "Alta Variabilidade";
-    const gmiStatus = (metrics.gmi_percent || 0) <= 6.5 ? "Ótimo" : "Monitorar";
-    const peakStatus = (metrics.post_prandial_peak_mgdl || 0) <= 140 ? "Normal" : "Pico Elevado";
-    const tbrStatus = (metrics.time_below_range_percent || 0) <= 4 ? "Seguro" : "Risco de Hipo";
-    
-    // General Health Status
-    const bpStatus = (metrics.blood_pressure_systolic || 0) < 120 && (metrics.blood_pressure_diastolic || 0) < 80 ? "Ótima" : "Atenção";
-    
-    // New Nutrition/Composition Status
-    const whtrStatus = (metrics.whtr_ratio || 0) <= 0.5 ? "Saudável" : "Atenção";
-    const proteinStatus = (metrics.protein_g_per_kg || 0) >= 1.0 ? "Adequada" : "Aumentar";
-    const fiberStatus = (metrics.dietary_fiber_grams || 0) >= 25 ? "Adequada" : "Aumentar";
-    const eatingWindowStatus = (metrics.eating_window_hours || 0) <= 10 ? "Restrita" : "Normal";
-    const naKStatus = (metrics.sodium_potassium_ratio || 0) <= 1.0 ? "Ideal" : "Atenção";
-    const hydrationStatus = (metrics.hydration_ml_per_kg || 0) >= 30 ? "Adequada" : "Aumentar";
+  const hrvStatus =
+    (metrics.hrv_ms || 0) >= 50
+      ? "Ótimo"
+      : (metrics.hrv_ms || 0) >= 30
+        ? "Bom"
+        : "Baixo";
 
-    // New Mental/Cognition Status
-    const pvtStatus = (metrics.reaction_time_pvt_ms || 0) < 300 ? "Excelente" : "Monitorar";
-    const lapsesStatus = (metrics.pvt_lapses_count || 0) === 0 ? "Nenhum lapso" : "Atenção à fadiga";
-    const cognitiveStatus = (metrics.cognitive_test_score || 0) >= 0.5 ? "Alto" : "Monitorar";
-    const hrvStressStatus = (metrics.hrv_stress_index || 0) < 10 ? "Baixo" : "Elevado";
-    const edaStatus = (metrics.eda_tonic_microsiemens || 0) < 0.5 ? "Normal" : "Pico de estresse";
-    const afibStatus = (metrics.afib_history_percent || 0) === 0 ? "Nenhuma FA detectada" : "Monitorar";
+  const readinessScore = metrics.readiness_score || metrics.recovery_score;
+  const recoveryStatus =
+    (readinessScore || 0) >= 80 ? "Pronto para o dia" : "Priorize o descanso";
 
+  const moodStatus =
+    metrics.mood_score === 5
+      ? "Excelente"
+      : metrics.mood_score && metrics.mood_score >= 3
+        ? "Neutro"
+        : "Baixo";
 
-    const pillars = [
-        {
-            title: "Recuperação e Resiliência Autonômica",
-            description: "Métricas que avaliam a capacidade do seu corpo de se adaptar ao estresse e se recuperar.",
-            icon: RefreshCw,
-            color: "text-red-600",
-            metrics: [
-                { 
-                    title: "HRV (rMSSD)", 
-                    value: metrics.hrv_ms ? `${metrics.hrv_ms} ms` : "N/A", 
-                    description: `Resiliência ao estresse: ${hrvStatus}`, 
-                    icon: HeartPulse, 
-                    colorClass: "text-red-600" 
-                },
-                { 
-                    title: "Score de Prontidão", 
-                    value: readinessScore ? `${readinessScore}/100` : "N/A", 
-                    description: recoveryStatus, 
-                    icon: TrendingUp, 
-                    colorClass: "text-green-700" 
-                },
-                { 
-                    title: "FC de Repouso", 
-                    value: metrics.resting_heart_rate ? `${metrics.resting_heart_rate} BPM` : "N/A", 
-                    description: "Média da noite.", 
-                    icon: HeartPulse, 
-                    colorClass: "text-pink-600" 
-                },
-                { 
-                    title: "Recuperação da FC (1 min)", 
-                    value: metrics.hrr_1min_bpm ? `${metrics.hrr_1min_bpm} bpm` : "N/A", 
-                    description: `Sinal de aptidão cardiovascular: ${hrrStatus}`, 
-                    icon: Waves, 
-                    colorClass: "text-orange-600" 
-                },
-                { 
-                    title: "Temp. Cutânea Noturna", 
-                    value: metrics.body_temperature_celsius ? `${metrics.body_temperature_celsius.toFixed(1)} °C` : "N/A", 
-                    description: "Desvio da linha de base.", 
-                    icon: Thermometer, 
-                    colorClass: "text-cyan-600" 
-                },
-                { 
-                    title: "SpO₂ Noturna (Média)", 
-                    value: metrics.spo2_average ? `${metrics.spo2_average.toFixed(1)}%` : "N/A", 
-                    description: `Oxigenação do sangue (Média): ${spo2Status}`, 
-                    icon: Moon, 
-                    colorClass: "text-indigo-600" 
-                },
-            ]
-        },
-        {
-            title: "Capacidade Cardiorrespiratória e Atividade Física",
-            description: "Monitoramento do seu gasto energético, aptidão física e carga de estresse do treino.",
-            icon: Activity,
-            color: "text-orange-600",
-            metrics: [
-                { 
-                    title: "VO₂max Estimado", // Métrica 13
-                    value: metrics.vo2_max ? `${metrics.vo2_max.toFixed(1)} mL/kg/min` : "N/A", 
-                    description: "Principal indicador de aptidão.", 
-                    icon: Gauge, 
-                    colorClass: "text-blue-600" 
-                },
-                { 
-                    title: "Minutos Mod/Vigorosa", // Métrica 14 (Usando active_minutes como proxy)
-                    value: `${metrics.active_minutes} min`, 
-                    description: activeMinutesStatus, 
-                    icon: Dumbbell, 
-                    colorClass: "text-orange-600" 
-                },
-                { 
-                    title: "Passos por Dia", // Métrica 15
-                    value: `${metrics.steps.toLocaleString()} Steps`, 
-                    description: stepsStatus, 
-                    icon: Activity, 
-                    colorClass: "text-green-600" 
-                },
-                { 
-                    title: "Carga de Treino (EPOC)", // Métrica 16
-                    value: metrics.training_load_epoc ? `${metrics.training_load_epoc.toFixed(0)} UA` : "N/A", 
-                    description: "Estresse fisiológico do exercício.", 
-                    icon: Flame, 
-                    colorClass: "text-red-500" 
-                },
-                { 
-                    title: "Strain Diário", // Métrica 17
-                    value: metrics.daily_strain ? `${metrics.daily_strain.toFixed(1)} / 21` : "N/A", 
-                    description: "Intensidade acumulada do dia.", 
-                    icon: Zap, 
-                    colorClass: "text-yellow-600" 
-                },
-                { 
-                    title: "Tempo Sedentário", // Métrica 18 (Parte 1)
-                    value: metrics.sedentary_hours ? `${metrics.sedentary_hours.toFixed(1)} h` : "N/A", 
-                    description: `Nível de sedentarismo: ${sedentaryStatus}`, 
-                    icon: Clock4, 
-                    colorClass: "text-gray-500" 
-                },
-                { 
-                    title: "Quebras Sedentárias", // Métrica 18 (Parte 2)
-                    value: metrics.sedentary_breaks ? `${metrics.sedentary_breaks} pausas` : "N/A", 
-                    description: "Número de pausas longas.", 
-                    icon: Pause, 
-                    colorClass: "text-teal-500" 
-                },
-            ]
-        },
-        {
-            title: "Sono e Cronobiologia",
-            description: "Análise da qualidade e estrutura do seu descanso noturno.",
-            icon: BedDouble,
-            color: "text-blue-600",
-            metrics: [
-                { 
-                    title: "Duração do sono (h/noite)", // Métrica 7
-                    value: formatMinutesToHours(metrics.sleep_duration_minutes), 
-                    description: `Qualidade: ${sleepQuality}`, 
-                    icon: BedDouble, 
-                    colorClass: "text-blue-600" 
-                },
-                { 
-                    title: "Eficiência do sono (%)", // Métrica 8
-                    value: metrics.sleep_efficiency ? `${metrics.sleep_efficiency.toFixed(0)}%` : "N/A", 
-                    description: "Sono vs. Tempo na cama.", 
-                    icon: Clock, 
-                    colorClass: "text-teal-600" 
-                },
-                { 
-                    title: "Regularidade do Sono (SRI)", // Métrica 9
-                    value: metrics.sleep_regularity_index ? `${metrics.sleep_regularity_index}/100` : "N/A", 
-                    description: "Consistência dos horários de sono.", 
-                    icon: Sun, 
-                    colorClass: "text-yellow-600" 
-                },
-                { 
-                    title: "Social Jetlag (h)", // Métrica 10
-                    value: metrics.social_jetlag_hours ? `${metrics.social_jetlag_hours.toFixed(1)} h` : "N/A", 
-                    description: "Desalinhamento entre dias úteis/fim de semana.", 
-                    icon: Rss, 
-                    colorClass: "text-orange-600" 
-                },
-                { 
-                    title: "Sono REM (min)", // Métrica 11
-                    value: formatMinutesToHours(metrics.rem_sleep_minutes), 
-                    description: "Importante para a memória.", 
-                    icon: BrainCircuit, 
-                    colorClass: "text-indigo-600" 
-                },
-                { 
-                    title: "WASO (min)", // Métrica 12
-                    value: metrics.waso_minutes ? `${metrics.waso_minutes} min` : "N/A", 
-                    description: "Tempo acordado após iniciar o sono.", 
-                    icon: Moon, 
-                    colorClass: "text-purple-600" 
-                },
-                { 
-                    title: "Sono Profundo (min)", 
-                    value: formatMinutesToHours(metrics.deep_sleep_minutes), 
-                    description: "Crucial para recuperação física.", 
-                    icon: BedDouble, 
-                    colorClass: "text-pink-600" 
-                },
-            ]
-        },
-        {
-            title: "Metabolismo e Glicose (CGM)",
-            description: "Métricas avançadas de controle glicêmico e estabilidade metabólica.",
-            icon: Droplet,
-            color: "text-red-600",
-            metrics: [
-                { 
-                    title: "Tempo em Faixa (TIR)", // Métrica 19
-                    value: metrics.time_in_range_percent ? `${metrics.time_in_range_percent.toFixed(1)}%` : "N/A", 
-                    description: `Meta > 70%. Status: ${tirStatus}`, 
-                    icon: TrendingUp, 
-                    colorClass: "text-green-600" 
-                },
-                { 
-                    title: "Variabilidade Glicêmica (CV)", // Métrica 20
-                    value: metrics.glycemic_variability_cv ? `${metrics.glycemic_variability_cv.toFixed(1)}%` : "N/A", 
-                    description: `Meta < 36%. Status: ${cvStatus}`, 
-                    icon: TrendingDown, 
-                    colorClass: "text-blue-600" 
-                },
-                { 
-                    title: "GMI (A1c Estimada)", // Métrica 21
-                    value: metrics.gmi_percent ? `${metrics.gmi_percent.toFixed(1)}%` : "N/A", 
-                    description: `Média glicêmica: ${gmiStatus}`, 
-                    icon: Gauge, 
-                    colorClass: "text-purple-600" 
-                },
-                { 
-                    title: "Pico Pós-Prandial", // Métrica 22
-                    value: metrics.post_prandial_peak_mgdl ? `${metrics.post_prandial_peak_mgdl} mg/dL` : "N/A", 
-                    description: `Pico após refeição: ${peakStatus}`, 
-                    icon: Flame, 
-                    colorClass: "text-orange-600" 
-                },
-                { 
-                    title: "Tempo Abaixo da Faixa", // Métrica 23
-                    value: metrics.time_below_range_percent ? `${metrics.time_below_range_percent.toFixed(1)}%` : "N/A", 
-                    description: `Risco de hipoglicemia: ${tbrStatus}`, 
-                    icon: AlertTriangle, 
-                    colorClass: "text-red-500" 
-                },
-                { 
-                    title: "iAUC por Refeição", // Métrica 24
-                    value: metrics.iauc_per_meal_mgdl_h ? `${metrics.iauc_per_meal_mgdl_h.toFixed(1)} mg/dL·h` : "N/A", 
-                    description: "Resposta alimentar quantificada.", 
-                    icon: Utensils, 
-                    colorClass: "text-amber-600" 
-                },
-            ]
-        },
-        {
-            title: "Composição Corporal e Nutrição Avançada",
-            description: "Foco em marcadores de composição corporal, ingestão de macronutrientes chave e padrões alimentares.",
-            icon: Utensils,
-            color: "text-amber-600",
-            metrics: [
-                { 
-                    title: "Relação Cintura/Altura (WHtR)", // Métrica 25
-                    value: metrics.whtr_ratio ? metrics.whtr_ratio.toFixed(2) : "N/A", 
-                    description: `Adiposidade central: ${whtrStatus}`, 
-                    icon: Ruler, 
-                    colorClass: "text-pink-500" 
-                },
-                { 
-                    title: "Proteína Diária (g/kg)", // Métrica 26
-                    value: metrics.protein_g_per_kg ? `${metrics.protein_g_per_kg.toFixed(2)} g/kg` : "N/A", 
-                    description: `Ingestão para longevidade: ${proteinStatus}`, 
-                    icon: Dumbbell, 
-                    colorClass: "text-amber-600" 
-                },
-                { 
-                    title: "Fibras Dietéticas", // Métrica 27
-                    value: metrics.dietary_fiber_grams ? `${metrics.dietary_fiber_grams} g` : "N/A", 
-                    description: `Meta > 25g. Status: ${fiberStatus}`, 
-                    icon: Soup, 
-                    colorClass: "text-green-600" 
-                },
-                { 
-                    title: "Janela Alimentar", // Métrica 28
-                    value: metrics.eating_window_hours ? `${metrics.eating_window_hours.toFixed(1)} h` : "N/A", 
-                    description: `Tempo de jejum intermitente: ${eatingWindowStatus}`, 
-                    icon: Clock3, 
-                    colorClass: "text-indigo-600" 
-                },
-                { 
-                    title: "Razão Sódio:Potássio", // Métrica 29
-                    value: metrics.sodium_potassium_ratio ? metrics.sodium_potassium_ratio.toFixed(2) : "N/A", 
-                    description: `Saúde cardiovascular: ${naKStatus}`, 
-                    icon: AlertTriangle, 
-                    colorClass: "text-gray-500" 
-                },
-                { 
-                    title: "Hidratação (mL/kg)", // Métrica 30 (Versão por peso)
-                    value: metrics.hydration_ml_per_kg ? `${metrics.hydration_ml_per_kg.toFixed(0)} mL/kg` : "N/A", 
-                    description: `Nível de hidratação: ${hydrationStatus}`, 
-                    icon: GlassWater, 
-                    colorClass: "text-sky-600" 
-                },
-            ]
-        },
-        {
-            title: "Saúde Mental & Cognição Digital",
-            description: "Avaliação da performance cognitiva, fadiga e estresse autonômico.",
-            icon: Brain,
-            color: "text-purple-600",
-            metrics: [
-                { 
-                    title: "Tempo de Reação (PVT)", // Métrica 31
-                    value: metrics.reaction_time_pvt_ms ? `${metrics.reaction_time_pvt_ms} ms` : "N/A", 
-                    description: `Fadiga/Alerta: ${pvtStatus}`, 
-                    icon: Hand, 
-                    colorClass: "text-purple-600" 
-                },
-                { 
-                    title: "Lapsos no PVT (≥500ms)", // Métrica 32
-                    value: metrics.pvt_lapses_count ? `${metrics.pvt_lapses_count} lapsos` : "N/A", 
-                    description: `Queda de atenção: ${lapsesStatus}`, 
-                    icon: AlertOctagon, 
-                    colorClass: "text-red-500" 
-                },
-                { 
-                    title: "Score Cognitivo (z-score)", // Métrica 33
-                    value: metrics.cognitive_test_score ? metrics.cognitive_test_score.toFixed(2) : "N/A", 
-                    description: `Performance diária: ${cognitiveStatus}`, 
-                    icon: BrainCircuit, 
-                    colorClass: "text-teal-600" 
-                },
-                { 
-                    title: "Índice de Estresse (HRV)", // Métrica 34
-                    value: metrics.hrv_stress_index ? metrics.hrv_stress_index.toFixed(1) : "N/A", 
-                    description: `Carga estressora: ${hrvStressStatus}`, 
-                    icon: HeartPulse, 
-                    colorClass: "text-orange-600" 
-                },
-                { 
-                    title: "EDA Tônica Média (µS)", // Métrica 35
-                    value: metrics.eda_tonic_microsiemens ? `${metrics.eda_tonic_microsiemens.toFixed(2)} µS` : "N/A", 
-                    description: `Ativação simpática: ${edaStatus}`, 
-                    icon: Zap, 
-                    colorClass: "text-yellow-600" 
-                },
-                { 
-                    title: "Carga de FA (AFib History)", // Métrica 36
-                    value: metrics.afib_history_percent ? `${metrics.afib_history_percent.toFixed(1)}%` : "N/A", 
-                    description: `Risco de Fibrilação Atrial: ${afibStatus}`, 
-                    icon: Heart, 
-                    colorClass: "text-pink-500" 
-                },
-            ]
-        },
-        {
-            title: "Bem-Estar e Saúde Geral",
-            description: "Métricas de saúde geral, humor e práticas de mindfulness.",
-            icon: Smile,
-            color: "text-fuchsia-600",
-            metrics: [
-                { 
-                    title: "Pressão Arterial", 
-                    value: metrics.blood_pressure_systolic && metrics.blood_pressure_diastolic 
-                        ? `${metrics.blood_pressure_systolic}/${metrics.blood_pressure_diastolic} mmHg` 
-                        : "N/A", 
-                    description: `Saúde cardiovascular: ${bpStatus}`, 
-                    icon: Heart, 
-                    colorClass: "text-pink-500" 
-                },
-                { 
-                    title: "Peso Corporal", 
-                    value: metrics.weight_kg ? `${metrics.weight_kg.toFixed(1)} kg` : "N/A", 
-                    description: "Monitoramento de composição.", 
-                    icon: Scale, 
-                    colorClass: "text-gray-600" 
-                },
-                { 
-                    title: "Hidratação (Total)", 
-                    value: `${metrics.water_liters.toFixed(1)} L`, 
-                    description: "Meta: 2.5L.", 
-                    icon: Droplet, 
-                    colorClass: "text-sky-600" 
-                },
-                { 
-                    title: "Score de Humor", 
-                    value: metrics.mood_score ? `${metrics.mood_score}/5` : "N/A", 
-                    description: `Bem-estar percebido: ${moodStatus}`, 
-                    icon: Smile, 
-                    colorClass: "text-fuchsia-600" 
-                },
-                { 
-                    title: "Minutos de Meditação", 
-                    value: `${metrics.meditation_minutes} min`, 
-                    description: "Foco e redução de estresse.", 
-                    icon: BrainCircuit, 
-                    colorClass: "text-purple-500" 
-                },
-                { 
-                    title: "Proteína (Total)", 
-                    value: `${metrics.protein_grams} g`, 
-                    description: "Ingestão bruta.", 
-                    icon: Utensils, 
-                    colorClass: "text-amber-600" 
-                },
-                { 
-                    title: "Carboidratos", 
-                    value: `${metrics.carb_grams} g`, 
-                    description: "Fonte primária de energia.", 
-                    icon: Utensils, 
-                    colorClass: "text-lime-600" 
-                },
-                { 
-                    title: "Gorduras", 
-                    value: `${metrics.fat_grams} g`, 
-                    description: "Saúde hormonal e celular.", 
-                    icon: Utensils, 
-                    colorClass: "text-brown-600" 
-                },
-            ]
-        },
-    ];
+  const hrrStatus =
+    (metrics.hrr_1min_bpm || 0) >= 30 ? "Excelente" : "Atenção";
+  const spo2Status =
+    (metrics.spo2_average || 0) >= 95 ? "Normal" : "Monitorar";
 
-    return (
-        <div className="space-y-10">
-            {pillars.map((pillar, pillarIndex) => (
-                <section key={pillarIndex}>
-                    <div className="flex items-center mb-4 space-x-3">
-                        <pillar.icon className={cn("h-6 w-6", pillar.color)} />
-                        <h2 className="text-xl font-semibold text-foreground">{pillar.title}</h2>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-6">{pillar.description}</p>
-                    
-                    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 auto-rows-fr">
-                        {pillar.metrics.map((data, index) => (
-                            <MetricCard key={index} {...data} />
-                        ))}
-                    </div>
-                </section>
+  const moderateVigorousGoal = 150;
+  const activeMinutesStatus =
+    metrics.active_minutes >= moderateVigorousGoal
+      ? "Meta semanal alcançada"
+      : "Aumentar atividade";
+  const stepsStatus =
+    metrics.steps >= 8000 ? "Meta de 8k passos alcançada" : "Continue se movendo";
+  const sedentaryStatus =
+    (metrics.sedentary_hours || 0) < 8 ? "Baixo" : "Alto";
+
+  const tirStatus =
+    (metrics.time_in_range_percent || 0) >= 70 ? "Meta alcançada" : "Aumentar TIR";
+  const cvStatus =
+    (metrics.glycemic_variability_cv || 0) <= 36
+      ? "Estável"
+      : "Alta Variabilidade";
+  const gmiStatus =
+    (metrics.gmi_percent || 0) <= 6.5 ? "Ótimo" : "Monitorar";
+  const peakStatus =
+    (metrics.post_prandial_peak_mgdl || 0) <= 140 ? "Normal" : "Pico Elevado";
+  const tbrStatus =
+    (metrics.time_below_range_percent || 0) <= 4 ? "Seguro" : "Risco de Hipo";
+
+  const bpStatus =
+    (metrics.blood_pressure_systolic || 0) < 120 &&
+    (metrics.blood_pressure_diastolic || 0) < 80
+      ? "Ótima"
+      : "Atenção";
+
+  const whtrStatus =
+    (metrics.whtr_ratio || 0) <= 0.5 ? "Saudável" : "Atenção";
+  const proteinStatus =
+    (metrics.protein_g_per_kg || 0) >= 1.0 ? "Adequada" : "Aumentar";
+  const fiberStatus =
+    (metrics.dietary_fiber_grams || 0) >= 25 ? "Adequada" : "Aumentar";
+  const eatingWindowStatus =
+    (metrics.eating_window_hours || 0) <= 10 ? "Restrita" : "Normal";
+  const naKStatus =
+    (metrics.sodium_potassium_ratio || 0) <= 1.0 ? "Ideal" : "Atenção";
+  const hydrationStatus =
+    (metrics.hydration_ml_per_kg || 0) >= 30 ? "Adequada" : "Aumentar";
+
+  const pvtStatus =
+    (metrics.reaction_time_pvt_ms || 0) < 300 ? "Excelente" : "Monitorar";
+  const lapsesStatus =
+    (metrics.pvt_lapses_count || 0) === 0
+      ? "Nenhum lapso"
+      : "Atenção à fadiga";
+  const cognitiveStatus =
+    (metrics.cognitive_test_score || 0) >= 0.5 ? "Alto" : "Monitorar";
+  const hrvStressStatus =
+    (metrics.hrv_stress_index || 0) < 10 ? "Baixo" : "Elevado";
+  const edaStatus =
+    (metrics.eda_tonic_microsiemens || 0) < 0.5 ? "Normal" : "Pico de estresse";
+  const afibStatus =
+    (metrics.afib_history_percent || 0) === 0
+      ? "Nenhuma FA detectada"
+      : "Monitorar";
+
+  const pillars: PillarConfig[] = [
+    {
+      title: "Recuperação e Resiliência Autonômica",
+      description:
+        "Métricas que avaliam a capacidade do seu corpo de se adaptar ao estresse e se recuperar.",
+      decorationColor: "emerald",
+      icon: RefreshCw,
+      iconColor: "text-emerald-600",
+      iconBackground: "bg-emerald-100 dark:bg-emerald-900/30",
+      metrics: [
+        {
+          title: "HRV (rMSSD)",
+          value: metrics.hrv_ms ? `${metrics.hrv_ms} ms` : "N/A",
+          description: `Resiliência ao estresse: ${hrvStatus}`,
+        },
+        {
+          title: "Score de Prontidão",
+          value: readinessScore ? `${readinessScore}/100` : "N/A",
+          description: recoveryStatus,
+        },
+        {
+          title: "FC de Repouso",
+          value: metrics.resting_heart_rate
+            ? `${metrics.resting_heart_rate} BPM`
+            : "N/A",
+          description: "Média da noite.",
+        },
+        {
+          title: "Recuperação da FC (1 min)",
+          value: metrics.hrr_1min_bpm ? `${metrics.hrr_1min_bpm} bpm` : "N/A",
+          description: `Sinal de aptidão cardiovascular: ${hrrStatus}`,
+        },
+        {
+          title: "Temp. Cutânea Noturna",
+          value: metrics.body_temperature_celsius
+            ? `${metrics.body_temperature_celsius.toFixed(1)} °C`
+            : "N/A",
+          description: "Desvio da linha de base.",
+        },
+        {
+          title: "SpO₂ Noturna (Média)",
+          value: metrics.spo2_average
+            ? `${metrics.spo2_average.toFixed(1)}%`
+            : "N/A",
+          description: `Oxigenação do sangue: ${spo2Status}`,
+        },
+      ],
+    },
+    {
+      title: "Capacidade Cardiorrespiratória e Atividade Física",
+      description:
+        "Monitoramento do seu gasto energético, aptidão física e carga de estresse do treino.",
+      decorationColor: "orange",
+      icon: Activity,
+      iconColor: "text-orange-600",
+      iconBackground: "bg-orange-100 dark:bg-orange-900/30",
+      metrics: [
+        {
+          title: "VO₂max Estimado",
+          value: metrics.vo2_max
+            ? `${metrics.vo2_max.toFixed(1)} mL/kg/min`
+            : "N/A",
+          description: "Principal indicador de aptidão.",
+        },
+        {
+          title: "Minutos Mod/Vigorosa",
+          value: `${metrics.active_minutes} min`,
+          description: activeMinutesStatus,
+        },
+        {
+          title: "Passos por Dia",
+          value: `${metrics.steps.toLocaleString()} passos`,
+          description: stepsStatus,
+        },
+        {
+          title: "Carga de Treino (EPOC)",
+          value: metrics.training_load_epoc
+            ? `${metrics.training_load_epoc.toFixed(0)} UA`
+            : "N/A",
+          description: "Estresse fisiológico do exercício.",
+        },
+        {
+          title: "Strain Diário",
+          value: metrics.daily_strain
+            ? `${metrics.daily_strain.toFixed(1)} / 21`
+            : "N/A",
+          description: "Intensidade acumulada do dia.",
+        },
+        {
+          title: "Tempo Sedentário",
+          value: metrics.sedentary_hours
+            ? `${metrics.sedentary_hours.toFixed(1)} h`
+            : "N/A",
+          description: `Nível de sedentarismo: ${sedentaryStatus}`,
+        },
+      ],
+    },
+    {
+      title: "Sono e Cronobiologia",
+      description: "Análise da qualidade e estrutura do seu descanso noturno.",
+      decorationColor: "indigo",
+      icon: BedDouble,
+      iconColor: "text-indigo-600",
+      iconBackground: "bg-indigo-100 dark:bg-indigo-900/30",
+      metrics: [
+        {
+          title: "Duração do sono",
+          value: formatMinutesToHours(metrics.sleep_duration_minutes),
+          description: `Qualidade: ${sleepQuality}`,
+        },
+        {
+          title: "Eficiência do sono",
+          value: metrics.sleep_efficiency
+            ? `${metrics.sleep_efficiency.toFixed(0)}%`
+            : "N/A",
+          description: "Sono vs. tempo na cama.",
+        },
+        {
+          title: "Regularidade do Sono (SRI)",
+          value: metrics.sleep_regularity_index
+            ? `${metrics.sleep_regularity_index}/100`
+            : "N/A",
+          description: "Consistência dos horários.",
+        },
+        {
+          title: "Social Jetlag",
+          value: metrics.social_jetlag_hours
+            ? `${metrics.social_jetlag_hours.toFixed(1)} h`
+            : "N/A",
+          description: "Diferença entre semana e fim de semana.",
+        },
+        {
+          title: "Sono REM",
+          value: formatMinutesToHours(metrics.rem_sleep_minutes),
+          description: "Importante para memória e humor.",
+        },
+        {
+          title: "Sono Profundo",
+          value: formatMinutesToHours(metrics.deep_sleep_minutes),
+          description: "Crucial para recuperação física.",
+        },
+      ],
+    },
+    {
+      title: "Metabolismo e Glicose (CGM)",
+      description:
+        "Métricas avançadas de controle glicêmico e estabilidade metabólica.",
+      decorationColor: "rose",
+      icon: Droplet,
+      iconColor: "text-rose-600",
+      iconBackground: "bg-rose-100 dark:bg-rose-900/30",
+      metrics: [
+        {
+          title: "Tempo em Faixa (TIR)",
+          value: metrics.time_in_range_percent
+            ? `${metrics.time_in_range_percent.toFixed(1)}%`
+            : "N/A",
+          description: `Meta > 70%. Status: ${tirStatus}`,
+        },
+        {
+          title: "Variabilidade Glicêmica (CV)",
+          value: metrics.glycemic_variability_cv
+            ? `${metrics.glycemic_variability_cv.toFixed(1)}%`
+            : "N/A",
+          description: `Meta < 36%. Status: ${cvStatus}`,
+        },
+        {
+          title: "GMI (A1c Estimada)",
+          value: metrics.gmi_percent
+            ? `${metrics.gmi_percent.toFixed(1)}%`
+            : "N/A",
+          description: `Média glicêmica: ${gmiStatus}`,
+        },
+        {
+          title: "Pico Pós-Prandial",
+          value: metrics.post_prandial_peak_mgdl
+            ? `${metrics.post_prandial_peak_mgdl} mg/dL`
+            : "N/A",
+          description: `Pico após refeição: ${peakStatus}`,
+        },
+        {
+          title: "Tempo Abaixo da Faixa",
+          value: metrics.time_below_range_percent
+            ? `${metrics.time_below_range_percent.toFixed(1)}%`
+            : "N/A",
+          description: `Risco de hipoglicemia: ${tbrStatus}`,
+        },
+        {
+          title: "iAUC por Refeição",
+          value: metrics.iauc_per_meal_mgdl_h
+            ? `${metrics.iauc_per_meal_mgdl_h.toFixed(1)} mg/dL·h`
+            : "N/A",
+          description: "Resposta alimentar quantificada.",
+        },
+      ],
+    },
+    {
+      title: "Composição Corporal e Nutrição",
+      description:
+        "Marcadores de composição corporal, ingestão de macros e padrões alimentares.",
+      decorationColor: "amber",
+      icon: Utensils,
+      iconColor: "text-amber-600",
+      iconBackground: "bg-amber-100 dark:bg-amber-900/30",
+      metrics: [
+        {
+          title: "Relação Cintura/Altura (WHtR)",
+          value: metrics.whtr_ratio ? metrics.whtr_ratio.toFixed(2) : "N/A",
+          description: `Adiposidade central: ${whtrStatus}`,
+        },
+        {
+          title: "Proteína Diária (g/kg)",
+          value: metrics.protein_g_per_kg
+            ? `${metrics.protein_g_per_kg.toFixed(2)} g/kg`
+            : "N/A",
+          description: `Ingestão para longevidade: ${proteinStatus}`,
+        },
+        {
+          title: "Fibras Dietéticas",
+          value: metrics.dietary_fiber_grams
+            ? `${metrics.dietary_fiber_grams} g`
+            : "N/A",
+          description: `Meta > 25g. Status: ${fiberStatus}`,
+        },
+        {
+          title: "Janela Alimentar",
+          value: metrics.eating_window_hours
+            ? `${metrics.eating_window_hours.toFixed(1)} h`
+            : "N/A",
+          description: `Tempo de jejum: ${eatingWindowStatus}`,
+        },
+        {
+          title: "Razão Sódio:Potássio",
+          value: metrics.sodium_potassium_ratio
+            ? metrics.sodium_potassium_ratio.toFixed(2)
+            : "N/A",
+          description: `Saúde cardiovascular: ${naKStatus}`,
+        },
+        {
+          title: "Hidratação (mL/kg)",
+          value: metrics.hydration_ml_per_kg
+            ? `${metrics.hydration_ml_per_kg.toFixed(0)} mL/kg`
+            : "N/A",
+          description: `Nível de hidratação: ${hydrationStatus}`,
+        },
+      ],
+    },
+    {
+      title: "Saúde Mental e Bem-Estar",
+      description:
+        "Avaliação da performance cognitiva, fadiga e equilíbrio emocional.",
+      decorationColor: "violet",
+      icon: Brain,
+      iconColor: "text-violet-600",
+      iconBackground: "bg-violet-100 dark:bg-violet-900/30",
+      metrics: [
+        {
+          title: "Tempo de Reação (PVT)",
+          value: metrics.reaction_time_pvt_ms
+            ? `${metrics.reaction_time_pvt_ms} ms`
+            : "N/A",
+          description: `Fadiga/Alerta: ${pvtStatus}`,
+        },
+        {
+          title: "Lapsos no PVT",
+          value: metrics.pvt_lapses_count
+            ? `${metrics.pvt_lapses_count} lapsos`
+            : "N/A",
+          description: `Queda de atenção: ${lapsesStatus}`,
+        },
+        {
+          title: "Score Cognitivo",
+          value: metrics.cognitive_test_score
+            ? metrics.cognitive_test_score.toFixed(2)
+            : "N/A",
+          description: `Performance diária: ${cognitiveStatus}`,
+        },
+        {
+          title: "Índice de Estresse (HRV)",
+          value: metrics.hrv_stress_index
+            ? metrics.hrv_stress_index.toFixed(1)
+            : "N/A",
+          description: `Carga estressora: ${hrvStressStatus}`,
+        },
+        {
+          title: "EDA Tônica Média",
+          value: metrics.eda_tonic_microsiemens
+            ? `${metrics.eda_tonic_microsiemens.toFixed(2)} µS`
+            : "N/A",
+          description: `Ativação simpática: ${edaStatus}`,
+        },
+        {
+          title: "Carga de FA",
+          value: metrics.afib_history_percent
+            ? `${metrics.afib_history_percent.toFixed(1)}%`
+            : "N/A",
+          description: `Risco de Fibrilação Atrial: ${afibStatus}`,
+        },
+        {
+          title: "Score de Humor",
+          value: metrics.mood_score ? `${metrics.mood_score}/5` : "N/A",
+          description: `Bem-estar percebido: ${moodStatus}`,
+        },
+        {
+          title: "Minutos de Meditação",
+          value: `${metrics.meditation_minutes} min`,
+          description: "Foco e redução de estresse.",
+        },
+      ],
+    },
+    {
+      title: "Saúde Geral",
+      description: "Indicadores de saúde globais e composição corporal.",
+      decorationColor: "emerald",
+      icon: Smile,
+      iconColor: "text-emerald-600",
+      iconBackground: "bg-emerald-100 dark:bg-emerald-900/30",
+      metrics: [
+        {
+          title: "Pressão Arterial",
+          value:
+            metrics.blood_pressure_systolic && metrics.blood_pressure_diastolic
+              ? `${metrics.blood_pressure_systolic}/${metrics.blood_pressure_diastolic} mmHg`
+              : "N/A",
+          description: `Saúde cardiovascular: ${bpStatus}`,
+        },
+        {
+          title: "Peso Corporal",
+          value: metrics.weight_kg ? `${metrics.weight_kg.toFixed(1)} kg` : "N/A",
+          description: "Monitoramento de composição.",
+        },
+        {
+          title: "Hidratação Total",
+          value: `${metrics.water_liters.toFixed(1)} L`,
+          description: "Meta diária sugerida: 2.5 L.",
+        },
+        {
+          title: "Calorias do treino",
+          value: metrics.workout_calories
+            ? `${metrics.workout_calories.toFixed(0)} kcal`
+            : "N/A",
+          description: "Energia dedicada ao exercício.",
+        },
+        {
+          title: "Calorias totais",
+          value: metrics.calories_burned
+            ? `${metrics.calories_burned.toFixed(0)} kcal`
+            : "N/A",
+          description: "Gasto energético diário.",
+        },
+      ],
+    },
+  ];
+
+  return (
+    <Grid
+      numItemsSm={1}
+      numItemsMd={2}
+      numItemsLg={2}
+      numItemsXl={3}
+      className="gap-6"
+    >
+      {pillars.map((pillar) => (
+        <Card
+          key={pillar.title}
+          decoration="top"
+          decorationColor={pillar.decorationColor}
+          className="space-y-4"
+        >
+          <Flex justifyContent="between" alignItems="start" className="gap-4">
+            <div>
+              <Title className="text-base font-semibold text-tremor-content-strong">
+                {pillar.title}
+              </Title>
+              <Text className="mt-1 text-sm text-tremor-content-subtle">
+                {pillar.description}
+              </Text>
+            </div>
+            <span
+              className={`flex h-10 w-10 items-center justify-center rounded-full ${pillar.iconBackground}`}
+            >
+              <pillar.icon className={`h-5 w-5 ${pillar.iconColor}`} />
+            </span>
+          </Flex>
+
+          <Divider className="my-2" />
+
+          <div className="space-y-3">
+            {pillar.metrics.map((metric) => (
+              <div
+                key={`${pillar.title}-${metric.title}`}
+                className="rounded-lg border border-tremor-border bg-tremor-background-muted p-3"
+              >
+                <Flex justifyContent="between" alignItems="start" className="gap-4">
+                  <div>
+                    <Text className="font-medium text-tremor-content-strong">
+                      {metric.title}
+                    </Text>
+                    <Text className="text-sm text-tremor-content-subtle">
+                      {metric.description}
+                    </Text>
+                  </div>
+                  <Text className="font-semibold text-right text-tremor-content-strong">
+                    {metric.value}
+                  </Text>
+                </Flex>
+              </div>
             ))}
-        </div>
-    );
+          </div>
+        </Card>
+      ))}
+    </Grid>
+  );
 }
