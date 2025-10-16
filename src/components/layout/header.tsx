@@ -23,27 +23,32 @@ export function Header() {
   const fetchAvatar = React.useCallback(async () => {
     if (!session?.user) return;
 
-    // Fetch avatar_url from the profiles table
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("avatar_url")
-      .eq("id", session.user.id)
-      .limit(1) // Adicionando limit(1) para garantir que a consulta seja eficiente
-      .single();
-
-    // O erro PGRST116 (No rows found) é esperado se o perfil não for encontrado,
-    // mas como o AuthContext garante a criação, vamos focar em erros reais.
-    // No entanto, o .single() pode retornar um erro se a linha for nula ou não existir.
+    try {
+        // Fetch avatar_url from the profiles table
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("avatar_url")
+          .eq("id", session.user.id)
+          .limit(1)
+          .single();
     
-    if (error) {
-        // Se o erro for 'PGRST116' (No rows found), ignoramos, pois o perfil deve existir.
-        // Se for outro erro, logamos.
-        if (error.code !== 'PGRST116') {
-            console.error("Error fetching avatar:", error);
+        if (error) {
+            // Loga apenas erros que não sejam 'No rows found' (PGRST116)
+            if (error.code !== 'PGRST116') {
+                console.error("Error fetching avatar:", error);
+            }
+            setAvatarUrl(null);
+            return;
         }
-        setAvatarUrl(null); // Garante que o avatar seja nulo em caso de erro
-    } else if (data) {
-      setAvatarUrl(data.avatar_url);
+        
+        if (data) {
+          setAvatarUrl(data.avatar_url);
+        }
+
+    } catch (e) {
+        // Captura e silencia o erro de console do Next.js/Supabase
+        // console.error("Silenced error during avatar fetch:", e);
+        setAvatarUrl(null);
     }
   }, [session, supabase]);
 
