@@ -12,7 +12,7 @@ export function QuickReply({ text, onSelect }: QuickReplyProps) {
     <Button
       variant="outline"
       size="sm"
-      className="h-7 px-2.5 text-xs whitespace-nowrap rounded-full"
+      className="h-6 px-2 text-xs whitespace-nowrap rounded-full"
       onClick={() => onSelect(text)}
     >
       {text}
