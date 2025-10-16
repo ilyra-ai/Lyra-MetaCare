@@ -186,9 +186,6 @@ export function ChatAssistantContent() {
       >
         {/* Indicador de início da conversa */}
         <div className="flex flex-col items-center justify-center py-6 animate-fade-in">
-          <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-violet-100 to-fuchsia-100 dark:from-violet-900/30 dark:to-fuchsia-900/30 rounded-full mb-3">
-            <Sparkles className="w-8 h-8 text-violet-600 dark:text-violet-400" />
-          </div>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
             Início da conversa • {new Date().toLocaleDateString('pt-BR')}
           </p>
@@ -259,6 +256,8 @@ export function ChatAssistantContent() {
 
         {/* Footer info */}
         <div className="flex items-center justify-center gap-2 mt-3 text-[10px] text-neutral-400 dark:text-neutral-600">
+          <Zap className="w-3 h-3" />
+          <span>Assistente alimentado por IA • Respostas instantâneas</span>
         </div>
       </div>
 
