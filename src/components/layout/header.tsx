@@ -32,22 +32,21 @@ export function Header() {
           .limit(1)
           .single();
     
-        if (error) {
-            // Loga apenas erros que não sejam 'No rows found' (PGRST116)
-            if (error.code !== 'PGRST116') {
-                console.error("Error fetching avatar:", error);
-            }
+        if (error && error.code !== 'PGRST116') {
+            // Apenas loga erros que não sejam "No rows found"
+            console.error("Error fetching avatar:", error);
             setAvatarUrl(null);
             return;
         }
         
         if (data) {
           setAvatarUrl(data.avatar_url);
+        } else {
+          setAvatarUrl(null);
         }
 
     } catch (e) {
-        // Captura e silencia o erro de console do Next.js/Supabase
-        // console.error("Silenced error during avatar fetch:", e);
+        // Silencia erros de console do Next.js/Supabase que ocorrem durante o .single()
         setAvatarUrl(null);
     }
   }, [session, supabase]);
