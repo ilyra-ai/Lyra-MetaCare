@@ -184,12 +184,6 @@ export function ChatAssistantContent() {
           scrollbarColor: 'rgba(139, 92, 246, 0.3) transparent'
         }}
       >
-        {/* Indicador de início da conversa */}
-        <div className="flex flex-col items-center justify-center py-6 animate-fade-in">
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-            Início da conversa • {new Date().toLocaleDateString('pt-BR')}
-          </p>
-        </div>
 
         {/* Mensagens */}
         {messages.map((msg, index) => (
