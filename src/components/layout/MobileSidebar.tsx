@@ -19,6 +19,7 @@ import {
   MessageCircle,
   Menu,
   Calendar,
+  BarChart2,
 } from "lucide-react";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { Separator } from "@/components/ui/separator";
@@ -55,17 +56,22 @@ export function MobileSidebar() {
 
           <SidebarLink href="/connect" icon={Zap}>Conexão de Dados</SidebarLink>
           <SidebarLink href="/profile" icon={User}>Perfil</SidebarLink>
-          <SidebarLink href="/settings" icon={Settings}>Configurações</SidebarLink>
           
           {isAdmin && (
             <>
               <Separator className="my-2" />
+              <div className="px-3 py-2 text-xs font-semibold text-muted-foreground">ADMINISTRAÇÃO</div>
               <SidebarLink 
                 href="/admin/ai-config" 
-                icon={Shield} 
-                className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+                icon={Shield}
               >
-                Admin IA
+                Configuração da IA
+              </SidebarLink>
+              <SidebarLink 
+                href="/admin/reports" 
+                icon={BarChart2}
+              >
+                Relatórios
               </SidebarLink>
             </>
           )}
