@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, User, Settings, BrainCircuit, Target, Zap, Shield, HeartPulse, MessageCircle } from "lucide-react";
+import { LayoutDashboard, User, Settings, BrainCircuit, Target, Zap, Shield, HeartPulse, MessageCircle, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsAdmin } from "@/hooks/use-is-admin"; // Importando o hook de admin
 
@@ -28,6 +28,12 @@ export function Sidebar() {
           <Link href="/goals">
             <Target className="mr-2 h-4 w-4" />
             Metas
+          </Link>
+        </Button>
+        <Button asChild variant="ghost" className="w-full justify-start">
+          <Link href="/appointments">
+            <Calendar className="mr-2 h-4 w-4" />
+            Agendamentos
           </Link>
         </Button>
         <Button asChild variant="ghost" className="w-full justify-start">

@@ -18,6 +18,7 @@ import {
   HeartPulse,
   MessageCircle,
   Menu,
+  Calendar,
 } from "lucide-react";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 
@@ -53,6 +54,12 @@ export function MobileSidebar() {
             <Link href="/goals">
               <Target className="mr-2 h-4 w-4" />
               Metas
+            </Link>
+          </Button>
+          <Button asChild variant="ghost" className="w-full justify-start">
+            <Link href="/appointments">
+              <Calendar className="mr-2 h-4 w-4" />
+              Agendamentos
             </Link>
           </Button>
           <Button asChild variant="ghost" className="w-full justify-start">
