@@ -28,10 +28,20 @@ export function Header() {
       .from("profiles")
       .select("avatar_url")
       .eq("id", session.user.id)
+      .limit(1) // Adicionando limit(1) para garantir que a consulta seja eficiente
       .single();
 
-    if (error && error.code !== 'PGRST116') {
-      console.error("Error fetching avatar:", error);
+    // O erro PGRST116 (No rows found) é esperado se o perfil não for encontrado,
+    // mas como o AuthContext garante a criação, vamos focar em erros reais.
+    // No entanto, o .single() pode retornar um erro se a linha for nula ou não existir.
+    
+    if (error) {
+        // Se o erro for 'PGRST116' (No rows found), ignoramos, pois o perfil deve existir.
+        // Se for outro erro, logamos.
+        if (error.code !== 'PGRST116') {
+            console.error("Error fetching avatar:", error);
+        }
+        setAvatarUrl(null); // Garante que o avatar seja nulo em caso de erro
     } else if (data) {
       setAvatarUrl(data.avatar_url);
     }
