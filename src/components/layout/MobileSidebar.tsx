@@ -21,6 +21,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { useIsAdmin } from "@/hooks/use-is-admin";
+import { Separator } from "@/components/ui/separator";
 
 export function MobileSidebar() {
   const isAdmin = useIsAdmin();
@@ -37,7 +38,9 @@ export function MobileSidebar() {
         <div className="p-4 border-b">
           <h1 className="text-2xl font-bold text-center text-primary">Lyra MetaCare</h1>
         </div>
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-1">
+          {/* Grupo: Análise */}
+          <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">Análise</div>
           <Button asChild variant="ghost" className="w-full justify-start">
             <Link href="/">
               <LayoutDashboard className="mr-2 h-4 w-4" />
@@ -56,6 +59,11 @@ export function MobileSidebar() {
               Metas
             </Link>
           </Button>
+
+          <Separator className="my-2" />
+
+          {/* Grupo: Ferramentas */}
+          <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">Ferramentas</div>
           <Button asChild variant="ghost" className="w-full justify-start">
             <Link href="/appointments">
               <Calendar className="mr-2 h-4 w-4" />
@@ -74,6 +82,11 @@ export function MobileSidebar() {
               Assistente IA
             </Link>
           </Button>
+          
+          <Separator className="my-2" />
+
+          {/* Grupo: Sua Conta */}
+          <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">Sua Conta</div>
           <Button asChild variant="ghost" className="w-full justify-start">
             <Link href="/connect">
               <Zap className="mr-2 h-4 w-4" />
@@ -86,22 +99,25 @@ export function MobileSidebar() {
               Perfil
             </Link>
           </Button>
-          
-          {isAdmin && (
-              <Button asChild variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
-                  <Link href="/admin/ai-config">
-                      <Shield className="mr-2 h-4 w-4" />
-                      Admin IA
-                  </Link>
-              </Button>
-          )}
-
           <Button asChild variant="ghost" className="w-full justify-start">
             <Link href="#">
               <Settings className="mr-2 h-4 w-4" />
               Configurações (Em Breve)
             </Link>
           </Button>
+          
+          {isAdmin && (
+            <>
+              <Separator className="my-2" />
+              <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">Admin</div>
+              <Button asChild variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                  <Link href="/admin/ai-config">
+                      <Shield className="mr-2 h-4 w-4" />
+                      Admin IA
+                  </Link>
+              </Button>
+            </>
+          )}
         </nav>
       </SheetContent>
     </Sheet>
