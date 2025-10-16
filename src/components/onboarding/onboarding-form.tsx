@@ -41,7 +41,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
-import { Heart, ArrowRight, User, Activity, ArrowLeft, Calendar, Clock, MapPin, Dumbbell, Target, ShieldCheck, Scale, Moon, Utensils, Zap, Weight, Sun, BrainCircuit, TrendingUp, Droplet, Footprints, Rss, Globe } from "lucide-react";
+import { Heart, ArrowRight, User, Activity, ArrowLeft, Calendar, Clock, MapPin, Dumbbell, Target, ShieldCheck, Scale, Moon, Utensils, Zap, Weight, Sun, Waves, Rss, Globe, Droplet, Footprints, BrainCircuit, TrendingUp } from "lucide-react";
 import { OnboardingNavigationDots } from "./OnboardingNavigationDots";
 import { cn } from "@/lib/utils";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -144,6 +144,34 @@ export function OnboardingForm() {
       form.setValue("age", calculatedAge, { shouldValidate: true });
     }
   }, [birthDate, form]);
+
+  // Efeito para preencher nome/sobrenome se vierem do OAuth
+  React.useEffect(() => {
+    if (session?.user) {
+        const metadata = session.user.user_metadata;
+        const currentFirstName = form.getValues("first_name");
+        const currentLastName = form.getValues("last_name");
+
+        // Tenta preencher o nome se o campo estiver vazio e houver dados no metadata
+        if (!currentFirstName && metadata?.first_name) {
+            form.setValue("first_name", metadata.first_name, { shouldValidate: true });
+        }
+        if (!currentLastName && metadata?.last_name) {
+            form.setValue("last_name", metadata.last_name, { shouldValidate: true });
+        }
+        // Fallback para 'full_name' se 'first_name' e 'last_name' não existirem
+        if ((!currentFirstName || !currentLastName) && metadata?.full_name) {
+            const parts = metadata.full_name.split(' ');
+            if (!currentFirstName && parts.length > 0) {
+                form.setValue("first_name", parts[0], { shouldValidate: true });
+            }
+            if (!currentLastName && parts.length > 1) {
+                form.setValue("last_name", parts.slice(1).join(' '), { shouldValidate: true });
+            }
+        }
+    }
+  }, [session, form]);
+
 
   // Efeito para rolar a tela para o topo após a transição do carrossel
   React.useEffect(() => {
@@ -451,7 +479,7 @@ export function OnboardingForm() {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => api?.scrollPrev()}
+                      onClick={() => handleNext("first_name")} // Volta para o primeiro campo obrigatório
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                     </Button>
