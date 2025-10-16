@@ -148,7 +148,7 @@ export function ChatBubble({ message, isUser }: ChatBubbleProps) {
       <div className="flex-1 relative">
         {/* Bubble principal com gradientes e efeitos */}
         <div className={cn(
-          "relative p-4 rounded-3xl transition-all duration-300",
+          "relative p-3 rounded-3xl transition-all duration-300",
           "animate-in fade-in-50 slide-in-from-bottom-3 duration-500",
           isUser 
             ? "bg-gradient-to-br from-blue-600 to-cyan-600 text-white rounded-br-md shadow-lg shadow-blue-500/20" 
@@ -167,7 +167,7 @@ export function ChatBubble({ message, isUser }: ChatBubbleProps) {
           {/* Conteúdo da mensagem */}
           <div className="relative z-10">
             <p className={cn(
-              "text-sm leading-relaxed",
+              "text-xs leading-relaxed",
               isUser ? "font-medium" : ""
             )}>
               {displayedText}

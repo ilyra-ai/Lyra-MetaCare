@@ -186,7 +186,7 @@ export function ChatAssistantContent() {
       >
         {/* Indicador de início da conversa */}
         <div className="flex flex-col items-center justify-center py-6 animate-fade-in">
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
             Início da conversa • {new Date().toLocaleDateString('pt-BR')}
           </p>
         </div>
