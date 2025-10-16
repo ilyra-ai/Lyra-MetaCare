@@ -13,10 +13,34 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut } from "lucide-react";
+import React from "react";
 
 export function Header() {
   const { session, supabase } = useAuth();
   const router = useRouter();
+  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+
+  const fetchAvatar = React.useCallback(async () => {
+    if (!session?.user) return;
+
+    // Fetch avatar_url from the profiles table
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("avatar_url")
+      .eq("id", session.user.id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error("Error fetching avatar:", error);
+    } else if (data) {
+      setAvatarUrl(data.avatar_url);
+    }
+  }, [session, supabase]);
+
+  React.useEffect(() => {
+    fetchAvatar();
+  }, [fetchAvatar]);
+
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -29,12 +53,12 @@ export function Header() {
   const initial = userEmail.charAt(0).toUpperCase();
 
   return (
-    <header className="flex items-center justify-end h-16 px-8 border-b bg-white">
+    <header className="flex items-center justify-end h-16 px-8 border-b bg-white dark:bg-gray-950 dark:border-gray-800">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={session.user.user_metadata?.avatar_url} alt={userEmail} />
+              <AvatarImage src={avatarUrl || undefined} alt={userEmail} />
               <AvatarFallback>{initial}</AvatarFallback>
             </Avatar>
           </Button>

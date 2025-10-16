@@ -352,6 +352,41 @@ export interface Database {
           }
         ]
       }
+      habits: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          is_active: boolean
+          frequency: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          is_active?: boolean
+          frequency?: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          is_active?: boolean
+          frequency?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       instruments: {
         Row: {
           id: number
@@ -405,6 +440,7 @@ export interface Database {
           birth_date: string | null
           birth_time: string | null
           birth_location: string | null
+          avatar_url: string | null
         }
         Insert: {
           id: string
@@ -419,6 +455,7 @@ export interface Database {
           birth_date?: string | null
           birth_time?: string | null
           birth_location?: string | null
+          avatar_url?: string | null
         }
         Update: {
           id?: string
@@ -433,6 +470,7 @@ export interface Database {
           birth_date?: string | null
           birth_time?: string | null
           birth_location?: string | null
+          avatar_url?: string | null
         }
         Relationships: [
           {
