@@ -23,12 +23,15 @@ export default function ChatPage() {
       <Sidebar />
       <div className="flex flex-col flex-1 min-w-0">
         <Header />
-        <main className="flex-1 flex flex-col p-4 sm:p-6 md:p-8 animate-in fade-in duration-500">
-           <div className="flex-1 flex flex-col min-h-0">
+        <main className="flex-1 flex flex-col p-4 animate-in fade-in duration-500">
+          {/* Container que centraliza e define a largura máxima do chat */}
+          <div className="flex-1 flex flex-col min-h-0 w-full max-w-6xl mx-auto">
             <ChatAssistantContent />
           </div>
         </main>
-
+        <div className="border-t border-gray-100 dark:border-gray-800">
+          <MadeWithIlyra />
+        </div>
       </div>
     </div>
   );
