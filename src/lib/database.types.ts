@@ -110,6 +110,10 @@ export interface Database {
           sleep_regularity_index: number | null
           social_jetlag_hours: number | null
           waso_minutes: number | null
+          training_load_epoc: number | null
+          daily_strain: number | null
+          sedentary_hours: number | null
+          sedentary_breaks: number | null
         }
         Insert: {
           id?: string
@@ -154,6 +158,10 @@ export interface Database {
           sleep_regularity_index?: number | null
           social_jetlag_hours?: number | null
           waso_minutes?: number | null
+          training_load_epoc?: number | null
+          daily_strain?: number | null
+          sedentary_hours?: number | null
+          sedentary_breaks?: number | null
         }
         Update: {
           id?: string
@@ -198,6 +206,10 @@ export interface Database {
           sleep_regularity_index?: number | null
           social_jetlag_hours?: number | null
           waso_minutes?: number | null
+          training_load_epoc?: number | null
+          daily_strain?: number | null
+          sedentary_hours?: number | null
+          sedentary_breaks?: number | null
         }
         Relationships: [
           {

@@ -51,6 +51,12 @@ export interface DailyMetric {
   sleep_regularity_index: number | null;
   social_jetlag_hours: number | null;
   waso_minutes: number | null;
+
+  // NEW ACTIVITY METRICS
+  training_load_epoc: number | null;
+  daily_strain: number | null;
+  sedentary_hours: number | null;
+  sedentary_breaks: number | null;
 }
 
 interface UseDailyMetricsResult {
@@ -102,6 +108,11 @@ const defaultMetricValues = {
     sleep_regularity_index: null,
     social_jetlag_hours: null,
     waso_minutes: null,
+    // NEW ACTIVITY METRICS DEFAULTS
+    training_load_epoc: null,
+    daily_strain: null,
+    sedentary_hours: null,
+    sedentary_breaks: null,
 }
 
 export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
@@ -130,7 +141,8 @@ export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
         caffeine_mg, stress_score, recovery_score, readiness_score, blood_glucose_mgdl, blood_pressure_systolic,
         blood_pressure_diastolic, weight_kg, mood_score, meditation_minutes,
         hrr_1min_bpm,
-        sleep_regularity_index, social_jetlag_hours, waso_minutes
+        sleep_regularity_index, social_jetlag_hours, waso_minutes,
+        training_load_epoc, daily_strain, sedentary_hours, sedentary_breaks
       `)
       .eq("user_id", session.user.id)
       .gte("date", startDate)

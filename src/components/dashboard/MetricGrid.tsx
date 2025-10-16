@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DailyMetric } from "@/hooks/use-daily-metrics";
-import { Activity, BedDouble, HeartPulse, Flame, TrendingUp, Zap, BrainCircuit, Utensils, Droplet, Thermometer, Gauge, Moon, Clock, Smile, Dumbbell, RefreshCw, Sun, Waves, Rss } from "lucide-react";
+import { Activity, BedDouble, HeartPulse, Flame, TrendingUp, Zap, BrainCircuit, Utensils, Droplet, Thermometer, Gauge, Moon, Clock, Smile, Dumbbell, RefreshCw, Sun, Waves, Rss, Clock4, Pause } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // --- Helper Functions ---
@@ -53,6 +53,12 @@ export function MetricGrid({ metrics }: MetricGridProps) {
     const moodStatus = metrics.mood_score === 5 ? "Excelente" : (metrics.mood_score && metrics.mood_score >= 3 ? "Neutro" : "Baixo");
     const hrrStatus = (metrics.hrr_1min_bpm || 0) >= 30 ? "Excelente" : "Atenção";
     const spo2Status = (metrics.spo2_average || 0) >= 95 ? "Normal" : "Monitorar";
+    
+    // Activity Metrics Status
+    const moderateVigorousGoal = 150;
+    const activeMinutesStatus = metrics.active_minutes >= moderateVigorousGoal ? "Meta semanal alcançada" : "Aumentar atividade";
+    const stepsStatus = metrics.steps >= 8000 ? "Meta de 8k passos alcançada" : "Continue se movendo";
+    const sedentaryStatus = (metrics.sedentary_hours || 0) < 8 ? "Baixo" : "Alto";
 
 
     const pillars = [
@@ -108,45 +114,59 @@ export function MetricGrid({ metrics }: MetricGridProps) {
             ]
         },
         {
-            title: "Atividade e Performance",
-            description: "Monitoramento do seu gasto energético e aptidão física.",
+            title: "Capacidade Cardiorrespiratória e Atividade Física",
+            description: "Monitoramento do seu gasto energético, aptidão física e carga de estresse do treino.",
             icon: Activity,
             color: "text-orange-600",
             metrics: [
                 { 
-                    title: "Passos Hoje", 
-                    value: `${metrics.steps.toLocaleString()} Steps`, 
-                    description: metrics.steps >= 8000 ? "Meta alcançada!" : "Continue se movendo.", 
-                    icon: Activity, 
-                    colorClass: "text-green-600" 
-                },
-                { 
-                    title: "Minutos Ativos", 
-                    value: `${metrics.active_minutes} min`, 
-                    description: "Tempo em zona moderada/alta.", 
-                    icon: Dumbbell, 
-                    colorClass: "text-orange-600" 
-                },
-                { 
-                    title: "Distância Total", 
-                    value: `${(metrics.total_distance_km || 0).toFixed(1)} km`, 
-                    description: "Caminhada e corrida.", 
-                    icon: Zap, 
-                    colorClass: "text-yellow-600" 
-                },
-                { 
-                    title: "VO2 Máximo", 
-                    value: metrics.vo2_max ? `${metrics.vo2_max.toFixed(1)}` : "N/A", 
-                    description: "Capacidade aeróbica.", 
+                    title: "VO₂max Estimado", // Métrica 13
+                    value: metrics.vo2_max ? `${metrics.vo2_max.toFixed(1)} mL/kg/min` : "N/A", 
+                    description: "Principal indicador de aptidão.", 
                     icon: Gauge, 
                     colorClass: "text-blue-600" 
                 },
                 { 
-                    title: "Calorias Queimadas", 
-                    value: metrics.calories_burned ? `${metrics.calories_burned} kcal` : "N/A", 
-                    description: "Total diário.", 
+                    title: "Minutos Mod/Vigorosa", // Métrica 14 (Usando active_minutes como proxy)
+                    value: `${metrics.active_minutes} min`, 
+                    description: activeMinutesStatus, 
+                    icon: Dumbbell, 
+                    colorClass: "text-orange-600" 
+                },
+                { 
+                    title: "Passos por Dia", // Métrica 15
+                    value: `${metrics.steps.toLocaleString()} Steps`, 
+                    description: stepsStatus, 
+                    icon: Activity, 
+                    colorClass: "text-green-600" 
+                },
+                { 
+                    title: "Carga de Treino (EPOC)", // Métrica 16
+                    value: metrics.training_load_epoc ? `${metrics.training_load_epoc.toFixed(0)} UA` : "N/A", 
+                    description: "Estresse fisiológico do exercício.", 
                     icon: Flame, 
                     colorClass: "text-red-500" 
+                },
+                { 
+                    title: "Strain Diário", // Métrica 17
+                    value: metrics.daily_strain ? `${metrics.daily_strain.toFixed(1)} / 21` : "N/A", 
+                    description: "Intensidade acumulada do dia.", 
+                    icon: Zap, 
+                    colorClass: "text-yellow-600" 
+                },
+                { 
+                    title: "Tempo Sedentário", // Métrica 18 (Parte 1)
+                    value: metrics.sedentary_hours ? `${metrics.sedentary_hours.toFixed(1)} h` : "N/A", 
+                    description: `Nível de sedentarismo: ${sedentaryStatus}`, 
+                    icon: Clock4, 
+                    colorClass: "text-gray-500" 
+                },
+                { 
+                    title: "Quebras Sedentárias", // Métrica 18 (Parte 2)
+                    value: metrics.sedentary_breaks ? `${metrics.sedentary_breaks} pausas` : "N/A", 
+                    description: "Número de pausas longas.", 
+                    icon: Pause, 
+                    colorClass: "text-teal-500" 
                 },
             ]
         },
