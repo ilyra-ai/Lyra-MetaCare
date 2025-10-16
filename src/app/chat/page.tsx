@@ -19,7 +19,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50/50 dark:bg-gray-950 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex min-h-screen font-[family-name:var(--font-geist-sans)]">
       <Sidebar />
       <div className="flex flex-col flex-1 min-w-0">
         <Header />
