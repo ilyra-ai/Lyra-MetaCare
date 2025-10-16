@@ -47,7 +47,7 @@ interface AgendaProps {
 
 export function Agenda({ events, onSelectSlot, onSelectEvent }: AgendaProps) {
   return (
-    <div className="h-[600px]">
+    <div className="h-[300px]">
       <Calendar
         localizer={localizer}
         events={events}

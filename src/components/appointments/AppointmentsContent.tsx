@@ -179,7 +179,6 @@ export function AppointmentsContent() {
         <Card>
           <CardHeader>
             <CardTitle>1. Agenda</CardTitle>
-            <CardDescription>Clique em um dia para adicionar uma consulta ou em um evento para editá-lo.</CardDescription>
           </CardHeader>
           <CardContent>
             <Agenda
