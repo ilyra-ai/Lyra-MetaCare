@@ -30,7 +30,6 @@ export function Header() {
       .eq("id", session.user.id)
       .maybeSingle();
 
-    // Corrigido: Checa se 'error' existe, em vez de 'error.code'
     if (error) {
       setAvatarUrl(null);
       return;
@@ -55,33 +54,35 @@ export function Header() {
   const initial = userEmail.charAt(0).toUpperCase();
 
   return (
-    <header className="flex items-center justify-between h-16 px-4 md:px-8 border-b bg-white dark:bg-gray-950 dark:border-gray-800">
+    <header className="flex items-center h-16 px-4 md:px-8 border-b bg-white dark:bg-gray-950 dark:border-gray-800">
       <MobileSidebar />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={avatarUrl || undefined} alt={userEmail} />
-              <AvatarFallback>{initial}</AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">Signed in as</p>
-              <p className="text-xs leading-none text-muted-foreground truncate">
-                {userEmail}
-              </p>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleSignOut}>
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="ml-auto">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={avatarUrl || undefined} alt={userEmail} />
+                <AvatarFallback>{initial}</AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">Signed in as</p>
+                <p className="text-xs leading-none text-muted-foreground truncate">
+                  {userEmail}
+                </p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleSignOut}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }
