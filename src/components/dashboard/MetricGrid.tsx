@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DailyMetric } from "@/hooks/use-daily-metrics";
-import { Activity, BedDouble, HeartPulse, Flame, TrendingUp, Zap, BrainCircuit, Utensils, Droplet, Thermometer, Gauge, Moon, Clock, Smile, Dumbbell, RefreshCw, Sun, Waves, Rss, Clock4, Pause } from "lucide-react";
+import { Activity, BedDouble, HeartPulse, Flame, TrendingUp, Zap, BrainCircuit, Utensils, Droplet, Thermometer, Gauge, Moon, Clock, Smile, Dumbbell, RefreshCw, Sun, Waves, Rss, Clock4, Pause, Scale, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // --- Helper Functions ---
@@ -59,6 +59,10 @@ export function MetricGrid({ metrics }: MetricGridProps) {
     const activeMinutesStatus = metrics.active_minutes >= moderateVigorousGoal ? "Meta semanal alcançada" : "Aumentar atividade";
     const stepsStatus = metrics.steps >= 8000 ? "Meta de 8k passos alcançada" : "Continue se movendo";
     const sedentaryStatus = (metrics.sedentary_hours || 0) < 8 ? "Baixo" : "Alto";
+
+    // Nutrition & Metabolism Status
+    const glucoseStatus = (metrics.blood_glucose_mgdl || 0) < 100 ? "Normal" : "Monitorar";
+    const bpStatus = (metrics.blood_pressure_systolic || 0) < 120 && (metrics.blood_pressure_diastolic || 0) < 80 ? "Ótima" : "Atenção";
 
 
     const pillars = [
@@ -228,27 +232,50 @@ export function MetricGrid({ metrics }: MetricGridProps) {
             ]
         },
         {
-            title: "Nutrição e Bem-Estar",
-            description: "Monitoramento de macronutrientes, hidratação e estado mental.",
+            title: "Nutrição e Metabolismo",
+            description: "Monitoramento de macronutrientes, hidratação, peso e indicadores metabólicos.",
             icon: Utensils,
             color: "text-amber-600",
             metrics: [
                 { 
-                    title: "Proteína Consumida", 
+                    title: "Glicose Sanguínea", // Métrica 19
+                    value: metrics.blood_glucose_mgdl ? `${metrics.blood_glucose_mgdl} mg/dL` : "N/A", 
+                    description: `Pós-prandial: ${glucoseStatus}`, 
+                    icon: Droplet, 
+                    colorClass: "text-red-500" 
+                },
+                { 
+                    title: "Pressão Arterial", // Métrica 20
+                    value: metrics.blood_pressure_systolic && metrics.blood_pressure_diastolic 
+                        ? `${metrics.blood_pressure_systolic}/${metrics.blood_pressure_diastolic} mmHg` 
+                        : "N/A", 
+                    description: `Saúde cardiovascular: ${bpStatus}`, 
+                    icon: Heart, 
+                    colorClass: "text-pink-500" 
+                },
+                { 
+                    title: "Peso Corporal", // Métrica 21
+                    value: metrics.weight_kg ? `${metrics.weight_kg.toFixed(1)} kg` : "N/A", 
+                    description: "Monitoramento de composição.", 
+                    icon: Scale, 
+                    colorClass: "text-gray-600" 
+                },
+                { 
+                    title: "Proteína Consumida", // Métrica 22 (Parte 1)
                     value: `${metrics.protein_grams} g`, 
                     description: "Suporte muscular.", 
                     icon: Utensils, 
                     colorClass: "text-amber-600" 
                 },
                 { 
-                    title: "Carboidratos", 
+                    title: "Carboidratos", // Métrica 22 (Parte 2)
                     value: `${metrics.carb_grams} g`, 
                     description: "Fonte primária de energia.", 
                     icon: Utensils, 
                     colorClass: "text-lime-600" 
                 },
                 { 
-                    title: "Gorduras", 
+                    title: "Gorduras", // Métrica 22 (Parte 3)
                     value: `${metrics.fat_grams} g`, 
                     description: "Saúde hormonal e celular.", 
                     icon: Utensils, 
