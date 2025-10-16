@@ -102,7 +102,7 @@ export function ChatAssistantContent() {
   };
 
   return (
-    <div className="relative flex flex-col h-full max-h-[calc(100vh-175px)] rounded-2xl overflow-hidden shadow-2xl">
+    <div className="relative flex flex-col h-full max-h-[calc(100vh-220px)] rounded-2xl overflow-hidden shadow-2xl">
       {/* Background gradiente animado */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 dark:from-gray-900 dark:via-gray-900 dark:to-violet-950 opacity-60"></div>
       
@@ -114,7 +114,6 @@ export function ChatAssistantContent() {
         <div className="flex items-center gap-3">
           {/* Avatar AI com efeitos */}
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500 rounded-2xl blur-md opacity-50 animate-pulse-slow"></div>
             <div className="relative flex items-center justify-center w-12 h-12 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-purple-600 rounded-2xl shadow-lg">
               <Brain className="w-6 h-6 text-white" />
             </div>
