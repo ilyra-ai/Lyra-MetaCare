@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, User, Target, Zap, BrainCircuit } from "lucide-react";
+import { LayoutDashboard, User, Target, Zap, BrainCircuit, HeartPulse, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/plan", icon: BrainCircuit, label: "Plano" },
-  { href: "/goals", icon: Target, label: "Metas" },
-  { href: "/connect", icon: Zap, label: "Conectar" },
+  { href: "/monitoring", icon: HeartPulse, label: "Ao Vivo" },
+  { href: "/chat", icon: MessageCircle, label: "Chat" },
   { href: "/profile", icon: User, label: "Perfil" },
 ];
 
@@ -28,14 +28,14 @@ export function MobileNavigation() {
               key={item.href} 
               href={item.href} 
               className={cn(
-                "flex flex-col items-center justify-center p-2 text-xs transition-colors duration-200",
+                "flex flex-col items-center justify-center p-2 text-xs transition-colors duration-200 w-1/5", // Garante distribuição igual
                 isActive ? "text-green-600 dark:text-green-400 font-semibold" : "text-gray-500 hover:text-green-600 dark:hover:text-green-400"
               )}
             >
               <Icon 
                 className={cn(
                   "h-6 w-6 transition-transform duration-300",
-                  isActive ? "scale-110 animate-bounce-once" : "" // Simple animation mock
+                  isActive ? "scale-110" : ""
                 )} 
               />
               <span className="mt-1">{item.label}</span>
