@@ -88,8 +88,8 @@ export function ChatInput({
   // Refs
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const waveformIntervalRef = useRef<NodeJS.Timeout>();
-  const suggestionTimerRef = useRef<NodeJS.Timeout>();
+  const waveformIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const suggestionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // IDs únicos para acessibilidade (React 19.2)
   const inputId = useId();
@@ -166,7 +166,7 @@ export function ChatInput({
     } else {
       if (waveformIntervalRef.current) {
         clearInterval(waveformIntervalRef.current);
-        waveformIntervalRef.current = undefined;
+        waveformIntervalRef.current = null;
       }
       setWaveformData([]);
     }
