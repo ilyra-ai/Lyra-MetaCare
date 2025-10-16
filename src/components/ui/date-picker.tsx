@@ -20,37 +20,43 @@ interface DatePickerProps {
 }
 
 // Função de formatação e validação de entrada de texto
-const formatInputDate = (value: string): { formatted: string, date: Date | undefined } => {
+const formatInputDate = (value: string): { displayValue: string, date: Date | undefined } => {
   // Remove todos os caracteres não numéricos
   const cleanValue = value.replace(/\D/g, '');
 
-  let formatted = cleanValue;
+  let displayValue = value; // Valor a ser exibido no input
   let date: Date | undefined = undefined;
 
-  if (cleanValue.length > 8) {
-    formatted = cleanValue.substring(0, 8);
-  }
-
-  // Aplica a máscara DD/MM/AAAA
-  if (formatted.length > 2) {
-    formatted = formatted.substring(0, 2) + '/' + formatted.substring(2);
-  }
-  if (formatted.length > 5) {
-    formatted = formatted.substring(0, 5) + '/' + formatted.substring(5);
-  }
-
-  // Se tiver 10 caracteres (DD/MM/AAAA), tenta parsear a data
-  if (formatted.length === 10) {
-    const parsedDate = parse(formatted, 'dd/MM/yyyy', new Date());
+  if (cleanValue.length === 8) {
+    // Se tiver exatamente 8 dígitos, aplica a máscara e tenta parsear
+    const day = cleanValue.substring(0, 2);
+    const month = cleanValue.substring(2, 4);
+    const year = cleanValue.substring(4, 8);
+    
+    const formattedDateString = `${day}/${month}/${year}`;
+    
+    const parsedDate = parse(formattedDateString, 'dd/MM/yyyy', new Date());
+    
     if (isValid(parsedDate)) {
       date = parsedDate;
+      displayValue = formattedDateString; // Exibe a data formatada
+    } else {
+      // Se for inválida (ex: 35/02/2000), exibe a entrada original limpa
+      displayValue = cleanValue;
     }
+  } else if (cleanValue.length < 8) {
+    // Se tiver menos de 8 dígitos, exibe apenas os dígitos limpos
+    displayValue = cleanValue;
+  } else {
+    // Se tiver mais de 8 dígitos, trunca e exibe os 8 dígitos limpos
+    displayValue = cleanValue.substring(0, 8);
   }
 
-  return { formatted, date };
+  return { displayValue, date };
 };
 
 export function DatePicker({ value, onChange, placeholder = "DD/MM/AAAA", id, disabled }: DatePickerProps) {
+  // O estado interno agora armazena a string de exibição (pode ser DDMMAAAA ou DD/MM/AAAA)
   const [inputValue, setInputValue] = React.useState(value ? format(value, "dd/MM/yyyy") : "");
   const [open, setOpen] = React.useState(false);
 
@@ -72,15 +78,15 @@ export function DatePicker({ value, onChange, placeholder = "DD/MM/AAAA", id, di
   // Lida com a digitação no input
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
-    const { formatted, date } = formatInputDate(rawValue);
+    const { displayValue, date } = formatInputDate(rawValue);
     
-    setInputValue(formatted);
+    setInputValue(displayValue);
 
-    // Se a data for válida e completa (10 caracteres), atualiza o valor do formulário
-    if (date && formatted.length === 10) {
+    // Se a data for válida e completa (8 dígitos limpos), atualiza o valor do formulário
+    if (date) {
       onChange(date);
-    } else if (formatted.length < 10 && value !== undefined) {
-      // Limpa o valor do formulário se o usuário estiver apagando a data
+    } else if (date === undefined && value !== undefined) {
+      // Limpa o valor do formulário se a entrada não for uma data válida de 8 dígitos
       onChange(undefined);
     }
   };
@@ -93,7 +99,7 @@ export function DatePicker({ value, onChange, placeholder = "DD/MM/AAAA", id, di
           value={inputValue}
           onChange={handleInputChange}
           placeholder={placeholder}
-          maxLength={10}
+          maxLength={10} // Permite 10 caracteres (DD/MM/AAAA)
           disabled={disabled}
           className="pr-10" // Adiciona padding para o ícone
         />
