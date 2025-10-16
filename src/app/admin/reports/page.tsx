@@ -18,11 +18,7 @@ export default function AdminReportsPage() {
     return <SplashScreen />;
   }
 
-  if (!session) {
-    return null;
-  }
-
-  if (!isAdmin) {
+  if (!session || !isAdmin) {
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-50/50 p-4">
             <Card className="w-full max-w-md text-center border-red-500/50">
@@ -46,7 +42,7 @@ export default function AdminReportsPage() {
       <div className="flex flex-col flex-1">
         <Header />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
-          <h1 className="text-3xl font-bold mb-8">Relatórios e Configurações</h1>
+          <h1 className="text-3xl font-bold mb-8">Relatórios e Exportação</h1>
           <AdminReportsContent />
         </main>
         <MadeWithIlyra />

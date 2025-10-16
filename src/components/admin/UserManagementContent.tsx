@@ -11,14 +11,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Search, User, MoreHorizontal, ArrowUpDown } from "lucide-react";
+import { Search, User, MoreHorizontal, ArrowUpDown, Trash2, CheckCircle, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { UserDetailModal } from "./UserDetailModal";
 
 interface UserProfile {
@@ -48,8 +59,11 @@ export function UserManagementContent() {
   const [page, setPage] = React.useState(0);
   const [totalUsers, setTotalUsers] = React.useState(0);
   const [sort, setSort] = React.useState({ column: 'created_at', ascending: false });
+  
   const [selectedUser, setSelectedUser] = React.useState<UserProfile | null>(null);
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = React.useState(false);
+  const [userToDelete, setUserToDelete] = React.useState<UserProfile | null>(null);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
 
   const fetchUsers = React.useCallback(async () => {
     setLoading(true);
@@ -81,7 +95,7 @@ export function UserManagementContent() {
   React.useEffect(() => {
     const debounce = setTimeout(() => {
       fetchUsers();
-    }, 300); // Debounce para evitar chamadas excessivas ao digitar
+    }, 300);
     return () => clearTimeout(debounce);
   }, [fetchUsers]);
 
@@ -90,6 +104,41 @@ export function UserManagementContent() {
       column,
       ascending: prev.column === column ? !prev.ascending : true,
     }));
+  };
+
+  const handleToggleOnboarding = async (user: UserProfile) => {
+    const newStatus = !user.onboarding_completed;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ onboarding_completed: newStatus })
+      .eq("id", user.id);
+
+    if (error) {
+      toast.error("Erro ao atualizar status do onboarding.", { description: error.message });
+    } else {
+      toast.success(`Onboarding de ${user.first_name} foi ${newStatus ? 'marcado como completo' : 'redefinido'}.`);
+      fetchUsers(); // Re-fetch para atualizar a lista
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!userToDelete) return;
+    
+    // Nota: A exclusão de um usuário da tabela `auth.users` é uma operação protegida
+    // e geralmente requer uma chamada a uma Edge Function com a service_role_key.
+    // Por simplicidade e segurança, aqui vamos apenas remover o perfil.
+    const { error } = await supabase
+      .from("profiles")
+      .delete()
+      .eq("id", userToDelete.id);
+
+    if (error) {
+      toast.error("Erro ao remover perfil do usuário.", { description: error.message });
+    } else {
+      toast.success(`Perfil de ${userToDelete.first_name} foi removido.`);
+      fetchUsers(); // Re-fetch para atualizar a lista
+    }
+    setIsDeleteAlertOpen(false);
   };
 
   const totalPages = Math.ceil(totalUsers / PAGE_SIZE);
@@ -111,10 +160,7 @@ export function UserManagementContent() {
               placeholder="Buscar por nome ou email..."
               className="pl-8 w-full md:w-1/3"
               value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setPage(0); // Reseta para a primeira página ao buscar
-              }}
+              onChange={(e) => { setSearchTerm(e.target.value); setPage(0); }}
             />
           </div>
           <div className="border rounded-md">
@@ -137,7 +183,7 @@ export function UserManagementContent() {
               </TableHeader>
               <TableBody>
                 {loading ? (
-                  Array.from({ length: 5 }).map((_, i) => (
+                  Array.from({ length: PAGE_SIZE }).map((_, i) => (
                     <TableRow key={i}>
                       <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                       <TableCell><Skeleton className="h-6 w-20" /></TableCell>
@@ -146,7 +192,7 @@ export function UserManagementContent() {
                     </TableRow>
                   ))
                 ) : users.length > 0 ? (
-                  users.map((user: UserProfile) => (
+                  users.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -175,9 +221,17 @@ export function UserManagementContent() {
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem onSelect={() => { setSelectedUser(user); setIsModalOpen(true); }}>
-                              Ver Detalhes
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onSelect={() => { setSelectedUser(user); setIsDetailModalOpen(true); }}>
+                              <Eye className="mr-2 h-4 w-4" /> Ver Detalhes
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => handleToggleOnboarding(user)}>
+                              <CheckCircle className="mr-2 h-4 w-4" /> 
+                              {user.onboarding_completed ? 'Redefinir Onboarding' : 'Completar Onboarding'}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-red-600" onSelect={() => { setUserToDelete(user); setIsDeleteAlertOpen(true); }}>
+                              <Trash2 className="mr-2 h-4 w-4" /> Deletar Perfil
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -195,32 +249,34 @@ export function UserManagementContent() {
             </Table>
           </div>
           <div className="flex items-center justify-end space-x-2 py-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage(p => Math.max(0, p - 1))}
-              disabled={page === 0}
-            >
+            <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}>
               Anterior
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage(p => p + 1)}
-              disabled={page >= totalPages - 1}
-            >
+            <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} disabled={page >= totalPages - 1}>
               Próximo
             </Button>
           </div>
         </CardContent>
       </Card>
       {selectedUser && (
-        <UserDetailModal
-          user={selectedUser}
-          open={isModalOpen}
-          onOpenChange={setIsModalOpen}
-        />
+        <UserDetailModal user={selectedUser} open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen} />
       )}
+      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja deletar o perfil de <span className="font-bold">{userToDelete?.first_name}</span>? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteUser} className="bg-destructive hover:bg-destructive/90">
+              Deletar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

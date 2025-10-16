@@ -2,77 +2,94 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Bell, FileDown, Users, AlertTriangle } from "lucide-react";
+import { FileDown, Users, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
+import * as React from "react";
 
 export function AdminReportsContent() {
+  const { supabase } = useAuth();
+  const [isExporting, setIsExporting] = React.useState(false);
 
-  const handleExport = () => {
-    toast.info("Gerando relatório...", {
-      description: "Esta funcionalidade está em desenvolvimento.",
-    });
-  };
+  const handleExportUsers = async () => {
+    setIsExporting(true);
+    toast.info("Iniciando exportação...", { description: "Buscando todos os perfis de usuários." });
 
-  const handleTestError = () => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      toast.error("Falha na exportação.", { description: error.message });
+      setIsExporting(false);
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      toast.warning("Nenhum usuário para exportar.");
+      setIsExporting(false);
+      return;
+    }
+
     try {
-      throw new Error("Este é um erro de teste para o Sentry a partir da página de admin.");
-    } catch (error) {
-      toast.error("Erro de teste enviado para o Sentry!");
-      // Sentry.captureException(error); // Descomente quando o DSN estiver configurado
+      // Constrói o cabeçalho do CSV
+      const headers = Object.keys(data[0]).join(',');
+      // Constrói as linhas de dados
+      const rows = data.map(user => {
+        return Object.values(user).map(value => {
+          // Trata valores que podem quebrar o CSV (aspas, vírgulas)
+          const stringValue = String(value).replace(/"/g, '""');
+          if (stringValue.includes(',')) {
+            return `"${stringValue}"`;
+          }
+          return stringValue;
+        }).join(',');
+      });
+
+      const csvContent = [headers, ...rows].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute("href", url);
+      const date = new Date().toISOString().split('T')[0];
+      link.setAttribute("download", `export_users_${date}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("Exportação concluída!", { description: `${data.length} usuários exportados.` });
+    } catch (e) {
+      toast.error("Ocorreu um erro ao gerar o arquivo CSV.");
+    } finally {
+      setIsExporting(false);
     }
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {/* Card de Estatísticas */}
       <Card className="shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center"><Users className="mr-3 h-5 w-5 text-primary" /> Estatísticas de Usuários</CardTitle>
-          <CardDescription>Visão geral da base de usuários.</CardDescription>
+          <CardTitle className="flex items-center"><Users className="mr-3 h-5 w-5 text-primary" /> Relatórios de Usuários</CardTitle>
+          <CardDescription>Exporte dados da plataforma para análise externa.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-            <span className="font-medium">Total de Usuários</span>
-            <span className="font-bold text-lg">1,234</span>
+          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border">
+            <div>
+              <h4 className="font-semibold">Exportar Todos os Usuários</h4>
+              <p className="text-sm text-muted-foreground">Gera um arquivo CSV com todos os dados da tabela de perfis.</p>
+            </div>
+            <Button onClick={handleExportUsers} disabled={isExporting}>
+              {isExporting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <FileDown className="mr-2 h-4 w-4" />
+              )}
+              Exportar
+            </Button>
           </div>
-          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-            <span className="font-medium">Ativos Hoje</span>
-            <span className="font-bold text-lg text-green-600">56</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Card de Configurações Globais */}
-      <Card className="shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center"><Bell className="mr-3 h-5 w-5 text-primary" /> Configurações Globais</CardTitle>
-          <CardDescription>Ajustes que afetam todos os usuários.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-3 rounded-lg border">
-            <label htmlFor="email-notifications" className="font-medium">Habilitar Notificações por Email</label>
-            <Switch id="email-notifications" defaultChecked />
-          </div>
-           <Button onClick={handleExport} variant="outline" className="w-full">
-            <FileDown className="mr-2 h-4 w-4" /> Gerar Relatório Mensal (PDF)
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Card de Ferramentas */}
-      <Card className="shadow-sm lg:col-span-2 border-amber-500/50">
-        <CardHeader>
-          <CardTitle className="flex items-center text-amber-600"><AlertTriangle className="mr-3 h-5 w-5" /> Ferramentas de Desenvolvedor</CardTitle>
-          <CardDescription>Ações para depuração e testes do sistema.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button onClick={handleTestError} variant="destructive" className="w-full">
-            Testar Integração Sentry (Gerar Erro)
-          </Button>
-          <p className="text-xs text-muted-foreground text-center mt-2">
-            Use esta opção para verificar se os erros estão sendo capturados corretamente.
-          </p>
         </CardContent>
       </Card>
     </div>
