@@ -441,6 +441,8 @@ export interface Database {
           birth_time: string | null
           birth_location: string | null
           avatar_url: string | null
+          email: string | null
+          created_at: string | null
         }
         Insert: {
           id: string
@@ -456,6 +458,8 @@ export interface Database {
           birth_time?: string | null
           birth_location?: string | null
           avatar_url?: string | null
+          email?: string | null
+          created_at?: string | null
         }
         Update: {
           id?: string
@@ -471,6 +475,8 @@ export interface Database {
           birth_time?: string | null
           birth_location?: string | null
           avatar_url?: string | null
+          email?: string | null
+          created_at?: string | null
         }
         Relationships: [
           {
