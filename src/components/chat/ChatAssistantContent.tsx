@@ -102,7 +102,7 @@ export function ChatAssistantContent() {
   };
 
   return (
-    <div className="relative flex flex-col h-full max-h-[calc(100vh-220px)] rounded-2xl overflow-hidden shadow-2xl">
+    <div className="relative flex flex-col h-full max-h-[calc(100vh-220px)] rounded-2xl overflow-hidden">
       {/* Background gradiente animado */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 dark:from-gray-900 dark:via-gray-900 dark:to-violet-950 opacity-60"></div>
       
@@ -231,12 +231,6 @@ export function ChatAssistantContent() {
         {/* Quick Replies melhoradas */}
         {messages.length <= 2 && (
           <div className="mb-3 animate-in fade-in-50 slide-in-from-bottom-2">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-3 h-3 text-violet-500" />
-              <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">
-                Sugestões rápidas
-              </span>
-            </div>
             <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 scrollbar-hide">
               {quickReplies.map((reply, index) => (
                 <div
@@ -253,12 +247,6 @@ export function ChatAssistantContent() {
         
         {/* Input principal */}
         <ChatInput onSendMessage={handleSendMessage} disabled={isTyping} />
-
-        {/* Footer info */}
-        <div className="flex items-center justify-center gap-2 mt-3 text-[10px] text-neutral-400 dark:text-neutral-600">
-          <Zap className="w-3 h-3" />
-          <span>Assistente alimentado por IA • Respostas instantâneas</span>
-        </div>
       </div>
 
       <style jsx>{`
