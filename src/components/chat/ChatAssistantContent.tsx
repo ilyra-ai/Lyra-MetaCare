@@ -178,31 +178,33 @@ export function ChatAssistantContent() {
       {/* Área de Mensagens com scroll customizado */}
       <div 
         ref={messagesContainerRef}
-        className="relative flex-1 p-6 overflow-y-auto space-y-6 scroll-smooth"
+        className="relative flex-1 overflow-y-auto scroll-smooth"
         style={{
           scrollbarWidth: 'thin',
           scrollbarColor: 'rgba(139, 92, 246, 0.3) transparent'
         }}
       >
-        {/* Mensagens */}
-        {messages.map((msg, index) => (
-          <div
-            key={msg.id}
-            className="animate-in fade-in-50 slide-in-from-bottom-4"
-            style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}
-          >
-            <ChatBubble message={msg.text} isUser={msg.sender === 'user'} />
-          </div>
-        ))}
-        
-        {/* Indicador de digitação */}
-        {isTyping && (
-          <div className="animate-in fade-in-50 slide-in-from-bottom-4">
-            <TypingIndicator />
-          </div>
-        )}
-        
-        <div ref={messagesEndRef} />
+        <div className="max-w-4xl mx-auto p-6 space-y-6">
+          {/* Mensagens */}
+          {messages.map((msg, index) => (
+            <div
+              key={msg.id}
+              className="animate-in fade-in-50 slide-in-from-bottom-4"
+              style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}
+            >
+              <ChatBubble message={msg.text} isUser={msg.sender === 'user'} />
+            </div>
+          ))}
+          
+          {/* Indicador de digitação */}
+          {isTyping && (
+            <div className="animate-in fade-in-50 slide-in-from-bottom-4">
+              <TypingIndicator />
+            </div>
+          )}
+          
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
       {/* Botão flutuante para scroll */}
