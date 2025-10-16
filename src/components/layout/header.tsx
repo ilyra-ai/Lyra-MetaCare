@@ -30,29 +30,12 @@ export function Header() {
       .maybeSingle();
 
     // Corrigido: Checa se 'error' existe, em vez de 'error.code'
-    if (!session?.user?.id) {
-        setAvatarUrl(null);
-        return;
-      }
+    if (error) {
+      setAvatarUrl(null);
+      return;
+    }
 
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('avatar_url')
-          .eq('id', session.user.id)
-          .single();
-
-        if (error) {
-          console.error("Error fetching avatar:", error);
-          setAvatarUrl(null);
-          return;
-        }
-
-        setAvatarUrl(data?.avatar_url || null);
-      } catch (error) {
-        console.error("Error fetching avatar:", error);
-        setAvatarUrl(null);
-      }
+    setAvatarUrl(data?.avatar_url || null);
     }, [session, supabase]);
 
     React.useEffect(() => {
