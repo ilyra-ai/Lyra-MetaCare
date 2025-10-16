@@ -291,7 +291,7 @@ export function ChatInput({
       {/* Container principal */}
       <div 
         className={`
-          relative flex items-end gap-2 px-3 py-1.5 rounded-[24px]
+          relative flex items-end gap-2 px-3 py-1 rounded-[22px]
           transition-all duration-300 ease-out backdrop-blur-2xl
           border
           ${isFocused 
@@ -324,11 +324,11 @@ export function ChatInput({
             aria-describedby={`${helperId} ${statusId}`}
             aria-invalid={false}
             className={`
-              w-full px-0 py-1.5 border-0 bg-transparent resize-none
+              w-full px-0 py-1 border-0 bg-transparent resize-none
               focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
               placeholder:text-neutral-400 placeholder:transition-all placeholder:duration-300
               ${isListening ? 'placeholder:text-red-400 placeholder:animate-pulse' : ''}
-              text-sm leading-6 font-medium
+              text-xs leading-5 font-medium
             `}
           />
 
@@ -358,7 +358,7 @@ export function ChatInput({
               aria-label={isListening ? "Parar gravação de voz" : "Iniciar gravação de voz"}
               aria-pressed={isListening}
               className={`
-                h-9 w-9 rounded-[18px] transition-all duration-300 relative overflow-hidden group
+                h-8 w-8 rounded-[16px] transition-all duration-300 relative overflow-hidden group
                 ${isListening 
                   ? 'bg-gradient-to-br from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 shadow-lg shadow-red-500/30 scale-110' 
                   : 'bg-gradient-to-br from-neutral-100 to-neutral-50 hover:from-violet-100 hover:to-fuchsia-100 hover:scale-105 border-[1.5px] border-neutral-200/60'
@@ -383,9 +383,9 @@ export function ChatInput({
               )}
 
               {isListening ? (
-                <MicOff className="h-5 w-5 text-white relative z-10" aria-hidden="true" />
+                <MicOff className="h-4 w-4 text-white relative z-10" aria-hidden="true" />
               ) : (
-                <Mic className="h-5 w-5 text-neutral-600 relative z-10 transition-colors group-hover:text-violet-600" aria-hidden="true" />
+                <Mic className="h-4 w-4 text-neutral-600 relative z-10 transition-colors group-hover:text-violet-600" aria-hidden="true" />
               )}
             </Button>
           )}
@@ -397,7 +397,7 @@ export function ChatInput({
             size="icon"
             aria-label="Enviar mensagem"
             className={`
-              relative h-9 w-9 rounded-[18px] transition-all duration-300 overflow-hidden group
+              relative h-8 w-8 rounded-[16px] transition-all duration-300 overflow-hidden group
               ${!disabled && text.trim()
                 ? 'bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-600 hover:from-violet-500 hover:via-fuchsia-500 hover:to-cyan-500 shadow-lg shadow-violet-500/40 hover:shadow-xl hover:shadow-violet-500/50 scale-100 hover:scale-110 hover:rotate-6'
                 : 'bg-gradient-to-br from-neutral-100 to-neutral-50 border-[1.5px] border-neutral-200/60'
@@ -425,7 +425,7 @@ export function ChatInput({
             )}
 
             {!disabled && text.trim() ? (
-              <ArrowUp className="h-5 w-5 text-white relative z-10 transition-transform group-hover:scale-110" aria-hidden="true" />
+              <ArrowUp className="h-4 w-4 text-white relative z-10 transition-transform group-hover:scale-110" aria-hidden="true" />
             ) : (
               <Send className="h-4 w-4 text-neutral-400 relative z-10" aria-hidden="true" />
             )}
