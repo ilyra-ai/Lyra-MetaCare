@@ -218,7 +218,7 @@ export function ProfileForm() {
       .eq("id", session.user.id)
       .maybeSingle();
 
-    if (error) {
+    if (error && error.code) {
       console.error("Error fetching profile:", error);
       toast.error("Erro ao carregar perfil.", { description: error.message });
     } else if (data) {
