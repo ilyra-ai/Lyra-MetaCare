@@ -6,179 +6,307 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ProfessionalCard } from "./ProfessionalCard";
-import { TimeSlotPicker } from "./TimeSlotPicker";
-import { BookingConfirmationModal } from "./BookingConfirmationModal";
 import { Button } from "@/components/ui/button";
-import { format, setHours, setMinutes, startOfDay } from "date-fns";
+import { Plus, User, Trash2, Edit, MoreVertical } from "lucide-react";
+import { format, startOfDay, parseISO, setHours, setMinutes } from "date-fns";
+import { AppointmentFormModal } from "./AppointmentFormModal";
+import { ProfessionalFormModal } from "./ProfessionalFormModal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
+// Tipos
 interface Professional {
   id: string;
   name: string;
   specialty: string;
-  avatar_url: string | null;
-  rating: number | null;
-  bio: string | null;
+  contact?: string | null;
+}
+
+interface Appointment {
+  id: string;
+  appointment_time: string;
+  professional_id: string;
+  notes?: string | null;
+  professionals: { name: string; specialty: string } | null;
 }
 
 export function AppointmentsContent() {
   const { supabase, session } = useAuth();
-  const [professionals, setProfessionals] = React.useState<Professional[]>([]);
   const [loading, setLoading] = React.useState(true);
+  
+  // Estados de dados
+  const [professionals, setProfessionals] = React.useState<Professional[]>([]);
+  const [appointments, setAppointments] = React.useState<Appointment[]>([]);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
-  const [selectedProfessional, setSelectedProfessional] = React.useState<Professional | null>(null);
-  const [bookedSlots, setBookedSlots] = React.useState<Date[]>([]);
-  const [selectedTime, setSelectedTime] = React.useState<Date | null>(null);
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const fetchProfessionals = React.useCallback(async () => {
+  // Estados dos modais
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = React.useState(false);
+  const [appointmentToEdit, setAppointmentToEdit] = React.useState<Appointment | null>(null);
+  const [isProfessionalModalOpen, setIsProfessionalModalOpen] = React.useState(false);
+  const [professionalToEdit, setProfessionalToEdit] = React.useState<Professional | null>(null);
+
+  // --- Funções de busca de dados ---
+  const fetchData = React.useCallback(async () => {
+    if (!session?.user) return;
     setLoading(true);
-    const { data, error } = await supabase.from("professionals").select("*");
-    if (error) {
-      toast.error("Erro ao carregar profissionais.", { description: error.message });
-    } else {
-      setProfessionals(data as Professional[]);
-    }
+    
+    const professionalsPromise = supabase.from("professionals").select("*").eq("user_id", session.user.id);
+    const appointmentsPromise = supabase.from("appointments").select("*, professionals(name, specialty)").eq("user_id", session.user.id);
+
+    const [{ data: professionalsData, error: professionalsError }, { data: appointmentsData, error: appointmentsError }] = await Promise.all([professionalsPromise, appointmentsPromise]);
+
+    if (professionalsError) toast.error("Erro ao buscar profissionais.");
+    else setProfessionals(professionalsData || []);
+
+    if (appointmentsError) toast.error("Erro ao buscar consultas.");
+    else setAppointments(appointmentsData || []);
+
     setLoading(false);
-  }, [supabase]);
+  }, [supabase, session]);
 
-  const fetchBookedSlots = React.useCallback(async (date: Date, professionalId: string) => {
-    const startOfDayDate = startOfDay(date);
-    const endOfDayDate = setMinutes(setHours(startOfDay(date), 23), 59);
+  React.useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-    const { data, error } = await supabase
-      .from("appointments")
-      .select("appointment_time")
-      .eq("professional_id", professionalId)
-      .gte("appointment_time", startOfDayDate.toISOString())
-      .lte("appointment_time", endOfDayDate.toISOString());
+  // --- Funções CRUD para Profissionais ---
+  const handleSaveProfessional = async (data: any, professionalId?: string) => {
+    if (!session?.user) return;
+    const payload = { ...data, user_id: session.user.id };
 
+    const query = professionalId
+      ? supabase.from("professionals").update(payload).eq("id", professionalId)
+      : supabase.from("professionals").insert(payload);
+
+    const { error } = await query;
     if (error) {
-      toast.error("Erro ao buscar horários.", { description: error.message });
-      setBookedSlots([]);
+      toast.error("Erro ao salvar profissional.", { description: error.message });
     } else {
-      setBookedSlots(data.map(slot => new Date(slot.appointment_time)));
+      toast.success(`Profissional ${professionalId ? 'atualizado' : 'cadastrado'} com sucesso!`);
+      setIsProfessionalModalOpen(false);
+      fetchData();
     }
-  }, [supabase]);
-
-  React.useEffect(() => {
-    fetchProfessionals();
-  }, [fetchProfessionals]);
-
-  React.useEffect(() => {
-    if (selectedDate && selectedProfessional) {
-      fetchBookedSlots(selectedDate, selectedProfessional.id);
-    }
-  }, [selectedDate, selectedProfessional, fetchBookedSlots]);
-
-  const handleProfessionalSelect = (professional: Professional) => {
-    setSelectedProfessional(professional);
-    setSelectedTime(null); // Reset time when professional changes
   };
 
-  const handleBookingConfirm = async () => {
-    if (!session?.user || !selectedProfessional || !selectedDate || !selectedTime) {
-      toast.error("Informações incompletas para o agendamento.");
-      return;
+  const handleDeleteProfessional = async (professionalId: string) => {
+    const { error } = await supabase.from("professionals").delete().eq("id", professionalId);
+    if (error) {
+      toast.error("Erro ao remover profissional.", { description: error.message });
+    } else {
+      toast.success("Profissional removido.");
+      fetchData();
     }
+  };
 
-    const { error } = await supabase.from("appointments").insert({
+  // --- Funções CRUD para Consultas ---
+  const handleSaveAppointment = async (data: any, appointmentId?: string) => {
+    if (!session?.user || !selectedDate) return;
+    
+    const [hours, minutes] = data.appointment_time.split(':').map(Number);
+    const appointmentDateTime = setMinutes(setHours(startOfDay(selectedDate), hours), minutes);
+
+    const payload = {
       user_id: session.user.id,
-      professional_id: selectedProfessional.id,
-      appointment_time: selectedTime.toISOString(),
-      meeting_link: `https://meet.example.com/${Math.random().toString(36).substring(2)}`, // Link simulado
-    });
+      professional_id: data.professional_id,
+      appointment_time: appointmentDateTime.toISOString(),
+      notes: data.notes,
+    };
 
+    const query = appointmentId
+      ? supabase.from("appointments").update(payload).eq("id", appointmentId)
+      : supabase.from("appointments").insert(payload);
+
+    const { error } = await query;
     if (error) {
-      toast.error("Falha ao agendar consulta.", { description: error.message });
+      toast.error("Erro ao agendar consulta.", { description: error.message });
     } else {
-      toast.success("Consulta agendada com sucesso!");
-      setIsModalOpen(false);
-      setSelectedTime(null);
-      if (selectedDate && selectedProfessional) {
-        fetchBookedSlots(selectedDate, selectedProfessional.id); // Refresh slots
-      }
+      toast.success(`Consulta ${appointmentId ? 'atualizada' : 'agendada'} com sucesso!`);
+      setIsAppointmentModalOpen(false);
+      fetchData();
     }
   };
+
+  const handleDeleteAppointment = async (appointmentId: string) => {
+    const { error } = await supabase.from("appointments").delete().eq("id", appointmentId);
+    if (error) {
+      toast.error("Erro ao cancelar consulta.", { description: error.message });
+    } else {
+      toast.success("Consulta cancelada.");
+      fetchData();
+    }
+  };
+
+  // --- Lógica de UI ---
+  const appointmentsOnSelectedDate = appointments.filter(app =>
+    selectedDate && format(parseISO(app.appointment_time), 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
+  ).sort((a, b) => new Date(a.appointment_time).getTime() - new Date(b.appointment_time).getTime());
+
+  const appointmentDays = React.useMemo(() => 
+    appointments.map(app => parseISO(app.appointment_time)), 
+  [appointments]);
+
+  if (loading) {
+    return <div className="grid grid-cols-1 lg:grid-cols-3 gap-8"><Skeleton className="h-96 lg:col-span-1" /><Skeleton className="h-96 lg:col-span-2" /></div>;
+  }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div className="lg:col-span-1">
-        <Card>
-          <CardHeader>
-            <CardTitle>1. Selecione uma Data</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              className="p-0"
-              disabled={(date) => date < startOfDay(new Date())}
-            />
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="lg:col-span-2 space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>2. Escolha um Profissional</CardTitle>
-            <CardDescription>Selecione com quem você deseja agendar a consulta.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {loading ? (
-              <>
-                <Skeleton className="h-24 w-full" />
-                <Skeleton className="h-24 w-full" />
-              </>
-            ) : (
-              professionals.map(prof => (
-                <ProfessionalCard
-                  key={prof.id}
-                  professional={prof}
-                  isSelected={selectedProfessional?.id === prof.id}
-                  onSelect={handleProfessionalSelect}
-                />
-              ))
-            )}
-          </CardContent>
-        </Card>
-
-        {selectedProfessional && (
-          <Card className="animate-in fade-in duration-500">
+    <>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Coluna 1: Agenda e Consultas do Dia */}
+        <div className="lg:col-span-1 space-y-8">
+          <Card>
             <CardHeader>
-              <CardTitle>3. Selecione um Horário</CardTitle>
-              <CardDescription>
-                Horários disponíveis para {selectedProfessional.name} em {selectedDate ? format(selectedDate, "dd/MM/yyyy") : ""}.
-              </CardDescription>
+              <CardTitle>1. Agenda</CardTitle>
+              <CardDescription>Clique em um dia para ver ou adicionar consultas.</CardDescription>
             </CardHeader>
             <CardContent>
-              <TimeSlotPicker
-                selectedDate={selectedDate || new Date()}
-                bookedSlots={bookedSlots}
-                onTimeSelect={setSelectedTime}
-                selectedTime={selectedTime}
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => {
+                  setSelectedDate(date);
+                  setAppointmentToEdit(null);
+                  setIsAppointmentModalOpen(true);
+                }}
+                className="p-0"
+                modifiers={{ booked: appointmentDays }}
+                modifiersStyles={{ booked: { border: "2px solid currentColor" } }}
               />
-              <Button
-                onClick={() => setIsModalOpen(true)}
-                disabled={!selectedTime}
-                className="w-full mt-6 bg-blue-600 hover:bg-blue-700"
-              >
-                Agendar Consulta
+            </CardContent>
+          </Card>
+          {selectedDate && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Consultas em {format(selectedDate, "dd/MM/yy")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {appointmentsOnSelectedDate.length > 0 ? (
+                  <ul className="space-y-4">
+                    {appointmentsOnSelectedDate.map(app => (
+                      <li key={app.id} className="flex items-center justify-between p-2 rounded-md hover:bg-gray-50">
+                        <div>
+                          <p className="font-semibold">{format(parseISO(app.appointment_time), "HH:mm")}</p>
+                          <p className="text-sm text-muted-foreground">{app.professionals?.name}</p>
+                          <p className="text-xs text-muted-foreground">{app.professionals?.specialty}</p>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => { setAppointmentToEdit(app); setIsAppointmentModalOpen(true); }}>
+                              <Edit className="mr-2 h-4 w-4" /> Editar
+                            </DropdownMenuItem>
+                            <AlertDialogTrigger asChild>
+                              <DropdownMenuItem className="text-red-600"><Trash2 className="mr-2 h-4 w-4" /> Cancelar</DropdownMenuItem>
+                            </AlertDialogTrigger>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        <AlertDialog>
+                          <AlertDialogContent>
+                            <AlertDialogHeader><AlertDialogTitle>Tem certeza?</AlertDialogTitle><AlertDialogDescription>Esta ação não pode ser desfeita. A consulta será cancelada permanentemente.</AlertDialogDescription></AlertDialogHeader>
+                            <AlertDialogFooter><AlertDialogCancel>Voltar</AlertDialogCancel><AlertDialogAction onClick={() => handleDeleteAppointment(app.id)}>Confirmar</AlertDialogAction></AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-center text-muted-foreground py-4">Nenhuma consulta para este dia.</p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Coluna 2: Gerenciamento */}
+        <div className="lg:col-span-2 space-y-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>2. Agendamento de Consulta</CardTitle>
+              <CardDescription>Adicione uma nova consulta à sua agenda.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" onClick={() => { setAppointmentToEdit(null); setIsAppointmentModalOpen(true); }}>
+                <Plus className="mr-2 h-4 w-4" /> Agendar Nova Consulta
               </Button>
             </CardContent>
           </Card>
-        )}
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>3. Cadastro de Profissionais</CardTitle>
+                <CardDescription>Gerencie sua lista de contatos profissionais.</CardDescription>
+              </div>
+              <Button size="sm" onClick={() => { setProfessionalToEdit(null); setIsProfessionalModalOpen(true); }}>
+                <Plus className="mr-2 h-4 w-4" /> Adicionar
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {professionals.length > 0 ? (
+                <ul className="space-y-2">
+                  {professionals.map(prof => (
+                    <li key={prof.id} className="flex items-center justify-between p-2 rounded-md border">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-gray-100 p-2 rounded-full"><User className="h-5 w-5 text-gray-600" /></div>
+                        <div>
+                          <p className="font-semibold">{prof.name}</p>
+                          <p className="text-sm text-muted-foreground">{prof.specialty}</p>
+                        </div>
+                      </div>
+                      <div>
+                        <Button variant="ghost" size="sm" onClick={() => { setProfessionalToEdit(prof); setIsProfessionalModalOpen(true); }}><Edit className="h-4 w-4" /></Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild><Button variant="ghost" size="sm" className="text-red-600"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader><AlertDialogTitle>Tem certeza?</AlertDialogTitle><AlertDialogDescription>Esta ação removerá o profissional e pode afetar consultas agendadas.</AlertDialogDescription></AlertDialogHeader>
+                            <AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction onClick={() => handleDeleteProfessional(prof.id)}>Confirmar</AlertDialogAction></AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-center text-muted-foreground py-4">Nenhum profissional cadastrado.</p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
-      <BookingConfirmationModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        professional={selectedProfessional}
-        date={selectedDate || null}
-        time={selectedTime}
-        onConfirm={handleBookingConfirm}
-      />
-    </div>
+
+      {/* Modais */}
+      {isAppointmentModalOpen && selectedDate && (
+        <AppointmentFormModal
+          open={isAppointmentModalOpen}
+          onOpenChange={setIsAppointmentModalOpen}
+          onSave={handleSaveAppointment}
+          professionals={professionals}
+          selectedDate={selectedDate}
+          appointmentToEdit={appointmentToEdit}
+        />
+      )}
+      {isProfessionalModalOpen && (
+        <ProfessionalFormModal
+          open={isProfessionalModalOpen}
+          onOpenChange={setIsProfessionalModalOpen}
+          onSave={handleSaveProfessional}
+          professionalToEdit={professionalToEdit}
+        />
+      )}
+    </>
   );
 }
