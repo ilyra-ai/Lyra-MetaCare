@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { User, TrendingUp, Calendar, Clock, MapPin, ListChecks, Scale } from "lucide-react";
+import { User, TrendingUp, Calendar, Clock, MapPin, ListChecks } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -37,7 +37,7 @@ import { cn } from "@/lib/utils";
 import { TimeInput } from "@/components/ui/time-input";
 import { AvatarUploader } from "./AvatarUploader";
 import { HabitList } from "./HabitList";
-import { DailyMetric } from "@/hooks/use-daily-metrics"; // Importando o tipo DailyMetric
+import { DailyMetric } from "@/hooks/use-daily-metrics";
 
 // --- Data Definitions ---
 const goalsList = [
@@ -67,8 +67,11 @@ const profileSchema = z.object({
   last_name: z.string().min(2, "O sobrenome deve ter pelo menos 2 caracteres."),
   
   birth_date: z.date().optional().nullable(),
-  birth_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Formato de hora inválido (HH:MM).").optional().or(z.literal('')),
-  birth_location: z.string().min(3, "Local de nascimento é obrigatório.").optional().or(z.literal('')),
+  birth_time: z.string().optional().or(z.literal('')).refine(val => {
+    if (val === '' || val === undefined) return true;
+    return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
+  }, "Formato de hora inválido (HH:MM)."),
+  birth_location: z.string().optional().or(z.literal('')),
 
   age: z.coerce
     .number({ required_error: "Idade é obrigatória." })
@@ -83,7 +86,7 @@ const profileSchema = z.object({
 
 type ProfileValues = z.infer<typeof profileSchema>;
 
-// --- Progress Chart Component (Updated to fetch real data) ---
+// --- Progress Chart Component ---
 const chartConfig = {
   weight: {
     label: "Peso (kg)",
@@ -97,7 +100,6 @@ function ProgressChart({ userId, supabase }: { userId: string, supabase: any }) 
 
     const fetchWeightData = React.useCallback(async () => {
         setLoading(true);
-        // Fetch last 6 months of weight data
         const sixMonthsAgo = format(new Date(Date.now() - 180 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
 
         const { data: metrics, error } = await supabase
@@ -112,11 +114,10 @@ function ProgressChart({ userId, supabase }: { userId: string, supabase: any }) 
             console.error("Error fetching weight data:", error);
             setData([]);
         } else {
-            // Filter and map data for Recharts
             const chartData = (metrics as Pick<DailyMetric, 'date' | 'weight_kg'>[])
                 .filter(m => m.weight_kg !== null)
                 .map(m => ({
-                    date: format(parseISO(m.date), 'MMM'), // Use month for X-axis label
+                    date: format(parseISO(m.date), 'MMM'),
                     weight: m.weight_kg as number,
                 }));
             setData(chartData);
@@ -141,12 +142,11 @@ function ProgressChart({ userId, supabase }: { userId: string, supabase: any }) 
                 </CardHeader>
                 <CardContent className="text-center p-8">
                     <p className="text-muted-foreground">Nenhum dado de peso encontrado nos últimos 6 meses.</p>
-                    <p className="text-xs text-muted-foreground mt-2">Registre seu peso nas métricas diárias para visualizar o progresso.</p>
+                    <p className="text-xs text-muted-foreground mt-2">Registre seu peso para visualizar o progresso.</p>
                 </CardContent>
             </Card>
         );
     }
-
 
   return (
     <Card className="col-span-full">
@@ -182,7 +182,7 @@ function ProgressChart({ userId, supabase }: { userId: string, supabase: any }) 
 export function ProfileForm() {
   const { supabase, session } = useAuth();
   const [isLoading, setIsLoading] = React.useState(true);
-  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null); // State for avatar URL
+  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
 
   const form = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
@@ -202,7 +202,6 @@ export function ProfileForm() {
 
   const birthDateWatch = form.watch("birth_date");
 
-  // Efeito para calcular a idade automaticamente
   React.useEffect(() => {
     if (birthDateWatch) {
       const calculatedAge = differenceInYears(new Date(), birthDateWatch);
@@ -210,46 +209,34 @@ export function ProfileForm() {
     }
   }, [birthDateWatch, form]);
 
-
   const fetchProfile = React.useCallback(async () => {
     if (!session?.user) return;
 
-    const { data: profiles, error } = await supabase
+    const { data, error } = await supabase
       .from("profiles")
-      .select("first_name, last_name, age, gender, activity_level, goals, birth_date, birth_time, birth_location, avatar_url") // Fetch avatar_url
+      .select("first_name, last_name, age, gender, activity_level, goals, birth_date, birth_time, birth_location, avatar_url")
       .eq("id", session.user.id)
-      .limit(1)
-      .single(); // Usando .single() para obter o objeto diretamente
+      .single();
 
     if (error && error.code !== 'PGRST116') {
       console.error("Error fetching profile:", error);
-    } else if (profiles) {
-      const data = profiles; // data já é o objeto do perfil
-      
-      // 1. Tratar birth_date: parseISO retorna Date ou Invalid Date.
+    } else if (data) {
       const parsedBirthDate = data.birth_date ? parseISO(data.birth_date) : null;
       const validBirthDate = parsedBirthDate && !isNaN(parsedBirthDate.getTime()) ? parsedBirthDate : undefined;
       
-      setAvatarUrl(data.avatar_url); // Set avatar URL state
+      setAvatarUrl(data.avatar_url);
 
-      const profileData: ProfileValues = {
+      form.reset({
         first_name: data.first_name ?? "",
         last_name: data.last_name ?? "",
         age: data.age ?? 18,
         gender: (data.gender as ProfileValues['gender']) ?? "prefer_not-to-say",
         activity_level: data.activity_level ?? 3,
         goals: data.goals ?? [],
-        
-        // Passa Date ou undefined (para o DatePicker)
-        birth_date: validBirthDate, 
-        
-        // Garante que campos de texto nulos sejam strings vazias
+        birth_date: validBirthDate,
         birth_time: data.birth_time ?? "",
         birth_location: data.birth_location ?? "",
-      };
-      
-      // Resetar o formulário com os dados carregados
-      form.reset(profileData);
+      });
     }
     setIsLoading(false);
   }, [session, supabase, form]);
@@ -261,12 +248,8 @@ export function ProfileForm() {
   const onSubmit = async (data: ProfileValues) => {
     if (!session?.user) return;
 
-    // Format birth_date to ISO string (YYYY-MM-DD) for Supabase DATE type
     const formattedBirthDate = data.birth_date ? format(data.birth_date, 'yyyy-MM-dd') : null;
-    
-    // Tratar birth_time: se for string vazia, enviar null para o DB
     const formattedBirthTime = data.birth_time === "" ? null : data.birth_time;
-
 
     const { error } = await supabase
       .from("profiles")
@@ -307,9 +290,7 @@ export function ProfileForm() {
   const lastName = form.getValues("last_name") || "";
 
   return (
-    <div className="flex flex-col gap-8"> {/* Layout vertical principal */}
-      
-      {/* Top Section: Avatar and Basic Info */}
+    <div className="flex flex-col gap-8">
       <Card className="w-full shadow-lg border-green-500/50">
         <CardHeader>
           <CardTitle className="text-2xl flex items-center">
@@ -319,15 +300,11 @@ export function ProfileForm() {
           <CardDescription>Gerencie sua foto e dados de contato.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
-          
-          {/* Avatar Uploader (Topo com avatar grande) */}
           <AvatarUploader 
             currentAvatarUrl={avatarUrl}
             firstName={firstName}
             onUploadSuccess={setAvatarUrl}
           />
-
-          {/* User Details */}
           <div className="space-y-1 text-center md:text-left pt-4">
             <p className="text-2xl font-bold">{firstName} {lastName}</p>
             <p className="text-sm text-muted-foreground">{userEmail}</p>
@@ -340,19 +317,13 @@ export function ProfileForm() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          
-          {/* Middle Section: Asymmetrical Form (Personal Data & Chronobiology + Habits) */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {/* Coluna 1 & 2: Dados Pessoais e Cronobiologia (Campos à esquerda) */}
             <Card className="lg:col-span-2">
               <CardHeader>
                 <CardTitle>Dados Pessoais e Cronobiologia</CardTitle>
                 <CardDescription>Informações essenciais para a análise de IA.</CardDescription>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                {/* Nome e Sobrenome */}
                 <FormField
                   control={form.control}
                   name="first_name"
@@ -379,8 +350,6 @@ export function ProfileForm() {
                     </FormItem>
                   )}
                 />
-                
-                {/* Data de Nascimento */}
                 <FormField
                   control={form.control}
                   name="birth_date"
@@ -401,8 +370,6 @@ export function ProfileForm() {
                     </FormItem>
                   )}
                 />
-
-                {/* Idade (Calculada) */}
                 <FormField
                   control={form.control}
                   name="age"
@@ -425,8 +392,6 @@ export function ProfileForm() {
                     </FormItem>
                   )}
                 />
-
-                {/* Gênero */}
                 <FormField
                   control={form.control}
                   name="gender"
@@ -435,7 +400,7 @@ export function ProfileForm() {
                       <FormLabel>Gênero</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value || undefined}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -455,8 +420,6 @@ export function ProfileForm() {
                     </FormItem>
                   )}
                 />
-                
-                {/* Hora de Nascimento */}
                 <FormField
                   control={form.control}
                   name="birth_time"
@@ -475,8 +438,6 @@ export function ProfileForm() {
                     </FormItem>
                   )}
                 />
-
-                {/* Local de Nascimento */}
                 <FormField
                   control={form.control}
                   name="birth_location"
@@ -500,22 +461,17 @@ export function ProfileForm() {
                 />
               </CardContent>
             </Card>
-            
-            {/* Coluna 3: Lista de Hábitos (Previews à direita) */}
             <div className="lg:col-span-1">
                 <HabitList />
             </div>
           </div>
 
-          {/* Bottom Section: Goals, Activity & Progress Chart */}
           <Card>
             <CardHeader>
               <CardTitle>Metas e Atividade</CardTitle>
               <CardDescription>Defina seus objetivos e nível de atividade.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              
-              {/* Activity Level Slider */}
               <FormField
                 control={form.control}
                 name="activity_level"
@@ -539,8 +495,6 @@ export function ProfileForm() {
                   </FormItem>
                 )}
               />
-
-              {/* Goals Checkboxes */}
               <FormField
                 control={form.control}
                 name="goals"
@@ -589,10 +543,8 @@ export function ProfileForm() {
             </CardContent>
           </Card>
           
-          {/* Progress Chart (Gráfico de progresso longitudinal) */}
           {session?.user && <ProgressChart userId={session.user.id} supabase={supabase} />}
 
-          {/* Save Button (Base com botão "Salvar") */}
           <Button type="submit" disabled={form.formState.isSubmitting} className="w-full md:w-auto">
             {form.formState.isSubmitting ? "Salvando..." : "Salvar Alterações"}
           </Button>
