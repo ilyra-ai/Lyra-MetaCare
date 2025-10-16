@@ -184,7 +184,6 @@ export function ChatAssistantContent() {
           scrollbarColor: 'rgba(139, 92, 246, 0.3) transparent'
         }}
       >
-
         {/* Mensagens */}
         {messages.map((msg, index) => (
           <div
