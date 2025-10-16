@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DailyMetric } from "@/hooks/use-daily-metrics";
-import { Activity, BedDouble, HeartPulse, Flame, TrendingUp, Zap, BrainCircuit, Utensils, Droplet, Thermometer, Gauge, Moon, Clock, Smile, Dumbbell, RefreshCw, Sun, Waves } from "lucide-react";
+import { Activity, BedDouble, HeartPulse, Flame, TrendingUp, Zap, BrainCircuit, Utensils, Droplet, Thermometer, Gauge, Moon, Clock, Smile, Dumbbell, RefreshCw, Sun, Waves, Rss } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // --- Helper Functions ---
@@ -157,32 +157,53 @@ export function MetricGrid({ metrics }: MetricGridProps) {
             color: "text-blue-600",
             metrics: [
                 { 
-                    title: "Sono Total", 
+                    title: "Duração do sono (h/noite)", // Métrica 7
                     value: formatMinutesToHours(metrics.sleep_duration_minutes), 
                     description: `Qualidade: ${sleepQuality}`, 
                     icon: BedDouble, 
                     colorClass: "text-blue-600" 
                 },
                 { 
-                    title: "Sono Profundo", 
-                    value: formatMinutesToHours(metrics.deep_sleep_minutes), 
-                    description: "Crucial para recuperação física.", 
-                    icon: BrainCircuit, 
-                    colorClass: "text-purple-600" 
+                    title: "Eficiência do sono (%)", // Métrica 8
+                    value: metrics.sleep_efficiency ? `${metrics.sleep_efficiency.toFixed(0)}%` : "N/A", 
+                    description: "Sono vs. Tempo na cama.", 
+                    icon: Clock, 
+                    colorClass: "text-teal-600" 
                 },
                 { 
-                    title: "Sono REM", 
+                    title: "Regularidade do Sono (SRI)", // Métrica 9
+                    value: metrics.sleep_regularity_index ? `${metrics.sleep_regularity_index}/100` : "N/A", 
+                    description: "Consistência dos horários de sono.", 
+                    icon: Sun, 
+                    colorClass: "text-yellow-600" 
+                },
+                { 
+                    title: "Social Jetlag (h)", // Métrica 10
+                    value: metrics.social_jetlag_hours ? `${metrics.social_jetlag_hours.toFixed(1)} h` : "N/A", 
+                    description: "Desalinhamento entre dias úteis/fim de semana.", 
+                    icon: Rss, 
+                    colorClass: "text-orange-600" 
+                },
+                { 
+                    title: "Sono REM (min)", // Métrica 11
                     value: formatMinutesToHours(metrics.rem_sleep_minutes), 
                     description: "Importante para a memória.", 
-                    icon: Moon, 
+                    icon: BrainCircuit, 
                     colorClass: "text-indigo-600" 
                 },
                 { 
-                    title: "Eficiência do Sono", 
-                    value: metrics.sleep_efficiency ? `${metrics.sleep_efficiency.toFixed(0)}%` : "N/A", 
-                    description: "Tempo dormido vs. tempo na cama.", 
-                    icon: Clock, 
-                    colorClass: "text-teal-600" 
+                    title: "WASO (min)", // Métrica 12
+                    value: metrics.waso_minutes ? `${metrics.waso_minutes} min` : "N/A", 
+                    description: "Tempo acordado após iniciar o sono.", 
+                    icon: Moon, 
+                    colorClass: "text-purple-600" 
+                },
+                { 
+                    title: "Sono Profundo (min)", 
+                    value: formatMinutesToHours(metrics.deep_sleep_minutes), 
+                    description: "Crucial para recuperação física.", 
+                    icon: BedDouble, 
+                    colorClass: "text-pink-600" 
                 },
             ]
         },
