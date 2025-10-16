@@ -30,7 +30,7 @@ export function Sidebar() {
 
         <SidebarLink href="/connect" icon={Zap}>Conexão de Dados</SidebarLink>
         <SidebarLink href="/profile" icon={User}>Perfil</SidebarLink>
-        <SidebarLink href="#" icon={Settings} className="text-muted-foreground cursor-not-allowed">Configurações</SidebarLink>
+        <SidebarLink href="/settings" icon={Settings}>Configurações</SidebarLink>
         
         {isAdmin && (
           <>
