@@ -5,10 +5,11 @@ import { ChatBubble } from './ChatBubble';
 import { ChatInput } from './ChatInput';
 import { TypingIndicator } from './TypingIndicator';
 import { QuickReply } from './QuickReply';
-import { getMockAIResponse } from './mock-ai';
 import { Sparkles, Brain, TrendingUp, Zap, ChevronDown, Cpu, Stethoscope, HeartPulse, Calendar, BookOpen } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 export interface Message {
   id: number;
@@ -28,6 +29,7 @@ const integrations = [
 ];
 
 export function ChatAssistantContent() {
+  const { supabase } = useAuth();
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, text: "Olá! Sou seu assistente de saúde. Como posso ajudar hoje?", sender: 'ai' }
   ]);
@@ -43,14 +45,12 @@ export function ChatAssistantContent() {
     messagesEndRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto" });
   };
 
-  // Scroll automático e detecção de posição
   useEffect(() => {
     if (isNearBottom) {
       scrollToBottom();
     }
   }, [messages, isTyping, isNearBottom]);
 
-  // Monitorar scroll para mostrar botão
   useEffect(() => {
     const container = messagesContainerRef.current;
     if (!container) return;
@@ -67,7 +67,7 @@ export function ChatAssistantContent() {
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
 
     const newUserMessage: Message = {
@@ -80,22 +80,38 @@ export function ChatAssistantContent() {
     setIsTyping(true);
     setIsNearBottom(true);
 
-    // Simula a resposta da IA com variação mais natural
-    const typingDelay = 1500 + Math.random() * 1000;
-    setTimeout(() => {
-      const aiResponseText = getMockAIResponse(text);
+    try {
+      const { data, error } = await supabase.functions.invoke('ask-ai-assistant', {
+        body: { query: text },
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
       const newAiMessage: Message = {
         id: Date.now() + 1,
-        text: aiResponseText,
+        text: data.response,
         sender: 'ai',
       };
+      setMessages(prev => [...prev, newAiMessage]);
+
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      toast.error("Erro ao contatar o assistente.", { description: errorMessage });
+      
+      const errorAiMessage: Message = {
+        id: Date.now() + 1,
+        text: `Desculpe, ocorreu um erro ao processar sua solicitação: ${errorMessage}`,
+        sender: 'ai',
+      };
+      setMessages(prev => [...prev, errorAiMessage]);
+    } finally {
       setIsTyping(false);
       setMessageCount(prev => prev + 1);
-      setMessages(prev => [...prev, newAiMessage]);
-    }, typingDelay);
+    }
   };
 
-  // Calcular tempo de sessão
   const getSessionDuration = () => {
     const duration = Math.floor((Date.now() - sessionStartTime) / 60000);
     return duration < 1 ? '< 1 min' : `${duration} min`;
@@ -103,22 +119,16 @@ export function ChatAssistantContent() {
 
   return (
     <div className="relative flex flex-col h-full rounded-2xl overflow-hidden">
-      {/* Background gradiente animado */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 dark:from-gray-900 dark:via-gray-900 dark:to-violet-950 opacity-60"></div>
-      
-      {/* Padrão de grade sutil */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.03)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
 
-      {/* Header melhorado */}
       <div className="relative z-10 flex items-center justify-between px-6 py-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-violet-100/50 dark:border-violet-900/30">
         <div className="flex items-center gap-3">
-          {/* Avatar AI com efeitos */}
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500 rounded-2xl blur-md opacity-50 animate-pulse-slow"></div>
             <div className="relative flex items-center justify-center w-10 h-10 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-purple-600 rounded-xl shadow-lg">
               <Brain className="w-5 h-5 text-white" />
             </div>
-            {/* Indicador online */}
             <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full"></div>
           </div>
 
@@ -140,7 +150,6 @@ export function ChatAssistantContent() {
           </div>
         </div>
 
-        {/* Stats e Integrações */}
         <div className="flex items-center gap-4">
             <Popover>
                 <PopoverTrigger asChild>
@@ -175,7 +184,6 @@ export function ChatAssistantContent() {
         </div>
       </div>
 
-      {/* Área de Mensagens com scroll customizado */}
       <div 
         ref={messagesContainerRef}
         className="relative flex-1 overflow-y-auto scroll-smooth"
@@ -185,7 +193,6 @@ export function ChatAssistantContent() {
         }}
       >
         <div className="max-w-4xl mx-auto p-6 space-y-6">
-          {/* Mensagens */}
           {messages.map((msg, index) => (
             <div
               key={msg.id}
@@ -196,7 +203,6 @@ export function ChatAssistantContent() {
             </div>
           ))}
           
-          {/* Indicador de digitação */}
           {isTyping && (
             <div className="animate-in fade-in-50 slide-in-from-bottom-4">
               <TypingIndicator />
@@ -207,7 +213,6 @@ export function ChatAssistantContent() {
         </div>
       </div>
 
-      {/* Botão flutuante para scroll */}
       {showScrollButton && (
         <button
           onClick={() => {
@@ -221,9 +226,7 @@ export function ChatAssistantContent() {
         </button>
       )}
 
-      {/* Footer com sugestões e input */}
       <div className="relative z-10 p-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-t border-violet-100/50 dark:border-violet-900/30">
-        {/* Quick Replies melhoradas */}
         {messages.length <= 2 && (
           <div className="mb-3 animate-in fade-in-50 slide-in-from-bottom-2">
             <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -240,7 +243,6 @@ export function ChatAssistantContent() {
           </div>
         )}
         
-        {/* Input principal */}
         <ChatInput onSendMessage={handleSendMessage} disabled={isTyping} />
       </div>
 
