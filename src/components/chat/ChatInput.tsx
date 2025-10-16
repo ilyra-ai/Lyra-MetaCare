@@ -291,13 +291,12 @@ export function ChatInput({
       {/* Container principal */}
       <div 
         className={`
-          relative flex items-end gap-3 px-4 py-3 rounded-[28px]
-          transition-all duration-500 ease-out backdrop-blur-2xl
+          relative flex items-end gap-3 px-3 py-2 rounded-[28px]
+          transition-all duration-300 ease-out backdrop-blur-2xl
+          border
           ${isFocused 
-            ? 'bg-gradient-to-br from-white via-violet-50/30 to-fuchsia-50/30 shadow-[0_8px_32px_rgba(139,92,246,0.15)] border-[2px] border-violet-200/60' 
-            : isHovering
-            ? 'bg-white shadow-[0_4px_24px_rgba(0,0,0,0.08)] border-[1.5px] border-neutral-200/80'
-            : 'bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] border-[1.5px] border-neutral-200/60'
+            ? 'bg-white shadow-md border-neutral-300' 
+            : 'bg-white shadow-sm border-neutral-200/70'
           }
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         `}
@@ -306,24 +305,6 @@ export function ChatInput({
         role="group"
         aria-labelledby={helperId}
       >
-        {/* Borda animada gradiente */}
-        {isFocused && (
-          <div 
-            className="absolute inset-0 rounded-[28px] bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 opacity-20 blur-xl animate-pulse-slow"
-            aria-hidden="true"
-          />
-        )}
-
-        {/* Indicador AI ativo */}
-        {isFocused && (
-          <div className="absolute -top-1 -right-1 flex items-center gap-1" aria-hidden="true">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full blur-md opacity-60 animate-pulse" />
-              <div className="relative w-3 h-3 bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full" />
-            </div>
-          </div>
-        )}
-
         {/* Input */}
         <div className="flex-1 relative z-10">
           <TextareaAutosize
@@ -343,10 +324,9 @@ export function ChatInput({
             aria-describedby={`${helperId} ${statusId}`}
             aria-invalid={false}
             className={`
-              w-full px-0 py-3 border-0 bg-transparent resize-none
+              w-full px-0 py-2 border-0 bg-transparent resize-none
               focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
               placeholder:text-neutral-400 placeholder:transition-all placeholder:duration-300
-              ${isFocused ? 'placeholder:text-violet-400' : ''}
               ${isListening ? 'placeholder:text-red-400 placeholder:animate-pulse' : ''}
               text-[15px] leading-7 font-medium
             `}
@@ -492,7 +472,9 @@ export function ChatInput({
             </div>
           )}
           {text.length > 0 && !isListening && (
-            <div className="flex items-center gap-2 text-neutral-500">          
+            <div className="flex items-center gap-2 text-neutral-500">
+              <Sparkles className="h-3 w-3" aria-hidden="true" />
+              <span>AI pronto para responder</span>
             </div>
           )}
         </div>
@@ -584,6 +566,7 @@ export function ChatInput({
           position: absolute;
           width: 1px;
           height: 1px;
+          padding: 0;
           margin: -1px;
           overflow: hidden;
           clip: rect(0, 0, 0, 0);
