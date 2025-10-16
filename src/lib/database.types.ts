@@ -114,6 +114,12 @@ export interface Database {
           daily_strain: number | null
           sedentary_hours: number | null
           sedentary_breaks: number | null
+          time_in_range_percent: number | null
+          glycemic_variability_cv: number | null
+          gmi_percent: number | null
+          post_prandial_peak_mgdl: number | null
+          time_below_range_percent: number | null
+          iauc_per_meal_mgdl_h: number | null
         }
         Insert: {
           id?: string
@@ -162,6 +168,12 @@ export interface Database {
           daily_strain?: number | null
           sedentary_hours?: number | null
           sedentary_breaks?: number | null
+          time_in_range_percent?: number | null
+          glycemic_variability_cv?: number | null
+          gmi_percent?: number | null
+          post_prandial_peak_mgdl?: number | null
+          time_below_range_percent?: number | null
+          iauc_per_meal_mgdl_h?: number | null
         }
         Update: {
           id?: string
@@ -210,6 +222,12 @@ export interface Database {
           daily_strain?: number | null
           sedentary_hours?: number | null
           sedentary_breaks?: number | null
+          time_in_range_percent?: number | null
+          glycemic_variability_cv?: number | null
+          gmi_percent?: number | null
+          post_prandial_peak_mgdl?: number | null
+          time_below_range_percent?: number | null
+          iauc_per_meal_mgdl_h?: number | null
         }
         Relationships: [
           {

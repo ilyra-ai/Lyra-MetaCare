@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DailyMetric } from "@/hooks/use-daily-metrics";
-import { Activity, BedDouble, HeartPulse, Flame, TrendingUp, Zap, BrainCircuit, Utensils, Droplet, Thermometer, Gauge, Moon, Clock, Smile, Dumbbell, RefreshCw, Sun, Waves, Rss, Clock4, Pause, Scale, Heart } from "lucide-react";
+import { Activity, BedDouble, HeartPulse, Flame, TrendingUp, Zap, BrainCircuit, Utensils, Droplet, Thermometer, Gauge, Moon, Clock, Smile, Dumbbell, RefreshCw, Sun, Waves, Rss, Clock4, Pause, Scale, Heart, TrendingDown, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // --- Helper Functions ---
@@ -60,7 +60,14 @@ export function MetricGrid({ metrics }: MetricGridProps) {
     const stepsStatus = metrics.steps >= 8000 ? "Meta de 8k passos alcançada" : "Continue se movendo";
     const sedentaryStatus = (metrics.sedentary_hours || 0) < 8 ? "Baixo" : "Alto";
 
-    // Nutrition & Metabolism Status
+    // Metabolism & Glucose Status
+    const tirStatus = (metrics.time_in_range_percent || 0) >= 70 ? "Meta alcançada" : "Aumentar TIR";
+    const cvStatus = (metrics.glycemic_variability_cv || 0) <= 36 ? "Estável" : "Alta Variabilidade";
+    const gmiStatus = (metrics.gmi_percent || 0) <= 6.5 ? "Ótimo" : "Monitorar";
+    const peakStatus = (metrics.post_prandial_peak_mgdl || 0) <= 140 ? "Normal" : "Pico Elevado";
+    const tbrStatus = (metrics.time_below_range_percent || 0) <= 4 ? "Seguro" : "Risco de Hipo";
+    
+    // General Health Status
     const glucoseStatus = (metrics.blood_glucose_mgdl || 0) < 100 ? "Normal" : "Monitorar";
     const bpStatus = (metrics.blood_pressure_systolic || 0) < 120 && (metrics.blood_pressure_diastolic || 0) < 80 ? "Ótima" : "Atenção";
 
@@ -110,7 +117,6 @@ export function MetricGrid({ metrics }: MetricGridProps) {
                 { 
                     title: "SpO₂ Noturna (Média)", 
                     value: metrics.spo2_average ? `${metrics.spo2_average.toFixed(1)}%` : "N/A", 
-                    // Ajustado para refletir que estamos usando a média, conforme o schema do DB
                     description: `Oxigenação do sangue (Média): ${spo2Status}`, 
                     icon: Moon, 
                     colorClass: "text-indigo-600" 
@@ -232,20 +238,63 @@ export function MetricGrid({ metrics }: MetricGridProps) {
             ]
         },
         {
-            title: "Nutrição e Metabolismo",
-            description: "Monitoramento de macronutrientes, hidratação, peso e indicadores metabólicos.",
+            title: "Metabolismo e Glicose (CGM)",
+            description: "Métricas avançadas de controle glicêmico e estabilidade metabólica.",
+            icon: Droplet,
+            color: "text-red-600",
+            metrics: [
+                { 
+                    title: "Tempo em Faixa (TIR)", // Métrica 19
+                    value: metrics.time_in_range_percent ? `${metrics.time_in_range_percent.toFixed(1)}%` : "N/A", 
+                    description: `Meta > 70%. Status: ${tirStatus}`, 
+                    icon: TrendingUp, 
+                    colorClass: "text-green-600" 
+                },
+                { 
+                    title: "Variabilidade Glicêmica (CV)", // Métrica 20
+                    value: metrics.glycemic_variability_cv ? `${metrics.glycemic_variability_cv.toFixed(1)}%` : "N/A", 
+                    description: `Meta < 36%. Status: ${cvStatus}`, 
+                    icon: TrendingDown, 
+                    colorClass: "text-blue-600" 
+                },
+                { 
+                    title: "GMI (A1c Estimada)", // Métrica 21
+                    value: metrics.gmi_percent ? `${metrics.gmi_percent.toFixed(1)}%` : "N/A", 
+                    description: `Média glicêmica: ${gmiStatus}`, 
+                    icon: Gauge, 
+                    colorClass: "text-purple-600" 
+                },
+                { 
+                    title: "Pico Pós-Prandial", // Métrica 22
+                    value: metrics.post_prandial_peak_mgdl ? `${metrics.post_prandial_peak_mgdl} mg/dL` : "N/A", 
+                    description: `Pico após refeição: ${peakStatus}`, 
+                    icon: Flame, 
+                    colorClass: "text-orange-600" 
+                },
+                { 
+                    title: "Tempo Abaixo da Faixa", // Métrica 23
+                    value: metrics.time_below_range_percent ? `${metrics.time_below_range_percent.toFixed(1)}%` : "N/A", 
+                    description: `Risco de hipoglicemia: ${tbrStatus}`, 
+                    icon: AlertTriangle, 
+                    colorClass: "text-red-500" 
+                },
+                { 
+                    title: "iAUC por Refeição", // Métrica 24
+                    value: metrics.iauc_per_meal_mgdl_h ? `${metrics.iauc_per_meal_mgdl_h.toFixed(1)} mg/dL·h` : "N/A", 
+                    description: "Resposta alimentar quantificada.", 
+                    icon: Utensils, 
+                    colorClass: "text-amber-600" 
+                },
+            ]
+        },
+        {
+            title: "Nutrição e Bem-Estar",
+            description: "Monitoramento de macronutrientes, hidratação, peso e estado mental.",
             icon: Utensils,
             color: "text-amber-600",
             metrics: [
                 { 
-                    title: "Glicose Sanguínea", // Métrica 19
-                    value: metrics.blood_glucose_mgdl ? `${metrics.blood_glucose_mgdl} mg/dL` : "N/A", 
-                    description: `Pós-prandial: ${glucoseStatus}`, 
-                    icon: Droplet, 
-                    colorClass: "text-red-500" 
-                },
-                { 
-                    title: "Pressão Arterial", // Métrica 20
+                    title: "Pressão Arterial", 
                     value: metrics.blood_pressure_systolic && metrics.blood_pressure_diastolic 
                         ? `${metrics.blood_pressure_systolic}/${metrics.blood_pressure_diastolic} mmHg` 
                         : "N/A", 
@@ -254,28 +303,28 @@ export function MetricGrid({ metrics }: MetricGridProps) {
                     colorClass: "text-pink-500" 
                 },
                 { 
-                    title: "Peso Corporal", // Métrica 21
+                    title: "Peso Corporal", 
                     value: metrics.weight_kg ? `${metrics.weight_kg.toFixed(1)} kg` : "N/A", 
                     description: "Monitoramento de composição.", 
                     icon: Scale, 
                     colorClass: "text-gray-600" 
                 },
                 { 
-                    title: "Proteína Consumida", // Métrica 22 (Parte 1)
+                    title: "Proteína Consumida", 
                     value: `${metrics.protein_grams} g`, 
                     description: "Suporte muscular.", 
                     icon: Utensils, 
                     colorClass: "text-amber-600" 
                 },
                 { 
-                    title: "Carboidratos", // Métrica 22 (Parte 2)
+                    title: "Carboidratos", 
                     value: `${metrics.carb_grams} g`, 
                     description: "Fonte primária de energia.", 
                     icon: Utensils, 
                     colorClass: "text-lime-600" 
                 },
                 { 
-                    title: "Gorduras", // Métrica 22 (Parte 3)
+                    title: "Gorduras", 
                     value: `${metrics.fat_grams} g`, 
                     description: "Saúde hormonal e celular.", 
                     icon: Utensils, 

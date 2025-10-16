@@ -57,6 +57,14 @@ export interface DailyMetric {
   daily_strain: number | null;
   sedentary_hours: number | null;
   sedentary_breaks: number | null;
+
+  // NEW GLUCOSE METRICS (CGM)
+  time_in_range_percent: number | null;
+  glycemic_variability_cv: number | null;
+  gmi_percent: number | null;
+  post_prandial_peak_mgdl: number | null;
+  time_below_range_percent: number | null;
+  iauc_per_meal_mgdl_h: number | null;
 }
 
 interface UseDailyMetricsResult {
@@ -113,6 +121,13 @@ const defaultMetricValues = {
     daily_strain: null,
     sedentary_hours: null,
     sedentary_breaks: null,
+    // NEW GLUCOSE METRICS DEFAULTS
+    time_in_range_percent: null,
+    glycemic_variability_cv: null,
+    gmi_percent: null,
+    post_prandial_peak_mgdl: null,
+    time_below_range_percent: null,
+    iauc_per_meal_mgdl_h: null,
 }
 
 export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
@@ -142,7 +157,8 @@ export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
         blood_pressure_diastolic, weight_kg, mood_score, meditation_minutes,
         hrr_1min_bpm,
         sleep_regularity_index, social_jetlag_hours, waso_minutes,
-        training_load_epoc, daily_strain, sedentary_hours, sedentary_breaks
+        training_load_epoc, daily_strain, sedentary_hours, sedentary_breaks,
+        time_in_range_percent, glycemic_variability_cv, gmi_percent, post_prandial_peak_mgdl, time_below_range_percent, iauc_per_meal_mgdl_h
       `)
       .eq("user_id", session.user.id)
       .gte("date", startDate)
