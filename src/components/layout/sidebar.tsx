@@ -16,33 +16,25 @@ export function Sidebar() {
         <h1 className="text-2xl font-bold text-primary">Lyra MetaCare</h1>
       </div>
       <nav className="flex-1 p-4 space-y-1">
-        {/* Grupo: Análise */}
-        <div className="px-3 py-1 text-xs font-semibold text-muted-foreground">Análise</div>
         <SidebarLink href="/" icon={LayoutDashboard}>Dashboard</SidebarLink>
         <SidebarLink href="/plan" icon={BrainCircuit}>Plano de IA</SidebarLink>
         <SidebarLink href="/goals" icon={Target}>Metas</SidebarLink>
 
         <Separator className="my-2" />
 
-        {/* Grupo: Ferramentas */}
-        <div className="px-3 py-1 text-xs font-semibold text-muted-foreground">Ferramentas</div>
         <SidebarLink href="/appointments" icon={Calendar}>Agendamentos</SidebarLink>
         <SidebarLink href="/monitoring" icon={HeartPulse}>Monitoramento</SidebarLink>
         <SidebarLink href="/chat" icon={MessageCircle}>Assistente IA</SidebarLink>
         
         <Separator className="my-2" />
 
-        {/* Grupo: Sua Conta */}
-        <div className="px-3 py-1 text-xs font-semibold text-muted-foreground">Sua Conta</div>
         <SidebarLink href="/connect" icon={Zap}>Conexão de Dados</SidebarLink>
         <SidebarLink href="/profile" icon={User}>Perfil</SidebarLink>
         <SidebarLink href="#" icon={Settings} className="text-muted-foreground cursor-not-allowed">Configurações</SidebarLink>
         
-        {/* Link de Administração visível apenas para o admin */}
         {isAdmin && (
           <>
             <Separator className="my-2" />
-            <div className="px-3 py-1 text-xs font-semibold text-muted-foreground">Admin</div>
             <SidebarLink 
               href="/admin/ai-config" 
               icon={Shield} 
