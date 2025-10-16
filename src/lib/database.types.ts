@@ -126,6 +126,12 @@ export interface Database {
           eating_window_hours: number | null
           sodium_potassium_ratio: number | null
           hydration_ml_per_kg: number | null
+          reaction_time_pvt_ms: number | null
+          pvt_lapses_count: number | null
+          cognitive_test_score: number | null
+          hrv_stress_index: number | null
+          eda_tonic_microsiemens: number | null
+          afib_history_percent: number | null
         }
         Insert: {
           id?: string
@@ -186,6 +192,12 @@ export interface Database {
           eating_window_hours?: number | null
           sodium_potassium_ratio?: number | null
           hydration_ml_per_kg?: number | null
+          reaction_time_pvt_ms?: number | null
+          pvt_lapses_count?: number | null
+          cognitive_test_score?: number | null
+          hrv_stress_index?: number | null
+          eda_tonic_microsiemens?: number | null
+          afib_history_percent?: number | null
         }
         Update: {
           id?: string
@@ -246,6 +258,12 @@ export interface Database {
           eating_window_hours?: number | null
           sodium_potassium_ratio?: number | null
           hydration_ml_per_kg?: number | null
+          reaction_time_pvt_ms?: number | null
+          pvt_lapses_count?: number | null
+          cognitive_test_score?: number | null
+          hrv_stress_index?: number | null
+          eda_tonic_microsiemens?: number | null
+          afib_history_percent?: number | null
         }
         Relationships: [
           {

@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DailyMetric } from "@/hooks/use-daily-metrics";
-import { Activity, BedDouble, HeartPulse, Flame, TrendingUp, Zap, BrainCircuit, Utensils, Droplet, Thermometer, Gauge, Moon, Clock, Smile, Dumbbell, RefreshCw, Sun, Waves, Rss, Clock4, Pause, Scale, Heart, TrendingDown, AlertTriangle, Ruler, Soup, Clock3, GlassWater } from "lucide-react";
+import { Activity, BedDouble, HeartPulse, Flame, TrendingUp, Zap, BrainCircuit, Utensils, Droplet, Thermometer, Gauge, Moon, Clock, Smile, Dumbbell, RefreshCw, Sun, Waves, Rss, Clock4, Pause, Scale, Heart, TrendingDown, AlertTriangle, Ruler, Soup, Clock3, GlassWater, Brain, Hand, AlertOctagon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // --- Helper Functions ---
@@ -68,7 +68,6 @@ export function MetricGrid({ metrics }: MetricGridProps) {
     const tbrStatus = (metrics.time_below_range_percent || 0) <= 4 ? "Seguro" : "Risco de Hipo";
     
     // General Health Status
-    const glucoseStatus = (metrics.blood_glucose_mgdl || 0) < 100 ? "Normal" : "Monitorar";
     const bpStatus = (metrics.blood_pressure_systolic || 0) < 120 && (metrics.blood_pressure_diastolic || 0) < 80 ? "Ótima" : "Atenção";
     
     // New Nutrition/Composition Status
@@ -78,6 +77,14 @@ export function MetricGrid({ metrics }: MetricGridProps) {
     const eatingWindowStatus = (metrics.eating_window_hours || 0) <= 10 ? "Restrita" : "Normal";
     const naKStatus = (metrics.sodium_potassium_ratio || 0) <= 1.0 ? "Ideal" : "Atenção";
     const hydrationStatus = (metrics.hydration_ml_per_kg || 0) >= 30 ? "Adequada" : "Aumentar";
+
+    // New Mental/Cognition Status
+    const pvtStatus = (metrics.reaction_time_pvt_ms || 0) < 300 ? "Excelente" : "Monitorar";
+    const lapsesStatus = (metrics.pvt_lapses_count || 0) === 0 ? "Nenhum lapso" : "Atenção à fadiga";
+    const cognitiveStatus = (metrics.cognitive_test_score || 0) >= 0.5 ? "Alto" : "Monitorar";
+    const hrvStressStatus = (metrics.hrv_stress_index || 0) < 10 ? "Baixo" : "Elevado";
+    const edaStatus = (metrics.eda_tonic_microsiemens || 0) < 0.5 ? "Normal" : "Pico de estresse";
+    const afibStatus = (metrics.afib_history_percent || 0) === 0 ? "Nenhuma FA detectada" : "Monitorar";
 
 
     const pillars = [
@@ -333,7 +340,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
                     title: "Razão Sódio:Potássio", // Métrica 29
                     value: metrics.sodium_potassium_ratio ? metrics.sodium_potassium_ratio.toFixed(2) : "N/A", 
                     description: `Saúde cardiovascular: ${naKStatus}`, 
-                    icon: AlertTriangle, // Substituído Salt por AlertTriangle
+                    icon: AlertTriangle, 
                     colorClass: "text-gray-500" 
                 },
                 { 
@@ -342,6 +349,56 @@ export function MetricGrid({ metrics }: MetricGridProps) {
                     description: `Nível de hidratação: ${hydrationStatus}`, 
                     icon: GlassWater, 
                     colorClass: "text-sky-600" 
+                },
+            ]
+        },
+        {
+            title: "Saúde Mental & Cognição Digital",
+            description: "Avaliação da performance cognitiva, fadiga e estresse autonômico.",
+            icon: Brain,
+            color: "text-purple-600",
+            metrics: [
+                { 
+                    title: "Tempo de Reação (PVT)", // Métrica 31
+                    value: metrics.reaction_time_pvt_ms ? `${metrics.reaction_time_pvt_ms} ms` : "N/A", 
+                    description: `Fadiga/Alerta: ${pvtStatus}`, 
+                    icon: Hand, 
+                    colorClass: "text-purple-600" 
+                },
+                { 
+                    title: "Lapsos no PVT (≥500ms)", // Métrica 32
+                    value: metrics.pvt_lapses_count ? `${metrics.pvt_lapses_count} lapsos` : "N/A", 
+                    description: `Queda de atenção: ${lapsesStatus}`, 
+                    icon: AlertOctagon, 
+                    colorClass: "text-red-500" 
+                },
+                { 
+                    title: "Score Cognitivo (z-score)", // Métrica 33
+                    value: metrics.cognitive_test_score ? metrics.cognitive_test_score.toFixed(2) : "N/A", 
+                    description: `Performance diária: ${cognitiveStatus}`, 
+                    icon: BrainCircuit, 
+                    colorClass: "text-teal-600" 
+                },
+                { 
+                    title: "Índice de Estresse (HRV)", // Métrica 34
+                    value: metrics.hrv_stress_index ? metrics.hrv_stress_index.toFixed(1) : "N/A", 
+                    description: `Carga estressora: ${hrvStressStatus}`, 
+                    icon: HeartPulse, 
+                    colorClass: "text-orange-600" 
+                },
+                { 
+                    title: "EDA Tônica Média (µS)", // Métrica 35
+                    value: metrics.eda_tonic_microsiemens ? `${metrics.eda_tonic_microsiemens.toFixed(2)} µS` : "N/A", 
+                    description: `Ativação simpática: ${edaStatus}`, 
+                    icon: Zap, 
+                    colorClass: "text-yellow-600" 
+                },
+                { 
+                    title: "Carga de FA (AFib History)", // Métrica 36
+                    value: metrics.afib_history_percent ? `${metrics.afib_history_percent.toFixed(1)}%` : "N/A", 
+                    description: `Risco de Fibrilação Atrial: ${afibStatus}`, 
+                    icon: Heart, 
+                    colorClass: "text-pink-500" 
                 },
             ]
         },

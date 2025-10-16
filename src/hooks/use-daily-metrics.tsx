@@ -73,6 +73,14 @@ export interface DailyMetric {
   eating_window_hours: number | null;
   sodium_potassium_ratio: number | null;
   hydration_ml_per_kg: number | null;
+
+  // NEW MENTAL/COGNITION METRICS
+  reaction_time_pvt_ms: number | null;
+  pvt_lapses_count: number | null;
+  cognitive_test_score: number | null;
+  hrv_stress_index: number | null;
+  eda_tonic_microsiemens: number | null;
+  afib_history_percent: number | null;
 }
 
 interface UseDailyMetricsResult {
@@ -143,6 +151,13 @@ const defaultMetricValues = {
     eating_window_hours: null,
     sodium_potassium_ratio: null,
     hydration_ml_per_kg: null,
+    // NEW MENTAL/COGNITION METRICS DEFAULTS
+    reaction_time_pvt_ms: null,
+    pvt_lapses_count: null,
+    cognitive_test_score: null,
+    hrv_stress_index: null,
+    eda_tonic_microsiemens: null,
+    afib_history_percent: null,
 }
 
 export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
@@ -174,7 +189,8 @@ export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
         sleep_regularity_index, social_jetlag_hours, waso_minutes,
         training_load_epoc, daily_strain, sedentary_hours, sedentary_breaks,
         time_in_range_percent, glycemic_variability_cv, gmi_percent, post_prandial_peak_mgdl, time_below_range_percent, iauc_per_meal_mgdl_h,
-        whtr_ratio, protein_g_per_kg, dietary_fiber_grams, eating_window_hours, sodium_potassium_ratio, hydration_ml_per_kg
+        whtr_ratio, protein_g_per_kg, dietary_fiber_grams, eating_window_hours, sodium_potassium_ratio, hydration_ml_per_kg,
+        reaction_time_pvt_ms, pvt_lapses_count, cognitive_test_score, hrv_stress_index, eda_tonic_microsiemens, afib_history_percent
       `)
       .eq("user_id", session.user.id)
       .gte("date", startDate)
