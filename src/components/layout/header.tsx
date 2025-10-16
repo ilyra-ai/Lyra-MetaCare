@@ -29,8 +29,8 @@ export function Header() {
       .eq("id", session.user.id)
       .maybeSingle();
 
-    // Verifica se há um erro real antes de registrar no console
-    if (error && error.code) {
+    // Corrigido: Checa se 'error' existe, em vez de 'error.code'
+    if (error) {
       console.error("Error fetching avatar:", error);
       setAvatarUrl(null);
       return;
