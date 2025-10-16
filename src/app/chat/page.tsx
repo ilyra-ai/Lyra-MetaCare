@@ -25,7 +25,7 @@ export default function ChatPage() {
         <Header />
         <main className="flex-1 flex flex-col p-4 sm:p-6 md:p-8 animate-in fade-in duration-500">
          
-          </div>
+
         </main>
 
       </div>
