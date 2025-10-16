@@ -65,6 +65,14 @@ export interface DailyMetric {
   post_prandial_peak_mgdl: number | null;
   time_below_range_percent: number | null;
   iauc_per_meal_mgdl_h: number | null;
+
+  // NEW NUTRITION/COMPOSITION METRICS
+  whtr_ratio: number | null;
+  protein_g_per_kg: number | null;
+  dietary_fiber_grams: number | null;
+  eating_window_hours: number | null;
+  sodium_potassium_ratio: number | null;
+  hydration_ml_per_kg: number | null;
 }
 
 interface UseDailyMetricsResult {
@@ -128,6 +136,13 @@ const defaultMetricValues = {
     post_prandial_peak_mgdl: null,
     time_below_range_percent: null,
     iauc_per_meal_mgdl_h: null,
+    // NEW NUTRITION/COMPOSITION METRICS DEFAULTS
+    whtr_ratio: null,
+    protein_g_per_kg: null,
+    dietary_fiber_grams: null,
+    eating_window_hours: null,
+    sodium_potassium_ratio: null,
+    hydration_ml_per_kg: null,
 }
 
 export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
@@ -158,7 +173,8 @@ export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
         hrr_1min_bpm,
         sleep_regularity_index, social_jetlag_hours, waso_minutes,
         training_load_epoc, daily_strain, sedentary_hours, sedentary_breaks,
-        time_in_range_percent, glycemic_variability_cv, gmi_percent, post_prandial_peak_mgdl, time_below_range_percent, iauc_per_meal_mgdl_h
+        time_in_range_percent, glycemic_variability_cv, gmi_percent, post_prandial_peak_mgdl, time_below_range_percent, iauc_per_meal_mgdl_h,
+        whtr_ratio, protein_g_per_kg, dietary_fiber_grams, eating_window_hours, sodium_potassium_ratio, hydration_ml_per_kg
       `)
       .eq("user_id", session.user.id)
       .gte("date", startDate)

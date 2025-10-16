@@ -120,6 +120,12 @@ export interface Database {
           post_prandial_peak_mgdl: number | null
           time_below_range_percent: number | null
           iauc_per_meal_mgdl_h: number | null
+          whtr_ratio: number | null
+          protein_g_per_kg: number | null
+          dietary_fiber_grams: number | null
+          eating_window_hours: number | null
+          sodium_potassium_ratio: number | null
+          hydration_ml_per_kg: number | null
         }
         Insert: {
           id?: string
@@ -174,6 +180,12 @@ export interface Database {
           post_prandial_peak_mgdl?: number | null
           time_below_range_percent?: number | null
           iauc_per_meal_mgdl_h?: number | null
+          whtr_ratio?: number | null
+          protein_g_per_kg?: number | null
+          dietary_fiber_grams?: number | null
+          eating_window_hours?: number | null
+          sodium_potassium_ratio?: number | null
+          hydration_ml_per_kg?: number | null
         }
         Update: {
           id?: string
@@ -228,6 +240,12 @@ export interface Database {
           post_prandial_peak_mgdl?: number | null
           time_below_range_percent?: number | null
           iauc_per_meal_mgdl_h?: number | null
+          whtr_ratio?: number | null
+          protein_g_per_kg?: number | null
+          dietary_fiber_grams?: number | null
+          eating_window_hours?: number | null
+          sodium_potassium_ratio?: number | null
+          hydration_ml_per_kg?: number | null
         }
         Relationships: [
           {

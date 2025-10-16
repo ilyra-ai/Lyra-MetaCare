@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DailyMetric } from "@/hooks/use-daily-metrics";
-import { Activity, BedDouble, HeartPulse, Flame, TrendingUp, Zap, BrainCircuit, Utensils, Droplet, Thermometer, Gauge, Moon, Clock, Smile, Dumbbell, RefreshCw, Sun, Waves, Rss, Clock4, Pause, Scale, Heart, TrendingDown, AlertTriangle } from "lucide-react";
+import { Activity, BedDouble, HeartPulse, Flame, TrendingUp, Zap, BrainCircuit, Utensils, Droplet, Thermometer, Gauge, Moon, Clock, Smile, Dumbbell, RefreshCw, Sun, Waves, Rss, Clock4, Pause, Scale, Heart, TrendingDown, AlertTriangle, Ruler, Soup, Clock3, GlassWater } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // --- Helper Functions ---
@@ -70,6 +70,14 @@ export function MetricGrid({ metrics }: MetricGridProps) {
     // General Health Status
     const glucoseStatus = (metrics.blood_glucose_mgdl || 0) < 100 ? "Normal" : "Monitorar";
     const bpStatus = (metrics.blood_pressure_systolic || 0) < 120 && (metrics.blood_pressure_diastolic || 0) < 80 ? "Ótima" : "Atenção";
+    
+    // New Nutrition/Composition Status
+    const whtrStatus = (metrics.whtr_ratio || 0) <= 0.5 ? "Saudável" : "Atenção";
+    const proteinStatus = (metrics.protein_g_per_kg || 0) >= 1.0 ? "Adequada" : "Aumentar";
+    const fiberStatus = (metrics.dietary_fiber_grams || 0) >= 25 ? "Adequada" : "Aumentar";
+    const eatingWindowStatus = (metrics.eating_window_hours || 0) <= 10 ? "Restrita" : "Normal";
+    const naKStatus = (metrics.sodium_potassium_ratio || 0) <= 1.0 ? "Ideal" : "Atenção";
+    const hydrationStatus = (metrics.hydration_ml_per_kg || 0) >= 30 ? "Adequada" : "Aumentar";
 
 
     const pillars = [
@@ -288,10 +296,60 @@ export function MetricGrid({ metrics }: MetricGridProps) {
             ]
         },
         {
-            title: "Nutrição e Bem-Estar",
-            description: "Monitoramento de macronutrientes, hidratação, peso e estado mental.",
+            title: "Composição Corporal e Nutrição Avançada",
+            description: "Foco em marcadores de composição corporal, ingestão de macronutrientes chave e padrões alimentares.",
             icon: Utensils,
             color: "text-amber-600",
+            metrics: [
+                { 
+                    title: "Relação Cintura/Altura (WHtR)", // Métrica 25
+                    value: metrics.whtr_ratio ? metrics.whtr_ratio.toFixed(2) : "N/A", 
+                    description: `Adiposidade central: ${whtrStatus}`, 
+                    icon: Ruler, 
+                    colorClass: "text-pink-500" 
+                },
+                { 
+                    title: "Proteína Diária (g/kg)", // Métrica 26
+                    value: metrics.protein_g_per_kg ? `${metrics.protein_g_per_kg.toFixed(2)} g/kg` : "N/A", 
+                    description: `Ingestão para longevidade: ${proteinStatus}`, 
+                    icon: Dumbbell, 
+                    colorClass: "text-amber-600" 
+                },
+                { 
+                    title: "Fibras Dietéticas", // Métrica 27
+                    value: metrics.dietary_fiber_grams ? `${metrics.dietary_fiber_grams} g` : "N/A", 
+                    description: `Meta > 25g. Status: ${fiberStatus}`, 
+                    icon: Soup, 
+                    colorClass: "text-green-600" 
+                },
+                { 
+                    title: "Janela Alimentar", // Métrica 28
+                    value: metrics.eating_window_hours ? `${metrics.eating_window_hours.toFixed(1)} h` : "N/A", 
+                    description: `Tempo de jejum intermitente: ${eatingWindowStatus}`, 
+                    icon: Clock3, 
+                    colorClass: "text-indigo-600" 
+                },
+                { 
+                    title: "Razão Sódio:Potássio", // Métrica 29
+                    value: metrics.sodium_potassium_ratio ? metrics.sodium_potassium_ratio.toFixed(2) : "N/A", 
+                    description: `Saúde cardiovascular: ${naKStatus}`, 
+                    icon: AlertTriangle, // Substituído Salt por AlertTriangle
+                    colorClass: "text-gray-500" 
+                },
+                { 
+                    title: "Hidratação (mL/kg)", // Métrica 30 (Versão por peso)
+                    value: metrics.hydration_ml_per_kg ? `${metrics.hydration_ml_per_kg.toFixed(0)} mL/kg` : "N/A", 
+                    description: `Nível de hidratação: ${hydrationStatus}`, 
+                    icon: GlassWater, 
+                    colorClass: "text-sky-600" 
+                },
+            ]
+        },
+        {
+            title: "Bem-Estar e Saúde Geral",
+            description: "Métricas de saúde geral, humor e práticas de mindfulness.",
+            icon: Smile,
+            color: "text-fuchsia-600",
             metrics: [
                 { 
                     title: "Pressão Arterial", 
@@ -310,28 +368,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
                     colorClass: "text-gray-600" 
                 },
                 { 
-                    title: "Proteína Consumida", 
-                    value: `${metrics.protein_grams} g`, 
-                    description: "Suporte muscular.", 
-                    icon: Utensils, 
-                    colorClass: "text-amber-600" 
-                },
-                { 
-                    title: "Carboidratos", 
-                    value: `${metrics.carb_grams} g`, 
-                    description: "Fonte primária de energia.", 
-                    icon: Utensils, 
-                    colorClass: "text-lime-600" 
-                },
-                { 
-                    title: "Gorduras", 
-                    value: `${metrics.fat_grams} g`, 
-                    description: "Saúde hormonal e celular.", 
-                    icon: Utensils, 
-                    colorClass: "text-brown-600" 
-                },
-                { 
-                    title: "Hidratação", 
+                    title: "Hidratação (Total)", 
                     value: `${metrics.water_liters.toFixed(1)} L`, 
                     description: "Meta: 2.5L.", 
                     icon: Droplet, 
@@ -350,6 +387,27 @@ export function MetricGrid({ metrics }: MetricGridProps) {
                     description: "Foco e redução de estresse.", 
                     icon: BrainCircuit, 
                     colorClass: "text-purple-500" 
+                },
+                { 
+                    title: "Proteína (Total)", 
+                    value: `${metrics.protein_grams} g`, 
+                    description: "Ingestão bruta.", 
+                    icon: Utensils, 
+                    colorClass: "text-amber-600" 
+                },
+                { 
+                    title: "Carboidratos", 
+                    value: `${metrics.carb_grams} g`, 
+                    description: "Fonte primária de energia.", 
+                    icon: Utensils, 
+                    colorClass: "text-lime-600" 
+                },
+                { 
+                    title: "Gorduras", 
+                    value: `${metrics.fat_grams} g`, 
+                    description: "Saúde hormonal e celular.", 
+                    icon: Utensils, 
+                    colorClass: "text-brown-600" 
                 },
             ]
         },
