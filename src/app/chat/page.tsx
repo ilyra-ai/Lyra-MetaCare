@@ -23,9 +23,9 @@ export default function ChatPage() {
       <Sidebar />
       <div className="flex flex-col flex-1 min-w-0">
         <Header />
-        <main className="flex-1 flex flex-col p-4 animate-in fade-in duration-500">
+        <main className="flex-1 flex items-center justify-center p-4 animate-in fade-in duration-500">
           {/* Container que centraliza e define a largura máxima do chat */}
-          <div className="flex-1 flex flex-col min-h-0 w-full max-w-6xl mx-auto">
+          <div className="h-full w-full max-w-6xl">
             <ChatAssistantContent />
           </div>
         </main>
