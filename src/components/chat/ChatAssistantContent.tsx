@@ -102,7 +102,7 @@ export function ChatAssistantContent() {
   };
 
   return (
-    <div className="relative flex flex-col h-full max-h-[calc(100vh-220px)] rounded-2xl overflow-hidden">
+    <div className="relative flex flex-col h-full rounded-2xl overflow-hidden">
       {/* Background gradiente animado */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 dark:from-gray-900 dark:via-gray-900 dark:to-violet-950 opacity-60"></div>
       
