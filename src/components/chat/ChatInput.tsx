@@ -291,7 +291,7 @@ export function ChatInput({
       {/* Container principal */}
       <div 
         className={`
-          relative flex items-end gap-3 px-3 py-2 rounded-[28px]
+          relative flex items-end gap-2 px-3 py-1.5 rounded-[24px]
           transition-all duration-300 ease-out backdrop-blur-2xl
           border
           ${isFocused 
@@ -324,11 +324,11 @@ export function ChatInput({
             aria-describedby={`${helperId} ${statusId}`}
             aria-invalid={false}
             className={`
-              w-full px-0 py-2 border-0 bg-transparent resize-none
+              w-full px-0 py-1.5 border-0 bg-transparent resize-none
               focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
               placeholder:text-neutral-400 placeholder:transition-all placeholder:duration-300
               ${isListening ? 'placeholder:text-red-400 placeholder:animate-pulse' : ''}
-              text-[15px] leading-7 font-medium
+              text-sm leading-6 font-medium
             `}
           />
 
@@ -347,7 +347,7 @@ export function ChatInput({
         </div>
 
         {/* Botões de ação */}
-        <div className="flex items-center gap-2 pb-1 relative z-10">
+        <div className="flex items-center gap-1.5 relative z-10">
           {/* Botão de voz */}
           {text.trim().length === 0 && (
             <Button 
@@ -358,7 +358,7 @@ export function ChatInput({
               aria-label={isListening ? "Parar gravação de voz" : "Iniciar gravação de voz"}
               aria-pressed={isListening}
               className={`
-                h-10 w-10 rounded-2xl transition-all duration-300 relative overflow-hidden group
+                h-9 w-9 rounded-[18px] transition-all duration-300 relative overflow-hidden group
                 ${isListening 
                   ? 'bg-gradient-to-br from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 shadow-lg shadow-red-500/30 scale-110' 
                   : 'bg-gradient-to-br from-neutral-100 to-neutral-50 hover:from-violet-100 hover:to-fuchsia-100 hover:scale-105 border-[1.5px] border-neutral-200/60'
@@ -397,7 +397,7 @@ export function ChatInput({
             size="icon"
             aria-label="Enviar mensagem"
             className={`
-              relative h-10 w-10 rounded-2xl transition-all duration-300 overflow-hidden group
+              relative h-9 w-9 rounded-[18px] transition-all duration-300 overflow-hidden group
               ${!disabled && text.trim()
                 ? 'bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-600 hover:from-violet-500 hover:via-fuchsia-500 hover:to-cyan-500 shadow-lg shadow-violet-500/40 hover:shadow-xl hover:shadow-violet-500/50 scale-100 hover:scale-110 hover:rotate-6'
                 : 'bg-gradient-to-br from-neutral-100 to-neutral-50 border-[1.5px] border-neutral-200/60'
