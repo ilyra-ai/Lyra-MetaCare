@@ -10,12 +10,12 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-// --- Mock Data: Estrutura de Plano Gerado por IA (6 Categorias) ---
+// --- Mock Data: Estrutura de Plano Gerado por IA (6 Pilares) ---
 const mockPlanData = {
   summary: "Seu plano de longevidade focado em otimizar o sono, aumentar a resiliência ao estresse e estabilizar o metabolismo, baseado em seus dados biológicos recentes.",
   lastUpdated: "25 de Julho, 2024",
   
-  categories: {
+  pillars: {
     nutrition: {
       title: "Nutrição",
       icon: Utensils,
@@ -135,12 +135,12 @@ const PlanItem: React.FC<PlanItemProps> = ({ title, details, image, color }) => 
 }
 
 export function AIPlanContent() {
-  const categories = mockPlanData.categories;
-  const firstCategoryKey = Object.keys(categories)[0];
-  const totalCategories = Object.keys(categories).length;
+  const pillars = mockPlanData.pillars;
+  const firstPillarKey = Object.keys(pillars)[0];
+  const totalPillars = Object.keys(pillars).length;
 
   // Ajusta o grid para 3 colunas em telas maiores, mantendo a responsividade
-  const gridColsClass = totalCategories <= 3 ? "grid-cols-3" : "grid-cols-3 lg:grid-cols-6";
+  const gridColsClass = totalPillars <= 3 ? "grid-cols-3" : "grid-cols-3 lg:grid-cols-6";
 
   return (
     <div className="space-y-8">
@@ -161,39 +161,39 @@ export function AIPlanContent() {
       </Card>
 
       {/* Tabs de Navegação */}
-      <Tabs defaultValue={firstCategoryKey} className="w-full">
+      <Tabs defaultValue={firstPillarKey} className="w-full">
         <TabsList className={cn("grid w-full h-auto p-1 bg-gray-100 dark:bg-gray-800", gridColsClass)}>
-          {Object.entries(categories).map(([key, category]) => (
+          {Object.entries(pillars).map(([key, pillar]) => (
             <TabsTrigger 
                 key={key} 
                 value={key}
                 className="flex flex-col sm:flex-row items-center space-x-0 sm:space-x-2 p-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-foreground transition-all duration-300 text-xs sm:text-sm"
             >
-                <category.icon className={cn("h-4 w-4 mb-1 sm:mb-0", category.color)} />
-                <span className="hidden sm:inline">{category.title}</span>
-                <span className="sm:hidden">{category.title.split(' ')[0]}</span> {/* Abreviação para mobile */}
+                <pillar.icon className={cn("h-4 w-4 mb-1 sm:mb-0", pillar.color)} />
+                <span className="hidden sm:inline">{pillar.title}</span>
+                <span className="sm:hidden">{pillar.title.split(' ')[0]}</span> {/* Abreviação para mobile */}
             </TabsTrigger>
           ))}
         </TabsList>
 
         {/* Conteúdo das Tabs */}
-        {Object.entries(categories).map(([key, category]) => (
+        {Object.entries(pillars).map(([key, pillar]) => (
             <TabsContent key={key} value={key} className="mt-6 animate-in fade-in duration-500">
                 <Card>
                     <CardHeader>
-                        <CardTitle className={cn("text-xl", category.color)}>{category.title}</CardTitle>
-                        <CardDescription>{category.description}</CardDescription>
+                        <CardTitle className={cn("text-xl", pillar.color)}>{pillar.title}</CardTitle>
+                        <CardDescription>{pillar.description}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {/* Lista de Itens (Generative Design / Asymmetrical Grid) */}
                         <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-                            {category.items.map((item) => (
+                            {pillar.items.map((item) => (
                                 <PlanItem 
                                     key={item.id}
                                     title={item.title}
                                     details={item.details}
                                     image={item.image}
-                                    color={category.color}
+                                    color={pillar.color}
                                 />
                             ))}
                         </div>
