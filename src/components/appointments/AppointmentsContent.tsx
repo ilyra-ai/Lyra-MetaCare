@@ -176,31 +176,18 @@ export function AppointmentsContent() {
   return (
     <>
       <div className="space-y-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>1. Agenda</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Agenda
-              events={calendarEvents}
-              onSelectSlot={handleSelectSlot}
-              onSelectEvent={handleSelectEvent}
-            />
-          </CardContent>
-        </Card>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between p-4">
               <div>
-                <CardTitle>2. Próximas Consultas</CardTitle>
+                <CardTitle className="text-xl">Próximas Consultas</CardTitle>
                 <CardDescription>Suas consultas agendadas.</CardDescription>
               </div>
               <Button size="sm" onClick={() => { setAppointmentToEdit(null); setSelectedDate(new Date()); setIsAppointmentModalOpen(true); }}>
                 <Plus className="mr-2 h-4 w-4" /> Agendar
               </Button>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4">
               {upcomingAppointments.length > 0 ? (
                 <ul className="space-y-2">
                   {upcomingAppointments.map(app => (
@@ -242,16 +229,16 @@ export function AppointmentsContent() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between p-4">
               <div>
-                <CardTitle>3. Cadastro de Profissionais</CardTitle>
+                <CardTitle className="text-xl">Cadastro de Profissionais</CardTitle>
                 <CardDescription>Gerencie sua lista de contatos.</CardDescription>
               </div>
               <Button size="sm" onClick={() => { setProfessionalToEdit(null); setIsProfessionalModalOpen(true); }}>
                 <Plus className="mr-2 h-4 w-4" /> Adicionar
               </Button>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4">
               {professionals.length > 0 ? (
                 <ul className="space-y-2">
                   {professionals.map(prof => (
@@ -292,6 +279,19 @@ export function AppointmentsContent() {
             </CardContent>
           </Card>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Agenda</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Agenda
+              events={calendarEvents}
+              onSelectSlot={handleSelectSlot}
+              onSelectEvent={handleSelectEvent}
+            />
+          </CardContent>
+        </Card>
       </div>
 
       {isAppointmentModalOpen && (

@@ -24,7 +24,6 @@ export default function AppointmentsPage() {
       <div className="flex flex-col flex-1">
         <Header />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
-          <h1 className="text-3xl font-bold mb-8">Agendamentos e Conexões</h1>
           <AppointmentsContent />
         </main>
         <MadeWithIlyra />
