@@ -1,6 +1,6 @@
 "use client";
 
-import { MadeWithDyad } from "@/components/made-with-dyad";
+import { MadeWithIlyra } from "@/components/made-with-ilyra";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -80,7 +80,7 @@ export default function Home() {
           </h1>
           <Dashboard />
         </main>
-        <MadeWithDyad />
+        <MadeWithIlyra />
       </div>
       <QuickScanFAB />
       <MobileNavigation />

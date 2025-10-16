@@ -1,6 +1,6 @@
 "use client";
 
-import { MadeWithDyad } from "@/components/made-with-dyad";
+import { MadeWithIlyra } from "@/components/made-with-ilyra";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { useAuth } from "@/context/AuthContext";
@@ -29,7 +29,7 @@ export default function DataConnectionPage() {
           <h1 className="text-3xl font-bold mb-8 text-center md:text-left">Conectar Dados de Saúde</h1>
           <WearableConnection />
         </main>
-        <MadeWithDyad />
+        <MadeWithIlyra />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { MadeWithDyad } from "@/components/made-with-dyad";
+import { MadeWithIlyra } from "@/components/made-with-ilyra";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { useAuth } from "@/context/AuthContext";
@@ -51,7 +51,7 @@ export default function AIConfigPage() {
           <h1 className="text-3xl font-bold mb-8">Administração de IA</h1>
           <AIConfigForm />
         </main>
-        <MadeWithDyad />
+        <MadeWithIlyra />
       </div>
     </div>
   );

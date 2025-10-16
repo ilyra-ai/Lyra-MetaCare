@@ -1,6 +1,6 @@
 "use client";
 
-import { MadeWithDyad } from "@/components/made-with-dyad";
+import { MadeWithIlyra } from "@/components/made-with-ilyra";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { ProfileForm } from "@/components/profile/ProfileForm";
@@ -29,7 +29,7 @@ export default function ProfilePage() {
           <h1 className="text-3xl font-bold mb-8">Seu Perfil</h1>
           <ProfileForm />
         </main>
-        <MadeWithDyad />
+        <MadeWithIlyra />
       </div>
     </div>
   );
