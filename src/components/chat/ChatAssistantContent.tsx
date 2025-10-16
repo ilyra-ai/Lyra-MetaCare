@@ -260,7 +260,6 @@ export function ChatAssistantContent() {
         {/* Footer info */}
         <div className="flex items-center justify-center gap-2 mt-3 text-[10px] text-neutral-400 dark:text-neutral-600">
           <Zap className="w-3 h-3" />
-          <span>Assistente alimentado por IA • Respostas instantâneas</span>
         </div>
       </div>
 
