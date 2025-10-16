@@ -10,7 +10,6 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { Dashboard } from "@/components/dashboard/dashboard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { QuickScanFAB } from "@/components/dashboard/QuickScanFAB";
-import { MobileNavigation } from "@/components/layout/MobileNavigation";
 
 // Define a type for the user profile for better type safety
 type UserProfile = {
@@ -74,7 +73,7 @@ export default function Home() {
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />
-        <main className="flex-1 p-4 sm:p-6 md:p-8 pb-20 md:pb-8"> {/* Added pb-20 for mobile nav clearance */}
+        <main className="flex-1 p-4 sm:p-6 md:p-8">
           <h1 className="text-3xl font-bold mb-8">
             Olá, {firstName}!
           </h1>
@@ -83,7 +82,6 @@ export default function Home() {
         <MadeWithIlyra />
       </div>
       <QuickScanFAB />
-      <MobileNavigation />
     </div>
   );
 }

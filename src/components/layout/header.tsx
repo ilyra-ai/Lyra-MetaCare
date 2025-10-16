@@ -14,6 +14,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut } from "lucide-react";
 import React from "react";
+import { MobileSidebar } from "./MobileSidebar";
 
 export function Header() {
   const { session, supabase } = useAuth();
@@ -54,7 +55,8 @@ export function Header() {
   const initial = userEmail.charAt(0).toUpperCase();
 
   return (
-    <header className="flex items-center justify-end h-16 px-8 border-b bg-white dark:bg-gray-950 dark:border-gray-800">
+    <header className="flex items-center justify-between h-16 px-4 md:px-8 border-b bg-white dark:bg-gray-950 dark:border-gray-800">
+      <MobileSidebar />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
