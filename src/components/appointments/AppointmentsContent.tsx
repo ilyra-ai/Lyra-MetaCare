@@ -1,13 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Plus, User, Trash2, Edit, MoreVertical } from "lucide-react";
+import { Plus, Trash2, Edit, MoreVertical } from "lucide-react";
 import { format, startOfDay, parseISO, setHours, setMinutes } from "date-fns";
 import { AppointmentFormModal } from "./AppointmentFormModal";
 import { ProfessionalFormModal } from "./ProfessionalFormModal";
@@ -26,9 +25,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Agenda } from "./Agenda";
 
 // Tipos
 interface Professional {
@@ -53,7 +52,7 @@ export function AppointmentsContent() {
   
   const [professionals, setProfessionals] = React.useState<Professional[]>([]);
   const [appointments, setAppointments] = React.useState<Appointment[]>([]);
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
 
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = React.useState(false);
   const [appointmentToEdit, setAppointmentToEdit] = React.useState<Appointment | null>(null);
@@ -146,44 +145,51 @@ export function AppointmentsContent() {
     }
   };
 
+  const handleSelectSlot = (slotInfo: { start: Date }) => {
+    setSelectedDate(slotInfo.start);
+    setAppointmentToEdit(null);
+    setIsAppointmentModalOpen(true);
+  };
+
+  const handleSelectEvent = (event: { resource: Appointment }) => {
+    setSelectedDate(parseISO(event.resource.appointment_time));
+    setAppointmentToEdit(event.resource);
+    setIsAppointmentModalOpen(true);
+  };
+
+  const calendarEvents = appointments.map(app => ({
+    title: `${format(parseISO(app.appointment_time), 'HH:mm')} - ${app.professionals?.name}`,
+    start: parseISO(app.appointment_time),
+    end: parseISO(app.appointment_time),
+    resource: app,
+  }));
+
   const upcomingAppointments = appointments
     .filter(app => new Date(app.appointment_time) >= startOfDay(new Date()))
     .sort((a, b) => new Date(a.appointment_time).getTime() - new Date(b.appointment_time).getTime());
 
-  const appointmentDays = React.useMemo(() => 
-    appointments.map(app => parseISO(app.appointment_time)), 
-  [appointments]);
-
   if (loading) {
-    return <div className="grid grid-cols-1 lg:grid-cols-3 gap-8"><Skeleton className="h-96 lg:col-span-1" /><Skeleton className="h-96 lg:col-span-2" /></div>;
+    return <Skeleton className="h-[80vh] w-full" />;
   }
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-1 space-y-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>1. Agenda</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={(date) => {
-                  setSelectedDate(date);
-                  setAppointmentToEdit(null);
-                  if (date) setIsAppointmentModalOpen(true);
-                }}
-                className="p-0"
-                modifiers={{ booked: appointmentDays }}
-                modifiersStyles={{ booked: { border: "2px solid currentColor", borderRadius: '50%' } }}
-              />
-            </CardContent>
-          </Card>
-        </div>
+      <div className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>1. Agenda</CardTitle>
+            <CardDescription>Clique em um dia para adicionar uma consulta ou em um evento para editá-lo.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Agenda
+              events={calendarEvents}
+              onSelectSlot={handleSelectSlot}
+              onSelectEvent={handleSelectEvent}
+            />
+          </CardContent>
+        </Card>
 
-        <div className="lg:col-span-2 space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
@@ -212,7 +218,7 @@ export function AppointmentsContent() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4" /></Button></DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => { setSelectedDate(parseISO(app.appointment_time)); setAppointmentToEdit(app); setIsAppointmentModalOpen(true); }}>
+                          <DropdownMenuItem onClick={() => handleSelectEvent({ resource: app })}>
                             <Edit className="mr-2 h-4 w-4" /> Editar
                           </DropdownMenuItem>
                           <AlertDialog>
@@ -294,7 +300,7 @@ export function AppointmentsContent() {
           onOpenChange={setIsAppointmentModalOpen}
           onSave={handleSaveAppointment}
           professionals={professionals}
-          initialDate={selectedDate || new Date()}
+          initialDate={selectedDate}
           appointmentToEdit={appointmentToEdit}
         />
       )}
