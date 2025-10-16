@@ -28,9 +28,7 @@ export default function ChatPage() {
             <ChatAssistantContent />
           </div>
         </main>
- 
-          <MadeWithIlyra />
-        </div>
+
       </div>
     </div>
   );
