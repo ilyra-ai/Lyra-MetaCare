@@ -492,8 +492,7 @@ export function ChatInput({
             </div>
           )}
           {text.length > 0 && !isListening && (
-            <div className="flex items-center gap-2 text-neutral-500">
-              <Sparkles className="h-3 w-3" aria-hidden="true" />
+            <div className="flex items-center gap-2 text-neutral-500">          
             </div>
           )}
         </div>
