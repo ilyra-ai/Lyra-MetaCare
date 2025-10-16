@@ -9,6 +9,33 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      ai_tips: {
+        Row: {
+          id: string
+          title: string
+          detail: string
+          category: string | null
+          is_active: boolean
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          title: string
+          detail: string
+          category?: string | null
+          is_active?: boolean
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          title?: string
+          detail?: string
+          category?: string | null
+          is_active?: boolean
+          created_at?: string | null
+        }
+        Relationships: []
+      }
       ai_config: {
         Row: {
           id: string

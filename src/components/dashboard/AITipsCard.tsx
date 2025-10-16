@@ -1,24 +1,58 @@
 "use client";
 
+import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lightbulb, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
-// Mock data for AI tips (simulando Hugging Face output)
-const mockTips = [
-  { id: 1, title: "Otimize o Sono Profundo", detail: "Seu padrão de sono sugere que 15 minutos de meditação antes de dormir podem aumentar o sono REM em 10%." },
-  { id: 2, title: "Aumente a Proteína", detail: "Para suportar seus objetivos de massa muscular, adicione 20g de proteína no café da manhã." },
-  { id: 3, title: "Alerta de Hidratação", detail: "Seu nível de atividade hoje exige 500ml extras de água para evitar fadiga." },
-];
+interface AITip {
+  id: number;
+  title: string;
+  detail: string;
+}
 
 interface AITipsCardProps {
     className?: string;
 }
 
 export function AITipsCard({ className }: AITipsCardProps) {
-  const currentTip = mockTips[Math.floor(Math.random() * mockTips.length)];
+  const { supabase } = useAuth();
+  const [tip, setTip] = React.useState<AITip | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchTip = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("ai_tips")
+        .select("id, title, detail")
+        .eq("is_active", true);
+
+      if (error || !data || data.length === 0) {
+        // Fallback para uma dica padrão se houver erro ou nenhuma dica for encontrada
+        setTip({ id: 0, title: "Mantenha-se Hidratado", detail: "Beber água suficiente ao longo do dia é crucial para a sua energia e bem-estar geral." });
+      } else {
+        // Seleciona uma dica aleatória da lista
+        const randomTip = data[Math.floor(Math.random() * data.length)];
+        setTip(randomTip);
+      }
+      setLoading(false);
+    };
+
+    fetchTip();
+  }, [supabase]);
+
+  if (loading) {
+    return <Skeleton className={cn("h-full w-full", className)} />;
+  }
+
+  if (!tip) {
+    return null; // Não renderiza nada se não houver dica
+  }
 
   return (
     <Card className={cn("bg-yellow-50 border-yellow-300 shadow-md hover:shadow-lg transition-shadow h-full", className)}>
@@ -32,8 +66,8 @@ export function AITipsCard({ className }: AITipsCardProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm font-medium text-gray-800">{currentTip.title}</p>
-        <p className="text-sm text-gray-600">{currentTip.detail}</p>
+        <p className="text-sm font-medium text-gray-800">{tip.title}</p>
+        <p className="text-sm text-gray-600">{tip.detail}</p>
         <Button asChild variant="link" className="p-0 h-auto text-yellow-700">
             <Link href="/plan">
                 Ver Plano Completo
