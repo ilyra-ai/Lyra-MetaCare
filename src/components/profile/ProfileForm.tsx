@@ -217,27 +217,34 @@ export function ProfileForm() {
     const { data: profiles, error } = await supabase
       .from("profiles")
       .select("first_name, last_name, age, gender, activity_level, goals, birth_date, birth_time, birth_location, avatar_url") // Fetch avatar_url
-      .eq("id", session.user.id);
+      .eq("id", session.user.id)
+      .limit(1)
+      .single(); // Usando .single() para obter o objeto diretamente
 
-    if (error) {
+    if (error && error.code !== 'PGRST116') {
       console.error("Error fetching profile:", error);
-    } else if (profiles && profiles.length > 0) {
-      const data = profiles[0];
+    } else if (profiles) {
+      const data = profiles; // data já é o objeto do perfil
       
       // Parse birth_date string to Date object for the form
+      // parseISO lida bem com o formato YYYY-MM-DD
       const parsedBirthDate = data.birth_date ? parseISO(data.birth_date) : null;
       setAvatarUrl(data.avatar_url); // Set avatar URL state
 
-      const profileData = {
-        ...data,
+      const profileData: ProfileValues = {
+        first_name: data.first_name || "",
+        last_name: data.last_name || "",
+        age: data.age || 18,
+        gender: (data.gender as ProfileValues['gender']) || "prefer_not-to-say",
         activity_level: data.activity_level || 3,
         goals: data.goals || [],
-        gender: data.gender || "prefer_not-to-say",
         // Se for null, passamos undefined para o DatePicker
-        birth_date: parsedBirthDate || undefined, 
+        birth_date: parsedBirthDate && !isNaN(parsedBirthDate.getTime()) ? parsedBirthDate : undefined, 
         birth_time: data.birth_time || "",
         birth_location: data.birth_location || "",
       };
+      
+      // Resetar o formulário com os dados carregados
       form.reset(profileData);
     }
     setIsLoading(false);
@@ -251,7 +258,7 @@ export function ProfileForm() {
     if (!session?.user) return;
 
     // Format birth_date to ISO string (YYYY-MM-DD) for Supabase DATE type
-    const formattedBirthDate = data.birth_date ? data.birth_date.toISOString().split('T')[0] : null;
+    const formattedBirthDate = data.birth_date ? format(data.birth_date, 'yyyy-MM-dd') : null;
     
     // Tratar birth_time: se for string vazia, enviar null para o DB
     const formattedBirthTime = data.birth_time === "" ? null : data.birth_time;
