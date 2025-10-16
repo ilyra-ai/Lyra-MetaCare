@@ -2,7 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   webpack: (config) => {
-    // Removida a regra de webpack que referenciava o pacote @dyad-sh/nextjs-webpack-component-tagger
+    if (process.env.NODE_ENV === "development") {
+      config.module.rules.push({
+        test: /\.(jsx|tsx)$/,
+        exclude: /node_modules/,
+        enforce: "pre",
+        use: "@dyad-sh/nextjs-webpack-component-tagger",
+      });
+    }
     return config;
   },
 };
