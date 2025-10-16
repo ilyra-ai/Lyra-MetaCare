@@ -43,14 +43,14 @@ export function Header() {
           .single();
 
         if (error) {
-          console.error("Error fetching avatar:", error);
+          console.error("Error fetching avatar:", error.message || error);
           setAvatarUrl(null);
           return;
         }
 
         setAvatarUrl(data?.avatar_url || null);
       } catch (error) {
-        console.error("Error fetching avatar:", error);
+        console.error("Error fetching avatar:", error instanceof Error ? error.message : String(error));
         setAvatarUrl(null);
       }
     }, [session, supabase]);
