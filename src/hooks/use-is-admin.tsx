@@ -2,14 +2,13 @@
 
 import { useAuth } from "@/context/AuthContext";
 
-const ADMIN_EMAIL = "douglas@ilyra.com.br";
-
+/**
+ * Hook para verificar se o usuário atual possui a role de administrador.
+ * Agora utiliza o sistema de roles baseado no banco de dados, eliminando
+ * a necessidade de e-mails hardcoded no código fonte.
+ */
 export function useIsAdmin() {
-  const { session } = useAuth();
+  const { userRole } = useAuth();
   
-  if (!session) {
-    return false;
-  }
-
-  return session.user.email === ADMIN_EMAIL;
+  return userRole === 'admin';
 }
