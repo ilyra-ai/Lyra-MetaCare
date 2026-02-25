@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 
 interface AITip {
-  id: number;
+  id: string | number;
   title: string;
   detail: string;
 }
@@ -34,20 +34,43 @@ export function AITipsCard({ className }: AITipsCardProps) {
   React.useEffect(() => {
     const fetchTip = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("ai_tips")
-        .select("id, title, detail")
-        .eq("is_active", true);
 
-      if (error || !data || data.length === 0) {
+      try {
+        // 1. Obter o total de dicas ativas (query leve)
+        const { count, error: countError } = await supabase
+          .from("ai_tips")
+          .select("*", { count: 'exact', head: true })
+          .eq("is_active", true);
+
+        if (countError || count === null || count === 0) {
+          throw new Error("No tips found or error fetching count");
+        }
+
+        // 2. Selecionar um índice aleatório e buscar apenas essa linha
+        const randomIndex = Math.floor(Math.random() * count);
+        const { data, error } = await supabase
+          .from("ai_tips")
+          .select("id, title, detail")
+          .eq("is_active", true)
+          .range(randomIndex, randomIndex)
+          .maybeSingle();
+
+        if (error || !data) {
+          throw new Error("Error fetching random tip");
+        }
+
+        setTip(data);
+      } catch (err) {
+        console.error("Error in fetchTip:", err);
         // Fallback para uma dica padrão se houver erro ou nenhuma dica for encontrada
-        setTip({ id: 0, title: "Mantenha-se Hidratado", detail: "Beber água suficiente ao longo do dia é crucial para a sua energia e bem-estar geral." });
-      } else {
-        // Seleciona uma dica aleatória da lista
-        const randomTip = data[Math.floor(Math.random() * data.length)];
-        setTip(randomTip);
+        setTip({
+          id: 0,
+          title: "Mantenha-se Hidratado",
+          detail: "Beber água suficiente ao longo do dia é crucial para a sua energia e bem-estar geral."
+        });
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchTip();
