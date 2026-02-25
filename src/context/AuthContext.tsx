@@ -8,12 +8,14 @@ import { useRouter } from "next/navigation";
 type AuthContextType = {
   session: Session | null;
   supabase: SupabaseClient;
+  userRole: string | null;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -21,7 +23,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const ensureProfileExists = async (currentSession: Session) => {
     const { data: profiles, error: fetchError } = await supabase
       .from("profiles")
-      .select("onboarding_completed")
+      .select("onboarding_completed, role")
       .eq("id", currentSession.user.id);
 
     if (fetchError && fetchError.code !== 'PGRST116') {
@@ -52,11 +54,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             console.error("Client-side profile creation failed:", insertError);
             // Se a inserção falhar (ex: RLS bloqueando, ou perfil já existe mas não foi buscado), 
             // ainda assim retornamos um objeto para evitar loop de redirecionamento.
-            return { onboarding_completed: false };
+            return { onboarding_completed: false, role: 'patient' };
         }
         
         // Se a inserção for bem-sucedida, retornamos o novo perfil
-        return { onboarding_completed: false };
+        return { onboarding_completed: false, role: 'patient' };
     }
 
     return profile;
@@ -65,6 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const handleRedirects = async (currentSession: Session | null) => {
     if (!currentSession) {
+      setUserRole(null);
       if (window.location.pathname !== "/login") {
         router.push("/login");
       }
@@ -73,6 +76,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // 1. Garantir que o perfil exista (fallback) e buscar o status de onboarding
     const profile = await ensureProfileExists(currentSession);
+    setUserRole(profile?.role || null);
 
     const isOnboardingPage = window.location.pathname === "/onboarding";
     const isLoginPage = window.location.pathname === "/login";
@@ -120,7 +124,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [router]);
 
   return (
-    <AuthContext.Provider value={{ session, supabase }}>
+    <AuthContext.Provider value={{ session, supabase, userRole }}>
       {!loading && children}
     </AuthContext.Provider>
   );
