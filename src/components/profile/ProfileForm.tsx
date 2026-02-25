@@ -48,7 +48,7 @@ const activityLevels = [
 ];
 
 // --- Zod Schema ---
-const profileSchema = z.object({
+export const profileSchema = z.object({
   first_name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres."),
   last_name: z.string().min(2, "O sobrenome deve ter pelo menos 2 caracteres."),
   
@@ -68,7 +68,7 @@ const profileSchema = z.object({
   }),
 });
 
-type ProfileValues = z.infer<typeof profileSchema>;
+export type ProfileValues = z.infer<typeof profileSchema>;
 
 // --- Progress Chart Component ---
 const chartConfig = {
