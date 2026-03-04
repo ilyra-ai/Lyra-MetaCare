@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { LayoutDashboard, User, Settings, BrainCircuit, Target, Zap, Shield, HeartPulse, MessageCircle, Calendar, BarChart2, Users, LayoutGrid, ClipboardList } from "lucide-react";
+import { LayoutDashboard, User, BrainCircuit, Target, Zap, Shield, HeartPulse, MessageCircle, Calendar, BarChart2, Users, LayoutGrid, ClipboardList } from "lucide-react";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { Separator } from "@/components/ui/separator";
 import { SidebarLink } from "./SidebarLink";
