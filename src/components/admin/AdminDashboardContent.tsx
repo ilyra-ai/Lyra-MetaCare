@@ -47,37 +47,47 @@ export function AdminDashboardContent() {
   React.useEffect(() => {
     const fetchDashboardData = async () => {
       setLoading(true);
-
-      // Fetch total users count
-      const { count: totalUsers, error: totalUsersError } = await supabase
-        .from("profiles")
-        .select('*', { count: 'exact', head: true });
-
-      // Fetch new users in the last 7 days
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const { count: newUsersLast7Days, error: newUsersError } = await supabase
-        .from("profiles")
-        .select('*', { count: 'exact', head: true })
-        .gte('created_at', sevenDaysAgo);
 
-      // Fetch onboarding completion rate
-      const { count: completedOnboarding, error: completedError } = await supabase
-        .from("profiles")
-        .select('*', { count: 'exact', head: true })
-        .eq('onboarding_completed', true);
+      const [
+        totalUsersResponse,
+        newUsersResponse,
+        completedOnboardingResponse,
+        recentUsersResponse
+      ] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select('*', { count: 'exact', head: true }),
+        supabase
+          .from("profiles")
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', sevenDaysAgo),
+        supabase
+          .from("profiles")
+          .select('*', { count: 'exact', head: true })
+          .eq('onboarding_completed', true),
+        supabase
+          .from("profiles")
+          .select("id, first_name, last_name, email, created_at, avatar_url")
+          .order("created_at", { ascending: false })
+          .limit(5)
+      ]);
 
-      // Fetch recent users
-      const { data: recentUsersData, error: recentUsersError } = await supabase
-        .from("profiles")
-        .select("id, first_name, last_name, email, created_at, avatar_url")
-        .order("created_at", { ascending: false })
-        .limit(5);
+      const totalUsersError = totalUsersResponse.error;
+      const newUsersError = newUsersResponse.error;
+      const completedError = completedOnboardingResponse.error;
+      const recentUsersError = recentUsersResponse.error;
 
       if (totalUsersError || newUsersError || completedError || recentUsersError) {
         toast.error("Erro ao carregar dados do dashboard.", {
           description: totalUsersError?.message || newUsersError?.message || completedError?.message || recentUsersError?.message,
         });
       } else {
+        const totalUsers = totalUsersResponse.count;
+        const newUsersLast7Days = newUsersResponse.count;
+        const completedOnboarding = completedOnboardingResponse.count;
+        const recentUsersData = recentUsersResponse.data;
+
         setStats({
           totalUsers: totalUsers || 0,
           newUsersLast7Days: newUsersLast7Days || 0,
