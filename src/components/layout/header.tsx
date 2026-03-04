@@ -54,7 +54,7 @@ export function Header() {
   const initial = userEmail.charAt(0).toUpperCase();
 
   return (
-    <header className="flex items-center h-16 px-4 md:px-8 border-b bg-white dark:bg-gray-950 dark:border-gray-800">
+    <header className="sticky top-0 z-30 flex items-center h-20 px-4 md:px-8 border-b border-white/20 bg-white/60 backdrop-blur-xl dark:bg-gray-950/60 dark:border-gray-800/50 shadow-glass dark:shadow-glass-dark">
       <MobileSidebar />
       <div className="ml-auto">
         <DropdownMenu>

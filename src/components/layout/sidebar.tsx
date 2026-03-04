@@ -10,12 +10,16 @@ export function Sidebar() {
   const isAdmin = useIsAdmin();
 
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-white border-r dark:bg-gray-950 dark:border-gray-800">
-      <div className="p-4 border-b flex items-center justify-center gap-2">
-        <BrainCircuit className="h-6 w-6 text-primary" />
-        <h1 className="text-2xl font-bold text-primary">Lyra MetaCare</h1>
+    <aside className="hidden md:flex flex-col w-64 bg-white/60 backdrop-blur-xl border-r border-white/20 dark:bg-gray-950/60 dark:border-gray-800/50 shadow-glass dark:shadow-glass-dark z-20">
+      <div className="p-6 border-b border-white/10 flex items-center justify-center gap-3">
+        <div className="p-2 bg-primary/10 rounded-xl">
+          <BrainCircuit className="h-6 w-6 text-primary drop-shadow-md" />
+        </div>
+        <h1 className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+          Lyra MetaCare
+        </h1>
       </div>
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-4 space-y-2">
         <SidebarLink href="/" icon={LayoutDashboard}>Dashboard</SidebarLink>
         <SidebarLink href="/plan" icon={BrainCircuit}>Plano de IA</SidebarLink>
         <SidebarLink href="/goals" icon={Target}>Metas</SidebarLink>
