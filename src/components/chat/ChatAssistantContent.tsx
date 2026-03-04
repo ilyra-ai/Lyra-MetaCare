@@ -5,7 +5,7 @@ import { ChatBubble } from './ChatBubble';
 import { ChatInput } from './ChatInput';
 import { TypingIndicator } from './TypingIndicator';
 import { QuickReply } from './QuickReply';
-import { Sparkles, Brain, TrendingUp, Zap, ChevronDown, Cpu, Stethoscope, HeartPulse, Calendar, BookOpen } from 'lucide-react';
+import { Sparkles, Brain, ChevronDown, Cpu, Stethoscope, HeartPulse, Calendar, BookOpen } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
