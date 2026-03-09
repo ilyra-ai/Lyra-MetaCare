@@ -491,8 +491,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
     <Grid
       numItemsSm={1}
       numItemsMd={2}
-      numItemsLg={2}
-      numItemsXl={3}
+      numItemsLg={3}
       className="gap-6"
     >
       {pillars.map((pillar) => (
