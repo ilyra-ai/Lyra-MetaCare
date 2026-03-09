@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   Sheet,
   SheetContent,
@@ -10,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   User,
-  Settings,
   BrainCircuit,
   Target,
   Zap,

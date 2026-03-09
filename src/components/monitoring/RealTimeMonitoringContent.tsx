@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { HeartPulse, Zap, Wind, Thermometer, Map, Mic, Bell } from 'lucide-react';
+import { HeartPulse, Zap, Wind, Thermometer, Mic, Bell } from 'lucide-react';
 import { RealTimeMetricCard } from './RealTimeMetricCard';
 import { LiveHeartRateChart } from './LiveHeartRateChart';
 import { MapPlaceholder } from './MapPlaceholder';
