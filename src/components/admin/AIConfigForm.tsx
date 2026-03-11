@@ -78,7 +78,7 @@ export function AIConfigForm() {
             weight_activity: 25,
             weight_nutrition: 15,
             training_endpoint: "https://api.external-ai.com/v1",
-            service_key: "AIzaSyDyC0ga1UvSpn9wHwZhhW3fUs4KG835ZLg", 
+            service_key: "",
             model_name: "",
         },
     });
@@ -107,7 +107,7 @@ export function AIConfigForm() {
                 model_name: data.model_name || "",
                 // Mantendo valores de teste no defaultValues, pois não são persistidos
                 training_endpoint: "https://api.external-ai.com/v1",
-                service_key: "AIzaSyDyC0ga1UvSpn9wHwZhhW3fUs4KG835ZLg", 
+                service_key: "",
             });
             if (data.model_name) {
                 // Simula que o modelo salvo está disponível
