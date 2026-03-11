@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { MadeWithIlyra } from "@/components/made-with-ilyra";
-import { Sidebar } from "@/components/layout/sidebar";
-import { Header } from "@/components/layout/header";
-import { useAuth } from "@/context/AuthContext";
-import { SplashScreen } from "@/components/SplashScreen";
-import { ChatAssistantContent } from "@/components/chat/ChatAssistantContent";
+import { MadeWithIlyra } from '@/components/made-with-ilyra';
+import { Sidebar } from '@/components/layout/sidebar';
+import { Header } from '@/components/layout/header';
+import { useAuth } from '@/context/AuthContext';
+import { SplashScreen } from '@/components/SplashScreen';
+import { ChatAssistantContent } from '@/components/chat/ChatAssistantContent';
 
 export default function ChatPage() {
   const { session } = useAuth();

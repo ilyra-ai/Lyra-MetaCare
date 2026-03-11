@@ -19,7 +19,9 @@ function getSecret() {
   return new TextEncoder().encode(secret);
 }
 
-export async function signSessionToken(payload: SessionPayload): Promise<string> {
+export async function signSessionToken(
+  payload: SessionPayload
+): Promise<string> {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -27,13 +29,15 @@ export async function signSessionToken(payload: SessionPayload): Promise<string>
     .sign(getSecret());
 }
 
-export async function verifySessionToken(token: string): Promise<SessionPayload | null> {
+export async function verifySessionToken(
+  token: string
+): Promise<SessionPayload | null> {
   try {
     const { payload } = await jwtVerify(token, getSecret());
     return {
       sub: String(payload.sub),
       email: String(payload.email),
-      role: String(payload.role)
+      role: String(payload.role),
     };
   } catch {
     return null;
@@ -52,7 +56,7 @@ export async function setSessionCookie(token: string) {
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
-    maxAge: 60 * 60 * 24 * 7
+    maxAge: 60 * 60 * 24 * 7,
   });
 }
 
@@ -63,14 +67,18 @@ export async function clearSessionCookie() {
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
-    expires: new Date(0)
+    expires: new Date(0),
   });
 }
 
-export function buildAppSession(token: string, payload: SessionPayload, profile?: {
-  first_name?: string | null;
-  last_name?: string | null;
-}): AppSession {
+export function buildAppSession(
+  token: string,
+  payload: SessionPayload,
+  profile?: {
+    first_name?: string | null;
+    last_name?: string | null;
+  }
+): AppSession {
   const firstName = profile?.first_name ?? null;
   const lastName = profile?.last_name ?? null;
 
@@ -83,8 +91,8 @@ export function buildAppSession(token: string, payload: SessionPayload, profile?
       user_metadata: {
         first_name: firstName,
         last_name: lastName,
-        full_name: [firstName, lastName].filter(Boolean).join(' ') || null
-      }
-    }
+        full_name: [firstName, lastName].filter(Boolean).join(' ') || null,
+      },
+    },
   };
 }

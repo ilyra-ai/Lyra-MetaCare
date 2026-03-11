@@ -5,7 +5,7 @@ import {
   runInsertQuery,
   runSelectQuery,
   runUpdateQuery,
-  runUpsertQuery
+  runUpsertQuery,
 } from '@/lib/mysql/data-api';
 import { getServerSession } from '@/lib/mysql/server-auth';
 
@@ -15,7 +15,10 @@ function parseNumber(value: string | null) {
   return value === null ? null : Number(value);
 }
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ table: string }> }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ table: string }> }
+) {
   try {
     const { table } = await params;
     const session = await getServerSession();
@@ -24,28 +27,43 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const result = await runSelectQuery({
       table,
       select: searchParams.get('select') ?? '*',
-      filters: searchParams.get('filters') ? JSON.parse(searchParams.get('filters') as string) : [],
-      orders: searchParams.get('orders') ? JSON.parse(searchParams.get('orders') as string) : [],
+      filters: searchParams.get('filters')
+        ? JSON.parse(searchParams.get('filters') as string)
+        : [],
+      orders: searchParams.get('orders')
+        ? JSON.parse(searchParams.get('orders') as string)
+        : [],
       limit: parseNumber(searchParams.get('limit')),
       rangeFrom: parseNumber(searchParams.get('rangeFrom')),
       rangeTo: parseNumber(searchParams.get('rangeTo')),
       count: (searchParams.get('count') as 'exact' | null) ?? null,
       head: searchParams.get('head') === 'true',
-      singleMode: (searchParams.get('singleMode') as 'single' | 'maybeSingle' | null) ?? null,
-      session
+      singleMode:
+        (searchParams.get('singleMode') as 'single' | 'maybeSingle' | null) ??
+        null,
+      session,
     });
 
     const status = result.error ? 400 : 200;
     return NextResponse.json(result, { status });
   } catch (error) {
     return NextResponse.json(
-      { data: null, error: { message: error instanceof Error ? error.message : 'Falha na consulta.' } },
+      {
+        data: null,
+        error: {
+          message:
+            error instanceof Error ? error.message : 'Falha na consulta.',
+        },
+      },
       { status: 500 }
     );
   }
 }
 
-export async function POST(request: Request, { params }: { params: Promise<{ table: string }> }) {
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ table: string }> }
+) {
   try {
     const { table } = await params;
     const session = await getServerSession();
@@ -60,25 +78,34 @@ export async function POST(request: Request, { params }: { params: Promise<{ tab
           table,
           values: body.values as Record<string, unknown>,
           onConflict: body.onConflict ?? 'id',
-          session
+          session,
         })
       : await runInsertQuery({
           table,
           values: body.values ?? {},
-          session
+          session,
         });
 
     const status = result.error ? 400 : 200;
     return NextResponse.json(result, { status });
   } catch (error) {
     return NextResponse.json(
-      { data: null, error: { message: error instanceof Error ? error.message : 'Falha na gravação.' } },
+      {
+        data: null,
+        error: {
+          message:
+            error instanceof Error ? error.message : 'Falha na gravação.',
+        },
+      },
       { status: 500 }
     );
   }
 }
 
-export async function PATCH(request: Request, { params }: { params: Promise<{ table: string }> }) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ table: string }> }
+) {
   try {
     const { table } = await params;
     const session = await getServerSession();
@@ -91,20 +118,29 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ ta
       table,
       values: body.values,
       filters: (body.filters ?? []) as never[],
-      session
+      session,
     });
 
     const status = result.error ? 400 : 200;
     return NextResponse.json(result, { status });
   } catch (error) {
     return NextResponse.json(
-      { data: null, error: { message: error instanceof Error ? error.message : 'Falha na atualização.' } },
+      {
+        data: null,
+        error: {
+          message:
+            error instanceof Error ? error.message : 'Falha na atualização.',
+        },
+      },
       { status: 500 }
     );
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: Promise<{ table: string }> }) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ table: string }> }
+) {
   try {
     const { table } = await params;
     const session = await getServerSession();
@@ -115,14 +151,20 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ t
     const result = await runDeleteQuery({
       table,
       filters: (body.filters ?? []) as never[],
-      session
+      session,
     });
 
     const status = result.error ? 400 : 200;
     return NextResponse.json(result, { status });
   } catch (error) {
     return NextResponse.json(
-      { data: null, error: { message: error instanceof Error ? error.message : 'Falha na exclusão.' } },
+      {
+        data: null,
+        error: {
+          message:
+            error instanceof Error ? error.message : 'Falha na exclusão.',
+        },
+      },
       { status: 500 }
     );
   }

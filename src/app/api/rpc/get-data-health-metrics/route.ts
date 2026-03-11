@@ -11,15 +11,32 @@ export async function GET() {
   try {
     const session = await requireServerSession();
     if (session.user.role !== 'admin') {
-      return NextResponse.json({ data: null, error: { message: 'Acesso restrito a administradores.' } }, { status: 403 });
+      return NextResponse.json(
+        {
+          data: null,
+          error: { message: 'Acesso restrito a administradores.' },
+        },
+        { status: 403 }
+      );
     }
 
     const columns = NUMERIC_METRIC_COLUMNS.join(', ');
-    const metrics = await queryRows<Record<string, unknown>[]>(`SELECT ${columns} FROM daily_metrics`);
-    return NextResponse.json({ data: extractMetricCompleteness(metrics), error: null });
+    const metrics = await queryRows<Record<string, unknown>[]>(
+      `SELECT ${columns} FROM daily_metrics`
+    );
+    return NextResponse.json({
+      data: extractMetricCompleteness(metrics),
+      error: null,
+    });
   } catch (error) {
     return NextResponse.json(
-      { data: null, error: { message: error instanceof Error ? error.message : 'Falha no RPC analítico.' } },
+      {
+        data: null,
+        error: {
+          message:
+            error instanceof Error ? error.message : 'Falha no RPC analítico.',
+        },
+      },
       { status: 500 }
     );
   }

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useAuth } from "@/context/AuthContext";
-import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
-import { format, subDays } from "date-fns";
+import { useAuth } from '@/context/AuthContext';
+import { useState, useEffect, useCallback } from 'react';
+import { toast } from 'sonner';
+import { format, subDays } from 'date-fns';
 
 export interface DailyMetric {
   date: string;
@@ -13,7 +13,7 @@ export interface DailyMetric {
   calories_burned: number | null;
   hrv_ms: number | null;
   deep_sleep_minutes: number;
-  
+
   // New 30+ Metrics
   resting_heart_rate_min: number | null;
   resting_heart_rate_max: number | null;
@@ -43,7 +43,7 @@ export interface DailyMetric {
   weight_kg: number | null;
   mood_score: number | null;
   meditation_minutes: number;
-  
+
   // New metric: Heart Rate Recovery 1 min
   hrr_1min_bpm: number | null;
 
@@ -91,77 +91,77 @@ interface UseDailyMetricsResult {
 }
 
 const defaultMetricValues = {
-    steps: 0,
-    sleep_duration_minutes: 0,
-    deep_sleep_minutes: 0,
-    total_distance_km: 0,
-    active_minutes: 0,
-    workout_calories: 0,
-    rem_sleep_minutes: 0,
-    light_sleep_minutes: 0,
-    protein_grams: 0,
-    carb_grams: 0,
-    fat_grams: 0,
-    water_liters: 0,
-    caffeine_mg: 0,
-    meditation_minutes: 0,
-    // Nullable fields default to null
-    resting_heart_rate: null,
-    calories_burned: null,
-    hrv_ms: null,
-    resting_heart_rate_min: null,
-    resting_heart_rate_max: null,
-    spo2_average: null,
-    respiratory_rate: null,
-    body_temperature_celsius: null,
-    vo2_max: null,
-    sleep_latency_minutes: null,
-    sleep_efficiency: null,
-    sleep_score: null,
-    stress_score: null,
-    recovery_score: null,
-    readiness_score: null,
-    blood_glucose_mgdl: null,
-    blood_pressure_systolic: null,
-    blood_pressure_diastolic: null,
-    weight_kg: null,
-    mood_score: null,
-    // New metric default
-    hrr_1min_bpm: null,
-    // NEW SLEEP METRICS DEFAULTS
-    sleep_regularity_index: null,
-    social_jetlag_hours: null,
-    waso_minutes: null,
-    // NEW ACTIVITY METRICS DEFAULTS
-    training_load_epoc: null,
-    daily_strain: null,
-    sedentary_hours: null,
-    sedentary_breaks: null,
-    // NEW GLUCOSE METRICS DEFAULTS
-    time_in_range_percent: null,
-    glycemic_variability_cv: null,
-    gmi_percent: null,
-    post_prandial_peak_mgdl: null,
-    time_below_range_percent: null,
-    iauc_per_meal_mgdl_h: null,
-    // NEW NUTRITION/COMPOSITION METRICS DEFAULTS
-    whtr_ratio: null,
-    protein_g_per_kg: null,
-    dietary_fiber_grams: null,
-    eating_window_hours: null,
-    sodium_potassium_ratio: null,
-    hydration_ml_per_kg: null,
-    // NEW MENTAL/COGNITION METRICS DEFAULTS
-    reaction_time_pvt_ms: null,
-    pvt_lapses_count: null,
-    cognitive_test_score: null,
-    hrv_stress_index: null,
-    eda_tonic_microsiemens: null,
-    afib_history_percent: null,
-}
+  steps: 0,
+  sleep_duration_minutes: 0,
+  deep_sleep_minutes: 0,
+  total_distance_km: 0,
+  active_minutes: 0,
+  workout_calories: 0,
+  rem_sleep_minutes: 0,
+  light_sleep_minutes: 0,
+  protein_grams: 0,
+  carb_grams: 0,
+  fat_grams: 0,
+  water_liters: 0,
+  caffeine_mg: 0,
+  meditation_minutes: 0,
+  // Nullable fields default to null
+  resting_heart_rate: null,
+  calories_burned: null,
+  hrv_ms: null,
+  resting_heart_rate_min: null,
+  resting_heart_rate_max: null,
+  spo2_average: null,
+  respiratory_rate: null,
+  body_temperature_celsius: null,
+  vo2_max: null,
+  sleep_latency_minutes: null,
+  sleep_efficiency: null,
+  sleep_score: null,
+  stress_score: null,
+  recovery_score: null,
+  readiness_score: null,
+  blood_glucose_mgdl: null,
+  blood_pressure_systolic: null,
+  blood_pressure_diastolic: null,
+  weight_kg: null,
+  mood_score: null,
+  // New metric default
+  hrr_1min_bpm: null,
+  // NEW SLEEP METRICS DEFAULTS
+  sleep_regularity_index: null,
+  social_jetlag_hours: null,
+  waso_minutes: null,
+  // NEW ACTIVITY METRICS DEFAULTS
+  training_load_epoc: null,
+  daily_strain: null,
+  sedentary_hours: null,
+  sedentary_breaks: null,
+  // NEW GLUCOSE METRICS DEFAULTS
+  time_in_range_percent: null,
+  glycemic_variability_cv: null,
+  gmi_percent: null,
+  post_prandial_peak_mgdl: null,
+  time_below_range_percent: null,
+  iauc_per_meal_mgdl_h: null,
+  // NEW NUTRITION/COMPOSITION METRICS DEFAULTS
+  whtr_ratio: null,
+  protein_g_per_kg: null,
+  dietary_fiber_grams: null,
+  eating_window_hours: null,
+  sodium_potassium_ratio: null,
+  hydration_ml_per_kg: null,
+  // NEW MENTAL/COGNITION METRICS DEFAULTS
+  reaction_time_pvt_ms: null,
+  pvt_lapses_count: null,
+  cognitive_test_score: null,
+  hrv_stress_index: null,
+  eda_tonic_microsiemens: null,
+  afib_history_percent: null,
+};
 
 export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
-  const { supabase, session } = useAuth();
+  const { db, session } = useAuth();
   const [metrics, setMetrics] = useState<DailyMetric[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -172,13 +172,14 @@ export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
     }
 
     setLoading(true);
-    
+
     const startDate = format(subDays(new Date(), days - 1), 'yyyy-MM-dd');
     const endDate = format(new Date(), 'yyyy-MM-dd');
 
-    const { data, error } = await supabase
-      .from("daily_metrics")
-      .select(`
+    const { data, error } = await db
+      .from('daily_metrics')
+      .select(
+        `
         date, steps, sleep_duration_minutes, resting_heart_rate, calories_burned, hrv_ms, deep_sleep_minutes,
         resting_heart_rate_min, resting_heart_rate_max, spo2_average, respiratory_rate, body_temperature_celsius,
         total_distance_km, active_minutes, workout_calories, vo2_max, sleep_latency_minutes, rem_sleep_minutes,
@@ -191,36 +192,39 @@ export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
         time_in_range_percent, glycemic_variability_cv, gmi_percent, post_prandial_peak_mgdl, time_below_range_percent, iauc_per_meal_mgdl_h,
         whtr_ratio, protein_g_per_kg, dietary_fiber_grams, eating_window_hours, sodium_potassium_ratio, hydration_ml_per_kg,
         reaction_time_pvt_ms, pvt_lapses_count, cognitive_test_score, hrv_stress_index, eda_tonic_microsiemens, afib_history_percent
-      `)
-      .eq("user_id", session.user.id)
-      .gte("date", startDate)
-      .lte("date", endDate)
-      .order("date", { ascending: true });
+      `
+      )
+      .eq('user_id', session.user.id)
+      .gte('date', startDate)
+      .lte('date', endDate)
+      .order('date', { ascending: true });
 
     if (error) {
-      toast.error("Erro ao carregar métricas diárias.", { description: error.message });
-      console.error("Error fetching daily metrics:", error);
+      toast.error('Erro ao carregar métricas diárias.', {
+        description: error.message,
+      });
+      console.error('Error fetching daily metrics:', error);
       setMetrics([]);
     } else {
       // Ensure all 'days' are present, filling missing days with defaults for chart consistency
-      const dateMap = new Map(data.map(m => [m.date, m]));
+      const dateMap = new Map(data.map((m) => [m.date, m]));
       const completeMetrics: DailyMetric[] = [];
-      
+
       for (let i = days - 1; i >= 0; i--) {
         const date = format(subDays(new Date(), i), 'yyyy-MM-dd');
         const existingData = dateMap.get(date);
-        
+
         completeMetrics.push({
           date,
           ...defaultMetricValues,
           ...existingData,
         } as DailyMetric);
       }
-      
+
       setMetrics(completeMetrics);
     }
     setLoading(false);
-  }, [session, supabase, days]);
+  }, [session, db, days]);
 
   useEffect(() => {
     fetchMetrics();

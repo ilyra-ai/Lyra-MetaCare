@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { MadeWithIlyra } from "@/components/made-with-ilyra";
-import { Sidebar } from "@/components/layout/sidebar";
-import { Header } from "@/components/layout/header";
-import { useAuth } from "@/context/AuthContext";
-import { SplashScreen } from "@/components/SplashScreen";
-import { WearableConnection } from "@/components/data-connection/WearableConnection";
+import { MadeWithIlyra } from '@/components/made-with-ilyra';
+import { Sidebar } from '@/components/layout/sidebar';
+import { Header } from '@/components/layout/header';
+import { useAuth } from '@/context/AuthContext';
+import { SplashScreen } from '@/components/SplashScreen';
+import { WearableConnection } from '@/components/data-connection/WearableConnection';
 
 export default function DataConnectionPage() {
   const { session } = useAuth();
@@ -26,7 +26,9 @@ export default function DataConnectionPage() {
       <div className="flex flex-col flex-1">
         <Header />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
-          <h1 className="text-3xl font-bold mb-8 text-center md:text-left">Conectar Dados de Saúde</h1>
+          <h1 className="text-3xl font-bold mb-8 text-center md:text-left">
+            Conectar Dados de Saúde
+          </h1>
           <WearableConnection />
         </main>
         <MadeWithIlyra />

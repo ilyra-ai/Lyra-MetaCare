@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import * as React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import {
   Carousel,
   CarouselApi,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel";
+} from '@/components/ui/carousel';
 import {
   Card,
   CardContent,
@@ -19,8 +19,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -29,149 +29,207 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useAuth } from "@/context/AuthContext";
-import { Heart, ArrowRight, User, Activity, ArrowLeft, Calendar, Clock, MapPin, Dumbbell, Target, ShieldCheck, Scale, Moon, Utensils, Zap, Weight, Sun, Waves, Rss, Globe, Droplet, Footprints, BrainCircuit, TrendingUp } from "lucide-react";
-import { OnboardingNavigationDots } from "./OnboardingNavigationDots";
-import { cn } from "@/lib/utils";
-import { DatePicker } from "@/components/ui/date-picker";
-import { differenceInYears } from "date-fns";
-import { TimeInput } from "@/components/ui/time-input";
+} from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useAuth } from '@/context/AuthContext';
+import {
+  Heart,
+  ArrowRight,
+  User,
+  Activity,
+  ArrowLeft,
+  Calendar,
+  Clock,
+  MapPin,
+  Dumbbell,
+  ShieldCheck,
+  Scale,
+  Moon,
+  Utensils,
+  Zap,
+  Weight,
+  Sun,
+  Rss,
+  Globe,
+  Droplet,
+  Footprints,
+  TrendingUp,
+} from 'lucide-react';
+import { OnboardingNavigationDots } from './OnboardingNavigationDots';
+import { cn } from '@/lib/utils';
+import { DatePicker } from '@/components/ui/date-picker';
+import { differenceInYears } from 'date-fns';
+import { TimeInput } from '@/components/ui/time-input';
 
 // Mapeamento de objetivos para ícones únicos e relevantes
 const goalsList = [
-  { id: "lose_weight", label: "Perder Peso", icon: Weight },
-  { id: "gain_muscle", label: "Ganhar Músculo", icon: Dumbbell },
-  { id: "improve_endurance", label: "Melhorar Resistência", icon: Footprints },
-  { id: "reduce_stress", label: "Reduzir Estresse Crônico", icon: Heart },
-  { id: "eat_healthier", label: "Comer de Forma Saudável", icon: Utensils },
-  { id: "optimize_hrv", label: "Otimizar HRV (Resiliência)", icon: Zap },
-  { id: "improve_readiness", label: "Melhorar Score de Prontidão", icon: ShieldCheck },
-  { id: "regulate_sleep_duration", label: "Regular Duração do Sono", icon: Moon },
-  { id: "improve_sleep_efficiency", label: "Aumentar a Eficiência do Sono", icon: Sun },
-  { id: "reduce_social_jetlag", label: "Reduzir o Social Jetlag (Regularidade)", icon: Rss },
-  { id: "increase_vo2max", label: "Aumentar VO₂max", icon: TrendingUp },
-  { id: "meet_activity_guidelines", label: "Cumprir Diretrizes de Atividade Moderada/Vigorosa", icon: Activity },
-  { id: "optimize_protein", label: "Otimizar a Ingestão Diária de Proteínas", icon: Utensils },
-  { id: "manage_blood_glucose", label: "Gerenciar Picos de Glicose Pós-Prandial", icon: Droplet },
+  { id: 'lose_weight', label: 'Perder Peso', icon: Weight },
+  { id: 'gain_muscle', label: 'Ganhar Músculo', icon: Dumbbell },
+  { id: 'improve_endurance', label: 'Melhorar Resistência', icon: Footprints },
+  { id: 'reduce_stress', label: 'Reduzir Estresse Crônico', icon: Heart },
+  { id: 'eat_healthier', label: 'Comer de Forma Saudável', icon: Utensils },
+  { id: 'optimize_hrv', label: 'Otimizar HRV (Resiliência)', icon: Zap },
+  {
+    id: 'improve_readiness',
+    label: 'Melhorar Score de Prontidão',
+    icon: ShieldCheck,
+  },
+  {
+    id: 'regulate_sleep_duration',
+    label: 'Regular Duração do Sono',
+    icon: Moon,
+  },
+  {
+    id: 'improve_sleep_efficiency',
+    label: 'Aumentar a Eficiência do Sono',
+    icon: Sun,
+  },
+  {
+    id: 'reduce_social_jetlag',
+    label: 'Reduzir o Social Jetlag (Regularidade)',
+    icon: Rss,
+  },
+  { id: 'increase_vo2max', label: 'Aumentar VO₂max', icon: TrendingUp },
+  {
+    id: 'meet_activity_guidelines',
+    label: 'Cumprir Diretrizes de Atividade Moderada/Vigorosa',
+    icon: Activity,
+  },
+  {
+    id: 'optimize_protein',
+    label: 'Otimizar a Ingestão Diária de Proteínas',
+    icon: Utensils,
+  },
+  {
+    id: 'manage_blood_glucose',
+    label: 'Gerenciar Picos de Glicose Pós-Prandial',
+    icon: Droplet,
+  },
 ];
 
 // --- Zod Schema ---
 const onboardingSchema = z.object({
-  first_name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres."),
-  last_name: z.string().min(2, "O sobrenome deve ter pelo menos 2 caracteres."),
-  
+  first_name: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres.'),
+  last_name: z.string().min(2, 'O sobrenome deve ter pelo menos 2 caracteres.'),
+
   // Campos de nascimento (Obrigatórios, exceto birth_time que é opcional)
-  birth_date: z.date({ required_error: "Data de nascimento é obrigatória." }),
-  birth_time: z.string().optional().or(z.literal('')).refine(val => {
-    if (val === '' || val === undefined) return true;
-    return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
-  }, "Formato de hora inválido (HH:MM)."),
-  birth_location: z.string().min(3, "Local de nascimento é obrigatório."),
+  birth_date: z.date({ required_error: 'Data de nascimento é obrigatória.' }),
+  birth_time: z
+    .string()
+    .optional()
+    .or(z.literal(''))
+    .refine((val) => {
+      if (val === '' || val === undefined) return true;
+      return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
+    }, 'Formato de hora inválido (HH:MM).'),
+  birth_location: z.string().min(3, 'Local de nascimento é obrigatório.'),
 
   // A idade é calculada, mas mantemos a validação
   age: z.coerce
     .number()
-    .min(13, "Você deve ter pelo menos 13 anos.")
-    .max(120, "Idade inválida."),
-  gender: z.enum(["male", "female", "other", "prefer_not-to-say"], {
-    required_error: "Por favor, selecione um gênero.",
+    .min(13, 'Você deve ter pelo menos 13 anos.')
+    .max(120, 'Idade inválida.'),
+  gender: z.enum(['male', 'female', 'other', 'prefer_not-to-say'], {
+    required_error: 'Por favor, selecione um gênero.',
   }),
-  
+
   // Campos Opcionais (Passos 3 e 4)
-  activity_level: z.number().min(1).max(5).optional(), 
-  goals: z
-    .array(z.string())
-    .optional(), // Tornando goals opcional, permitindo array vazio
-    
+  activity_level: z.number().min(1).max(5).optional(),
+  goals: z.array(z.string()).optional(), // Tornando goals opcional, permitindo array vazio
+
   consent: z.boolean().refine((val) => val === true, {
-    message: "Você deve aceitar os termos.",
+    message: 'Você deve aceitar os termos.',
   }),
 });
 
 type OnboardingValues = z.infer<typeof onboardingSchema>;
 
 // O número total de passos diminuiu de 6 para 5
-const TOTAL_STEPS = 5; 
+const TOTAL_STEPS = 5;
 
 // Helper component for Carousel Item structure
-const OnboardingStep: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className }) => (
-    <CarouselItem className={cn("animate-in fade-in duration-500", className)}>
-        <Card className="min-h-[550px] flex flex-col"> 
-            {children}
-        </Card>
-    </CarouselItem>
+const OnboardingStep: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+}> = ({ children, className }) => (
+  <CarouselItem className={cn('animate-in fade-in duration-500', className)}>
+    <Card className="min-h-[550px] flex flex-col">{children}</Card>
+  </CarouselItem>
 );
 
 export function OnboardingForm() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const router = useRouter();
-  const { supabase, session } = useAuth();
+  const { db, session } = useAuth();
 
   const form = useForm<OnboardingValues>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
-      first_name: "",
-      last_name: "",
+      first_name: '',
+      last_name: '',
       age: 18,
-      gender: "prefer_not-to-say",
-      activity_level: 3, 
+      gender: 'prefer_not-to-say',
+      activity_level: 3,
       goals: [],
       consent: false,
-      birth_time: "12:00", // Default time
-      birth_location: "",
+      birth_time: '12:00', // Default time
+      birth_location: '',
       birth_date: undefined, // Usar undefined para DatePicker vazio
     },
   });
 
-  const birthDate = form.watch("birth_date");
+  const birthDate = form.watch('birth_date');
 
   // Efeito para calcular a idade automaticamente
   React.useEffect(() => {
     if (birthDate) {
       const calculatedAge = differenceInYears(new Date(), birthDate);
-      form.setValue("age", calculatedAge, { shouldValidate: true });
+      form.setValue('age', calculatedAge, { shouldValidate: true });
     }
   }, [birthDate, form]);
 
   // Efeito para preencher nome/sobrenome se vierem do OAuth
   React.useEffect(() => {
     if (session?.user) {
-        const metadata = session.user.user_metadata;
-        const currentFirstName = form.getValues("first_name");
-        const currentLastName = form.getValues("last_name");
+      const metadata = session.user.user_metadata;
+      const currentFirstName = form.getValues('first_name');
+      const currentLastName = form.getValues('last_name');
 
-        // Tenta preencher o nome se o campo estiver vazio e houver dados no metadata
-        if (!currentFirstName && metadata?.first_name) {
-            form.setValue("first_name", metadata.first_name, { shouldValidate: true });
+      // Tenta preencher o nome se o campo estiver vazio e houver dados no metadata
+      if (!currentFirstName && metadata?.first_name) {
+        form.setValue('first_name', metadata.first_name, {
+          shouldValidate: true,
+        });
+      }
+      if (!currentLastName && metadata?.last_name) {
+        form.setValue('last_name', metadata.last_name, {
+          shouldValidate: true,
+        });
+      }
+      // Fallback para 'full_name' se 'first_name' e 'last_name' não existirem
+      if ((!currentFirstName || !currentLastName) && metadata?.full_name) {
+        const parts = metadata.full_name.split(' ');
+        if (!currentFirstName && parts.length > 0) {
+          form.setValue('first_name', parts[0], { shouldValidate: true });
         }
-        if (!currentLastName && metadata?.last_name) {
-            form.setValue("last_name", metadata.last_name, { shouldValidate: true });
+        if (!currentLastName && parts.length > 1) {
+          form.setValue('last_name', parts.slice(1).join(' '), {
+            shouldValidate: true,
+          });
         }
-        // Fallback para 'full_name' se 'first_name' e 'last_name' não existirem
-        if ((!currentFirstName || !currentLastName) && metadata?.full_name) {
-            const parts = metadata.full_name.split(' ');
-            if (!currentFirstName && parts.length > 0) {
-                form.setValue("first_name", parts[0], { shouldValidate: true });
-            }
-            if (!currentLastName && parts.length > 1) {
-                form.setValue("last_name", parts.slice(1).join(' '), { shouldValidate: true });
-            }
-        }
+      }
     }
   }, [session, form]);
-
 
   // Efeito para rolar a tela para o topo após a transição do carrossel
   React.useEffect(() => {
@@ -185,506 +243,530 @@ export function OnboardingForm() {
     };
 
     // Adiciona o listener para o evento 'select' (quando o slide muda)
-    api.on("select", handleScrollToTop);
+    api.on('select', handleScrollToTop);
 
     // Limpeza do listener
     return () => {
-      api.off("select", handleScrollToTop);
+      api.off('select', handleScrollToTop);
     };
   }, [api]);
-
 
   const handleNext = async (
     fields: (keyof OnboardingValues)[] | keyof OnboardingValues
   ) => {
     const fieldsToValidate = Array.isArray(fields) ? fields : [fields];
-    const isValid = await form.trigger(fieldsToValidate as any);
+    const isValid = await form.trigger(fieldsToValidate);
     if (isValid) {
       api?.scrollNext();
     } else {
-        toast.error("Por favor, preencha os campos obrigatórios corretamente antes de prosseguir.");
+      toast.error(
+        'Por favor, preencha os campos obrigatórios corretamente antes de prosseguir.'
+      );
     }
   };
 
   const onSubmit = async (data: OnboardingValues) => {
     if (!session?.user) {
-      toast.error("Erro de autenticação. Por favor, faça login novamente.");
+      toast.error('Erro de autenticação. Por favor, faça login novamente.');
       return;
     }
     setIsSubmitting(true);
-    
-    // 1. Preparar dados
-    const { consent, ...profileData } = data;
 
-    // Format birth_date to ISO string (YYYY-MM-DD) for Supabase DATE type
-    const formattedBirthDate = profileData.birth_date ? profileData.birth_date.toISOString().split('T')[0] : null;
-    
+    // 1. Preparar dados
+    const profileData = data;
+
+    // Converter birth_date para o formato DATE persistido no MySQL
+    const formattedBirthDate = profileData.birth_date
+      ? profileData.birth_date.toISOString().split('T')[0]
+      : null;
+
     // Garantir que a idade seja um número inteiro (smallint)
     const ageInt = Math.floor(profileData.age);
-    
-    // Tratar birth_time: se for string vazia, enviar null para o DB
-    const formattedBirthTime = profileData.birth_time === "" ? null : profileData.birth_time;
 
+    // Tratar birth_time: se for string vazia, enviar null para o DB
+    const formattedBirthTime =
+      profileData.birth_time === '' ? null : profileData.birth_time;
 
     // 2. Montar o objeto de atualização
     const updatePayload = {
-        first_name: profileData.first_name,
-        last_name: profileData.last_name,
-        age: ageInt,
-        gender: profileData.gender,
-        activity_level: profileData.activity_level,
-        goals: profileData.goals && profileData.goals.length > 0 ? profileData.goals : null, // Envia null se o array estiver vazio
-        birth_date: formattedBirthDate,
-        birth_time: formattedBirthTime, // Usando o valor tratado
-        birth_location: profileData.birth_location,
-        onboarding_completed: true,
-        updated_at: new Date().toISOString(),
+      first_name: profileData.first_name,
+      last_name: profileData.last_name,
+      age: ageInt,
+      gender: profileData.gender,
+      activity_level: profileData.activity_level,
+      goals:
+        profileData.goals && profileData.goals.length > 0
+          ? profileData.goals
+          : null, // Envia null se o array estiver vazio
+      birth_date: formattedBirthDate,
+      birth_time: formattedBirthTime, // Usando o valor tratado
+      birth_location: profileData.birth_location,
+      onboarding_completed: true,
+      updated_at: new Date().toISOString(),
     };
 
-    // 3. Atualizar perfil no Supabase
-    const { error } = await supabase
-      .from("profiles")
+    // 3. Atualizar perfil no banco principal
+    const { error } = await db
+      .from('profiles')
       .update(updatePayload)
-      .eq("id", session.user.id);
+      .eq('id', session.user.id);
 
     setIsSubmitting(false);
 
     if (error) {
-      console.error("Supabase Update Error:", error);
-      toast.error("Ocorreu um erro ao salvar seu perfil.", {
+      console.error('Erro ao atualizar perfil no MySQL:', error);
+      toast.error('Ocorreu um erro ao salvar seu perfil.', {
         description: error.message,
       });
     } else {
-      toast.success("Perfil salvo com sucesso! Bem-vindo(a)!");
-      router.push("/");
+      toast.success('Perfil salvo com sucesso! Bem-vindo(a)!');
+      router.push('/');
     }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Carousel 
-            setApi={setApi} 
-            className="w-full max-w-2xl"
-            opts={{
-                // Desabilita o arrastar/swipe com o mouse/touch e, consequentemente, o teclado
-                watchDrag: false, 
-            }}
+        <Carousel
+          setApi={setApi}
+          className="w-full max-w-2xl"
+          opts={{
+            // Desabilita o arrastar/swipe com o mouse/touch e, consequentemente, o teclado
+            watchDrag: false,
+          }}
         >
           <CarouselContent>
             {/* Step 1: Welcome */}
             <OnboardingStep>
-                <CardHeader>
-                  <CardTitle className="text-2xl">
-                    Bem-vindo(a) à sua Jornada
-                  </CardTitle>
-                  <CardDescription>
-                    Vamos personalizar sua experiência. Responda algumas
-                    perguntas rápidas para começarmos.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 overflow-y-auto">
-                  <div className="md:col-span-2 space-y-4">
-                    <p className="text-lg text-gray-700">
-                      O Lyra MetaCare usa inteligência artificial para criar um
-                      plano de longevidade exclusivo para você.
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Clique em "Começar" para iniciar a configuração do seu perfil.
-                    </p>
-                  </div>
-                  {/* Ícone: Coração (Verde 600) */}
-                  <div className="flex justify-center items-center md:col-span-1">
-                    <Heart className="w-16 h-16 md:w-24 md:h-24 text-green-600 animate-pulse" />
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between items-center border-t pt-4">
-                  <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <Button type="button" onClick={() => api?.scrollNext()}>
-                    Começar <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardFooter>
+              <CardHeader>
+                <CardTitle className="text-2xl">
+                  Bem-vindo(a) à sua Jornada
+                </CardTitle>
+                <CardDescription>
+                  Vamos personalizar sua experiência. Responda algumas perguntas
+                  rápidas para começarmos.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 overflow-y-auto">
+                <div className="md:col-span-2 space-y-4">
+                  <p className="text-lg text-gray-700">
+                    O Lyra MetaCare usa inteligência artificial para criar um
+                    plano de longevidade exclusivo para você.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Clique em "Começar" para iniciar a configuração do seu
+                    perfil.
+                  </p>
+                </div>
+                {/* Ícone: Coração (Verde 600) */}
+                <div className="flex justify-center items-center md:col-span-1">
+                  <Heart className="w-16 h-16 md:w-24 md:h-24 text-green-600 animate-pulse" />
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-between items-center border-t pt-4">
+                <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
+                <Button type="button" onClick={() => api?.scrollNext()}>
+                  Começar <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </CardFooter>
             </OnboardingStep>
 
             {/* Step 2: Personal Data - Sem imagem grande, com ícones nos campos */}
             <OnboardingStep>
-                <CardHeader>
-                  <CardTitle>Seus Dados Pessoais</CardTitle>
-                  <CardDescription>
-                    Nome, data de nascimento e gênero para personalização.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
-                  
-                  {/* Nome e Sobrenome */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="first_name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center">
-                            <User className="h-4 w-4 mr-1 text-green-600" /> Nome
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder="Seu nome" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="last_name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center">
-                            <User className="h-4 w-4 mr-1 text-green-600" /> Sobrenome
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder="Seu sobrenome" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+              <CardHeader>
+                <CardTitle>Seus Dados Pessoais</CardTitle>
+                <CardDescription>
+                  Nome, data de nascimento e gênero para personalização.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
+                {/* Nome e Sobrenome */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="first_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center">
+                          <User className="h-4 w-4 mr-1 text-green-600" /> Nome
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="Seu nome" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="last_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center">
+                          <User className="h-4 w-4 mr-1 text-green-600" />{' '}
+                          Sobrenome
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="Seu sobrenome" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-                  {/* Data de Nascimento, Idade e Gênero */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="birth_date"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel className="mb-2 flex items-center">
-                            <Calendar className="h-4 w-4 mr-1 text-green-600" /> Data de Nascimento
-                          </FormLabel>
-                          <FormControl>
-                            <DatePicker
-                              value={field.value}
-                              onChange={field.onChange}
-                              placeholder="DD/MM/AAAA"
-                              id={field.name}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="age"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center">
-                            <Scale className="h-4 w-4 mr-1 text-green-600" /> Idade
-                          </FormLabel>
-                          <FormControl>
-                            <Input 
-                                type="number" 
-                                placeholder="Idade" 
-                                {...field} 
-                                disabled={!!birthDate} 
-                                className={cn(!!birthDate && "bg-gray-100 cursor-not-allowed")}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Calculada automaticamente.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                {/* Data de Nascimento, Idade e Gênero */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="birth_date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel className="mb-2 flex items-center">
+                          <Calendar className="h-4 w-4 mr-1 text-green-600" />{' '}
+                          Data de Nascimento
+                        </FormLabel>
+                        <FormControl>
+                          <DatePicker
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder="DD/MM/AAAA"
+                            id={field.name}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="gender"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center">
-                            <Globe className="h-4 w-4 mr-1 text-green-600" /> Gênero
-                          </FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione..." />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="male">Masculino</SelectItem>
-                              <SelectItem value="female">Feminino</SelectItem>
-                              <SelectItem value="other">Outro</SelectItem>
-                              <SelectItem value="prefer_not-to-say">
-                                Prefiro não dizer
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="age"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center">
+                          <Scale className="h-4 w-4 mr-1 text-green-600" />{' '}
+                          Idade
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Idade"
+                            {...field}
+                            disabled={!!birthDate}
+                            className={cn(
+                              !!birthDate && 'bg-gray-100 cursor-not-allowed'
+                            )}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Calculada automaticamente.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                  {/* Hora e Local de Nascimento */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="birth_time"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center">
-                            <Clock className="h-4 w-4 mr-1 text-green-600" /> Hora Exata (HH:MM)
-                          </FormLabel>
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center">
+                          <Globe className="h-4 w-4 mr-1 text-green-600" />{' '}
+                          Gênero
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
-                            <TimeInput placeholder="12:00" {...field} />
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione..." />
+                            </SelectTrigger>
                           </FormControl>
-                          <FormDescription>
-                            Usado para cronobiologia. (Opcional)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="birth_location"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center">
-                            <MapPin className="h-4 w-4 mr-1 text-green-600" /> Local de Nascimento
-                          </FormLabel>
-                          <FormControl>
-                            <Input 
-                                placeholder="Ex: São Paulo, SP, Brasil" 
-                                {...field} 
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Digite Cidade, Estado e País.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between items-center border-t pt-4">
-                  <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <div className="space-x-2 flex items-center">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleNext("first_name")} // Volta para o primeiro campo obrigatório
-                    >
-                      <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() => handleNext(["first_name", "last_name", "birth_date", "birth_time", "birth_location", "age", "gender"])}
-                    >
-                      Próximo <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardFooter>
+                          <SelectContent>
+                            <SelectItem value="male">Masculino</SelectItem>
+                            <SelectItem value="female">Feminino</SelectItem>
+                            <SelectItem value="other">Outro</SelectItem>
+                            <SelectItem value="prefer_not-to-say">
+                              Prefiro não dizer
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Hora e Local de Nascimento */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="birth_time"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center">
+                          <Clock className="h-4 w-4 mr-1 text-green-600" /> Hora
+                          Exata (HH:MM)
+                        </FormLabel>
+                        <FormControl>
+                          <TimeInput placeholder="12:00" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Usado para cronobiologia. (Opcional)
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="birth_location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-1 text-green-600" />{' '}
+                          Local de Nascimento
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Ex: São Paulo, SP, Brasil"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Digite Cidade, Estado e País.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-between items-center border-t pt-4">
+                <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
+                <div className="space-x-2 flex items-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleNext('first_name')} // Volta para o primeiro campo obrigatório
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() =>
+                      handleNext([
+                        'first_name',
+                        'last_name',
+                        'birth_date',
+                        'birth_time',
+                        'birth_location',
+                        'age',
+                        'gender',
+                      ])
+                    }
+                  >
+                    Próximo <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </CardFooter>
             </OnboardingStep>
 
             {/* Step 3: Activity Level - Centralizado e Mobile-First */}
             <OnboardingStep>
-                <CardHeader>
-                  <CardTitle>Nível de Atividade</CardTitle>
-                  <CardDescription>
-                    Quão ativo(a) você é no seu dia a dia?
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col items-center justify-center p-6 space-y-8 overflow-y-auto">
-                  {/* Ícone: Haltere (Verde 600) - Centralizado */}
-                  <Dumbbell className="w-16 h-16 md:w-24 md:h-24 text-green-600/70" />
-                  
-                  <div className="w-full max-w-md">
-                    <FormField
-                      control={form.control}
-                      name="activity_level"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-lg font-semibold block text-center mb-4">
-                            Nível Atual: {field.value}
-                          </FormLabel>
-                          <FormControl>
-                            <Slider
-                              min={1}
-                              max={5}
-                              step={1}
-                              value={[field.value || 3]} // Usando 3 como fallback visual
-                              onValueChange={(vals) => field.onChange(vals[0])}
-                            />
-                          </FormControl>
-                          <div className="flex justify-between text-xs text-muted-foreground mt-2">
-                            <span>Sedentário (1)</span>
-                            <span>Muito Ativo (5)</span>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between items-center border-t pt-4">
-                  <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <div className="space-x-2 flex items-center">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => api?.scrollPrev()}
-                    >
-                      <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
-                    </Button>
-                    <Button
-                      type="button"
-                      // Não precisamos validar activity_level aqui, pois ele é opcional
-                      onClick={() => api?.scrollNext()}
-                    >
-                      Próximo <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardFooter>
+              <CardHeader>
+                <CardTitle>Nível de Atividade</CardTitle>
+                <CardDescription>
+                  Quão ativo(a) você é no seu dia a dia?
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 flex flex-col items-center justify-center p-6 space-y-8 overflow-y-auto">
+                {/* Ícone: Haltere (Verde 600) - Centralizado */}
+                <Dumbbell className="w-16 h-16 md:w-24 md:h-24 text-green-600/70" />
+
+                <div className="w-full max-w-md">
+                  <FormField
+                    control={form.control}
+                    name="activity_level"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg font-semibold block text-center mb-4">
+                          Nível Atual: {field.value}
+                        </FormLabel>
+                        <FormControl>
+                          <Slider
+                            min={1}
+                            max={5}
+                            step={1}
+                            value={[field.value || 3]} // Usando 3 como fallback visual
+                            onValueChange={(vals) => field.onChange(vals[0])}
+                          />
+                        </FormControl>
+                        <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                          <span>Sedentário (1)</span>
+                          <span>Muito Ativo (5)</span>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-between items-center border-t pt-4">
+                <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
+                <div className="space-x-2 flex items-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => api?.scrollPrev()}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
+                  </Button>
+                  <Button
+                    type="button"
+                    // Não precisamos validar activity_level aqui, pois ele é opcional
+                    onClick={() => api?.scrollNext()}
+                  >
+                    Próximo <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </CardFooter>
             </OnboardingStep>
 
             {/* Step 4: Goals - Ícones únicos e layout organizado */}
             <OnboardingStep>
-                <CardHeader>
-                  <CardTitle>Seus Objetivos</CardTitle>
-                  <CardDescription>
-                    O que você espera alcançar? (Opcional)
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col items-center p-6 overflow-y-auto">
-                  <div className="w-full max-w-xl">
-                    <FormField
-                      control={form.control}
-                      name="goals"
-                      render={() => (
-                        <FormItem className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {goalsList.map((item) => {
-                            const GoalIcon = item.icon;
-                            return (
-                              <FormField
-                                key={item.id}
-                                control={form.control}
-                                name="goals"
-                                render={({ field }) => (
-                                  <FormItem className="flex flex-row items-center space-x-3 space-y-0 border p-3 rounded-lg hover:bg-green-50 transition-colors cursor-pointer">
-                                    <FormControl>
-                                      <Checkbox
-                                        checked={field.value?.includes(item.id)}
-                                        onCheckedChange={(checked) => {
-                                          return checked
-                                            ? field.onChange([
-                                                ...(field.value || []),
-                                                item.id,
-                                              ])
-                                            : field.onChange(
-                                                field.value?.filter(
-                                                  (value) => value !== item.id
-                                                )
-                                              );
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <div className="flex items-center space-x-3">
-                                        <GoalIcon className="h-5 w-5 text-green-600 flex-shrink-0" />
-                                        <FormLabel className="font-medium cursor-pointer text-sm">
-                                            {item.label}
-                                        </FormLabel>
-                                    </div>
-                                  </FormItem>
-                                )}
-                              />
-                            );
-                          })}
-                          <FormMessage className="col-span-full" />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between items-center border-t pt-4">
-                  <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <div className="space-x-2 flex items-center">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => api?.scrollPrev()}
-                    >
-                      <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
-                    </Button>
-                    <Button 
-                        type="button" 
-                        // Não precisamos validar goals aqui, pois ele é opcional
-                        onClick={() => api?.scrollNext()}
-                    >
-                      Próximo <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardFooter>
+              <CardHeader>
+                <CardTitle>Seus Objetivos</CardTitle>
+                <CardDescription>
+                  O que você espera alcançar? (Opcional)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 flex flex-col items-center p-6 overflow-y-auto">
+                <div className="w-full max-w-xl">
+                  <FormField
+                    control={form.control}
+                    name="goals"
+                    render={() => (
+                      <FormItem className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {goalsList.map((item) => {
+                          const GoalIcon = item.icon;
+                          return (
+                            <FormField
+                              key={item.id}
+                              control={form.control}
+                              name="goals"
+                              render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0 border p-3 rounded-lg hover:bg-green-50 transition-colors cursor-pointer">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(item.id)}
+                                      onCheckedChange={(checked) => {
+                                        return checked
+                                          ? field.onChange([
+                                              ...(field.value || []),
+                                              item.id,
+                                            ])
+                                          : field.onChange(
+                                              field.value?.filter(
+                                                (value) => value !== item.id
+                                              )
+                                            );
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <div className="flex items-center space-x-3">
+                                    <GoalIcon className="h-5 w-5 text-green-600 flex-shrink-0" />
+                                    <FormLabel className="font-medium cursor-pointer text-sm">
+                                      {item.label}
+                                    </FormLabel>
+                                  </div>
+                                </FormItem>
+                              )}
+                            />
+                          );
+                        })}
+                        <FormMessage className="col-span-full" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-between items-center border-t pt-4">
+                <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
+                <div className="space-x-2 flex items-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => api?.scrollPrev()}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
+                  </Button>
+                  <Button
+                    type="button"
+                    // Não precisamos validar goals aqui, pois ele é opcional
+                    onClick={() => api?.scrollNext()}
+                  >
+                    Próximo <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </CardFooter>
             </OnboardingStep>
 
             {/* Step 5: Consent & Submit */}
             <OnboardingStep>
-                <CardHeader>
-                  <CardTitle>Quase lá!</CardTitle>
-                  <CardDescription>
-                    Revise e confirme para finalizar.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col items-center justify-center p-6 space-y-6 overflow-y-auto">
-                  {/* Ícone: ShieldCheck (Verde 600) */}
-                  <ShieldCheck className="w-16 h-16 md:w-24 md:h-24 text-green-600/70" />
-                  <FormField
-                    control={form.control}
-                    name="consent"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 w-full max-w-md">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel>
-                            Eu concordo com o processamento dos meus dados para
-                            personalizar minha experiência.
-                          </FormLabel>
-                          <FormDescription>
-                            Você pode gerenciar seus dados nas configurações a
-                            qualquer momento.
-                          </FormDescription>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-                <CardFooter className="flex justify-between items-center border-t pt-4">
-                  <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                  <div className="space-x-2 flex items-center">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => api?.scrollPrev()}
-                    >
-                      <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
-                    </Button>
-                    <Button type="submit" disabled={isSubmitting}>
-                      {isSubmitting ? "Salvando..." : "Finalizar"}
-                    </Button>
-                  </div>
-                </CardFooter>
+              <CardHeader>
+                <CardTitle>Quase lá!</CardTitle>
+                <CardDescription>
+                  Revise e confirme para finalizar.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 flex flex-col items-center justify-center p-6 space-y-6 overflow-y-auto">
+                {/* Ícone: ShieldCheck (Verde 600) */}
+                <ShieldCheck className="w-16 h-16 md:w-24 md:h-24 text-green-600/70" />
+                <FormField
+                  control={form.control}
+                  name="consent"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 w-full max-w-md">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>
+                          Eu concordo com o processamento dos meus dados para
+                          personalizar minha experiência.
+                        </FormLabel>
+                        <FormDescription>
+                          Você pode gerenciar seus dados nas configurações a
+                          qualquer momento.
+                        </FormDescription>
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+              <CardFooter className="flex justify-between items-center border-t pt-4">
+                <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
+                <div className="space-x-2 flex items-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => api?.scrollPrev()}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Salvando...' : 'Finalizar'}
+                  </Button>
+                </div>
+              </CardFooter>
             </OnboardingStep>
           </CarouselContent>
         </Carousel>

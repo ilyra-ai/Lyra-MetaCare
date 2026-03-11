@@ -17,10 +17,15 @@ export async function POST() {
       'SELECT weight_hrv, weight_sleep, weight_activity, weight_nutrition FROM ai_config LIMIT 1'
     );
 
-    return NextResponse.json(calculateLongevityScores(metric ?? null, config ?? undefined));
+    return NextResponse.json(
+      calculateLongevityScores(metric ?? null, config ?? undefined)
+    );
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Falha no cálculo local.' },
+      {
+        error:
+          error instanceof Error ? error.message : 'Falha no cálculo local.',
+      },
       { status: 500 }
     );
   }

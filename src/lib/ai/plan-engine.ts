@@ -17,7 +17,7 @@ function createItem(title: string, details: string, image: string) {
     id: crypto.randomUUID(),
     title,
     details,
-    image
+    image,
   };
 }
 
@@ -34,10 +34,11 @@ export function generateLocalWellnessPlan(payload: PlanPayload) {
   const lowActivity = steps > 0 && steps < 6000;
 
   const summary = [
-    `Lua em ${payload.astrology.moonSign} sob ${payload.astrology.nakshatra}, com foco atual em ${payload.astrology.impactOnHealth.energy.toLowerCase()}.`,
+    `Lua em ${payload.astrology.moonSign}, nakshatra ${payload.astrology.nakshatra}, ${payload.astrology.tithi} e ayanamsha de ${payload.astrology.ayanamshaDegrees.toFixed(2)} graus.`,
+    `Leitura fisiológica-astrológica atual com foco em ${payload.astrology.impactOnHealth.energy.toLowerCase()}.`,
     recoveryMode || shortSleep
       ? 'Seu protocolo de hoje prioriza recuperação, sono consistente e menor agressão metabólica.'
-      : 'Seu protocolo de hoje pode combinar carga física moderada com alimentação estável e recuperação ativa.'
+      : 'Seu protocolo de hoje pode combinar carga física moderada com alimentação estável e recuperação ativa.',
   ].join(' ');
 
   const nutritionItems = [
@@ -58,7 +59,7 @@ export function generateLocalWellnessPlan(payload: PlanPayload) {
         ? 'Na janela de Lua Cheia, hidrate-se de forma fracionada ao longo do dia para reduzir percepção de agitação e retenção.'
         : 'Hidrate-se de forma fracionada, ajustando eletrólitos conforme treino, temperatura corporal e quantidade de sono.',
       'hydration'
-    )
+    ),
   ];
 
   const exerciseItems = [
@@ -83,7 +84,7 @@ export function generateLocalWellnessPlan(payload: PlanPayload) {
           'Consolidar volume',
           'Feche o dia com zona aeróbica leve para ampliar recuperação sem elevar demais a carga interna.',
           'cardio'
-        )
+        ),
   ];
 
   const sleepItems = [
@@ -102,7 +103,7 @@ export function generateLocalWellnessPlan(payload: PlanPayload) {
       'Ajuste astrológico do sono',
       payload.astrology.impactOnHealth.sleep,
       'moon'
-    )
+    ),
   ];
 
   if (payload.goals.includes('manage_blood_glucose') && !highGlucose) {
@@ -122,23 +123,26 @@ export function generateLocalWellnessPlan(payload: PlanPayload) {
         title: 'Nutrição',
         icon: 'Utensils',
         color: 'text-teal-600',
-        description: 'Intervenções alimentares de baixo atrito e alto impacto metabólico.',
-        items: nutritionItems
+        description:
+          'Intervenções alimentares de baixo atrito e alto impacto metabólico.',
+        items: nutritionItems,
       },
       exercise: {
         title: 'Movimento',
         icon: 'Dumbbell',
         color: 'text-rose-600',
-        description: 'Prescrição de movimento guiada por recuperação e prontidão.',
-        items: exerciseItems
+        description:
+          'Prescrição de movimento guiada por recuperação e prontidão.',
+        items: exerciseItems,
       },
       sleep: {
         title: 'Sono',
         icon: 'Moon',
         color: 'text-indigo-600',
-        description: 'Recuperação noturna alinhada ao estado fisiológico e ao céu atual.',
-        items: sleepItems
-      }
-    }
+        description:
+          'Recuperação noturna alinhada ao estado fisiológico e ao céu atual.',
+        items: sleepItems,
+      },
+    },
   };
 }

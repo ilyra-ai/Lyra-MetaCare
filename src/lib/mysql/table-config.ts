@@ -11,6 +11,19 @@ export type TableName =
   | 'professionals'
   | 'instruments';
 
+export type QueryFilter =
+  | { type: 'eq'; column: string; value: unknown }
+  | { type: 'gte'; column: string; value: unknown }
+  | { type: 'lte'; column: string; value: unknown }
+  | { type: 'not'; column: string; operator: string; value: unknown }
+  | { type: 'or'; expression: string };
+
+export interface QueryOrder {
+  column: string;
+  ascending: boolean;
+  foreignTable?: string;
+}
+
 interface TableConfig {
   columns: string[];
   userScopedBy?: string;
@@ -37,10 +50,10 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'birth_location',
       'avatar_url',
       'created_at',
-      'updated_at'
+      'updated_at',
     ],
     userScopedBy: 'id',
-    adminReadAll: true
+    adminReadAll: true,
   },
   daily_metrics: {
     columns: [
@@ -107,54 +120,95 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'cognitive_test_score',
       'hrv_stress_index',
       'eda_tonic_microsiemens',
-      'afib_history_percent'
+      'afib_history_percent',
     ],
     userScopedBy: 'user_id',
-    adminReadAll: true
+    adminReadAll: true,
   },
   goals: {
-    columns: ['id', 'user_id', 'title', 'description', 'category', 'target_value', 'current_value', 'unit', 'status', 'created_at', 'updated_at'],
+    columns: [
+      'id',
+      'user_id',
+      'title',
+      'description',
+      'category',
+      'target_value',
+      'current_value',
+      'unit',
+      'status',
+      'created_at',
+      'updated_at',
+    ],
     userScopedBy: 'user_id',
-    adminReadAll: true
+    adminReadAll: true,
   },
   habits: {
     columns: ['id', 'user_id', 'name', 'is_active', 'frequency', 'created_at'],
     userScopedBy: 'user_id',
-    adminReadAll: true
+    adminReadAll: true,
   },
   suggested_habits: {
     columns: ['id', 'name', 'frequency', 'is_active', 'created_at'],
-    adminOnlyCrud: true
+    adminOnlyCrud: true,
   },
   ai_tips: {
     columns: ['id', 'title', 'detail', 'category', 'is_active', 'created_at'],
-    adminOnlyCrud: true
+    adminOnlyCrud: true,
   },
   ai_config: {
-    columns: ['id', 'mission', 'key_objectives', 'weight_hrv', 'weight_sleep', 'weight_activity', 'weight_nutrition', 'model_name', 'updated_at'],
-    adminOnlyCrud: true
+    columns: [
+      'id',
+      'mission',
+      'key_objectives',
+      'weight_hrv',
+      'weight_sleep',
+      'weight_activity',
+      'weight_nutrition',
+      'model_name',
+      'updated_at',
+    ],
+    adminOnlyCrud: true,
   },
   ai_plans: {
     columns: ['id', 'user_id', 'plan_data', 'created_at', 'updated_at'],
     userScopedBy: 'user_id',
-    adminReadAll: true
+    adminReadAll: true,
   },
   appointments: {
-    columns: ['id', 'user_id', 'professional_id', 'appointment_time', 'status', 'notes', 'meeting_link', 'created_at', 'updated_at'],
+    columns: [
+      'id',
+      'user_id',
+      'professional_id',
+      'appointment_time',
+      'status',
+      'notes',
+      'meeting_link',
+      'created_at',
+      'updated_at',
+    ],
     userScopedBy: 'user_id',
-    adminReadAll: true
+    adminReadAll: true,
   },
   professionals: {
-    columns: ['id', 'user_id', 'name', 'specialty', 'contact', 'avatar_url', 'created_at', 'updated_at'],
+    columns: [
+      'id',
+      'user_id',
+      'name',
+      'specialty',
+      'contact',
+      'avatar_url',
+      'created_at',
+      'updated_at',
+    ],
     userScopedBy: 'user_id',
-    adminReadAll: true
+    adminReadAll: true,
   },
   instruments: {
     columns: ['id', 'name'],
-    publicRead: true
-  }
+    publicRead: true,
+  },
 };
 
-export const NUMERIC_METRIC_COLUMNS = TABLE_CONFIG.daily_metrics.columns.filter((column) =>
-  !['id', 'user_id', 'date', 'created_at'].includes(column)
+export const NUMERIC_METRIC_COLUMNS = TABLE_CONFIG.daily_metrics.columns.filter(
+  (column) => !['id', 'user_id', 'date', 'created_at'].includes(column)
 );

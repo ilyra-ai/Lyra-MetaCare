@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { MadeWithIlyra } from "@/components/made-with-ilyra";
-import { Sidebar } from "@/components/layout/sidebar";
-import { Header } from "@/components/layout/header";
-import { useAuth } from "@/context/AuthContext";
-import { SplashScreen } from "@/components/SplashScreen";
-import { AIPlanContent } from "@/components/ai-plan/AIPlanContent";
+import { MadeWithIlyra } from '@/components/made-with-ilyra';
+import { Sidebar } from '@/components/layout/sidebar';
+import { Header } from '@/components/layout/header';
+import { useAuth } from '@/context/AuthContext';
+import { SplashScreen } from '@/components/SplashScreen';
+import { AIPlanContent } from '@/components/ai-plan/AIPlanContent';
 
 export default function AIPlanPage() {
   const { session } = useAuth();

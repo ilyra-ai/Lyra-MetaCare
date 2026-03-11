@@ -1,29 +1,29 @@
-"use client";
+'use client';
 
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 export default function LoginPage() {
-  const { session, supabase } = useAuth();
+  const { session, db } = useAuth();
   const router = useRouter();
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [registerFirstName, setRegisterFirstName] = useState("");
-  const [registerLastName, setRegisterLastName] = useState("");
-  const [registerEmail, setRegisterEmail] = useState("");
-  const [registerPassword, setRegisterPassword] = useState("");
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [registerFirstName, setRegisterFirstName] = useState('');
+  const [registerLastName, setRegisterLastName] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (session) {
-      router.push("/");
+      router.push('/');
     }
   }, [session, router]);
 
@@ -33,24 +33,24 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     setSubmitting(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await db.auth.signInWithPassword({
       email: loginEmail,
       password: loginPassword,
     });
     setSubmitting(false);
 
     if (error) {
-      toast.error("Falha no login.", { description: error.message });
+      toast.error('Falha no login.', { description: error.message });
       return;
     }
 
-    toast.success("Sessão iniciada com sucesso.");
-    router.push("/");
+    toast.success('Sessão iniciada com sucesso.');
+    router.push('/');
   };
 
   const handleRegister = async () => {
     setSubmitting(true);
-    const { error } = await supabase.auth.signUp({
+    const { error } = await db.auth.signUp({
       email: registerEmail,
       password: registerPassword,
       firstName: registerFirstName,
@@ -59,12 +59,12 @@ export default function LoginPage() {
     setSubmitting(false);
 
     if (error) {
-      toast.error("Falha no cadastro.", { description: error.message });
+      toast.error('Falha no cadastro.', { description: error.message });
       return;
     }
 
-    toast.success("Conta criada com sucesso.");
-    router.push("/");
+    toast.success('Conta criada com sucesso.');
+    router.push('/');
   };
 
   return (
@@ -74,7 +74,12 @@ export default function LoginPage() {
           Acesse sua Jornada
         </h2>
         <div className="flex justify-center mb-6">
-          <svg className="h-10 w-10 text-teal-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg
+            className="h-10 w-10 text-teal-700"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -93,13 +98,27 @@ export default function LoginPage() {
           <TabsContent value="login" className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="login-email">Email</Label>
-              <Input id="login-email" type="email" value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} />
+              <Input
+                id="login-email"
+                type="email"
+                value={loginEmail}
+                onChange={(event) => setLoginEmail(event.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="login-password">Senha</Label>
-              <Input id="login-password" type="password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} />
+              <Input
+                id="login-password"
+                type="password"
+                value={loginPassword}
+                onChange={(event) => setLoginPassword(event.target.value)}
+              />
             </div>
-            <Button className="w-full bg-teal-700 hover:bg-teal-800" disabled={submitting} onClick={handleLogin}>
+            <Button
+              className="w-full bg-teal-700 hover:bg-teal-800"
+              disabled={submitting}
+              onClick={handleLogin}
+            >
               Entrar
             </Button>
           </TabsContent>
@@ -108,22 +127,44 @@ export default function LoginPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="register-first-name">Nome</Label>
-                <Input id="register-first-name" value={registerFirstName} onChange={(event) => setRegisterFirstName(event.target.value)} />
+                <Input
+                  id="register-first-name"
+                  value={registerFirstName}
+                  onChange={(event) => setRegisterFirstName(event.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="register-last-name">Sobrenome</Label>
-                <Input id="register-last-name" value={registerLastName} onChange={(event) => setRegisterLastName(event.target.value)} />
+                <Input
+                  id="register-last-name"
+                  value={registerLastName}
+                  onChange={(event) => setRegisterLastName(event.target.value)}
+                />
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="register-email">Email</Label>
-              <Input id="register-email" type="email" value={registerEmail} onChange={(event) => setRegisterEmail(event.target.value)} />
+              <Input
+                id="register-email"
+                type="email"
+                value={registerEmail}
+                onChange={(event) => setRegisterEmail(event.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="register-password">Senha</Label>
-              <Input id="register-password" type="password" value={registerPassword} onChange={(event) => setRegisterPassword(event.target.value)} />
+              <Input
+                id="register-password"
+                type="password"
+                value={registerPassword}
+                onChange={(event) => setRegisterPassword(event.target.value)}
+              />
             </div>
-            <Button className="w-full bg-coral-600 hover:bg-coral-700" disabled={submitting} onClick={handleRegister}>
+            <Button
+              className="w-full bg-coral-600 hover:bg-coral-700"
+              disabled={submitting}
+              onClick={handleRegister}
+            >
               Criar conta
             </Button>
           </TabsContent>

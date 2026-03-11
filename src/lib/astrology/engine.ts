@@ -1,77 +1,246 @@
-import { Body, Equator, Ecliptic, GeoVector, MakeTime } from 'astronomy-engine';
+import { Body, Ecliptic, GeoVector, MakeTime } from 'astronomy-engine';
 
-export interface AstrologicalData {
-    moonPhase: number; // 0-1, where 0 is New Moon, 0.5 is Full Moon
-    moonSign: string;
-    sunSign: string;
-    currentDasha?: string; // Simplified for this implementation
-    nakshatra: string;
-    impactOnHealth: {
-        sleep: string;
-        energy: string;
-        stress: string;
-    }
+interface BirthReference {
+  birth_timestamp_utc?: string | null;
+  birth_date?: string | null;
+  birth_time?: string | null;
+  birth_location?: string | null;
 }
 
-const zodiacSigns = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-const nakshatrasList = ["Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"];
+export interface AstrologicalData {
+  moonPhase: number;
+  moonSign: string;
+  sunSign: string;
+  currentDasha?: string;
+  nakshatra: string;
+  tithi: string;
+  paksha: string;
+  ayanamshaDegrees: number;
+  impactOnHealth: {
+    sleep: string;
+    energy: string;
+    stress: string;
+  };
+}
 
-export function getAstrologicalContext(date: Date = new Date()): AstrologicalData {
-    const time = MakeTime(date);
+const zodiacSigns = [
+  'Áries',
+  'Touro',
+  'Gêmeos',
+  'Câncer',
+  'Leão',
+  'Virgem',
+  'Libra',
+  'Escorpião',
+  'Sagitário',
+  'Capricórnio',
+  'Aquário',
+  'Peixes',
+];
 
-    // Moon Position
-    const moonEq = Equator(Body.Moon, time, { latitude: 0, longitude: 0, height: 0 }, true, true);
-    // Rough estimation for ecliptic longitude
-    // (Note: For precise Vedic Astrology, we would use Lahiri Ayanamsha for sidereal longitude.
-    // Astronomy Engine gives tropical by default. We will approximate or use tropical for demonstration if ayanamsha is complex,
-    // but the task asks for Vedic correlations, so we can mock a rough offset (~24 degrees) for sidereal).
-    const AYANAMSHA_OFFSET = 24.1;
+const nakshatras = [
+  'Ashwini',
+  'Bharani',
+  'Krittika',
+  'Rohini',
+  'Mrigashira',
+  'Ardra',
+  'Punarvasu',
+  'Pushya',
+  'Ashlesha',
+  'Magha',
+  'Purva Phalguni',
+  'Uttara Phalguni',
+  'Hasta',
+  'Chitra',
+  'Swati',
+  'Vishakha',
+  'Anuradha',
+  'Jyeshtha',
+  'Mula',
+  'Purva Ashadha',
+  'Uttara Ashadha',
+  'Shravana',
+  'Dhanishta',
+  'Shatabhisha',
+  'Purva Bhadrapada',
+  'Uttara Bhadrapada',
+  'Revati',
+];
 
-    const eclipticMoon = Ecliptic(GeoVector(Body.Moon, time, true));
-    let siderealMoonLon = (eclipticMoon.elon - AYANAMSHA_OFFSET + 360) % 360;
+const shuklaTithis = [
+  'Pratipada',
+  'Dvitiya',
+  'Tritiya',
+  'Chaturthi',
+  'Panchami',
+  'Shashthi',
+  'Saptami',
+  'Ashtami',
+  'Navami',
+  'Dashami',
+  'Ekadashi',
+  'Dwadashi',
+  'Trayodashi',
+  'Chaturdashi',
+  'Purnima',
+];
 
-    const eclipticSun = Ecliptic(GeoVector(Body.Sun, time, true));
-    let siderealSunLon = (eclipticSun.elon - AYANAMSHA_OFFSET + 360) % 360;
+const krishnaTithis = [
+  'Pratipada',
+  'Dvitiya',
+  'Tritiya',
+  'Chaturthi',
+  'Panchami',
+  'Shashthi',
+  'Saptami',
+  'Ashtami',
+  'Navami',
+  'Dashami',
+  'Ekadashi',
+  'Dwadashi',
+  'Trayodashi',
+  'Chaturdashi',
+  'Amavasya',
+];
 
-    // Calculate Moon Phase (Angle between Moon and Sun)
-    let phaseAngle = (eclipticMoon.elon - eclipticSun.elon + 360) % 360;
-    let moonPhase = phaseAngle / 360.0;
+function normalizeDegrees(value: number) {
+  return ((value % 360) + 360) % 360;
+}
 
-    // Zodiac Sign (Tropical or Sidereal - we use sidereal for Vedic)
-    const moonSignIndex = Math.floor(siderealMoonLon / 30);
-    const sunSignIndex = Math.floor(siderealSunLon / 30);
+function calculateLahiriAyanamsha(date: Date) {
+  const j2000Utc = Date.UTC(2000, 0, 1, 12, 0, 0);
+  const tropicalYears =
+    (date.getTime() - j2000Utc) / (365.24219879 * 24 * 60 * 60 * 1000);
+  const baseDegrees = 23.8530555556;
+  const annualPrecessionDegrees = 0.0139694444;
+  const secularCorrection = -0.00000036 * tropicalYears * tropicalYears;
+  return Number(
+    (
+      baseDegrees +
+      tropicalYears * annualPrecessionDegrees +
+      secularCorrection
+    ).toFixed(6)
+  );
+}
 
-    // Nakshatra (13 degrees 20 minutes each, so 360 / 27 = 13.333)
-    const nakshatraIndex = Math.floor(siderealMoonLon / (360 / 27));
+function getSiderealLongitude(
+  body: Body,
+  date: Date,
+  ayanamshaDegrees: number
+) {
+  const time = MakeTime(date);
+  const ecliptic = Ecliptic(GeoVector(body, time, true));
+  return normalizeDegrees(ecliptic.elon - ayanamshaDegrees);
+}
 
-    // Determine impact based on moon phase
-    let healthImpact = {
-        sleep: "Normal",
-        energy: "Estável",
-        stress: "Moderado"
-    };
+function buildTithi(phaseAngle: number) {
+  const rawTithi = Math.floor(normalizeDegrees(phaseAngle) / 12) + 1;
+  const waxing = rawTithi <= 15;
+  const paksha = waxing ? 'Shukla Paksha' : 'Krishna Paksha';
+  const tithiNumber = waxing ? rawTithi : rawTithi - 15;
+  const label = waxing
+    ? shuklaTithis[tithiNumber - 1]
+    : krishnaTithis[tithiNumber - 1];
+  return {
+    paksha,
+    tithi: `${label} (${paksha})`,
+  };
+}
 
-    if (moonPhase > 0.45 && moonPhase < 0.55) {
-        // Full Moon
-        healthImpact = {
-            sleep: "Possível dificuldade em iniciar o sono. Melatonina pode ser suprimida.",
-            energy: "Pico de energia, ótimo para treinos intensos (Pitta elevado).",
-            stress: "Emoções à flor da pele. Recomendada meditação de aterramento."
-        };
-    } else if (moonPhase < 0.05 || moonPhase > 0.95) {
-        // New Moon
-        healthImpact = {
-            sleep: "Sono profundo provável. Corpo focado em regeneração.",
-            energy: "Energia mais baixa (Vata elevado). Focar em recuperação.",
-            stress: "Bom momento para introspecção e planejamento."
-        };
-    }
+function buildHealthImpact(
+  moonPhase: number,
+  moonSign: string,
+  paksha: string
+) {
+  const nearFullMoon = moonPhase >= 0.45 && moonPhase <= 0.55;
+  const nearNewMoon = moonPhase <= 0.06 || moonPhase >= 0.94;
 
+  if (nearFullMoon) {
     return {
-        moonPhase,
-        moonSign: zodiacSigns[moonSignIndex],
-        sunSign: zodiacSigns[sunSignIndex],
-        nakshatra: nakshatrasList[nakshatraIndex],
-        impactOnHealth: healthImpact
+      sleep:
+        'Janela de Lua Cheia: maior chance de latência do sono e hiperalerta. Priorize luz baixa, temperatura ambiente menor e desaceleração cognitiva antecipada.',
+      energy: `Expansão de energia em ${moonSign}. Use para treino técnico ou força submáxima, evitando excesso de intensidade à noite.`,
+      stress:
+        'Tendência de maior reatividade emocional. Respiração diafragmática, alongamento restaurativo e redução de estímulo social tardio ajudam a modular a carga autonômica.',
     };
+  }
+
+  if (nearNewMoon) {
+    return {
+      sleep:
+        'Janela de Lua Nova: maior propensão a recuperação profunda. Vale consolidar rotina, ampliar higiene do sono e preservar horários consistentes.',
+      energy: `Energia mais contida em ${moonSign}. Favorece recuperação ativa, mobilidade e trabalho aeróbico leve.`,
+      stress:
+        'Momento bom para introspecção, revisão de metas e redução de ruído decisório. Evite sobrecarga de agenda e excesso de cafeína.',
+    };
+  }
+
+  if (paksha === 'Shukla Paksha') {
+    return {
+      sleep:
+        'Fase de crescimento lunar com tendência a aumento progressivo de ativação. Termine o dia com rotina estável para não perder profundidade de sono.',
+      energy: `Crescimento de energia em ${moonSign}. Janela favorável para construir volume de treino e consistência metabólica.`,
+      stress:
+        'Boa fase para planejamento e execução, desde que a carga externa não ultrapasse a recuperação percebida.',
+    };
+  }
+
+  return {
+    sleep:
+      'Fase de recolhimento lunar. O corpo responde melhor a previsibilidade, menor estímulo noturno e redução de carga nas últimas horas do dia.',
+    energy: `Energia em depuração sob ${moonSign}. Combine rotina, hidratação e movimento moderado com menor impulsividade.`,
+    stress:
+      'Tendência a sensibilidade maior a variações de humor e fadiga acumulada. Reforce pausas estratégicas e critérios de priorização.',
+  };
+}
+
+function buildCurrentDasha(birthReference?: BirthReference) {
+  if (!birthReference?.birth_timestamp_utc) {
+    return undefined;
+  }
+
+  return `Vimshottari calculável a partir do timestamp UTC ${birthReference.birth_timestamp_utc}.`;
+}
+
+export function getAstrologicalContext(
+  date: Date = new Date(),
+  birthReference?: BirthReference
+): AstrologicalData {
+  const ayanamshaDegrees = calculateLahiriAyanamsha(date);
+  const siderealMoonLongitude = getSiderealLongitude(
+    Body.Moon,
+    date,
+    ayanamshaDegrees
+  );
+  const siderealSunLongitude = getSiderealLongitude(
+    Body.Sun,
+    date,
+    ayanamshaDegrees
+  );
+  const phaseAngle = normalizeDegrees(
+    siderealMoonLongitude - siderealSunLongitude
+  );
+  const moonPhase = Number((phaseAngle / 360).toFixed(6));
+
+  const moonSignIndex = Math.floor(siderealMoonLongitude / 30);
+  const sunSignIndex = Math.floor(siderealSunLongitude / 30);
+  const nakshatraIndex = Math.floor(siderealMoonLongitude / (360 / 27));
+  const { paksha, tithi } = buildTithi(phaseAngle);
+
+  return {
+    moonPhase,
+    moonSign: zodiacSigns[moonSignIndex],
+    sunSign: zodiacSigns[sunSignIndex],
+    currentDasha: buildCurrentDasha(birthReference),
+    nakshatra: nakshatras[nakshatraIndex],
+    tithi,
+    paksha,
+    ayanamshaDegrees,
+    impactOnHealth: buildHealthImpact(
+      moonPhase,
+      zodiacSigns[moonSignIndex],
+      paksha
+    ),
+  };
 }

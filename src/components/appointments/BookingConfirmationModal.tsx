@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,11 +8,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Calendar, Clock, User, Loader2 } from "lucide-react";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Calendar, Clock, User, Loader2 } from 'lucide-react';
 
 interface Professional {
   id: string;
@@ -47,8 +47,10 @@ export function BookingConfirmationModal({
 
   if (!professional || !date || !time) return null;
 
-  const formattedDate = format(date, "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR });
-  const formattedTime = format(time, "HH:mm");
+  const formattedDate = format(date, "EEEE, dd 'de' MMMM 'de' yyyy", {
+    locale: ptBR,
+  });
+  const formattedTime = format(time, 'HH:mm');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -64,7 +66,9 @@ export function BookingConfirmationModal({
             <User className="h-5 w-5 text-blue-600" />
             <div>
               <p className="font-semibold">{professional.name}</p>
-              <p className="text-sm text-muted-foreground">{professional.specialty}</p>
+              <p className="text-sm text-muted-foreground">
+                {professional.specialty}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -77,17 +81,25 @@ export function BookingConfirmationModal({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isConfirming}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isConfirming}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleConfirm} disabled={isConfirming} className="bg-blue-600 hover:bg-blue-700">
+          <Button
+            onClick={handleConfirm}
+            disabled={isConfirming}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
             {isConfirming ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Confirmando...
               </>
             ) : (
-              "Confirmar Agendamento"
+              'Confirmar Agendamento'
             )}
           </Button>
         </DialogFooter>

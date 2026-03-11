@@ -1,19 +1,12 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import {
-  Card,
-  Title,
-  Text,
-  Flex,
-  Badge,
-  Button,
-} from "@tremor/react";
-import { Lightbulb, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useAuth } from "@/context/AuthContext";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter } from "next/navigation";
+import * as React from 'react';
+import { Card, Title, Text, Flex, Badge, Button } from '@tremor/react';
+import { Lightbulb, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useRouter } from 'next/navigation';
 
 interface AITip {
   id: string | number;
@@ -22,12 +15,12 @@ interface AITip {
 }
 
 interface AITipsCardProps {
-    className?: string;
+  className?: string;
 }
 
 export function AITipsCard({ className }: AITipsCardProps) {
   const router = useRouter();
-  const { supabase } = useAuth();
+  const { db } = useAuth();
   const [tip, setTip] = React.useState<AITip | null>(null);
   const [loading, setLoading] = React.useState(true);
 
@@ -36,59 +29,65 @@ export function AITipsCard({ className }: AITipsCardProps) {
       setLoading(true);
 
       try {
-        // 1. Obter o total de dicas ativas (query leve)
-        const { count, error: countError } = await supabase
-          .from("ai_tips")
-          .select("*", { count: 'exact', head: true })
-          .eq("is_active", true);
+        const { count, error: countError } = await db
+          .from('ai_tips')
+          .select('*', { count: 'exact', head: true })
+          .eq('is_active', true);
 
         if (countError || count === null || count === 0) {
-          throw new Error("No tips found or error fetching count");
+          throw new Error('No tips found or error fetching count');
         }
 
         // 2. Selecionar um índice aleatório e buscar apenas essa linha
         const randomIndex = Math.floor(Math.random() * count);
-        const { data, error } = await supabase
-          .from("ai_tips")
-          .select("id, title, detail")
-          .eq("is_active", true)
+        const { data, error } = await db
+          .from('ai_tips')
+          .select('id, title, detail')
+          .eq('is_active', true)
           .range(randomIndex, randomIndex)
           .maybeSingle();
 
         if (error || !data) {
-          throw new Error("Error fetching random tip");
+          throw new Error('Error fetching random tip');
         }
 
         setTip(data);
       } catch (err) {
-        console.error("Error in fetchTip:", err);
-        // Fallback para uma dica padrão se houver erro ou nenhuma dica for encontrada
-        setTip({
-          id: 0,
-          title: "Mantenha-se Hidratado",
-          detail: "Beber água suficiente ao longo do dia é crucial para a sua energia e bem-estar geral."
-        });
+        console.error('Error in fetchTip:', err);
+        setTip(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchTip();
-  }, [supabase]);
+  }, [db]);
 
   if (loading) {
-    return <Skeleton className={cn("h-full w-full", className)} />;
+    return <Skeleton className={cn('h-full w-full', className)} />;
   }
 
   if (!tip) {
-    return null; // Não renderiza nada se não houver dica
+    return (
+      <Card
+        className={cn(
+          'h-full border border-dashed border-amber-200 bg-amber-50/70 text-amber-900 dark:bg-amber-900/20 dark:text-amber-100',
+          className
+        )}
+      >
+        <div className="flex h-full items-center justify-center p-6 text-center text-sm">
+          Nenhum insight ativo foi encontrado no banco MySQL para exibição no
+          dashboard.
+        </div>
+      </Card>
+    );
   }
 
   return (
     <Card
       className={cn(
-        "h-full bg-amber-50 text-amber-900 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-100",
-        className,
+        'h-full bg-amber-50 text-amber-900 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-100',
+        className
       )}
       decoration="top"
       decorationColor="amber"
@@ -109,15 +108,19 @@ export function AITipsCard({ className }: AITipsCardProps) {
       </Flex>
 
       <div className="mt-6 space-y-3">
-        <Text className="font-semibold text-amber-900 dark:text-amber-100">{tip.title}</Text>
-        <Text className="text-sm text-amber-700 dark:text-amber-200">{tip.detail}</Text>
+        <Text className="font-semibold text-amber-900 dark:text-amber-100">
+          {tip.title}
+        </Text>
+        <Text className="text-sm text-amber-700 dark:text-amber-200">
+          {tip.detail}
+        </Text>
         <Button
           className="w-fit"
           size="sm"
           variant="secondary"
           icon={ChevronRight}
           iconPosition="right"
-          onClick={() => router.push("/plan")}
+          onClick={() => router.push('/plan')}
         >
           Ver plano completo
         </Button>

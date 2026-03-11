@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
@@ -36,12 +36,19 @@ interface Event {
   title: string;
   start: Date;
   end: Date;
-  resource: any;
+  resource: Record<string, unknown>;
+}
+
+interface SlotInfo {
+  start: Date;
+  end: Date;
+  slots: Date[];
+  action: 'select' | 'click' | 'doubleClick';
 }
 
 interface AgendaProps {
   events: Event[];
-  onSelectSlot: (slotInfo: any) => void;
+  onSelectSlot: (slotInfo: SlotInfo) => void;
   onSelectEvent: (event: Event) => void;
 }
 

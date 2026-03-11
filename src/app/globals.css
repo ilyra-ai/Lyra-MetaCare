@@ -4,8 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @layer base {
   :root {
     --background: 182 29% 98%;
@@ -100,8 +98,6 @@
   }
 }
 
-
-
 @layer base {
   * {
     @apply border-border;
@@ -109,8 +105,16 @@
   body {
     @apply bg-background text-foreground;
     background-image:
-      radial-gradient(circle at top left, rgba(255, 127, 80, 0.14), transparent 32%),
-      radial-gradient(circle at top right, rgba(20, 77, 86, 0.16), transparent 36%),
+      radial-gradient(
+        circle at top left,
+        rgba(255, 127, 80, 0.14),
+        transparent 32%
+      ),
+      radial-gradient(
+        circle at top right,
+        rgba(20, 77, 86, 0.16),
+        transparent 36%
+      ),
       linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0));
   }
 }

@@ -24,7 +24,10 @@ function formatSleep(minutes: number | null | undefined) {
   return `${hours}h ${mins}m`;
 }
 
-export function generateLocalAssistantReply(query: string, context: ChatContext) {
+export function generateLocalAssistantReply(
+  query: string,
+  context: ChatContext
+) {
   const text = query.toLowerCase();
   const name = context.profile?.first_name ?? 'você';
   const goals = context.profile?.goals?.join(', ') ?? 'longevidade geral';
@@ -34,7 +37,7 @@ export function generateLocalAssistantReply(query: string, context: ChatContext)
   }
 
   if (text.includes('resumo') || text.includes('ontem')) {
-    return `${name}, no quadro recente você somou ${context.latestMetric?.steps ?? 0} passos, registrou ${formatSleep(context.latestMetric?.sleep_duration_minutes)} e HRV em ${context.latestMetric?.hrv_ms ?? 'N/A'} ms. A leitura astrológica atual aponta ${context.astrology.impactOnHealth.energy.toLowerCase()} e metas prioritárias em ${goals}.`;
+    return `${name}, no quadro recente você somou ${context.latestMetric?.steps ?? 0} passos, registrou ${formatSleep(context.latestMetric?.sleep_duration_minutes)} e HRV em ${context.latestMetric?.hrv_ms ?? 'N/A'} ms. A leitura astrológica atual aponta ${context.astrology.impactOnHealth.energy.toLowerCase()}, com ${context.astrology.tithi} em ${context.astrology.nakshatra}, e metas prioritárias em ${goals}.`;
   }
 
   if (text.includes('consulta') || text.includes('agendar')) {
@@ -45,5 +48,5 @@ export function generateLocalAssistantReply(query: string, context: ChatContext)
     return `${name}, sua melhor decisão prática é observar resposta pós-prandial com fibra, proteína e caminhada leve após refeição. Se houver tendência de elevação, reduza densidade glicêmica nas refeições mais tardias.`;
   }
 
-  return `${name}, posso ajudar com sono, recuperação, prontidão, glicose, metas e organização de consultas. Seu contexto atual combina ${context.astrology.moonSign} em ${context.astrology.nakshatra} com foco de saúde em ${context.astrology.impactOnHealth.stress.toLowerCase()}.`;
+  return `${name}, posso ajudar com sono, recuperação, prontidão, glicose, metas e organização de consultas. Seu contexto atual combina Lua em ${context.astrology.moonSign}, ${context.astrology.tithi} em ${context.astrology.nakshatra} e foco de saúde em ${context.astrology.impactOnHealth.stress.toLowerCase()}.`;
 }

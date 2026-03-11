@@ -31,20 +31,24 @@ function emitAuthChange(event: string, session: AppSession | null) {
   }
 }
 
-async function requestJson<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
+async function requestJson<T>(
+  input: RequestInfo,
+  init?: RequestInit
+): Promise<T> {
   const response = await fetch(input, {
     credentials: 'include',
     ...init,
     headers: {
       'Content-Type': 'application/json',
-      ...(init?.headers ?? {})
-    }
+      ...(init?.headers ?? {}),
+    },
   });
   return response.json() as Promise<T>;
 }
 
 class QueryBuilder<T = unknown> implements PromiseLike<QueryEnvelope<T>> {
-  private operation: 'select' | 'insert' | 'update' | 'delete' | 'upsert' = 'select';
+  private operation: 'select' | 'insert' | 'update' | 'delete' | 'upsert' =
+    'select';
   private selectColumns = '*';
   private filters: QueryFilter[] = [];
   private orders: QueryOrder[] = [];
@@ -54,7 +58,8 @@ class QueryBuilder<T = unknown> implements PromiseLike<QueryEnvelope<T>> {
   private rangeFrom: number | null = null;
   private rangeTo: number | null = null;
   private singleMode: 'single' | 'maybeSingle' | null = null;
-  private values: Record<string, unknown> | Record<string, unknown>[] | null = null;
+  private values: Record<string, unknown> | Record<string, unknown>[] | null =
+    null;
   private onConflict: string | null = null;
 
   constructor(private readonly table: string) {}
@@ -116,11 +121,14 @@ class QueryBuilder<T = unknown> implements PromiseLike<QueryEnvelope<T>> {
     return this;
   }
 
-  order(column: string, options?: { ascending?: boolean; foreignTable?: string }) {
+  order(
+    column: string,
+    options?: { ascending?: boolean; foreignTable?: string }
+  ) {
     this.orders.push({
       column,
       ascending: options?.ascending ?? true,
-      foreignTable: options?.foreignTable
+      foreignTable: options?.foreignTable,
     });
     return this;
   }
@@ -147,10 +155,15 @@ class QueryBuilder<T = unknown> implements PromiseLike<QueryEnvelope<T>> {
   }
 
   then<TResult1 = QueryEnvelope<T>, TResult2 = never>(
-    onfulfilled?: ((value: QueryEnvelope<T>) => TResult1 | PromiseLike<TResult1>) | null,
+    onfulfilled?:
+      | ((value: QueryEnvelope<T>) => TResult1 | PromiseLike<TResult1>)
+      | null,
     onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
   ) {
-    return this.execute().then(onfulfilled ?? undefined, onrejected ?? undefined);
+    return this.execute().then(
+      onfulfilled ?? undefined,
+      onrejected ?? undefined
+    );
   }
 
   private async execute(): Promise<QueryEnvelope<T>> {
@@ -187,27 +200,31 @@ class QueryBuilder<T = unknown> implements PromiseLike<QueryEnvelope<T>> {
     if (this.operation === 'insert') {
       return requestJson(`/api/data/${this.table}`, {
         method: 'POST',
-        body: JSON.stringify({ values: this.values })
+        body: JSON.stringify({ values: this.values }),
       });
     }
 
     if (this.operation === 'upsert') {
       return requestJson(`/api/data/${this.table}`, {
         method: 'POST',
-        body: JSON.stringify({ values: this.values, onConflict: this.onConflict, upsert: true })
+        body: JSON.stringify({
+          values: this.values,
+          onConflict: this.onConflict,
+          upsert: true,
+        }),
       });
     }
 
     if (this.operation === 'update') {
       return requestJson(`/api/data/${this.table}`, {
         method: 'PATCH',
-        body: JSON.stringify({ values: this.values, filters: this.filters })
+        body: JSON.stringify({ values: this.values, filters: this.filters }),
       });
     }
 
     return requestJson(`/api/data/${this.table}`, {
       method: 'DELETE',
-      body: JSON.stringify({ filters: this.filters })
+      body: JSON.stringify({ filters: this.filters }),
     });
   }
 }
@@ -225,7 +242,7 @@ class StorageBucketClient {
     const response = await fetch('/api/storage/upload', {
       method: 'POST',
       credentials: 'include',
-      body: formData
+      body: formData,
     });
 
     return response.json();
@@ -234,22 +251,32 @@ class StorageBucketClient {
   getPublicUrl(path: string) {
     return {
       data: {
-        publicUrl: `/api/storage/${this.bucket}/${path}`
-      }
+        publicUrl: `/api/storage/${this.bucket}/${path}`,
+      },
     };
   }
 }
 
 class RealtimeChannel {
   private readonly channel: BroadcastChannel;
-  private readonly listeners: Array<(event: MessageEvent<{ type: string; event: string; payload: unknown }>) => void> = [];
+  private readonly listeners: Array<
+    (
+      event: MessageEvent<{ type: string; event: string; payload: unknown }>
+    ) => void
+  > = [];
 
   constructor(name: string) {
     this.channel = new BroadcastChannel(`lyra-${name}`);
   }
 
-  on(_type: 'broadcast', options: { event: string }, callback: (payload: { payload: unknown }) => void) {
-    const listener = (event: MessageEvent<{ type: string; event: string; payload: unknown }>) => {
+  on(
+    _type: 'broadcast',
+    options: { event: string },
+    callback: (payload: { payload: unknown }) => void
+  ) {
+    const listener = (
+      event: MessageEvent<{ type: string; event: string; payload: unknown }>
+    ) => {
       if (event.data?.event === options.event) {
         callback({ payload: event.data.payload });
       }
@@ -282,7 +309,9 @@ export const db = {
   },
   auth: {
     async getSession() {
-      const result = await requestJson<{ session: AppSession | null }>('/api/auth/session');
+      const result = await requestJson<{ session: AppSession | null }>(
+        '/api/auth/session'
+      );
       return { data: result, error: null };
     },
     onAuthStateChange(callback: AuthChangeListener) {
@@ -292,9 +321,9 @@ export const db = {
           subscription: {
             unsubscribe() {
               authListeners.delete(callback);
-            }
-          }
-        }
+            },
+          },
+        },
       };
     },
     async signOut() {
@@ -303,9 +332,12 @@ export const db = {
       return { error: null };
     },
     async signInWithPassword(credentials: { email: string; password: string }) {
-      const result = await requestJson<{ session?: AppSession; error?: string }>('/api/auth/login', {
+      const result = await requestJson<{
+        session?: AppSession;
+        error?: string;
+      }>('/api/auth/login', {
         method: 'POST',
-        body: JSON.stringify(credentials)
+        body: JSON.stringify(credentials),
       });
       if (result.session) {
         emitAuthChange('SIGNED_IN', result.session);
@@ -313,13 +345,21 @@ export const db = {
       }
       return {
         data: { session: null },
-        error: { message: result.error ?? 'Falha no login.' }
+        error: { message: result.error ?? 'Falha no login.' },
       };
     },
-    async signUp(payload: { email: string; password: string; firstName?: string; lastName?: string }) {
-      const result = await requestJson<{ session?: AppSession; error?: string }>('/api/auth/register', {
+    async signUp(payload: {
+      email: string;
+      password: string;
+      firstName?: string;
+      lastName?: string;
+    }) {
+      const result = await requestJson<{
+        session?: AppSession;
+        error?: string;
+      }>('/api/auth/register', {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
       if (result.session) {
         emitAuthChange('SIGNED_IN', result.session);
@@ -327,9 +367,9 @@ export const db = {
       }
       return {
         data: { session: null },
-        error: { message: result.error ?? 'Falha no cadastro.' }
+        error: { message: result.error ?? 'Falha no cadastro.' },
       };
-    }
+    },
   },
   functions: {
     async invoke<T = unknown>(name: string, options?: { body?: unknown }) {
@@ -337,7 +377,7 @@ export const db = {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(options?.body ?? {})
+        body: JSON.stringify(options?.body ?? {}),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -345,28 +385,28 @@ export const db = {
           data: null,
           error: {
             message: data.error ?? 'Falha na função local.',
-            context: { status: response.status }
-          }
+            context: { status: response.status },
+          },
         };
       }
       return { data: data as T, error: null };
-    }
+    },
   },
   rpc<T = unknown>(name: string) {
     return fetch(`/api/rpc/${name}`, {
       method: 'GET',
-      credentials: 'include'
+      credentials: 'include',
     }).then(async (response) => response.json() as Promise<QueryEnvelope<T>>);
   },
   storage: {
     from(bucket: string) {
       return new StorageBucketClient(bucket);
-    }
+    },
   },
   channel(name: string) {
     return new RealtimeChannel(name);
   },
   removeChannel(channel: RealtimeChannel) {
     channel.close();
-  }
+  },
 };

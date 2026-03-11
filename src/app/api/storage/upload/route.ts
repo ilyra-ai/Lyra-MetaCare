@@ -19,11 +19,18 @@ export async function POST(request: Request) {
     const file = formData.get('file');
 
     if (!bucket || !filePath || !(file instanceof File)) {
-      return NextResponse.json({ error: 'Parâmetros de upload inválidos.' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Parâmetros de upload inválidos.' },
+        { status: 400 }
+      );
     }
 
     const normalizedPath = filePath.replace(/^\/+/, '');
-    const fullDirectory = path.join(STORAGE_ROOT, bucket, path.dirname(normalizedPath));
+    const fullDirectory = path.join(
+      STORAGE_ROOT,
+      bucket,
+      path.dirname(normalizedPath)
+    );
     const fullFilePath = path.join(STORAGE_ROOT, bucket, normalizedPath);
     await mkdir(fullDirectory, { recursive: true });
 
@@ -33,13 +40,19 @@ export async function POST(request: Request) {
     return NextResponse.json({
       data: {
         path: normalizedPath,
-        publicUrl: `/api/storage/${bucket}/${normalizedPath}`
+        publicUrl: `/api/storage/${bucket}/${normalizedPath}`,
       },
-      error: null
+      error: null,
     });
   } catch (error) {
     return NextResponse.json(
-      { data: null, error: { message: error instanceof Error ? error.message : 'Falha no upload local.' } },
+      {
+        data: null,
+        error: {
+          message:
+            error instanceof Error ? error.message : 'Falha no upload local.',
+        },
+      },
       { status: 500 }
     );
   }

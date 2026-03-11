@@ -1,5 +1,9 @@
 import { queryRows } from '@/lib/mysql/pool';
-import { buildAppSession, getServerSessionToken, verifySessionToken } from '@/lib/auth/session';
+import {
+  buildAppSession,
+  getServerSessionToken,
+  verifySessionToken,
+} from '@/lib/auth/session';
 import { AppSession } from '@/types/app-session';
 
 interface ProfileRow {

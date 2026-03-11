@@ -1,15 +1,19 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { format, parse, isValid } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { SelectSingleEventHandler } from "react-day-picker";
+import * as React from 'react';
+import { format, parse, isValid } from 'date-fns';
+import { Calendar as CalendarIcon } from 'lucide-react';
+import { SelectSingleEventHandler } from 'react-day-picker';
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
 
 interface DatePickerProps {
   value?: Date;
@@ -20,7 +24,9 @@ interface DatePickerProps {
 }
 
 // Função de formatação e validação de entrada de texto
-const formatInputDate = (value: string): { displayValue: string, date: Date | undefined } => {
+const formatInputDate = (
+  value: string
+): { displayValue: string; date: Date | undefined } => {
   // Remove todos os caracteres não numéricos
   const cleanValue = value.replace(/\D/g, '');
 
@@ -32,11 +38,11 @@ const formatInputDate = (value: string): { displayValue: string, date: Date | un
     const day = cleanValue.substring(0, 2);
     const month = cleanValue.substring(2, 4);
     const year = cleanValue.substring(4, 8);
-    
+
     const formattedDateString = `${day}/${month}/${year}`;
-    
+
     const parsedDate = parse(formattedDateString, 'dd/MM/yyyy', new Date());
-    
+
     if (isValid(parsedDate)) {
       date = parsedDate;
       displayValue = formattedDateString; // Exibe a data formatada
@@ -55,17 +61,25 @@ const formatInputDate = (value: string): { displayValue: string, date: Date | un
   return { displayValue, date };
 };
 
-export function DatePicker({ value, onChange, placeholder = "DD/MM/AAAA", id, disabled }: DatePickerProps) {
+export function DatePicker({
+  value,
+  onChange,
+  placeholder = 'DD/MM/AAAA',
+  id,
+  disabled,
+}: DatePickerProps) {
   // O estado interno agora armazena a string de exibição (pode ser DDMMAAAA ou DD/MM/AAAA)
-  const [inputValue, setInputValue] = React.useState(value ? format(value, "dd/MM/yyyy") : "");
+  const [inputValue, setInputValue] = React.useState(
+    value ? format(value, 'dd/MM/yyyy') : ''
+  );
   const [open, setOpen] = React.useState(false);
 
   // Sincroniza o valor externo (value) com o estado interno (inputValue)
   React.useEffect(() => {
     if (value) {
-      setInputValue(format(value, "dd/MM/yyyy"));
+      setInputValue(format(value, 'dd/MM/yyyy'));
     } else if (value === undefined) {
-      setInputValue("");
+      setInputValue('');
     }
   }, [value]);
 
@@ -79,7 +93,7 @@ export function DatePicker({ value, onChange, placeholder = "DD/MM/AAAA", id, di
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
     const { displayValue, date } = formatInputDate(rawValue);
-    
+
     setInputValue(displayValue);
 
     // Se a data for válida e completa (8 dígitos limpos), atualiza o valor do formulário
@@ -105,10 +119,10 @@ export function DatePicker({ value, onChange, placeholder = "DD/MM/AAAA", id, di
         />
         <PopoverTrigger asChild>
           <Button
-            variant={"outline"}
+            variant={'outline'}
             className={cn(
-              "absolute right-0 h-full px-3 py-2 rounded-l-none border-l-0",
-              !value && "text-muted-foreground"
+              'absolute right-0 h-full px-3 py-2 rounded-l-none border-l-0',
+              !value && 'text-muted-foreground'
             )}
             disabled={disabled}
           >

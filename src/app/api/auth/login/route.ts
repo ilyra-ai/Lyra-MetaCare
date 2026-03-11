@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 
 import { verifyPassword } from '@/lib/auth/password';
-import { buildAppSession, setSessionCookie, signSessionToken } from '@/lib/auth/session';
+import {
+  buildAppSession,
+  setSessionCookie,
+  signSessionToken,
+} from '@/lib/auth/session';
 import { queryRows } from '@/lib/mysql/pool';
 
 export const runtime = 'nodejs';
@@ -27,7 +31,10 @@ export async function POST(request: Request) {
     const password = payload.password?.trim();
 
     if (!email || !password) {
-      return NextResponse.json({ error: 'Credenciais obrigatórias.' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Credenciais obrigatórias.' },
+        { status: 400 }
+      );
     }
 
     const users = await queryRows<UserRow[]>(
@@ -49,7 +56,10 @@ export async function POST(request: Request) {
 
     const user = users[0];
     if (!user) {
-      return NextResponse.json({ error: 'Usuário não encontrado.' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Usuário não encontrado.' },
+        { status: 404 }
+      );
     }
 
     const validPassword = await verifyPassword(password, user.password_hash);
@@ -60,12 +70,16 @@ export async function POST(request: Request) {
     const token = await signSessionToken({
       sub: user.id,
       email: user.email,
-      role: user.role
+      role: user.role,
     });
     await setSessionCookie(token);
 
     return NextResponse.json({
-      session: buildAppSession(token, { sub: user.id, email: user.email, role: user.role }, user)
+      session: buildAppSession(
+        token,
+        { sub: user.id, email: user.email, role: user.role },
+        user
+      ),
     });
   } catch (error) {
     return NextResponse.json(

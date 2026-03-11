@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,24 +10,24 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, User } from "lucide-react";
-import React from "react";
-import { MobileSidebar } from "./MobileSidebar";
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { LogOut, User } from 'lucide-react';
+import React from 'react';
+import { MobileSidebar } from './MobileSidebar';
 
 export function Header() {
-  const { session, supabase } = useAuth();
+  const { session, db } = useAuth();
   const router = useRouter();
   const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
 
   const fetchAvatar = React.useCallback(async () => {
     if (!session?.user) return;
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("avatar_url")
-      .eq("id", session.user.id)
+    const { data, error } = await db
+      .from('profiles')
+      .select('avatar_url')
+      .eq('id', session.user.id)
       .maybeSingle();
 
     if (error) {
@@ -36,21 +36,20 @@ export function Header() {
     }
 
     setAvatarUrl(data?.avatar_url || null);
-    }, [session, supabase]);
+  }, [session, db]);
 
-    React.useEffect(() => {
-      fetchAvatar();
-    }, [fetchAvatar]);
-
+  React.useEffect(() => {
+    fetchAvatar();
+  }, [fetchAvatar]);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
+    await db.auth.signOut();
+    router.push('/login');
   };
 
   if (!session) return null;
 
-  const userEmail = session.user.email || "";
+  const userEmail = session.user.email || '';
   const initial = userEmail.charAt(0).toUpperCase();
 
   return (

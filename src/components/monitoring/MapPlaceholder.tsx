@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Activity, MapPin } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/mysql/client';
 
 interface ActivityEvent {
   timestamp: string;
@@ -14,25 +14,27 @@ export function MapPlaceholder() {
   const [events, setEvents] = useState<ActivityEvent[]>([]);
 
   useEffect(() => {
-    const channel = supabase
+    const channel = db
       .channel('realtime-wearable')
       .on('broadcast', { event: 'new_data' }, (payload) => {
         const data = payload.payload as {
           heartRate: number | null;
           hrv: number | null;
         };
-        setEvents((current) => [
-          {
-            timestamp: new Date().toLocaleTimeString('pt-BR'),
-            description: `Leitura recebida: BPM ${data.heartRate ?? 'N/A'} e HRV ${data.hrv ?? 'N/A'} ms`
-          },
-          ...current,
-        ].slice(0, 6));
+        setEvents((current) =>
+          [
+            {
+              timestamp: new Date().toLocaleTimeString('pt-BR'),
+              description: `Leitura recebida: BPM ${data.heartRate ?? 'N/A'} e HRV ${data.hrv ?? 'N/A'} ms`,
+            },
+            ...current,
+          ].slice(0, 6)
+        );
       })
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      db.removeChannel(channel);
     };
   }, []);
 
@@ -46,13 +48,18 @@ export function MapPlaceholder() {
           <MapPin className="h-10 w-10 text-teal-600" />
           <div>
             <p className="font-medium">Feed local de telemetria</p>
-            <p className="text-sm text-muted-foreground">Eventos capturados no dispositivo em tempo real.</p>
+            <p className="text-sm text-muted-foreground">
+              Eventos capturados no dispositivo em tempo real.
+            </p>
           </div>
         </div>
         {events.length > 0 ? (
           <ul className="space-y-3">
             {events.map((event) => (
-              <li key={`${event.timestamp}-${event.description}`} className="rounded-xl bg-white/70 p-3 text-sm shadow-sm dark:bg-gray-900/70">
+              <li
+                key={`${event.timestamp}-${event.description}`}
+                className="rounded-xl bg-white/70 p-3 text-sm shadow-sm dark:bg-gray-900/70"
+              >
                 <p className="font-medium">{event.timestamp}</p>
                 <p className="text-muted-foreground">{event.description}</p>
               </li>

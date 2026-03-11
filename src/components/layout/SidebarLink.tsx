@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface SidebarLinkProps {
   href: string;
@@ -12,15 +12,20 @@ interface SidebarLinkProps {
   className?: string;
 }
 
-export function SidebarLink({ href, children, icon: Icon, className }: SidebarLinkProps) {
+export function SidebarLink({
+  href,
+  children,
+  icon: Icon,
+  className,
+}: SidebarLinkProps) {
   const pathname = usePathname();
   const isActive = pathname === href;
 
   return (
     <Button
       asChild
-      variant={isActive ? "secondary" : "ghost"}
-      className={cn("w-full justify-start", className)}
+      variant={isActive ? 'secondary' : 'ghost'}
+      className={cn('w-full justify-start', className)}
     >
       <Link href={href}>
         <Icon className="mr-2 h-4 w-4" />

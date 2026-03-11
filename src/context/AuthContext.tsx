@@ -1,13 +1,19 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useRouter } from "next/navigation";
-import { AppSession } from "@/types/app-session";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { db } from '@/integrations/mysql/client';
+import { useRouter } from 'next/navigation';
+import { AppSession } from '@/types/app-session';
 
 type AuthContextType = {
   session: AppSession | null;
-  supabase: typeof supabase;
+  db: typeof db;
   userRole: string | null;
 };
 
@@ -20,98 +26,114 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   // Função de fallback para criar o perfil se o trigger falhar ou não tiver rodado
-  const ensureProfileExists = async (currentSession: AppSession) => {
-    const { data: profiles, error: fetchError } = await supabase
-      .from("profiles")
-      .select("onboarding_completed, role")
-      .eq("id", currentSession.user.id);
+  const ensureProfileExists = useCallback(
+    async (currentSession: AppSession) => {
+      const { data: profiles, error: fetchError } = await db
+        .from('profiles')
+        .select('onboarding_completed, role')
+        .eq('id', currentSession.user.id);
 
-    if (fetchError && fetchError.code !== 'PGRST116') {
-        console.error("Error fetching profile:", fetchError);
+      if (fetchError) {
+        console.error('Erro ao consultar perfil do usuário:', fetchError);
         return null;
-    }
-    
-    const profile = profiles?.[0];
+      }
 
-    if (!profile) {
-        console.warn("Profile not found. Attempting client-side creation fallback.");
-        
-        // Tenta extrair nome/sobrenome do metadata (útil para OAuth)
+      const profile = profiles?.[0];
+
+      if (!profile) {
+        console.warn(
+          'Perfil ausente. Iniciando recuperação consistente no banco MySQL.'
+        );
+
         const metadata = currentSession.user.user_metadata;
-        const firstName = metadata?.first_name || (metadata?.full_name?.split(' ')[0] || null);
-        const lastName = metadata?.last_name || (metadata?.full_name?.split(' ').slice(1).join(' ') || null);
+        const firstName =
+          metadata?.first_name || metadata?.full_name?.split(' ')[0] || null;
+        const lastName =
+          metadata?.last_name ||
+          metadata?.full_name?.split(' ').slice(1).join(' ') ||
+          null;
 
-        const { error: insertError } = await supabase
-            .from("profiles")
-            .insert({
-                id: currentSession.user.id,
-                first_name: firstName,
-                last_name: lastName,
-                onboarding_completed: false,
-            });
+        const { error: insertError } = await db.from('profiles').insert({
+          id: currentSession.user.id,
+          email: currentSession.user.email,
+          first_name: firstName,
+          last_name: lastName,
+          onboarding_completed: false,
+          role: currentSession.user.role || 'patient',
+        });
 
         if (insertError) {
-            console.error("Client-side profile creation failed:", insertError);
-            // Se a inserção falhar (ex: RLS bloqueando, ou perfil já existe mas não foi buscado), 
-            // ainda assim retornamos um objeto para evitar loop de redirecionamento.
-            return { onboarding_completed: false, role: 'patient' };
+          console.error('Falha ao recriar perfil no banco MySQL:', insertError);
+          return null;
         }
-        
-        // Se a inserção for bem-sucedida, retornamos o novo perfil
-        return { onboarding_completed: false, role: 'patient' };
-    }
 
-    return profile;
-  }
-
-
-  const handleRedirects = async (currentSession: AppSession | null) => {
-    if (!currentSession) {
-      setUserRole(null);
-      if (window.location.pathname !== "/login" && window.location.pathname !== "/") {
-        router.push("/login");
+        return {
+          onboarding_completed: false,
+          role: currentSession.user.role || 'patient',
+        };
       }
-      return;
-    }
 
-    // 1. Garantir que o perfil exista (fallback) e buscar o status de onboarding
-    const profile = await ensureProfileExists(currentSession);
-    setUserRole(profile?.role || null);
+      return profile;
+    },
+    []
+  );
 
-    const isOnboardingPage = window.location.pathname === "/onboarding";
-    const isLoginPage = window.location.pathname === "/login";
-
-    if (!profile || !profile.onboarding_completed) {
-      if (!isOnboardingPage) {
-        router.push("/onboarding");
+  const handleRedirects = useCallback(
+    async (currentSession: AppSession | null) => {
+      if (!currentSession) {
+        setUserRole(null);
+        if (
+          window.location.pathname !== '/login' &&
+          window.location.pathname !== '/'
+        ) {
+          router.push('/login');
+        }
+        return;
       }
-    } else if (profile && profile.onboarding_completed) {
-      if (isLoginPage || isOnboardingPage) {
-        router.push("/");
+
+      // 1. Garantir que o perfil exista e buscar o status real de onboarding
+      const profile = await ensureProfileExists(currentSession);
+      setUserRole(profile?.role || null);
+
+      const isOnboardingPage = window.location.pathname === '/onboarding';
+      const isLoginPage = window.location.pathname === '/login';
+
+      if (!profile || !profile.onboarding_completed) {
+        if (!isOnboardingPage) {
+          router.push('/onboarding');
+        }
+      } else if (profile && profile.onboarding_completed) {
+        if (isLoginPage || isOnboardingPage) {
+          router.push('/');
+        }
       }
-    }
-  };
+    },
+    [ensureProfileExists, router]
+  );
 
   useEffect(() => {
     const getInitialSession = async () => {
       const {
         data: { session },
-      } = await supabase.auth.getSession();
+      } = await db.auth.getSession();
       setSession(session);
       setLoading(false);
-      // Initial check after loading session
+
       if (session) {
         handleRedirects(session);
       } else {
-        if (window.location.pathname !== "/login" && window.location.pathname !== "/") {
-          router.push("/login");
+        if (
+          window.location.pathname !== '/login' &&
+          window.location.pathname !== '/'
+        ) {
+          router.push('/login');
         }
       }
     };
 
     getInitialSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(
+    const { data: authListener } = db.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
         handleRedirects(session);
@@ -121,10 +143,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [router]);
+  }, [handleRedirects, router]);
 
   return (
-    <AuthContext.Provider value={{ session, supabase, userRole }}>
+    <AuthContext.Provider value={{ session, db, userRole }}>
       {!loading && children}
     </AuthContext.Provider>
   );
@@ -133,7 +155,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === null) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

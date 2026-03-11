@@ -1,15 +1,21 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { toast } from "sonner";
-import { Loader2, RefreshCw, Settings, Zap } from "lucide-react";
+import * as React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { toast } from 'sonner';
+import { Loader2, RefreshCw, Settings, Zap } from 'lucide-react';
 
-import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -17,34 +23,36 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 
 const aiConfigSchema = z.object({
-  mission: z.string().min(20, "Descreva a missão com mais profundidade."),
-  key_objectives: z.string().min(20, "Detalhe melhor os objetivos principais."),
+  mission: z.string().min(20, 'Descreva a missão com mais profundidade.'),
+  key_objectives: z.string().min(20, 'Detalhe melhor os objetivos principais.'),
   weight_hrv: z.coerce.number().min(0).max(100),
   weight_sleep: z.coerce.number().min(0).max(100),
   weight_activity: z.coerce.number().min(0).max(100),
   weight_nutrition: z.coerce.number().min(0).max(100),
-  model_name: z.string().min(1, "Selecione um motor local."),
+  model_name: z.string().min(1, 'Selecione um motor local.'),
 });
 
 type AIConfigValues = z.infer<typeof aiConfigSchema>;
 
 export function AIConfigForm() {
-  const { supabase } = useAuth();
+  const { db } = useAuth();
   const [configId, setConfigId] = React.useState<string | null>(null);
-  const [availableModels, setAvailableModels] = React.useState<Array<{ id: string; label: string }>>([]);
+  const [availableModels, setAvailableModels] = React.useState<
+    Array<{ id: string; label: string }>
+  >([]);
   const [isLoadingConfig, setIsLoadingConfig] = React.useState(true);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isLoadingModels, setIsLoadingModels] = React.useState(false);
@@ -52,27 +60,28 @@ export function AIConfigForm() {
   const form = useForm<AIConfigValues>({
     resolver: zodResolver(aiConfigSchema),
     defaultValues: {
-      mission: "",
-      key_objectives: "",
+      mission: '',
+      key_objectives: '',
       weight_hrv: 30,
       weight_sleep: 30,
       weight_activity: 25,
       weight_nutrition: 15,
-      model_name: "",
+      model_name: '',
     },
   });
 
   const loadConfig = React.useCallback(async () => {
     setIsLoadingConfig(true);
-    const { data, error } = await supabase
-      .from("ai_config")
-      .select("*")
+    const { data, error } = await db
+      .from('ai_config')
+      .select('*')
       .limit(1)
       .single();
 
     if (error || !data) {
-      toast.error("Erro ao carregar configuração local de IA.", {
-        description: error?.message || "Registro de configuração não encontrado.",
+      toast.error('Erro ao carregar configuração local de IA.', {
+        description:
+          error?.message || 'Registro de configuração não encontrado.',
       });
       setIsLoadingConfig(false);
       return;
@@ -81,12 +90,20 @@ export function AIConfigForm() {
     setConfigId(String((data as { id: string }).id));
     form.reset({
       mission: String((data as { mission: string }).mission),
-      key_objectives: String((data as { key_objectives: string }).key_objectives),
+      key_objectives: String(
+        (data as { key_objectives: string }).key_objectives
+      ),
       weight_hrv: Number((data as { weight_hrv: number }).weight_hrv),
       weight_sleep: Number((data as { weight_sleep: number }).weight_sleep),
-      weight_activity: Number((data as { weight_activity: number }).weight_activity),
-      weight_nutrition: Number((data as { weight_nutrition: number }).weight_nutrition),
-      model_name: String((data as { model_name: string | null }).model_name ?? ""),
+      weight_activity: Number(
+        (data as { weight_activity: number }).weight_activity
+      ),
+      weight_nutrition: Number(
+        (data as { weight_nutrition: number }).weight_nutrition
+      ),
+      model_name: String(
+        (data as { model_name: string | null }).model_name ?? ''
+      ),
     });
 
     if ((data as { model_name: string | null }).model_name) {
@@ -99,7 +116,7 @@ export function AIConfigForm() {
     }
 
     setIsLoadingConfig(false);
-  }, [form, supabase]);
+  }, [form, db]);
 
   React.useEffect(() => {
     loadConfig();
@@ -107,49 +124,52 @@ export function AIConfigForm() {
 
   const loadLocalModels = async () => {
     setIsLoadingModels(true);
-    const { data, error } = await supabase.functions.invoke<{
+    const { data, error } = await db.functions.invoke<{
       success: boolean;
       models: Array<{ id: string; label: string }>;
       error?: string;
-    }>("test-ai-connection");
+    }>('test-ai-connection');
     setIsLoadingModels(false);
 
     if (error || !data?.success) {
-      toast.error("Falha ao consultar catálogo local.", {
-        description: error?.message || data?.error || "Motores locais indisponíveis.",
+      toast.error('Falha ao consultar catálogo local.', {
+        description:
+          error?.message || data?.error || 'Motores locais indisponíveis.',
       });
       return;
     }
 
     setAvailableModels(data.models);
     if (data.models[0]) {
-      form.setValue("model_name", data.models[0].id, { shouldValidate: true });
+      form.setValue('model_name', data.models[0].id, { shouldValidate: true });
     }
-    toast.success("Motores locais carregados.");
+    toast.success('Motores locais carregados.');
   };
 
   const onSubmit = async (values: AIConfigValues) => {
     if (!configId) {
-      toast.error("Configuração principal não encontrada.");
+      toast.error('Configuração principal não encontrada.');
       return;
     }
 
     setIsSubmitting(true);
-    const { error } = await supabase
-      .from("ai_config")
+    const { error } = await db
+      .from('ai_config')
       .update({
         ...values,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", configId);
+      .eq('id', configId);
     setIsSubmitting(false);
 
     if (error) {
-      toast.error("Falha ao salvar configuração local.", { description: error.message });
+      toast.error('Falha ao salvar configuração local.', {
+        description: error.message,
+      });
       return;
     }
 
-    toast.success("Configuração local atualizada com sucesso.");
+    toast.success('Configuração local atualizada com sucesso.');
   };
 
   if (isLoadingConfig) {
@@ -170,7 +190,8 @@ export function AIConfigForm() {
             Configuração do Motor Local
           </CardTitle>
           <CardDescription>
-            Ajuste a missão, os pesos de biomarcadores e o motor de orquestração utilizado pelo backend MySQL.
+            Ajuste a missão, os pesos de biomarcadores e o motor de orquestração
+            utilizado pelo backend MySQL.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -266,7 +287,10 @@ export function AIConfigForm() {
                   <FormItem>
                     <FormLabel>Motor local ativo</FormLabel>
                     <div className="flex gap-3">
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecione um motor local..." />
@@ -280,7 +304,12 @@ export function AIConfigForm() {
                           ))}
                         </SelectContent>
                       </Select>
-                      <Button type="button" variant="outline" onClick={loadLocalModels} disabled={isLoadingModels}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={loadLocalModels}
+                        disabled={isLoadingModels}
+                      >
                         {isLoadingModels ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : (
@@ -294,8 +323,16 @@ export function AIConfigForm() {
                 )}
               />
 
-              <Button type="submit" disabled={isSubmitting} className="bg-teal-700 hover:bg-teal-800">
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Settings className="mr-2 h-4 w-4" />}
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-teal-700 hover:bg-teal-800"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Settings className="mr-2 h-4 w-4" />
+                )}
                 Salvar Configuração
               </Button>
             </form>
@@ -307,21 +344,31 @@ export function AIConfigForm() {
         <CardHeader>
           <CardTitle>Estado Operacional</CardTitle>
           <CardDescription>
-            O backend agora usa motor local, persistência MySQL e APIs internas do Next.js.
+            O backend agora usa motor local, persistência MySQL e APIs internas
+            do Next.js.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 text-sm">
           <div className="rounded-xl border p-4">
             <p className="font-semibold">Processamento de score</p>
-            <p className="text-muted-foreground">Executado internamente via cálculo local sobre métricas persistidas.</p>
+            <p className="text-muted-foreground">
+              Executado internamente via cálculo local sobre métricas
+              persistidas.
+            </p>
           </div>
           <div className="rounded-xl border p-4">
             <p className="font-semibold">Geração de plano</p>
-            <p className="text-muted-foreground">Plano estruturado, persistido em MySQL e sem dependência de Edge Function externa.</p>
+            <p className="text-muted-foreground">
+              Plano estruturado, persistido em MySQL e sem dependência de
+              serviço externo para processamento sensível.
+            </p>
           </div>
           <div className="rounded-xl border p-4">
             <p className="font-semibold">Assistente</p>
-            <p className="text-muted-foreground">Respostas contextuais locais com leitura de perfil, métricas e astrologia atual.</p>
+            <p className="text-muted-foreground">
+              Respostas contextuais locais com leitura de perfil, métricas e
+              astrologia atual.
+            </p>
           </div>
         </CardContent>
       </Card>

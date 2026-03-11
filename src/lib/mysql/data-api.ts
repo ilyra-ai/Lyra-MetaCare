@@ -1,6 +1,11 @@
 import { executeStatement, queryRows, withTransaction } from '@/lib/mysql/pool';
 import { AppSession } from '@/types/app-session';
-import { QueryFilter, QueryOrder, TableName, TABLE_CONFIG } from '@/lib/mysql/table-config';
+import {
+  QueryFilter,
+  QueryOrder,
+  TableName,
+  TABLE_CONFIG,
+} from '@/lib/mysql/table-config';
 
 type SingleMode = 'single' | 'maybeSingle' | null;
 
@@ -15,7 +20,7 @@ const JSON_COLUMNS: Record<TableName, string[]> = {
   ai_plans: ['plan_data'],
   appointments: [],
   professionals: [],
-  instruments: []
+  instruments: [],
 };
 
 function assertTable(table: string): asserts table is TableName {
@@ -38,7 +43,10 @@ function coerceWriteValue(table: TableName, column: string, value: unknown) {
   return value;
 }
 
-function normalizeRow<T extends Record<string, unknown>>(table: TableName, row: T): T {
+function normalizeRow<T extends Record<string, unknown>>(
+  table: TableName,
+  row: T
+): T {
   const jsonColumns = JSON_COLUMNS[table];
   const normalizedEntries = Object.entries(row).map(([key, value]) => {
     if (jsonColumns.includes(key) && typeof value === 'string') {
@@ -75,17 +83,24 @@ function ensureCanWrite(table: TableName, session: AppSession | null) {
 function sanitizeColumns(table: TableName, select: string) {
   const trimmed = select.trim();
   if (trimmed === '*' || trimmed.length === 0) {
-    return TABLE_CONFIG[table].columns.map((column) => `t.${column}`).join(', ');
+    return TABLE_CONFIG[table].columns
+      .map((column) => `t.${column}`)
+      .join(', ');
   }
 
-  const specialAppointments = table === 'appointments' && trimmed.includes('professionals(');
-  const specialProfiles = table === 'profiles' && trimmed.includes('daily_metrics(');
+  const specialAppointments =
+    table === 'appointments' && trimmed.includes('professionals(');
+  const specialProfiles =
+    table === 'profiles' && trimmed.includes('daily_metrics(');
 
   if (specialAppointments || specialProfiles) {
     return trimmed;
   }
 
-  const columns = trimmed.split(',').map((column) => column.trim()).filter(Boolean);
+  const columns = trimmed
+    .split(',')
+    .map((column) => column.trim())
+    .filter(Boolean);
   for (const column of columns) {
     if (!TABLE_CONFIG[table].columns.includes(column)) {
       throw new Error(`Coluna não permitida em ${table}: ${column}`);
@@ -95,7 +110,10 @@ function sanitizeColumns(table: TableName, select: string) {
 }
 
 function parseOrExpression(expression: string, table: TableName) {
-  const pieces = expression.split(',').map((piece) => piece.trim()).filter(Boolean);
+  const pieces = expression
+    .split(',')
+    .map((piece) => piece.trim())
+    .filter(Boolean);
   const sqlChunks: string[] = [];
   const params: unknown[] = [];
 
@@ -118,22 +136,35 @@ function parseOrExpression(expression: string, table: TableName) {
 
   return {
     clause: `(${sqlChunks.join(' OR ')})`,
-    params
+    params,
   };
 }
 
-function buildWhereClause(table: TableName, filters: QueryFilter[], session: AppSession | null, writeOperation = false) {
+function buildWhereClause(
+  table: TableName,
+  filters: QueryFilter[],
+  session: AppSession | null,
+  writeOperation = false
+) {
   const whereParts: string[] = [];
   const params: unknown[] = [];
   const config = TABLE_CONFIG[table];
   const admin = isAdmin(session);
 
-  if (config.userScopedBy && session && (!admin || !config.adminReadAll || writeOperation)) {
+  if (
+    config.userScopedBy &&
+    session &&
+    (!admin || !config.adminReadAll || writeOperation)
+  ) {
     whereParts.push(`t.${config.userScopedBy} = ?`);
     params.push(session.user.id);
   }
 
-  if ((table === 'suggested_habits' || table === 'ai_tips') && !admin && !writeOperation) {
+  if (
+    (table === 'suggested_habits' || table === 'ai_tips') &&
+    !admin &&
+    !writeOperation
+  ) {
     whereParts.push('t.is_active = 1');
   }
 
@@ -147,7 +178,10 @@ function buildWhereClause(table: TableName, filters: QueryFilter[], session: App
       continue;
     }
 
-    if (!filter.column || !TABLE_CONFIG[table].columns.includes(filter.column)) {
+    if (
+      !filter.column ||
+      !TABLE_CONFIG[table].columns.includes(filter.column)
+    ) {
       throw new Error(`Filtro inválido para ${table}.`);
     }
 
@@ -181,15 +215,21 @@ function buildWhereClause(table: TableName, filters: QueryFilter[], session: App
 
   return {
     clause: whereParts.length > 0 ? `WHERE ${whereParts.join(' AND ')}` : '',
-    params
+    params,
   };
 }
 
-function buildOrderClause(table: TableName, orders: QueryOrder[], hasProfileDailyMetricSelect = false) {
+function buildOrderClause(
+  table: TableName,
+  orders: QueryOrder[],
+  hasProfileDailyMetricSelect = false
+) {
   if (hasProfileDailyMetricSelect) {
     return 'ORDER BY latest_metric_date DESC';
   }
-  const safeOrders = orders.filter((order) => TABLE_CONFIG[table].columns.includes(order.column));
+  const safeOrders = orders.filter((order) =>
+    TABLE_CONFIG[table].columns.includes(order.column)
+  );
   if (safeOrders.length === 0) {
     return '';
   }
@@ -242,9 +282,9 @@ async function selectAppointmentsWithProfessionals(
       ? {
           name: row.professional_name,
           specialty: row.professional_specialty,
-          avatar_url: row.professional_avatar_url
+          avatar_url: row.professional_avatar_url,
         }
-      : null
+      : null,
   }));
 }
 
@@ -276,7 +316,9 @@ async function selectProfilesWithDailyMetrics(
     id: row.id,
     first_name: row.first_name,
     email: row.email,
-    daily_metrics: row.latest_metric_date ? [{ date: row.latest_metric_date }] : []
+    daily_metrics: row.latest_metric_date
+      ? [{ date: row.latest_metric_date }]
+      : [],
   }));
 }
 
@@ -296,14 +338,30 @@ export async function runSelectQuery(options: {
   assertTable(options.table);
   ensureCanRead(options.table, options.session);
 
-  const specialAppointments = options.table === 'appointments' && options.select.includes('professionals(');
-  const specialProfiles = options.table === 'profiles' && options.select.includes('daily_metrics(');
+  const specialAppointments =
+    options.table === 'appointments' &&
+    options.select.includes('professionals(');
+  const specialProfiles =
+    options.table === 'profiles' && options.select.includes('daily_metrics(');
 
-  const where = buildWhereClause(options.table, options.filters, options.session);
-  const order = buildOrderClause(options.table, options.orders, specialProfiles);
-  const limit = options.limit ?? (options.rangeFrom !== null && options.rangeFrom !== undefined && options.rangeTo !== null && options.rangeTo !== undefined
-    ? options.rangeTo - options.rangeFrom + 1
-    : null);
+  const where = buildWhereClause(
+    options.table,
+    options.filters,
+    options.session
+  );
+  const order = buildOrderClause(
+    options.table,
+    options.orders,
+    specialProfiles
+  );
+  const limit =
+    options.limit ??
+    (options.rangeFrom !== null &&
+    options.rangeFrom !== undefined &&
+    options.rangeTo !== null &&
+    options.rangeTo !== undefined
+      ? options.rangeTo - options.rangeFrom + 1
+      : null);
   const offset = options.rangeFrom ?? null;
   const limitClause = limit ? `LIMIT ${limit}` : '';
   const offsetClause = offset !== null ? `OFFSET ${offset}` : '';
@@ -311,9 +369,16 @@ export async function runSelectQuery(options: {
   let data: Record<string, unknown>[];
 
   if (specialAppointments) {
-    data = await selectAppointmentsWithProfessionals(options.filters, options.orders, options.session);
+    data = await selectAppointmentsWithProfessionals(
+      options.filters,
+      options.orders,
+      options.session
+    );
   } else if (specialProfiles) {
-    data = await selectProfilesWithDailyMetrics(options.filters, options.session);
+    data = await selectProfilesWithDailyMetrics(
+      options.filters,
+      options.session
+    );
   } else {
     const selectedColumns = sanitizeColumns(options.table, options.select);
     data = await queryRows<Record<string, unknown>[]>(
@@ -348,7 +413,7 @@ export async function runSelectQuery(options: {
       return {
         data: null,
         count,
-        error: { message: 'Registro não encontrado.' }
+        error: { message: 'Registro não encontrado.' },
       };
     }
     return { data: data[0], count, error: null };
@@ -370,7 +435,9 @@ export async function runInsertQuery(options: {
   ensureCanWrite(options.table, options.session);
 
   const config = TABLE_CONFIG[options.table];
-  const payloads = Array.isArray(options.values) ? options.values : [options.values];
+  const payloads = Array.isArray(options.values)
+    ? options.values
+    : [options.values];
   const preparedPayloads = payloads.map((payload) => {
     const nextPayload: Record<string, unknown> = {};
 
@@ -379,7 +446,11 @@ export async function runInsertQuery(options: {
         continue;
       }
       const incomingValue = payload[column];
-      const coercedValue = coerceWriteValue(options.table, column, incomingValue);
+      const coercedValue = coerceWriteValue(
+        options.table,
+        column,
+        incomingValue
+      );
       if (coercedValue !== undefined) {
         nextPayload[column] = coercedValue;
       }
@@ -389,11 +460,19 @@ export async function runInsertQuery(options: {
       nextPayload.id = crypto.randomUUID();
     }
 
-    if (config.userScopedBy && options.session && (!isAdmin(options.session) || config.userScopedBy !== 'id')) {
+    if (
+      config.userScopedBy &&
+      options.session &&
+      (!isAdmin(options.session) || config.userScopedBy !== 'id')
+    ) {
       nextPayload[config.userScopedBy] = options.session.user.id;
     }
 
-    if (options.table === 'profiles' && options.session && !isAdmin(options.session)) {
+    if (
+      options.table === 'profiles' &&
+      options.session &&
+      !isAdmin(options.session)
+    ) {
       nextPayload.id = options.session.user.id;
       nextPayload.email = options.session.user.email;
     }
@@ -406,12 +485,16 @@ export async function runInsertQuery(options: {
   const sql = `INSERT INTO ${options.table} (${columns.join(', ')}) VALUES ${preparedPayloads
     .map(() => placeholders)
     .join(', ')}`;
-  const params = preparedPayloads.flatMap((payload) => columns.map((column) => payload[column]));
+  const params = preparedPayloads.flatMap((payload) =>
+    columns.map((column) => payload[column])
+  );
 
   await executeStatement(sql, params);
   return {
-    data: Array.isArray(options.values) ? preparedPayloads : preparedPayloads[0],
-    error: null
+    data: Array.isArray(options.values)
+      ? preparedPayloads
+      : preparedPayloads[0],
+    error: null,
   };
 }
 
@@ -431,7 +514,11 @@ export async function runUpsertQuery(options: {
     if (column === 'created_at' || column === 'updated_at') {
       continue;
     }
-    const value = coerceWriteValue(options.table, column, options.values[column]);
+    const value = coerceWriteValue(
+      options.table,
+      column,
+      options.values[column]
+    );
     if (value !== undefined) {
       payload[column] = value;
     }
@@ -445,13 +532,18 @@ export async function runUpsertQuery(options: {
   }
 
   const columns = Object.keys(payload);
-  const updateColumns = columns.filter((column) => column !== options.onConflict && column !== 'id');
+  const updateColumns = columns.filter(
+    (column) => column !== options.onConflict && column !== 'id'
+  );
   const sql = `
     INSERT INTO ${options.table} (${columns.join(', ')})
     VALUES (${columns.map(() => '?').join(', ')})
     ON DUPLICATE KEY UPDATE ${updateColumns.map((column) => `${column} = VALUES(${column})`).join(', ')}
   `;
-  await executeStatement(sql, columns.map((column) => payload[column]));
+  await executeStatement(
+    sql,
+    columns.map((column) => payload[column])
+  );
   return { data: payload, error: null };
 }
 
@@ -465,15 +557,29 @@ export async function runUpdateQuery(options: {
   ensureCanWrite(options.table, options.session);
 
   const entries = Object.entries(options.values)
-    .filter(([column, value]) => TABLE_CONFIG[options.table].columns.includes(column) && column !== 'id')
-    .map(([column, value]) => [column, coerceWriteValue(options.table, column, value)] as const)
+    .filter(
+      ([column]) =>
+        TABLE_CONFIG[options.table].columns.includes(column) && column !== 'id'
+    )
+    .map(
+      ([column, value]) =>
+        [column, coerceWriteValue(options.table, column, value)] as const
+    )
     .filter(([, value]) => value !== undefined);
 
   if (entries.length === 0) {
-    return { data: null, error: { message: 'Nenhum campo válido para atualização.' } };
+    return {
+      data: null,
+      error: { message: 'Nenhum campo válido para atualização.' },
+    };
   }
 
-  const where = buildWhereClause(options.table, options.filters, options.session, true);
+  const where = buildWhereClause(
+    options.table,
+    options.filters,
+    options.session,
+    true
+  );
   const sql = `UPDATE ${options.table} t SET ${entries.map(([column]) => `${column} = ?`).join(', ')} ${where.clause}`;
   const params = [...entries.map(([, value]) => value), ...where.params];
   await executeStatement(sql, params);
@@ -490,8 +596,16 @@ export async function runDeleteQuery(options: {
   ensureCanWrite(options.table, options.session);
 
   if (options.table === 'profiles' && isAdmin(options.session)) {
-    const where = buildWhereClause(options.table, options.filters, options.session, true);
-    const rows = await queryRows<Array<{ id: string }>>(`SELECT t.id FROM profiles t ${where.clause}`, where.params);
+    const where = buildWhereClause(
+      options.table,
+      options.filters,
+      options.session,
+      true
+    );
+    const rows = await queryRows<Array<{ id: string }>>(
+      `SELECT t.id FROM profiles t ${where.clause}`,
+      where.params
+    );
     await withTransaction(async (connection) => {
       for (const row of rows) {
         await connection.execute('DELETE FROM users WHERE id = ?', [row.id]);
@@ -500,7 +614,15 @@ export async function runDeleteQuery(options: {
     return { data: { deleted: rows.length }, error: null };
   }
 
-  const where = buildWhereClause(options.table, options.filters, options.session, true);
-  const result = await executeStatement(`DELETE FROM ${options.table} t ${where.clause}`, where.params);
+  const where = buildWhereClause(
+    options.table,
+    options.filters,
+    options.session,
+    true
+  );
+  const result = await executeStatement(
+    `DELETE FROM ${options.table} t ${where.clause}`,
+    where.params
+  );
   return { data: { deleted: result.affectedRows }, error: null };
 }

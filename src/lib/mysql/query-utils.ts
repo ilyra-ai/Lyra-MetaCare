@@ -35,7 +35,10 @@ export function isAdmin(session: AppSession | null) {
   return session?.user.role === 'admin';
 }
 
-export function ensureCanReadTable(table: TableName, session: AppSession | null) {
+export function ensureCanReadTable(
+  table: TableName,
+  session: AppSession | null
+) {
   const config = TABLE_CONFIG[table];
   if (config.publicRead) {
     return;
@@ -45,7 +48,10 @@ export function ensureCanReadTable(table: TableName, session: AppSession | null)
   }
 }
 
-export function ensureCanWriteTable(table: TableName, session: AppSession | null) {
+export function ensureCanWriteTable(
+  table: TableName,
+  session: AppSession | null
+) {
   const config = TABLE_CONFIG[table];
   if (!session) {
     throw new Error('Sessão autenticada obrigatória para esta operação.');

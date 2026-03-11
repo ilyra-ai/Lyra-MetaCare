@@ -12,11 +12,22 @@ export async function POST(request: Request) {
     const session = await requireServerSession();
     const { query } = (await request.json()) as { query: string };
     if (!query?.trim()) {
-      return NextResponse.json({ error: 'Pergunta obrigatória.' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Pergunta obrigatória.' },
+        { status: 400 }
+      );
     }
 
-    const [profile] = await queryRows<Array<{ first_name: string | null; goals: string | null }>>(
-      'SELECT first_name, goals FROM profiles WHERE id = ? LIMIT 1',
+    const [profile] = await queryRows<
+      Array<{
+        first_name: string | null;
+        goals: string | null;
+        birth_date: string | null;
+        birth_time: string | null;
+        birth_location: string | null;
+      }>
+    >(
+      'SELECT first_name, goals, birth_date, birth_time, birth_location FROM profiles WHERE id = ? LIMIT 1',
       [session.user.id]
     );
     const [latestMetric] = await queryRows<
@@ -43,16 +54,19 @@ export async function POST(request: Request) {
         profile: profile
           ? {
               first_name: profile.first_name,
-              goals: profile.goals ? JSON.parse(profile.goals) : null
+              goals: profile.goals ? JSON.parse(profile.goals) : null,
             }
           : null,
         latestMetric: latestMetric ?? null,
-        astrology: getAstrologicalContext()
-      })
+        astrology: getAstrologicalContext(new Date(), profile ?? undefined),
+      }),
     });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Falha no assistente local.' },
+      {
+        error:
+          error instanceof Error ? error.message : 'Falha no assistente local.',
+      },
       { status: 500 }
     );
   }

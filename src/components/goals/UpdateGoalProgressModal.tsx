@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
+import * as React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
 import {
   Dialog,
   DialogContent,
@@ -13,8 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -22,11 +22,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
 
-// Define Goal type based on the new Supabase schema
+// Define o tipo de meta conforme o schema MySQL atual
 interface Goal {
   id: string;
   title: string;
@@ -39,7 +39,7 @@ interface Goal {
 }
 
 const formSchema = z.object({
-  current_value: z.coerce.number().min(0, "O valor deve ser positivo."),
+  current_value: z.coerce.number().min(0, 'O valor deve ser positivo.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -50,8 +50,12 @@ interface UpdateGoalProgressModalProps {
   children: React.ReactNode;
 }
 
-export function UpdateGoalProgressModal({ goal, onUpdate, children }: UpdateGoalProgressModalProps) {
-  const { supabase } = useAuth();
+export function UpdateGoalProgressModal({
+  goal,
+  onUpdate,
+  children,
+}: UpdateGoalProgressModalProps) {
+  const { db } = useAuth();
   const [open, setOpen] = React.useState(false);
 
   const form = useForm<FormValues>({
@@ -62,29 +66,24 @@ export function UpdateGoalProgressModal({ goal, onUpdate, children }: UpdateGoal
   });
 
   const onSubmit = async (data: FormValues) => {
-    let newStatus = goal.status;
-    
-    if (goal.target_value && data.current_value >= goal.target_value) {
-        newStatus = 'completed';
-    } else if (goal.target_value && data.current_value > 0) {
-        newStatus = 'in_progress';
-    } else {
-        newStatus = 'missed'; // Simplified logic for demonstration
-    }
+    const newStatus =
+      goal.target_value && data.current_value >= goal.target_value
+        ? 'completed'
+        : 'in_progress';
 
-    const { error } = await supabase
-      .from("goals")
+    const { error } = await db
+      .from('goals')
       .update({
         current_value: data.current_value,
         status: newStatus,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", goal.id);
+      .eq('id', goal.id);
 
     if (error) {
-      toast.error("Erro ao atualizar meta.", { description: error.message });
+      toast.error('Erro ao atualizar meta.', { description: error.message });
     } else {
-      toast.success("Progresso atualizado com sucesso!");
+      toast.success('Progresso atualizado com sucesso!');
       setOpen(false);
       onUpdate(); // Trigger parent refresh
     }
@@ -104,18 +103,20 @@ export function UpdateGoalProgressModal({ goal, onUpdate, children }: UpdateGoal
             Atualize seu progresso para esta meta.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">{goal.description}</p>
-            {goal.target_value && (
-                <div className="space-y-1">
-                    <div className="flex justify-between text-sm font-medium">
-                        <span>Meta: {goal.target_value} {goal.unit}</span>
-                        <span>Progresso: {progressPercentage.toFixed(0)}%</span>
-                    </div>
-                    <Progress value={progressPercentage} className="h-2" />
-                </div>
-            )}
+          <p className="text-sm text-muted-foreground">{goal.description}</p>
+          {goal.target_value && (
+            <div className="space-y-1">
+              <div className="flex justify-between text-sm font-medium">
+                <span>
+                  Meta: {goal.target_value} {goal.unit}
+                </span>
+                <span>Progresso: {progressPercentage.toFixed(0)}%</span>
+              </div>
+              <Progress value={progressPercentage} className="h-2" />
+            </div>
+          )}
         </div>
 
         <Form {...form}>
@@ -133,8 +134,12 @@ export function UpdateGoalProgressModal({ goal, onUpdate, children }: UpdateGoal
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "Salvando..." : "Salvar Progresso"}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? 'Salvando...' : 'Salvar Progresso'}
             </Button>
           </form>
         </Form>

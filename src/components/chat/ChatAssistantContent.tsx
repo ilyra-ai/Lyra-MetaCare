@@ -1,12 +1,25 @@
-"use client";
+'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatBubble } from './ChatBubble';
 import { ChatInput } from './ChatInput';
 import { TypingIndicator } from './TypingIndicator';
 import { QuickReply } from './QuickReply';
-import { Sparkles, Brain, ChevronDown, Cpu, Stethoscope, HeartPulse, Calendar, BookOpen } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Sparkles,
+  Brain,
+  ChevronDown,
+  Cpu,
+  Stethoscope,
+  HeartPulse,
+  Calendar,
+  BookOpen,
+} from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
@@ -17,32 +30,70 @@ export interface Message {
   sender: 'user' | 'ai';
 }
 
-const quickReplies = ["Como posso melhorar meu sono?", "Qual meu resumo de ontem?", "Agendar consulta"];
+const quickReplies = [
+  'Como posso melhorar meu sono?',
+  'Qual meu resumo de ontem?',
+  'Agendar consulta',
+];
 
 const integrations = [
-    { icon: Cpu, title: "Dialogflow", description: "Processamento de Linguagem Natural (NLP) para entender suas perguntas." },
-    { icon: Stethoscope, title: "Google Med-PaLM 2", description: "Modelo de linguagem médica para insights de saúde seguros e precisos." },
-    { icon: HeartPulse, title: "Health Connect & HealthKit", description: "Integração em tempo real com dados de wearables (Apple, Google, etc.)." },
-    { icon: Brain, title: "Lyra's Longevity Engine", description: "Modelo proprietário para análise preditiva e criação de planos personalizados." },
-    { icon: Calendar, title: "Google Calendar API", description: "Agendamento inteligente de consultas e lembretes de saúde." },
-    { icon: BookOpen, title: "PubMed API", description: "Acesso a estudos científicos para fornecer as informações mais recentes." },
+  {
+    icon: Cpu,
+    title: 'API local Next.js',
+    description:
+      'Camada interna responsável por autenticação, CRUDs e orquestração do backend MySQL.',
+  },
+  {
+    icon: Stethoscope,
+    title: 'Motor clínico local',
+    description:
+      'Regras determinísticas e cálculo contextual sobre métricas recentes sem enviar dados sensíveis a terceiros.',
+  },
+  {
+    icon: HeartPulse,
+    title: 'Wearables via Bluetooth',
+    description:
+      'Leitura local em tempo real para frequência cardíaca e eventos de monitoramento no dispositivo.',
+  },
+  {
+    icon: Brain,
+    title: 'Lyra Orchestrator',
+    description:
+      'Motor local que cruza métricas fisiológicas, perfil e astrologia computacional para respostas contextuais.',
+  },
+  {
+    icon: Calendar,
+    title: 'Agenda MySQL',
+    description:
+      'Persistência de profissionais e consultas diretamente no banco MySQL do projeto.',
+  },
+  {
+    icon: BookOpen,
+    title: 'Contexto biométrico',
+    description:
+      'Perfil, metas e última janela de métricas utilizados para personalizar a conversa em tempo real.',
+  },
 ];
 
 export function ChatAssistantContent() {
-  const { supabase } = useAuth();
+  const { db } = useAuth();
   const [messages, setMessages] = useState<Message[]>([
-    { id: 1, text: "Olá! Sou seu assistente de saúde. Como posso ajudar hoje?", sender: 'ai' }
+    {
+      id: 1,
+      text: 'Olá! Sou seu assistente de saúde. Como posso ajudar hoje?',
+      sender: 'ai',
+    },
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isNearBottom, setIsNearBottom] = useState(true);
-  const [messageCount, setMessageCount] = useState(1);
-  const [sessionStartTime] = useState(Date.now());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = (smooth = true) => {
-    messagesEndRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto" });
+    messagesEndRef.current?.scrollIntoView({
+      behavior: smooth ? 'smooth' : 'auto',
+    });
   };
 
   useEffect(() => {
@@ -58,7 +109,7 @@ export function ChatAssistantContent() {
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-      
+
       setShowScrollButton(distanceFromBottom > 100);
       setIsNearBottom(distanceFromBottom < 50);
     };
@@ -75,13 +126,12 @@ export function ChatAssistantContent() {
       text,
       sender: 'user',
     };
-    setMessages(prev => [...prev, newUserMessage]);
-    setMessageCount(prev => prev + 1);
+    setMessages((prev) => [...prev, newUserMessage]);
     setIsTyping(true);
     setIsNearBottom(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('ask-ai-assistant', {
+      const { data, error } = await db.functions.invoke('ask-ai-assistant', {
         body: { query: text },
       });
 
@@ -94,27 +144,22 @@ export function ChatAssistantContent() {
         text: data.response,
         sender: 'ai',
       };
-      setMessages(prev => [...prev, newAiMessage]);
-
+      setMessages((prev) => [...prev, newAiMessage]);
     } catch (error) {
       const errorMessage = (error as Error).message;
-      toast.error("Erro ao contatar o assistente.", { description: errorMessage });
-      
+      toast.error('Erro ao contatar o assistente.', {
+        description: errorMessage,
+      });
+
       const errorAiMessage: Message = {
         id: Date.now() + 1,
         text: `Desculpe, ocorreu um erro ao processar sua solicitação: ${errorMessage}`,
         sender: 'ai',
       };
-      setMessages(prev => [...prev, errorAiMessage]);
+      setMessages((prev) => [...prev, errorAiMessage]);
     } finally {
       setIsTyping(false);
-      setMessageCount(prev => prev + 1);
     }
-  };
-
-  const getSessionDuration = () => {
-    const duration = Math.floor((Date.now() - sessionStartTime) / 60000);
-    return duration < 1 ? '< 1 min' : `${duration} min`;
   };
 
   return (
@@ -151,45 +196,54 @@ export function ChatAssistantContent() {
         </div>
 
         <div className="flex items-center gap-4">
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-auto px-3 py-1.5 bg-violet-50/80 dark:bg-violet-900/20 rounded-xl border-violet-100/50 dark:border-violet-800/30 hover:bg-violet-100/90">
-                        <Cpu className="h-3.5 w-3.5 mr-2 text-violet-600 dark:text-violet-400" />
-                        <span className="text-xs font-medium text-violet-700 dark:text-violet-300">Tecnologias</span>
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80">
-                    <div className="space-y-4">
-                        <h4 className="font-medium leading-none">Integrações Ativas</h4>
-                        <p className="text-sm text-muted-foreground">
-                            Este assistente é alimentado por uma combinação de tecnologias de ponta.
-                        </p>
-                        <div className="space-y-3">
-                            {integrations.map((item) => {
-                                const Icon = item.icon;
-                                return (
-                                    <div key={item.title} className="flex items-start gap-3">
-                                        <Icon className="h-4 w-4 mt-1 text-violet-500 flex-shrink-0" />
-                                        <div>
-                                            <p className="text-sm font-semibold">{item.title}</p>
-                                            <p className="text-xs text-muted-foreground">{item.description}</p>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-auto px-3 py-1.5 bg-violet-50/80 dark:bg-violet-900/20 rounded-xl border-violet-100/50 dark:border-violet-800/30 hover:bg-violet-100/90"
+              >
+                <Cpu className="h-3.5 w-3.5 mr-2 text-violet-600 dark:text-violet-400" />
+                <span className="text-xs font-medium text-violet-700 dark:text-violet-300">
+                  Tecnologias
+                </span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="space-y-4">
+                <h4 className="font-medium leading-none">Integrações Ativas</h4>
+                <p className="text-sm text-muted-foreground">
+                  Este assistente é alimentado por uma combinação de tecnologias
+                  de ponta.
+                </p>
+                <div className="space-y-3">
+                  {integrations.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={item.title} className="flex items-start gap-3">
+                        <Icon className="h-4 w-4 mt-1 text-violet-500 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-semibold">{item.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.description}
+                          </p>
                         </div>
-                    </div>
-                </PopoverContent>
-            </Popover>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
-      <div 
+      <div
         ref={messagesContainerRef}
         className="relative flex-1 overflow-y-auto scroll-smooth"
         style={{
           scrollbarWidth: 'thin',
-          scrollbarColor: 'rgba(139, 92, 246, 0.3) transparent'
+          scrollbarColor: 'rgba(139, 92, 246, 0.3) transparent',
         }}
       >
         <div className="max-w-4xl mx-auto p-6 space-y-6">
@@ -197,18 +251,21 @@ export function ChatAssistantContent() {
             <div
               key={msg.id}
               className="animate-in fade-in-50 slide-in-from-bottom-4"
-              style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}
+              style={{
+                animationDelay: `${index * 50}ms`,
+                animationFillMode: 'backwards',
+              }}
             >
               <ChatBubble message={msg.text} isUser={msg.sender === 'user'} />
             </div>
           ))}
-          
+
           {isTyping && (
             <div className="animate-in fade-in-50 slide-in-from-bottom-4">
               <TypingIndicator />
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -234,7 +291,10 @@ export function ChatAssistantContent() {
                 <div
                   key={reply}
                   className="animate-in fade-in-50 slide-in-from-left-4"
-                  style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
+                  style={{
+                    animationDelay: `${index * 100}ms`,
+                    animationFillMode: 'backwards',
+                  }}
                 >
                   <QuickReply text={reply} onSelect={handleSendMessage} />
                 </div>
@@ -242,13 +302,14 @@ export function ChatAssistantContent() {
             </div>
           </div>
         )}
-        
+
         <ChatInput onSendMessage={handleSendMessage} disabled={isTyping} />
       </div>
 
       <style jsx>{`
         @keyframes pulse-slow {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 0.5;
           }
           50% {
@@ -257,7 +318,8 @@ export function ChatAssistantContent() {
         }
 
         @keyframes bounce-subtle {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateY(0);
           }
           50% {
@@ -290,7 +352,7 @@ export function ChatAssistantContent() {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
-        
+
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }

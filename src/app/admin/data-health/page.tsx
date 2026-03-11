@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { MadeWithIlyra } from "@/components/made-with-ilyra";
-import { Sidebar } from "@/components/layout/sidebar";
-import { Header } from "@/components/layout/header";
-import { useAuth } from "@/context/AuthContext";
-import { SplashScreen } from "@/components/SplashScreen";
-import { useIsAdmin } from "@/hooks/use-is-admin";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle } from "lucide-react";
-import { DataHealthContent } from "@/components/admin/DataHealthContent";
+import { MadeWithIlyra } from '@/components/made-with-ilyra';
+import { Sidebar } from '@/components/layout/sidebar';
+import { Header } from '@/components/layout/header';
+import { useAuth } from '@/context/AuthContext';
+import { SplashScreen } from '@/components/SplashScreen';
+import { useIsAdmin } from '@/hooks/use-is-admin';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertTriangle } from 'lucide-react';
+import { DataHealthContent } from '@/components/admin/DataHealthContent';
 
 export default function AdminDataHealthPage() {
   const { session } = useAuth();

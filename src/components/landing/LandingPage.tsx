@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   BrainCircuit,
   Heart,
@@ -18,13 +18,11 @@ import {
   ChevronDown,
   Sparkles,
   LineChart,
-  Calendar,
   Moon,
   Sun,
   Menu,
   X,
   Zap,
-  Users,
   Clock,
   TrendingUp,
   Smartphone,
@@ -35,7 +33,7 @@ import {
   Eye,
   Fingerprint,
   Globe,
-} from "lucide-react";
+} from 'lucide-react';
 
 // ─── Intersection Observer Hook for Scroll Animations ────────────────────────
 
@@ -68,8 +66,8 @@ function useInView(options?: IntersectionObserverInit) {
 
 function AnimatedCounter({
   end,
-  suffix = "",
-  prefix = "",
+  suffix = '',
+  prefix = '',
   duration = 2000,
 }: {
   end: number;
@@ -111,7 +109,7 @@ function AnimatedCounter({
 
 function AnimatedSection({
   children,
-  className = "",
+  className = '',
   delay = 0,
 }: {
   children: React.ReactNode;
@@ -124,9 +122,7 @@ function AnimatedSection({
     <div
       ref={ref}
       className={`transition-all duration-700 ease-out ${
-        isInView
-          ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-8"
+        isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       } ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -140,113 +136,113 @@ function AnimatedSection({
 const features = [
   {
     icon: BrainCircuit,
-    title: "Inteligência Artificial Avançada",
+    title: 'Orquestração Local de Saúde',
     description:
-      "Algoritmos de IA de última geração analisam seus dados de saúde em tempo real, identificando padrões e gerando insights personalizados para otimizar seu bem-estar.",
-    gradient: "from-violet-500 to-purple-600",
-    span: "md:col-span-2",
+      'Motores locais cruzam métricas persistidas, sinais capturados no dispositivo e contexto astrológico sem expor dados sensíveis a processamento externo.',
+    gradient: 'from-teal-600 to-cyan-600',
+    span: 'md:col-span-2',
   },
   {
     icon: Heart,
-    title: "Score de Longevidade",
+    title: 'Score de Longevidade',
     description:
-      "Métrica exclusiva que avalia sua saúde holística combinando dados biométricos, hábitos de vida e indicadores de vitalidade em um score dinâmico.",
-    gradient: "from-rose-500 to-pink-600",
-    span: "",
+      'Pontuação calculada localmente com base em sono, HRV, atividade, glicose, hidratação e pesos configuráveis pelo painel administrativo.',
+    gradient: 'from-rose-500 to-orange-500',
+    span: '',
   },
   {
     icon: Activity,
-    title: "Monitoramento Contínuo",
+    title: 'Monitoramento Contínuo',
     description:
-      "Acompanhe seus sinais vitais, padrões de sono, variabilidade cardíaca e níveis de estresse com dashboards interativos em tempo real.",
-    gradient: "from-cyan-500 to-blue-600",
-    span: "",
+      'Acompanhe métricas persistidas no MySQL, eventos BLE em tempo real e leituras nativas quando houver ponte compatível no ambiente.',
+    gradient: 'from-cyan-500 to-teal-600',
+    span: '',
   },
   {
     icon: Watch,
-    title: "Integração com Wearables",
+    title: 'Integração com Wearables',
     description:
-      "Conecte Apple Watch, Fitbit, Garmin e outros dispositivos para uma visão unificada e completa dos seus dados de saúde.",
-    gradient: "from-emerald-500 to-teal-600",
-    span: "md:col-span-2",
+      'Conecte sensores Bluetooth compatíveis no navegador e prepare a evolução para shell nativo quando HealthKit ou Health Connect forem exigidos.',
+    gradient: 'from-emerald-500 to-teal-600',
+    span: 'md:col-span-2',
   },
   {
     icon: Target,
-    title: "Planos Personalizados",
+    title: 'Planos Personalizados',
     description:
-      "Receba protocolos de saúde e bem-estar gerados por IA, adaptados ao seu perfil biológico, objetivos pessoais e rotina diária.",
-    gradient: "from-amber-500 to-orange-600",
-    span: "",
+      'Receba protocolos gerados com base em metas, histórico persistido, estado fisiológico atual e contexto astrológico do momento.',
+    gradient: 'from-amber-500 to-orange-600',
+    span: '',
   },
   {
     icon: Star,
-    title: "Integração Astrológica",
+    title: 'Astrologia Védica Computacional',
     description:
-      "Uma abordagem única que combina astronomia computacional com dados de saúde, revelando correlações entre ciclos cósmicos e seu bem-estar.",
-    gradient: "from-indigo-500 to-violet-600",
-    span: "",
+      'A engine local calcula ayanamsha, signo sideral, nakshatra, tithi e paksha para contextualizar sono, energia e estresse de forma auditável.',
+    gradient: 'from-sky-500 to-cyan-600',
+    span: '',
   },
   {
     icon: MessageCircle,
-    title: "Assistente IA Dedicado",
+    title: 'Assistente Local Dedicado',
     description:
-      "Converse com uma IA especializada em saúde e bem-estar, disponível 24/7 para orientações, esclarecimentos e suporte na sua jornada.",
-    gradient: "from-sky-500 to-cyan-600",
-    span: "md:col-span-2",
+      'Converse com um motor local que lê perfil, metas, métricas e agenda para responder com contexto real e persistência integrada.',
+    gradient: 'from-cyan-500 to-orange-500',
+    span: 'md:col-span-2',
   },
 ];
 
 const steps = [
   {
-    number: "01",
+    number: '01',
     icon: Smartphone,
-    title: "Crie sua Conta",
+    title: 'Crie sua Conta',
     description:
-      "Registre-se e complete seu perfil de saúde com informações sobre seu estilo de vida, objetivos e histórico.",
+      'Cadastre-se com autenticação local e inicie uma sessão protegida por cookie assinado.',
   },
   {
-    number: "02",
+    number: '02',
     icon: Watch,
-    title: "Conecte seus Dispositivos",
+    title: 'Estruture seu Perfil',
     description:
-      "Integre seus wearables e dispositivos de monitoramento para que a Lyra colete dados automaticamente.",
+      'Complete dados clínicos, metas e nascimento para habilitar correlações de saúde e astrologia computacional.',
   },
   {
-    number: "03",
+    number: '03',
     icon: BrainCircuit,
-    title: "IA Analisa seus Dados",
+    title: 'Conecte sua Fonte de Dados',
     description:
-      "Nossa inteligência artificial processa seus dados, identifica padrões e gera insights exclusivos para você.",
+      'Use o fluxo BLE no navegador, a ponte nativa quando disponível ou os CRUDs de métricas para alimentar o sistema.',
   },
   {
-    number: "04",
+    number: '04',
     icon: TrendingUp,
-    title: "Evolua Continuamente",
+    title: 'Reorquestre Continuamente',
     description:
-      "Acompanhe sua evolução com dashboards detalhados, ajuste seus planos e alcance seus objetivos de longevidade.",
+      'O sistema recalcula score, plano e recomendações conforme surgem novos dados e muda o contexto astronômico.',
   },
 ];
 
 const pillars = [
   {
     icon: Leaf,
-    title: "Sabedoria Ancestral",
-    description: "Práticas milenares validadas pela ciência moderna",
+    title: 'Sabedoria Ancestral',
+    description: 'Práticas milenares validadas pela ciência moderna',
   },
   {
     icon: Zap,
-    title: "Tecnologia de Ponta",
-    description: "IA e machine learning para análises preditivas",
+    title: 'Tecnologia de Ponta',
+    description: 'IA e machine learning para análises preditivas',
   },
   {
     icon: Eye,
-    title: "Visão Holística",
-    description: "Corpo, mente e espírito integrados",
+    title: 'Visão Holística',
+    description: 'Corpo, mente e espírito integrados',
   },
   {
     icon: Fingerprint,
-    title: "Personalização Total",
-    description: "Cada recomendação é única para você",
+    title: 'Personalização Total',
+    description: 'Cada recomendação é única para você',
   },
 ];
 
@@ -267,23 +263,23 @@ export function LandingPage() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollToSection = useCallback((id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      element.scrollIntoView({ behavior: 'smooth' });
     }
     setMobileMenuOpen(false);
   }, []);
 
   const navigateToLogin = useCallback(() => {
-    router.push("/login");
+    router.push('/login');
   }, [router]);
 
-  const isDark = mounted && resolvedTheme === "dark";
+  const isDark = mounted && resolvedTheme === 'dark';
 
   // ─── Navbar ──────────────────────────────────────────────────────────────
 
@@ -291,8 +287,8 @@ export function LandingPage() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-glass dark:shadow-glass-dark"
-          : "bg-transparent"
+          ? 'bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-glass dark:shadow-glass-dark'
+          : 'bg-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -301,12 +297,12 @@ export function LandingPage() {
           <div className="flex items-center gap-2.5">
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg" />
-              <div className="relative bg-gradient-to-br from-primary to-purple-600 p-2 rounded-xl">
+              <div className="relative bg-gradient-to-br from-primary to-accent p-2 rounded-xl">
                 <BrainCircuit className="h-6 w-6 text-white" />
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600 dark:from-primary dark:to-purple-400">
+              <span className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent dark:from-primary dark:to-accent">
                 Lyra MetaCare
               </span>
               <span className="text-[10px] text-muted-foreground -mt-1 tracking-widest uppercase">
@@ -318,9 +314,9 @@ export function LandingPage() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-1">
             {[
-              { label: "Recursos", id: "features" },
-              { label: "Como Funciona", id: "how-it-works" },
-              { label: "Pilares", id: "pillars" },
+              { label: 'Recursos', id: 'features' },
+              { label: 'Como Funciona', id: 'how-it-works' },
+              { label: 'Pilares', id: 'pillars' },
             ].map((item) => (
               <button
                 key={item.id}
@@ -336,7 +332,7 @@ export function LandingPage() {
           <div className="flex items-center gap-2 sm:gap-3">
             {mounted && (
               <button
-                onClick={() => setTheme(isDark ? "light" : "dark")}
+                onClick={() => setTheme(isDark ? 'light' : 'dark')}
                 className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                 aria-label="Alternar tema"
               >
@@ -357,7 +353,7 @@ export function LandingPage() {
             </Button>
             <Button
               onClick={navigateToLogin}
-              className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white shadow-lg shadow-primary/25 text-sm"
+              className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-lg shadow-primary/25 text-sm"
             >
               Começar Agora
             </Button>
@@ -381,14 +377,14 @@ export function LandingPage() {
       {/* Mobile Menu */}
       <div
         className={`md:hidden transition-all duration-300 overflow-hidden ${
-          mobileMenuOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
+          mobileMenuOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
         <div className="px-4 pb-4 space-y-1 bg-background/95 backdrop-blur-xl border-b border-border/50">
           {[
-            { label: "Recursos", id: "features" },
-            { label: "Como Funciona", id: "how-it-works" },
-            { label: "Pilares", id: "pillars" },
+            { label: 'Recursos', id: 'features' },
+            { label: 'Como Funciona', id: 'how-it-works' },
+            { label: 'Pilares', id: 'pillars' },
           ].map((item) => (
             <button
               key={item.id}
@@ -426,8 +422,8 @@ export function LandingPage() {
         className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]"
         style={{
           backgroundImage:
-            "linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
+            'linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)',
+          backgroundSize: '64px 64px',
         }}
       />
 
@@ -448,7 +444,7 @@ export function LandingPage() {
               Seu Bem-Estar
             </span>
             <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-accent">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-cyan-500 to-accent">
               Orquestrado por IA
             </span>
           </h1>
@@ -456,14 +452,14 @@ export function LandingPage() {
 
         <AnimatedSection delay={200}>
           <p className="max-w-2xl mx-auto text-lg sm:text-xl text-muted-foreground leading-relaxed mb-10">
-            Combinamos{" "}
+            Combinamos{' '}
             <span className="text-foreground font-medium">
               sabedoria ancestral
-            </span>{" "}
-            com{" "}
+            </span>{' '}
+            com{' '}
             <span className="text-foreground font-medium">
               inteligência artificial de última geração
-            </span>{" "}
+            </span>{' '}
             para criar uma jornada personalizada de longevidade e bem-estar que
             se adapta continuamente a você.
           </p>
@@ -474,13 +470,13 @@ export function LandingPage() {
             <Button
               onClick={navigateToLogin}
               size="lg"
-              className="h-12 px-8 text-base bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white shadow-xl shadow-primary/25 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5"
+              className="h-12 px-8 text-base bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-xl shadow-primary/25 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5"
             >
               Comece sua Jornada
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button
-              onClick={() => scrollToSection("features")}
+              onClick={() => scrollToSection('features')}
               variant="outline"
               size="lg"
               className="h-12 px-8 text-base border-border/50 hover:bg-muted/50"
@@ -491,12 +487,11 @@ export function LandingPage() {
           </div>
         </AnimatedSection>
 
-        {/* Hero Visual - Abstract Dashboard Preview */}
+        {/* Hero Visual - Visão operacional dos módulos reais */}
         <AnimatedSection delay={500} className="mt-16 sm:mt-20">
           <div className="relative max-w-4xl mx-auto">
-            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-purple-500/20 to-accent/20 rounded-2xl blur-2xl opacity-60" />
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-cyan-500/20 to-accent/20 rounded-2xl blur-2xl opacity-60" />
             <div className="relative bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl overflow-hidden">
-              {/* Mock Dashboard Header */}
               <div className="flex items-center gap-2 px-6 py-4 border-b border-border/50">
                 <div className="flex gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-red-400/80" />
@@ -505,36 +500,35 @@ export function LandingPage() {
                 </div>
                 <div className="flex-1 flex justify-center">
                   <div className="px-4 py-1 rounded-lg bg-muted/50 text-xs text-muted-foreground">
-                    app.lyrametacare.com
+                    cockpit.lyra-metacare.local
                   </div>
                 </div>
               </div>
-              {/* Mock Dashboard Content */}
               <div className="p-6 sm:p-8">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
                   {[
                     {
-                      label: "Longevity Score",
-                      value: "87",
-                      color: "text-emerald-500",
+                      label: 'Banco',
+                      value: 'MySQL',
+                      color: 'text-teal-600',
                       icon: Heart,
                     },
                     {
-                      label: "Readiness",
-                      value: "92",
-                      color: "text-primary",
+                      label: 'Auth',
+                      value: 'JWT',
+                      color: 'text-primary',
                       icon: Zap,
                     },
                     {
-                      label: "Passos",
-                      value: "8.4k",
-                      color: "text-accent",
+                      label: 'IA',
+                      value: 'Local',
+                      color: 'text-accent',
                       icon: Activity,
                     },
                     {
-                      label: "Sono",
-                      value: "7h42",
-                      color: "text-violet-500",
+                      label: 'Astrologia',
+                      value: 'Védica',
+                      color: 'text-cyan-600',
                       icon: Moon,
                     },
                   ].map((metric) => (
@@ -543,72 +537,45 @@ export function LandingPage() {
                       className="bg-muted/30 rounded-xl p-4 border border-border/30"
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        <metric.icon
-                          className={`h-4 w-4 ${metric.color}`}
-                        />
+                        <metric.icon className={`h-4 w-4 ${metric.color}`} />
                         <span className="text-xs text-muted-foreground">
                           {metric.label}
                         </span>
                       </div>
-                      <span
-                        className={`text-2xl font-bold ${metric.color}`}
-                      >
+                      <span className={`text-2xl font-bold ${metric.color}`}>
                         {metric.value}
                       </span>
                     </div>
                   ))}
                 </div>
-                {/* Chart Area Placeholder */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-muted/30 rounded-xl p-4 border border-border/30 h-32 flex items-end gap-1.5 overflow-hidden">
-                    {[40, 55, 35, 65, 50, 75, 60, 80, 70, 90, 65, 85].map(
-                      (h, i) => (
-                        <div
-                          key={i}
-                          className="flex-1 bg-gradient-to-t from-primary/60 to-primary/20 rounded-t-sm transition-all duration-500"
-                          style={{
-                            height: `${h}%`,
-                            animationDelay: `${i * 100}ms`,
-                          }}
-                        />
-                      )
-                    )}
+                  <div className="bg-muted/30 rounded-xl p-4 border border-border/30 h-32 grid grid-cols-2 gap-3">
+                    {[
+                      'CRUD completo de pacientes',
+                      'Storage local para avatares',
+                      'Plano persistido em ai_plans',
+                      'Monitoramento BLE em memória',
+                    ].map((item) => (
+                      <div
+                        key={item}
+                        className="rounded-lg bg-white/60 dark:bg-slate-900/60 px-3 py-2 text-xs font-medium text-foreground text-left"
+                      >
+                        {item}
+                      </div>
+                    ))}
                   </div>
                   <div className="bg-muted/30 rounded-xl p-4 border border-border/30 h-32 flex items-center justify-center">
-                    <div className="relative w-20 h-20">
-                      <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                        <circle
-                          cx="18"
-                          cy="18"
-                          r="15.9"
-                          fill="none"
-                          stroke="hsl(var(--muted))"
-                          strokeWidth="3"
-                        />
-                        <circle
-                          cx="18"
-                          cy="18"
-                          r="15.9"
-                          fill="none"
-                          stroke="hsl(var(--primary))"
-                          strokeWidth="3"
-                          strokeDasharray="75 25"
-                          strokeLinecap="round"
-                        />
-                        <circle
-                          cx="18"
-                          cy="18"
-                          r="11"
-                          fill="none"
-                          stroke="hsl(var(--accent))"
-                          strokeWidth="3"
-                          strokeDasharray="60 40"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-xs font-bold text-foreground">87%</span>
+                    <div className="space-y-2 text-center">
+                      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                        Estado do pipeline
+                      </p>
+                      <div className="inline-flex items-center gap-2 rounded-full bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-700 dark:bg-teal-950/60 dark:text-teal-300">
+                        <CheckCircle2 className="h-4 w-4" />
+                        MySQL + Auth + Storage local
                       </div>
+                      <p className="text-xs text-muted-foreground">
+                        sem dependência de backend externo legado
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -634,26 +601,26 @@ export function LandingPage() {
           {[
             {
               value: 12,
-              suffix: "+",
-              label: "Métricas de Saúde Monitoradas",
+              suffix: '',
+              label: 'Entidades Persistidas no Schema',
               icon: LineChart,
             },
             {
-              value: 24,
-              suffix: "/7",
-              label: "Monitoramento Contínuo",
+              value: 3,
+              suffix: '',
+              label: 'Motores Locais Ativos',
               icon: Clock,
             },
             {
-              value: 6,
-              suffix: "+",
-              label: "Dispositivos Compatíveis",
+              value: 27,
+              suffix: '',
+              label: 'Nakshatras Calculadas',
               icon: Watch,
             },
             {
-              value: 100,
-              suffix: "%",
-              label: "Dados Protegidos e Criptografados",
+              value: 1,
+              suffix: '',
+              label: 'Pipeline de Auth e CRUD',
               icon: Shield,
             },
           ].map((stat, index) => (
@@ -693,7 +660,7 @@ export function LandingPage() {
           </Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-              Tecnologia que Cuida de{" "}
+              Tecnologia que Cuida de{' '}
             </span>
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
               Você
@@ -766,9 +733,9 @@ export function LandingPage() {
           </Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-              Como a Lyra{" "}
+              Como a Lyra{' '}
             </span>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
               Funciona
             </span>
           </h2>
@@ -789,7 +756,7 @@ export function LandingPage() {
 
                 <div className="relative bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 sm:p-8 text-center hover:border-primary/30 transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1">
                   {/* Step Number */}
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-purple-600 text-white text-xl font-bold mb-5 shadow-lg shadow-primary/25 group-hover:scale-110 transition-transform duration-300">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent text-white text-xl font-bold mb-5 shadow-lg shadow-primary/25 group-hover:scale-110 transition-transform duration-300">
                     <step.icon className="h-7 w-7" />
                   </div>
 
@@ -867,42 +834,42 @@ export function LandingPage() {
           {/* Right Visual */}
           <AnimatedSection delay={200}>
             <div className="relative">
-              <div className="absolute -inset-8 bg-gradient-to-r from-primary/10 via-purple-500/10 to-accent/10 rounded-3xl blur-3xl" />
+              <div className="absolute -inset-8 bg-gradient-to-r from-primary/10 via-cyan-500/10 to-accent/10 rounded-3xl blur-3xl" />
               <div className="relative grid grid-cols-2 gap-4">
                 {[
                   {
                     icon: Heart,
-                    label: "Vitalidade",
-                    value: "Excelente",
-                    color: "from-rose-500 to-pink-500",
-                    bg: "bg-rose-500/10",
+                    label: 'Persistência',
+                    value: 'MySQL',
+                    color: 'from-rose-500 to-orange-500',
+                    bg: 'bg-rose-500/10',
                   },
                   {
                     icon: Activity,
-                    label: "HRV",
-                    value: "68ms",
-                    color: "from-cyan-500 to-blue-500",
-                    bg: "bg-cyan-500/10",
+                    label: 'Motor de Score',
+                    value: 'Local',
+                    color: 'from-cyan-500 to-teal-500',
+                    bg: 'bg-cyan-500/10',
                   },
                   {
                     icon: Moon,
-                    label: "Qualidade do Sono",
-                    value: "94%",
-                    color: "from-violet-500 to-purple-500",
-                    bg: "bg-violet-500/10",
+                    label: 'Contexto Lunar',
+                    value: 'Tithi',
+                    color: 'from-sky-500 to-cyan-500',
+                    bg: 'bg-sky-500/10',
                   },
                   {
                     icon: Zap,
-                    label: "Energia",
-                    value: "Alta",
-                    color: "from-amber-500 to-orange-500",
-                    bg: "bg-amber-500/10",
+                    label: 'Plano',
+                    value: 'Persistido',
+                    color: 'from-amber-500 to-orange-500',
+                    bg: 'bg-amber-500/10',
                   },
                 ].map((card, index) => (
                   <div
                     key={card.label}
                     className={`${
-                      index % 2 === 1 ? "mt-8" : ""
+                      index % 2 === 1 ? 'mt-8' : ''
                     } bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 hover:border-primary/20 transition-all duration-500 hover:shadow-lg`}
                   >
                     <div className={`p-2.5 rounded-xl ${card.bg} w-fit mb-4`}>
@@ -944,15 +911,15 @@ export function LandingPage() {
           </Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-              Seus Dados,{" "}
+              Seus Dados,{' '}
             </span>
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-teal-500">
               Sua Privacidade
             </span>
           </h2>
           <p className="max-w-2xl mx-auto text-lg text-muted-foreground">
-            Segurança não é um recurso — é a base de tudo que construímos.
-            Seus dados de saúde são tratados com o mais alto nível de proteção.
+            Segurança não é um recurso — é a base de tudo que construímos. Seus
+            dados de saúde são tratados com o mais alto nível de proteção.
           </p>
         </AnimatedSection>
 
@@ -960,21 +927,21 @@ export function LandingPage() {
           {[
             {
               icon: Shield,
-              title: "Criptografia de Ponta a Ponta",
+              title: 'Sessão Assinada no Backend',
               description:
-                "Todos os dados são criptografados em trânsito e em repouso utilizando protocolos de segurança de nível bancário.",
+                'A autenticação usa JWT assinado e cookie HTTP-only, reduzindo exposição direta do token no cliente.',
             },
             {
               icon: Fingerprint,
-              title: "Autenticação Multifator",
+              title: 'Hash Seguro de Senhas',
               description:
-                "Login seguro com OAuth 2.0, autenticação via Google e Apple, com suporte a verificação em duas etapas.",
+                'As credenciais são armazenadas com `bcryptjs`, sem persistência de senha em texto puro em nenhuma etapa do fluxo.',
             },
             {
               icon: Eye,
-              title: "Controle Total de Acesso",
+              title: 'Controle por Papel e Escopo',
               description:
-                "Row-Level Security (RLS) garante que apenas você tenha acesso aos seus dados. Nenhum terceiro pode visualizá-los.",
+                'As rotas sensíveis validam a sessão no backend e verificam o papel do usuário antes de liberar ações administrativas ou dados críticos.',
             },
           ].map((item, index) => (
             <AnimatedSection key={item.title} delay={index * 100}>
@@ -1019,7 +986,7 @@ export function LandingPage() {
               Comece Hoje sua Jornada
             </span>
             <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-accent">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-cyan-500 to-accent">
               Rumo à Longevidade
             </span>
           </h2>
@@ -1037,7 +1004,7 @@ export function LandingPage() {
             <Button
               onClick={navigateToLogin}
               size="lg"
-              className="h-14 px-10 text-lg bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white shadow-xl shadow-primary/25 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5"
+              className="h-14 px-10 text-lg bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-xl shadow-primary/25 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5"
             >
               Criar Conta Gratuita
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -1048,9 +1015,9 @@ export function LandingPage() {
         <AnimatedSection delay={400}>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
             {[
-              "Sem cartão de crédito",
-              "Configuração em minutos",
-              "Dados protegidos",
+              'Sem cartão de crédito',
+              'Configuração em minutos',
+              'Dados protegidos',
             ].map((item) => (
               <div key={item} className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
@@ -1072,16 +1039,16 @@ export function LandingPage() {
           {/* Brand Column */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="bg-gradient-to-br from-primary to-purple-600 p-2 rounded-xl">
+              <div className="bg-gradient-to-br from-primary to-accent p-2 rounded-xl">
                 <BrainCircuit className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600 dark:from-primary dark:to-purple-400">
+              <span className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent dark:from-primary dark:to-accent">
                 Lyra MetaCare
               </span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mb-6">
-              Plataforma de saúde e bem-estar que combina sabedoria ancestral com
-              inteligência artificial para uma jornada personalizada de
+              Plataforma de saúde e bem-estar que combina sabedoria ancestral
+              com inteligência artificial para uma jornada personalizada de
               longevidade.
             </p>
             <p className="text-xs text-muted-foreground/60">
@@ -1097,12 +1064,15 @@ export function LandingPage() {
             </h4>
             <ul className="space-y-3">
               {[
-                { label: "Recursos", action: () => scrollToSection("features") },
                 {
-                  label: "Como Funciona",
-                  action: () => scrollToSection("how-it-works"),
+                  label: 'Recursos',
+                  action: () => scrollToSection('features'),
                 },
-                { label: "Pilares", action: () => scrollToSection("pillars") },
+                {
+                  label: 'Como Funciona',
+                  action: () => scrollToSection('how-it-works'),
+                },
+                { label: 'Pilares', action: () => scrollToSection('pillars') },
               ].map((link) => (
                 <li key={link.label}>
                   <button

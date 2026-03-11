@@ -1,7 +1,12 @@
-import mysql, { FieldPacket, Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import mysql, {
+  FieldPacket,
+  Pool,
+  ResultSetHeader,
+  RowDataPacket,
+} from 'mysql2/promise';
 
 declare global {
-  var __lyraMysqlPool: Pool | undefined;
+  let __lyraMysqlPool: Pool | undefined;
 }
 
 function getRequiredEnv(name: string): string {
@@ -22,7 +27,7 @@ function createLyraPool(): Pool {
     connectionLimit: 10,
     namedPlaceholders: false,
     decimalNumbers: true,
-    dateStrings: true
+    dateStrings: true,
   });
 }
 

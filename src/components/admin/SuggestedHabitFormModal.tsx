@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import * as React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import {
   Dialog,
   DialogContent,
@@ -11,8 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -21,10 +21,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Loader2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 // Tipos
 export interface SuggestedHabit {
@@ -36,8 +36,8 @@ export interface SuggestedHabit {
 
 // Schema
 const formSchema = z.object({
-  name: z.string().min(3, "O nome do hábito é obrigatório."),
-  frequency: z.string().min(3, "A frequência é obrigatória."),
+  name: z.string().min(3, 'O nome do hábito é obrigatório.'),
+  frequency: z.string().min(3, 'A frequência é obrigatória.'),
   is_active: z.boolean(),
 });
 
@@ -60,14 +60,14 @@ export function SuggestedHabitFormModal({
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name: "", frequency: "", is_active: true },
+    defaultValues: { name: '', frequency: '', is_active: true },
   });
 
   React.useEffect(() => {
     if (habitToEdit) {
       form.reset(habitToEdit);
     } else {
-      form.reset({ name: "", frequency: "", is_active: true });
+      form.reset({ name: '', frequency: '', is_active: true });
     }
   }, [habitToEdit, open, form]);
 
@@ -81,20 +81,27 @@ export function SuggestedHabitFormModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{habitToEdit ? "Editar Hábito" : "Adicionar Novo Hábito Sugerido"}</DialogTitle>
+          <DialogTitle>
+            {habitToEdit ? 'Editar Hábito' : 'Adicionar Novo Hábito Sugerido'}
+          </DialogTitle>
           <DialogDescription>
             Este hábito aparecerá como uma sugestão para novos usuários.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nome do Hábito</FormLabel>
-                  <FormControl><Input placeholder="Ex: Ler 15 minutos" {...field} /></FormControl>
+                  <FormControl>
+                    <Input placeholder="Ex: Ler 15 minutos" {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -105,7 +112,9 @@ export function SuggestedHabitFormModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Frequência</FormLabel>
-                  <FormControl><Input placeholder="Ex: Diário" {...field} /></FormControl>
+                  <FormControl>
+                    <Input placeholder="Ex: Diário" {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -131,11 +140,18 @@ export function SuggestedHabitFormModal({
               )}
             />
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Salvar
               </Button>
             </DialogFooter>

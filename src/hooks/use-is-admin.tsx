@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from '@/context/AuthContext';
 
 /**
  * Hook para verificar se o usuário atual possui a role de administrador.
@@ -9,6 +9,6 @@ import { useAuth } from "@/context/AuthContext";
  */
 export function useIsAdmin() {
   const { userRole } = useAuth();
-  
+
   return userRole === 'admin';
 }

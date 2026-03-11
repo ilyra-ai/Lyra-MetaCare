@@ -18,7 +18,10 @@ export async function GET(
     return new NextResponse(file);
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Arquivo não encontrado.' },
+      {
+        error:
+          error instanceof Error ? error.message : 'Arquivo não encontrado.',
+      },
       { status: 404 }
     );
   }

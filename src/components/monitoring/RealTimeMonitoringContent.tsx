@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/mysql/client';
 import { toast } from 'sonner';
 import { HeartPulse, Zap, Wind, Thermometer, Mic, Bell } from 'lucide-react';
 import { RealTimeMetricCard } from './RealTimeMetricCard';
@@ -14,7 +14,7 @@ const showPushAlert = (metric: string, value: number, threshold: number) => {
   if ('vibrate' in navigator) {
     navigator.vibrate(200); // Vibra por 200ms
   }
-  toast.warning("Alerta de Métrica", {
+  toast.warning('Alerta de Métrica', {
     description: `${metric} atingiu ${value}, que está acima do seu limite de ${threshold}.`,
   });
 };
@@ -30,8 +30,8 @@ export function RealTimeMonitoringContent() {
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   useEffect(() => {
-    // Recebe dados sincronizados em tempo real via Supabase (ex: de uma Edge Function processando Apple Health/Health Connect ou Wearable local)
-    const channel = supabase
+    // Recebe eventos sincronizados em tempo real a partir do canal local de monitoramento.
+    const channel = db
       .channel('realtime-wearable')
       .on('broadcast', { event: 'new_data' }, (payload) => {
         const newData = payload.payload as {
@@ -47,15 +47,13 @@ export function RealTimeMonitoringContent() {
 
         // Lógica de Alerta
         if (newData.heartRate && newData.heartRate > 120) {
-          showPushAlert("Frequência Cardíaca", newData.heartRate, 120);
+          showPushAlert('Frequência Cardíaca', newData.heartRate, 120);
         }
       })
       .subscribe();
 
-
-
     return () => {
-      supabase.removeChannel(channel);
+      db.removeChannel(channel);
     };
   }, []);
 
@@ -69,7 +67,7 @@ export function RealTimeMonitoringContent() {
       utterance.onend = () => setIsSpeaking(false);
       window.speechSynthesis.speak(utterance);
     } else {
-      toast.error("Seu navegador não suporta atualizações por voz.");
+      toast.error('Seu navegador não suporta atualizações por voz.');
     }
   };
 
@@ -119,7 +117,14 @@ export function RealTimeMonitoringContent() {
           <Mic className="mr-2 h-4 w-4" />
           {isSpeaking ? 'Falando...' : 'Atualização por Voz'}
         </Button>
-        <Button variant="outline" onClick={() => toast.info("Alertas locais habilitados para frequência cardíaca acima do limiar.")}>
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast.info(
+              'Alertas locais habilitados para frequência cardíaca acima do limiar.'
+            )
+          }
+        >
           <Bell className="mr-2 h-4 w-4" />
           Status dos Alertas
         </Button>
