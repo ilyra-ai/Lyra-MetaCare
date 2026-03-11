@@ -11,6 +11,8 @@ export default {
   theme: {
   	extend: {
   		colors: {
+            'lyra-teal': '#14B8A6',
+            'warm-coral': '#F43F5E',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
