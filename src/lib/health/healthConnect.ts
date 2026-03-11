@@ -42,13 +42,11 @@ export async function fetchRealTimeVitals(): Promise<HealthDataMetrics> {
                 return metrics;
             }
         } catch (error) {
-            console.error("[Lyra MetaCare] Falha na bridge nativa de saúde:", error);
             throw new Error("Falha estrutural ao tentar ler HealthKit/Health Connect: " + (error as Error).message);
         }
     }
 
     if ((navigator as any).bluetooth) {
-         console.warn("[Lyra MetaCare] Ambiente web isolado. Requerendo conexão GATT (BLE) para sensores de saúde externos.");
          throw new Error("A coleta em background via Web Bluetooth é bloqueada pelo navegador. Conecte o dispositivo manualmente na interface do Wearable ou encapsule o app via Capacitor para permissões Health Connect nativas.");
     }
 
