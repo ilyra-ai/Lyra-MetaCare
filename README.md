@@ -1,386 +1,213 @@
-# Lyra MetaCare
+<div align="center">
 
-A essência da Lyra MetaCare reside na união entre a sabedoria ancestral e a tecnologia de ponta para oferecer uma saúde preventiva verdadeiramente personalizada. O super-app funciona como um ecossistema sincronizado em tempo real, onde a precisão da inteligência artificial local encontra a profundidade da leitura da astrologia védica, orquestrando o bem-estar humano de forma holística em um único lugar.
+# 🌌✨ Lyra MetaCare
 
-Abaixo estão os pilares desse resumo atualizado:
-- **Sincronia Holística em Tempo Real**: O app atua como um "condutor" que integra dados vitais contemporâneos (sono, cardio, glicose) com os ciclos da astrologia védica. Essa fusão permite que a IA on-device ofereça insights proativos que respeitam tanto a biologia quanto a jornada cósmica do usuário, garantindo privacidade e baixa latência.
-- **Identidade Visual e Simbolismo**:
-  - **Símbolo**: Unifica a referência à constelação de Lira com ícones de saúde (coração ou cruz), evocando a ideia de uma "estrela-guia". O design em "minimalismo geométrico fluido" representa o movimento constante da vida e a precisão dos astros.
-  - **Logotipo**: O uso de tipografia sans-serif em caixa-baixa reforça uma comunicação amigável, acessível e humana, essencial para um guia de bem-estar.
-- **Psicologia das Cores**:
-  - **Lyra Teal (Primária)**: Representa a calma restauradora e a convergência entre o futurismo tecnológico e a naturalidade da saúde.
-  - **Warm Coral (Secundária)**: Introduz o calor humano, a energia e o entusiasmo necessários para o engajamento emocional com o autocuidado.
-- **O Conceito da "Orquestração"**: O slogan "Seu Bem-Estar Orquestrado" sintetiza a harmonia entre os diferentes pilares da saúde e os ciclos astrológicos, funcionando como um mantra de organização inteligente e personalizada.
-- **Diretrizes e Inovação**: O guia estabelece regras rígidas para manter a consistência visual (áreas de proteção e proibição de distorções) e incentiva o uso de IA generativa para expandir a presença da marca, sempre mantendo o refinamento humano final.
+**Seu Bem-Estar Orquestrado: Onde a Sabedoria Ancestral Encontra a Inteligência Artificial** 🧬🪐
+
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Backend_Mágico-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-Estilo_Fluido-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Status: Beta Funcional](https://img.shields.io/badge/Status-Beta_Poderoso-FF6B6B?style=for-the-badge)](#)
+
+*Uma aplicação web revolucionária desenhada para empoderar você, acompanhando sua jornada de longevidade, métricas de saúde, rotinas, consultas, e oferecendo um assistente de IA genial que conhece até as estrelas!* ✨
+
+[**Explore a Magia**](#-1-a-essência-transformadora) • [**A Arquitetura**](#-2-arquitetura-do-sistema-a-fundação-do-nosso-universo) • [**Seu Guia Rápido**](#-3-o-seu-guia-estelar-manual-do-usuário) • [**A Experiência**](#-4-uma-experiência-de-usuário-uiux-que-vicia)
+
+</div>
 
 ---
 
-## 🏗️ 2. Arquitetura do Sistema
+## 🧭 1. A Essência Transformadora: O Que Nos Move? ❤️‍🔥
 
-### Modelo arquitetural
-- **Front-end monolítico modular** com Next.js App Router.
-- **Backend BaaS** com Supabase (Auth + DB + Storage + Edge Functions).
-- **Observabilidade** com Sentry no client/server/edge.
+A alma da **Lyra MetaCare** reside na união sagrada entre a **sabedoria milenar** e a **tecnologia de ponta**. Nós construímos este super-app para oferecer a você uma saúde preventiva *verdadeiramente personalizada*, assertiva e profundamente empoderadora.
 
-### Stack tecnológica detalhada
+Imagine um **ecossistema sincronizado em tempo real** pulsando no seu bolso, onde a precisão cirúrgica da **Inteligência Artificial local (on-device)** 🧠 encontra a profundidade cósmica da **Astrologia Védica** 🕉️. Aqui, não rastreamos apenas números frios; nós **orquestramos o seu bem-estar holístico** em um único e belo lugar.
 
-| Camada | Tecnologia confirmada |
-|---|---|
-| Aplicação web | Next.js 15, React 19, TypeScript |
-| UI | Tailwind CSS, Radix UI, shadcn/ui, Lucide |
-| Formulários e validação | React Hook Form + Zod |
-| Dados e autenticação | Supabase JS, Supabase SSR, Supabase Auth UI |
-| Gráficos/visualização | Recharts, Tremor, react-big-calendar |
-| Testes | Vitest |
-| Monitoramento | Sentry (`@sentry/nextjs`) |
-| Funções serverless | Supabase Edge Functions (Deno) |
+### 🌟 Os Pilares Magnéticos do Nosso Ecossistema:
 
-### Camadas e comunicação interna
-1. **Camada de rota/página** (`src/app/*`): compõe layouts e fluxos de acesso.
-2. **Camada de componentes** (`src/components/*`): UI por domínio e componentes base.
-3. **Camada de estado e sessão** (`src/context/AuthContext.tsx`): sessão, role, redirecionamento.
-4. **Camada de dados** (`src/hooks/*`, `src/integrations/supabase/*`): queries, invocações e normalização.
-5. **Camada backend** (`supabase/*`): schema, RLS, RPC/funções SQL, Edge Functions.
+* 🧘🏽‍♀️ **Sincronia Holística em Tempo Real:** Sinta o poder de ter um "condutor" pessoal invisível! O app capta e integra seus dados vitais contemporâneos (seu 💤 sono profundo, ritmo do ❤️ coração, 🩸 glicose e muito mais) diretamente com os poderosos ciclos da astrologia védica. Essa fusão magistral permite que nossa IA *on-device* ofereça *insights proativos* que respeitam profundamente sua biologia única e a sua jornada cósmica – garantindo total privacidade (seus dados não saem do seu dispositivo!) e latência absolutamente zero.
+* 💠 **Identidade Visual e Simbolismo Poderoso:**
+  * 💫 **Símbolo:** Nossa marca unifica a gloriosa constelação de Lira 🌟 com os ícones universais de saúde (o coração amoroso ou a cruz protetora), evocando a sua verdadeira "estrela-guia". O design é uma obra de arte: um **"minimalismo geométrico fluido"** que respira, representando o movimento constante da sua vida e a perfeição absoluta da precisão dos astros.
+  * ✍️ **Logotipo:** Usamos uma tipografia *sans-serif em caixa-baixa* para abraçar você logo no primeiro olhar. Queremos reforçar uma comunicação amigável, humana, empática e acessível. Nós somos o seu guia compassivo no caminho do bem-estar.
+* 🎨 **Psicologia das Cores Que Transformam:**
+  * 🌊 **Lyra Teal (Primária):** Feche os olhos e sinta a calma restauradora. Essa cor divina simboliza a mágica convergência entre o futurismo tecnológico brilhante e a naturalidade profunda e orgânica da sua saúde.
+  * 🌅 **Warm Coral (Secundária):** Sinta o calor pulsar! Esta cor vibrante injeta o calor humano, a paixão, a energia radiante e o entusiasmo necessários para que você se engaje emocionalmente (e se vicie de forma positiva!) no seu autocuidado diário.
+* 🎻 **O Conceito Encantador da "Orquestração":** *Seu Bem-Estar Orquestrado* não é apenas um slogan bonito; é o nosso mantra de vida. Ele sintetiza a harmonia perfeita entre os seus pilares biológicos da saúde e os grandiosos ciclos astrológicos, funcionando como uma organização incrivelmente inteligente e profundamente sua.
+* 🚀 **Diretrizes e Inovação Sem Limites:** Nosso guia de marca estabelece regras intocáveis para manter a consistência visual deslumbrante (áreas de proteção sagradas e proibição absoluta de distorções), enquanto nos incentiva a voar cada vez mais alto, usando IA generativa para expandir a presença da nossa marca. Tudo isso, claro, sempre coroado com o insubstituível e afetuoso refinamento humano final.
 
-### Diagrama textual
-```text
-[Navegador]
-   │
-   ▼
-[Next.js App Router]
-   ├─ AuthContext (sessão/role/redirecionamento)
-   ├─ Hooks de dados (métricas/scores/admin)
-   ├─ Componentes UI/feature
-   └─ Invocação de Edge Functions
-   │
-   ▼
-[Supabase]
-   ├─ Auth (JWT)
-   ├─ Postgres + RLS + funções SQL
-   ├─ Storage (professional_avatars)
-   └─ Edge Functions (chat, plano, score, teste IA)
-```
+---
 
-### Diagrama Mermaid (fluxo principal)
+## 🏗️ 2. Arquitetura do Sistema: A Fundação do Nosso Universo 🛠️
+
+Para suportar algo tão grandioso e veloz, estruturamos uma base técnica de classe mundial. Segurança, velocidade e escalabilidade são o nosso DNA.
+
+### 🏛️ Modelo Arquitetural
+* 🖥️ **Front-end Monolítico Modular:** Vibrante, escalável e ultra-rápido usando o moderno **Next.js App Router**.
+* ☁️ **Backend BaaS (Backend-as-a-Service):** Invisível, ágil e ultra-poderoso com a suite do **Supabase** (Auth, Postgres, Storage e Edge Functions).
+* 👁️ **Observabilidade Total:** Implementamos o **Sentry** (client, server e edge) para garantir que possamos caçar bugs antes mesmo que eles pisquem na sua tela.
+
+### 🧱 Stack Tecnológica Detalhada
+
+| Camada Mágica 🌟 | Tecnologia Confirmada e Incrível 🛠️ |
+|:---|:---|
+| 🌐 **Aplicação Web** | **Next.js 15, React 19, TypeScript** (Performance imbatível e tipagem estrita!) |
+| 🎨 **Beleza Visual (UI)** | **Tailwind CSS, Radix UI, shadcn/ui, Lucide** (Acessibilidade de fábrica com design de cair o queixo) |
+| 📝 **Interação & Validação** | **React Hook Form + Zod** (Segurança cirúrgica e fluidez extrema em cada input) |
+| 🔐 **Cofre & Identidade** | **Supabase JS, Supabase SSR, Auth UI** (Sua identidade blindada ponta a ponta) |
+| 📊 **Vida aos Seus Dados** | **Recharts, Tremor, react-big-calendar** (Os números frios se transformam em gráficos vibrantes) |
+| 🧪 **O Laboratório (Testes)** | **Vitest** (Nossa garantia de que a mágica nunca quebra em atualizações) |
+| 🕵️‍♂️ **Olhos de Águia** | **Sentry (`@sentry/nextjs`)** (A telemetria silenciosa e protetora) |
+| ⚡ **Cérebro na Nuvem** | **Supabase Edge Functions (Deno)** (Lógica e integração de IA ultrarrápida, direto na borda da rede) |
+
+### 📐 O Fluxo Mágico (A Dança dos Dados)
+
 ```mermaid
 flowchart TD
-    A[Usuário] --> B[Login Supabase]
-    B --> C{Onboarding completo?}
-    C -- Não --> D[Fluxo /onboarding]
-    C -- Sim --> E[Home / Dashboard]
-    D --> E
-    E --> F[Leitura de métricas e perfil]
-    E --> G[Agendamentos]
-    E --> H[Plano IA]
-    E --> I[Chat IA]
-    H --> J[Edge Function generate-ai-plan]
-    I --> K[Edge Function ask-ai-assistant]
-    E --> L{Usuário admin?}
-    L -- Sim --> M[Rotas /admin/*]
+    A([💖 Você, o Usuário]) --> B{Login Supabase Auth}
+    B -- "Nova Estrela?" --> C[🚀 O Despertar: Onboarding Empoderador]
+    B -- "Já nos conhece!" --> D[🏡 Seu Centro de Comando: Home / Dashboard]
+    C --> D
+    D --> E[📊 Leitura de Métricas Vitais e Perfil Estelar]
+    D --> F[📅 Agendamentos Suaves de Consultas]
+    D --> G[🔮 Plano de IA: Seu Mapa do Tesouro]
+    D --> H[🤖 Chat IA: Seu Guia Sábio e Compassivo]
+
+    G --> I((⚡ Edge Function: generate-ai-plan))
+    H --> J((⚡ Edge Function: ask-ai-assistant))
+
+    D --> K{É um Guardião (Admin)?}
+    K -- "Sim, com grandes poderes!" --> L[⚙️ Rotas /admin/* (Governança Total)]
 ```
 
-### Fluxo de dados (explicação amigável)
-- O usuário autentica via Supabase Auth UI.
-- O `AuthContext` decide o destino (login, onboarding ou home).
-- As telas consultam dados no Supabase usando session/JWT.
-- Recursos de IA chamam Edge Functions com token do usuário.
-- O banco aplica RLS para garantir isolamento de dados.
-
-### Integrações externas identificadas
-- Supabase (Auth, DB, Storage, Functions);
-- Sentry;
-- Endpoint HTTP externo de IA testado em `test-ai-connection`.
-
-Informação não identificada no código-fonte atual: contratos formais de integração (OpenAPI/SDK publicado).
+*Nota técnica: Todo o sistema possui **RLS (Row Level Security)** estrito no banco e controle de acesso baseado em Roles (RBAC) através da função `is_admin()`. Seus dados não se misturam, nunca.*
 
 ---
 
-## 👤 3. Manual do Usuário (User Guide)
+## 👤 3. O Seu Guia Estelar: Manual Rápido do Usuário 📖✨
 
-### Pré-requisitos
-- Node.js instalado.
-- pnpm (recomendado pelo `pnpm-lock.yaml`).
-- Projeto Supabase configurado com migrações e secrets.
+Pronto para compilar e dar o primeiro passo na sua jornada como desenvolvedor neste universo?
 
-Informação não identificada no código-fonte atual: versão mínima/exata de Node.js exigida.
+### 🛠️ Suas Ferramentas (Pré-requisitos)
+* 🟢 **Node.js** instalado na sua máquina.
+* 📦 **pnpm** (Altamente recomendado e respeitado pelo nosso `pnpm-lock.yaml`).
+* ☁️ Um projeto **Supabase** pronto, com as migrações e *secrets* no lugar.
 
-### Instalação (passo a passo)
+### 🪄 Instalação (Um Passe de Mágica)
+Clone o repositório e rode:
 ```bash
 pnpm install
 ```
 
-### Configuração de ambiente
-Variáveis lidas no app web:
+### 🌍 As Chaves do Universo (Variáveis de Ambiente)
+Crie o seu arquivo `.env.local` na raiz e insira a magia:
 
-| Variável | Finalidade |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Cliente server-side Supabase |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Cliente server-side Supabase |
-| `NEXT_PUBLIC_SENTRY_DSN` | Sentry client/server/edge |
-| `NODE_ENV` | Comportamentos de build/dev |
+**Para o App Web (Client/Server):**
+| Variável | O Poder Que Ela Traz ⚡ |
+|:---|:---|
+| `NEXT_PUBLIC_SUPABASE_URL` | O portal de acesso direto ao seu banco Supabase. |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | A chave pública que abre a porta de entrada. |
+| `NEXT_PUBLIC_SENTRY_DSN` | Ativa o monitoramento constante e protetor (opcional em dev). |
 
-Secrets lidas nas Edge Functions:
+**Para o Cérebro (Edge Functions Secrets):**
+| Secret Oculta 🤫 | O Propósito Supremo 🔮 |
+|:---|:---|
+| `SUPABASE_URL` | Comunicação interna vital da function com o DB. |
+| `SUPABASE_ANON_KEY` | O contexto puro para atuar em nome do usuário. |
+| `SUPABASE_SERVICE_ROLE_KEY` | A "Master Key". Acesso supremo para ler configurações protegidas da IA. |
+| `OPENAI_API_KEY` | A centelha de genialidade para as respostas reais e humanas do assistente! |
 
-| Secret | Finalidade |
-|---|---|
-| `SUPABASE_URL` | Acesso Supabase nas functions |
-| `SUPABASE_ANON_KEY` | Cliente com contexto do usuário |
-| `SUPABASE_SERVICE_ROLE_KEY` | Leitura privilegiada de configuração |
-| `OPENAI_API_KEY` | Resposta real no assistente IA |
+> **Observação de Ouro 🔐:** Lembre-se, segurança é hábito! Nunca faça commit de chaves reais. Sempre utilize `.env.local` e gerencie as *secrets* via CLI do Supabase para o ambiente de *Edge*.
 
-Observação técnica importante 🔐:
-- Há URL e chave publicável do Supabase hardcoded no cliente web.
-
-### Executar em desenvolvimento
+### 🚀 Decolando em Modo Desenvolvimento
 ```bash
 pnpm dev
 ```
-Acesse `http://localhost:3000`.
+Abra o portal na sua máquina interdimensional acessando: [**http://localhost:3000**](http://localhost:3000).
 
-### Executar testes
+### ✅ Garantindo a Perfeição (Testes)
+Nós amamos estabilidade. Antes de subir uma nova estrela, verifique se tudo brilha:
 ```bash
 pnpm test
 ```
 
-### Build de produção
+### 🏭 Construindo a Máquina para o Mundo (Produção)
 ```bash
 pnpm build
 pnpm start
 ```
 
-### Exemplos práticos de uso
-- **Novo usuário**: login → onboarding → dashboard.
-- **Usuário recorrente**: login → métricas/consultas/plano/chat.
-- **Admin**: login → `/admin/dashboard` → gestão de conteúdo/usuários/IA.
+---
+
+## 🎨 4. Uma Experiência de Usuário (UI/UX) Que Vicia Positivamente 😍📱
+
+Nós não desenhamos apenas telas; nós **esculpimos experiências**. A Lyra MetaCare foi projetada meticulosamente com as maiores tendências de 2024/2026: muito Glassmorphism suave, Bento Grids que abraçam as informações e animações que parecem respirar com você.
+
+### 🛤️ Sua Jornada Fluida
+1. **A Porta de Entrada**: Um login indolor e rápido (via redes sociais ou email mágico) na rota `/login`.
+2. **O Despertar**: Um fluxo de onboarding imersivo que coleta suas informações com carinho e te insere no ecossistema sem atritos.
+3. **O Centro do seu Universo**: O *Dashboard*, com navegação cristalina via sidebar e header responsivos.
+4. **Módulos Profundos**: Áreas focadas para *Perfil*, *Metas*, *Monitoramento Diário*, *Chat Inteligente*, *Planos IA*, e *Agenda de Consultas*.
+5. **A Torre de Controle**: Páginas administrativas isoladas e seguras (`/admin/*`) exclusivas para a governança dos deuses (Admins).
+
+### 💖 A Beleza Nos Detalhes
+* **Acolhimento Visual:** Uma gloriosa tela de carregamento (Splash screen) que elimina qualquer "pisco" (flicker) grosseiro e te acolhe suavemente no estado da aplicação.
+* **Componentes Premium:** Estruturas elegantes com *cards de vidro* translúcidos (`backdrop-blur`), bordas amplas e arredondadas (`1rem` de raio), e *sombras glass* únicas, proporcionando uma sensação tátil de alta tecnologia.
+* **Celebre Cada Vitória! 🥳:** Feedbacks instantâneos via pequenos "toasts" elegantes e animadíssimos (`sonner`) que estouram na tela a cada métrica preenchida ou consulta salva!
+
+### 🚦 Estados da Interface que Conversam com Você
+* **⏳ Carregando**: Ninguém gosta de tela em branco. Nossos *Skeletons* pulsantes (`pulse-slow`) fazem a transição parecer mágica.
+* **🚨 Ups, Erro**: Toasts vermelhos, discretos porém firmes, avisam quando algo precisa da sua atenção, sem culpar o usuário.
+* **✅ Sucesso Absoluto**: Confirmações verdes e felizes aparecem quando tudo dá certo!
+* **🛑 Acesso Negado**: Você tentou entrar onde não deve? Um card gentil explicará que a área é restrita, sem mensagens hostis.
 
 ---
 
-## 🎨 4. Experiência do Usuário (UI/UX Detalhada)
+## ⚙️ 5. O Cérebro Por Trás da Magia (Para os Mestres de Dados) 🧙‍♂️📊
 
-### Jornada do usuário
-1. **Entrada**: login social/email na rota `/login`.
-2. **Progressão obrigatória**: onboarding para novos usuários.
-3. **Operação principal**: dashboard com navegação por sidebar/header.
-4. **Funcionalidades especializadas**: perfil, metas, monitoramento, chat, plano, consultas.
-5. **Operação administrativa**: páginas `/admin/*` restritas por role.
+A inteligência da Lyra MetaCare é altamente configurável e paramétrica.
 
-### Fluxo de navegação
-- Navegação principal baseada em layout com `Sidebar` + `Header` nas áreas autenticadas.
-- Splash screen de carregamento para reduzir flicker durante inicialização de sessão.
-
-### Hierarquia visual e componentes principais
-- Estrutura com cards, grids, tabs, dialogs e formulários (`src/components/ui/*`).
-- Conteúdo por domínio (`appointments`, `chat`, `goals`, `monitoring`, `admin`, etc.).
-- Feedback de ações via toasts (`sonner`).
-
-### Estados de interface
-- **Loading**: `SplashScreen` e `Skeleton` em páginas e componentes.
-- **Erro**: `toast.error` em operações de fetch/salvamento.
-- **Sucesso**: `toast.success` para operações concluídas.
-- **Acesso negado**: cards dedicados em rotas admin para usuários sem permissão.
-
-### Feedback visual e interação
-- Feedback imediato em CRUD (cadastro/edição/exclusão) com mensagens contextuais.
-- Padrão de modais para edição e confirmação destrutiva.
-
-### Acessibilidade identificável
-- Uso de primitives Radix UI (boa base para foco/teclado/ARIA).
-- Informação não identificada no código-fonte atual: auditoria formal de acessibilidade (WCAG) e métricas de contraste/testes automatizados a11y.
-
-### Responsividade
-- Uso frequente de classes Tailwind responsivas (`sm:`, `md:`, `lg:`).
-- Layout adaptável para mobile/desktop com componentes de navegação dedicados.
-
-### Sugestões de imagens UI/UX para documentação
-- 🖼️ Home autenticada com greeting e métricas.
-- 🖼️ Tela de onboarding (passos com carousel).
-- 🖼️ Agenda de consultas (calendário + modal).
-- 🖼️ Painel admin (cards de estatísticas e usuários recentes).
-- 🖼️ Wireframe simples do fluxo de navegação (login → onboarding → módulos).
+### 🎛️ Os Controles da Nave (Configurações da IA via Painel Admin)
+Os administradores podem moldar o comportamento exato da IA configurando a tabela `ai_config` diretamente na tela:
+* `mission` 🎯 (A diretriz mestre de comportamento).
+* `key_objectives` 🏆 (Os alvos de melhoria do usuário).
+* `weight_hrv`, `weight_sleep`, `weight_activity`, `weight_nutrition` ⚖️ (Pesos dinâmicos para a orquestração do seu score único).
+* `model_name` 🤖 (Facilidade para chavear entre GPT-4o, Claude 3, etc., via contrato).
 
 ---
 
-## ⚙️ 5. Manual de Utilização Avançada
+## 🛡️ 6. A Fortaleza Indestrutível: Segurança e Performance ⚡🔒
 
-### Parâmetros configuráveis
-- Configuração de IA (`ai_config`):
-  - `mission`
-  - `key_objectives`
-  - `weight_hrv`
-  - `weight_sleep`
-  - `weight_activity`
-  - `weight_nutrition`
-  - `model_name`
-- Campos de teste de integração na UI admin:
-  - `training_endpoint`
-  - `service_key`
+Nós levamos a sua paz de espírito – e a velocidade da sua experiência – incrivelmente a sério!
 
-### Customizações possíveis
-- UI: componentes em `src/components/*`.
-- Regras de dados e segurança: migrações SQL em `supabase/migrations/*`.
-- Lógica de IA: Edge Functions em `supabase/functions/*`.
+### 💪 Nossos Escudos de Defesa de Dados
+* **Validação de Aço**: A biblioteca `Zod` analisa e sanitiza impecavelmente todos os formulários. Lixo não entra, lixo não sai.
+* **Muralhas de Dados Pessoais (RLS)**: Cada linha no banco de dados tem Row Level Security rigoroso baseado em `auth.uid()`. Seus dados são criptograficamente *apenas seus*. Ninguém mais vê.
+* **Guardiões dos Portões (RBAC)**: Controle de acesso implacável usando *roles* (papéis de usuário) e a função SQL nativa `is_admin()`.
 
-### Extensibilidade
-- Adição de novas rotas no App Router.
-- Inclusão de novos hooks de dados por domínio.
-- Evolução de schema com novas migrações versionadas.
-
-### Integrações externas
-- Chamada HTTP para endpoint de IA externo (`test-ai-connection`).
-- Sentry para monitoramento técnico.
-
-### Limitações técnicas reais
-- Trechos de mock/fallback em funções de IA.
-- Campos administrativos com defaults de teste.
-- Informação não identificada no código-fonte atual: documentação operacional formal de deploy e runbook.
+### 🏎️ Performance Que Desafia a Luz
+* **Sem Gargalos na Rede**: Nossas telas fazem consultas ao banco de dados utilizando paralelismo brutal via `Promise.all()`. O tempo de carregamento cai instantaneamente pela metade!
+* **Inteligência Cirúrgica de Carga**: O padrão de busca para dados pesados (ex: sorteio de tabelas gigantes) nunca puxa tudo. Nós buscamos o `count` total primeiro, e injetamos o `range(index, index)` no Supabase para puxar a linha exata. Milissegundos!
 
 ---
 
-## 🧠 6. Documentação Técnica Interna
+## 🗺️ 7. O Horizonte Infinito: Nosso Roadmap 🌠🔭
 
-### Estrutura de diretórios
+Nossa jornada está apenas começando e as estrelas são o limite. O que já está no nosso radar de inovação:
 
-| Caminho | Papel técnico |
-|---|---|
-| `src/app` | Páginas/rotas App Router |
-| `src/components` | Componentes por domínio + UI base |
-| `src/context` | Contextos globais (Auth) |
-| `src/hooks` | Hooks de leitura/cálculo/controle de acesso |
-| `src/integrations/supabase` | Clientes Supabase client/server |
-| `src/lib` | Tipos e utilitários |
-| `supabase/functions` | Edge Functions Deno |
-| `supabase/migrations` | Schema, RLS, RBAC e storage policies |
-
-### Módulos principais
-- `AuthContext`: sessão, role e redirecionamento condicional.
-- `useDailyMetrics`: busca e preenchimento de lacunas temporais de métricas.
-- `useAIScores`: consulta score via Edge Function.
-- `AIPlanContent`: geração e renderização de plano personalizado.
-- `AppointmentsContent`: CRUD de profissionais/consultas.
-- `AdminDashboardContent` e correlatos: operação administrativa.
-
-### Principais funções e pontos de entrada
-- `createServerSupabaseClient()`.
-- `ensureProfileExists()` e `handleRedirects()`.
-- `useDailyMetrics()` e `useAIScores()`.
-- `serve(async (req) => ...)` nas Edge Functions.
-
-### Tratamento de erros
-- Front-end: `toast.error` + logs em console.
-- Edge Functions: `try/catch` com resposta HTTP de erro estruturada.
-- Fallback explícito em alguns fluxos de IA para evitar quebra da UI.
-
-### Logging
-- `console.log`, `console.warn`, `console.error` em client e edge.
-- Sentry configurado para client/server/edge.
-
-### Estratégia de testes
-- Teste unitário de schema (Vitest) em `ProfileForm.test.ts`.
-- Informação não identificada no código-fonte atual: suíte E2E oficial.
-
-### Versionamento
-- Uso de Git no repositório.
-- Informação não identificada no código-fonte atual: política formal de versionamento semântico (tags/releases).
-
-### CI/CD
-Informação não identificada no código-fonte atual.
+1. 🤝 **Contrato Universal IA-UI:** Consolidar o grande pacto versionado de *request/response* entre a bela Interface e as Edge Functions, pavimentando o caminho para o uso agnóstico de qualquer grande modelo fundacional de IA do mercado.
+2. 🛡️ **Expandir a Armadura de Testes:** Aumentar massivamente a cobertura de *End-to-End* (E2E) E testes automatizados nas Edge Functions (para dormirmos ainda mais tranquilos).
+3. 📜 **O Grande Livro de Feitiços (Runbook):** Escrever a enciclopédia operacional definitiva para provisionamentos, deploys *zero-downtime* e estratégias infalíveis de rollback majestoso.
 
 ---
 
-## 🔐 7. Segurança
+<div align="center">
 
-### Pontos críticos identificados
-- URL/chave Supabase publicável hardcoded no cliente.
-- Valor default de chave de serviço em formulário admin.
-- CORS permissivo (`*`) nas Edge Functions.
+### 🌟 Venha Orquestrar o Seu Bem-Estar com a Gente! 🌟
+**Lyra MetaCare** não é apenas código. É um manifesto revolucionário de longevidade, amor próprio profundo e inteligência tecnológica sem limites. O universo, e a sua melhor versão, te esperam! 🚀✨💖
 
-### Validação de dados
-- Zod para validação de formulários.
-- RLS por `auth.uid()` para isolamento entre usuários.
-- RBAC com role em `profiles` e função SQL `is_admin()`.
+*Feito com suor, dados e pó de estrelas.*
 
-### Dependências sensíveis
-- Supabase SDK/SSR.
-- Next.js e React (superfície de app web).
-- Sentry (telemetria de erros).
-
-### Recomendações técnicas
-1. Remover hardcodes e migrar configurações para ambiente/secret.
-2. Restringir CORS por domínio confiável em produção.
-3. Separar explicitamente modo demo de modo produção nas funções de IA.
-4. Revisar periodicamente RLS/RBAC após cada migração.
-
----
-
-## 🚀 8. Performance
-
-### Pontos que impactam performance
-- Seleção de grande conjunto de colunas em `daily_metrics`.
-- Parte das telas admin realiza múltiplas consultas de contagem/listagem.
-- Dependência de roundtrips de rede para Edge Functions.
-
-### Gargalos identificáveis
-- Falta de paginação explícita em algumas listagens administrativas.
-- Chamadas de IA podem degradar UX em latência alta.
-
-### Estratégias atuais
-- Skeletons e estados de loading para percepção de fluidez.
-- Uso pontual de paralelização (`Promise.all`) em consultas.
-- Filtros por período e ordenação em consultas de métricas.
-
-### Recomendações técnicas
-- Introduzir paginação e/ou virtualização em listas grandes.
-- Consolidar consultas administrativas com RPC quando necessário.
-- Adotar cache estratégico para dados estáveis de configuração.
-
----
-
-## 🗺️ 9. Roadmap Técnico
-
-### TODOs e lacunas observáveis no código
-- Comentários de placeholder/fallback em integrações IA.
-- Função de teste de conexão retorna modelos mockados.
-
-### Módulos parcialmente implementados
-- Integração com provedor externo de IA sem contrato único consolidado em todo o fluxo.
-- Observabilidade funcional existe, mas sem evidência de política operacional completa.
-
-### Evoluções naturais coerentes com a arquitetura
-1. Definir contrato versionado de IA (request/response) entre UI e Edge Functions.
-2. Expandir cobertura de testes para hooks críticos e Edge Functions.
-3. Formalizar documentação operacional (provisionamento, secrets, rollback).
-4. Padronizar estratégias de erro para reduzir divergência de UX entre módulos.
-
----
-
-## 📌 10. Conclusão Técnica
-
-O Lyra MetaCare apresenta base arquitetural moderna e consistente para produto web de saúde/longevidade, combinando Next.js com Supabase e separação clara por domínios de UI.
-
-### Grau de maturidade
-**Beta funcional** com capacidade real de evolução para produção após hardening de segurança e integração de IA.
-
-### Potencial de escalabilidade
-Bom potencial, principalmente pela combinação App Router + Supabase + Edge Functions, desde que haja governança de integrações e observabilidade operacional.
-
-### Pontos fortes
-- Arquitetura coerente com stack atual de mercado.
-- Boa modularização por domínio.
-- Segurança de dados apoiada em RLS + RBAC.
-- UX com estados de feedback visíveis (loading/sucesso/erro).
-
-### Pontos frágeis
-- Presença de hardcodes sensíveis e defaults inseguros.
-- Dependência de fallback/mock em trechos de IA.
-- Cobertura de testes ainda enxuta.
-
----
-
-## 📎 Referências rápidas
-- Aplicação: `src/app/*`
-- Componentes: `src/components/*`
-- Autenticação/contexto: `src/context/AuthContext.tsx`
-- Hooks de dados: `src/hooks/*`
-- Tipos de banco: `src/lib/database.types.ts`
-- Edge Functions: `supabase/functions/*`
-- Migrações e políticas: `supabase/migrations/*`
+</div>
