@@ -14,9 +14,18 @@
 
 *Uma aplicação web revolucionária desenhada para empoderar você, acompanhando sua jornada de longevidade, métricas de saúde, rotinas, consultas, e oferecendo um assistente de IA genial que conhece até as estrelas!* ✨
 
-[**Explore a Magia**](#-1-a-essência-transformadora) • [**A Arquitetura**](#-2-arquitetura-do-sistema-a-fundação-do-nosso-universo) • [**Seu Guia Rápido**](#-3-o-seu-guia-estelar-manual-do-usuário) • [**A Experiência**](#-4-uma-experiência-de-usuário-uiux-que-vicia)
+[**Explore a Magia**](#-1-a-essência-transformadora) • [**Visão UI/UX**](#-preview-da-interface-a-estética-2026) • [**A Arquitetura**](#-2-arquitetura-do-sistema-a-fundação-do-nosso-universo) • [**Seu Guia Rápido**](#-3-o-seu-guia-estelar-manual-do-usuário)
 
 </div>
+
+---
+
+## 🖼️ Preview da Interface: A Estética 2026
+
+Para que você possa sentir o poder do nosso design de ponta antes mesmo de rodar o projeto completo, nós codificamos uma **Visão UI/UX de Alta Fidelidade (Standalone)**. Ela simula o nosso *Bento Grid*, o majestoso *Glassmorphism* avançado e a harmonia das cores **Lyra Teal** e **Warm Coral**.
+
+👉 **[Clique aqui para visualizar o Protótipo HTML UI (Dashboard)](public/assets/lyra-ui-preview.html)**
+*(Basta baixar/clonar e abrir o arquivo `.html` direto no seu navegador Chrome/Safari para interagir com o layout deslumbrante!)*
 
 ---
 
