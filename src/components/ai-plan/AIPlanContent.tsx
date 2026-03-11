@@ -163,7 +163,7 @@ export function AIPlanContent() {
             // Disparar o modelo de Machine Learning no Worker (não bloqueante)
             if (worker.current) {
                 worker.current.postMessage({
-                    prompt: \`Gere um conselho curto de saúde considerando HRV de \${currentMetrics.hrv_ms || 50} e fase lunar \${astroData.moonSign}.\`
+                    prompt: `Gere um conselho curto de saúde considerando HRV de ${currentMetrics.hrv_ms || 50} e fase lunar ${astroData.moonSign}.`
                 });
             }
 
