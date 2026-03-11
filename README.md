@@ -1,7 +1,3 @@
-# Se houver divergência entre discurso e código, a referência válida é o código implementado e testado. Este `README` foi reescrito para refletir somente o que o repositório atual comprova ou o que ele ainda não consegue comprovar de forma auditável.
-
-<div align="center">
-
 # 🌌✨ Lyra MetaCare
 
 **Seu Bem-Estar Orquestrado: Onde a Sabedoria Ancestral Encontra a Inteligência Artificial** 🧬🪐
