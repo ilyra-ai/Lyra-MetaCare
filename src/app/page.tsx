@@ -10,6 +10,7 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { Dashboard } from "@/components/dashboard/dashboard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { QuickScanFAB } from "@/components/dashboard/QuickScanFAB";
+import { LandingPage } from "@/components/landing/LandingPage";
 
 // Define a type for the user profile for better type safety
 type UserProfile = {
@@ -54,16 +55,21 @@ export default function Home() {
     }
   }, [session, supabase]);
 
+  // If there is no session, show the landing page directly
+  if (!session) {
+    // While still loading the initial auth state, show splash
+    if (session === undefined || !isMinimumTimeElapsed) {
+      return <SplashScreen />;
+    }
+    return <LandingPage />;
+  }
+
+  // Authenticated flow
   const isLoading =
-    session === undefined || !isMinimumTimeElapsed || (session && profileLoading);
+    session === undefined || !isMinimumTimeElapsed || profileLoading;
 
   if (isLoading) {
     return <SplashScreen />;
-  }
-
-  if (!session) {
-    // AuthContext handles redirect, return null to avoid flicker
-    return null;
   }
 
   const firstName = profile?.first_name || "Usuário";
