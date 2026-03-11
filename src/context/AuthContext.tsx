@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const handleRedirects = async (currentSession: Session | null) => {
     if (!currentSession) {
       setUserRole(null);
-      if (window.location.pathname !== "/login") {
+      if (window.location.pathname !== "/login" && window.location.pathname !== "/") {
         router.push("/login");
       }
       return;
@@ -103,7 +103,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (session) {
         handleRedirects(session);
       } else {
-        if (window.location.pathname !== "/login") {
+        if (window.location.pathname !== "/login" && window.location.pathname !== "/") {
           router.push("/login");
         }
       }
