@@ -11,10 +11,26 @@ import { supabase } from '@/integrations/supabase/client';
 
 type ConnectionStatus = "idle" | "connecting" | "connected" | "error";
 
+function calculateRmssd(rrIntervalsMs: number[]) {
+  if (rrIntervalsMs.length < 2) {
+    return null;
+  }
+
+  const successiveDiffSquares = [];
+  for (let index = 1; index < rrIntervalsMs.length; index += 1) {
+    const diff = rrIntervalsMs[index] - rrIntervalsMs[index - 1];
+    successiveDiffSquares.push(diff * diff);
+  }
+
+  const meanSquare = successiveDiffSquares.reduce((sum, value) => sum + value, 0) / successiveDiffSquares.length;
+  return Number(Math.sqrt(meanSquare).toFixed(1));
+}
+
 export function WearableConnection() {
   const [status, setStatus] = useState<ConnectionStatus>("idle");
   const [deviceName, setDeviceName] = useState<string | null>(null);
   const deviceRef = useRef<any>(null); // For Web Bluetooth device
+  const rrHistoryRef = useRef<number[]>([]);
 
   useEffect(() => {
     return () => {
@@ -31,17 +47,31 @@ export function WearableConnection() {
     // Format: Flags (1 byte), Heart Rate (1 or 2 bytes depending on flags)
     const flags = value.getUint8(0);
     const rate16Bits = flags & 0x1;
+    const rrPresent = Boolean(flags & 0x10);
     const heartRate = rate16Bits ? value.getUint16(1, true) : value.getUint8(1);
+    let cursor = rate16Bits ? 3 : 2;
+
+    if (rrPresent) {
+      while (cursor + 1 < value.byteLength) {
+        const rrValue = value.getUint16(cursor, true);
+        const rrMs = Number(((rrValue / 1024) * 1000).toFixed(2));
+        rrHistoryRef.current.push(rrMs);
+        cursor += 2;
+      }
+      rrHistoryRef.current = rrHistoryRef.current.slice(-20);
+    }
+
+    const hrv = calculateRmssd(rrHistoryRef.current);
 
     // Send real data to Supabase channel so RealTimeMonitoringContent can show it
     supabase.channel('realtime-wearable').send({
       type: 'broadcast',
       event: 'new_data',
       payload: {
-        heartRate: heartRate,
-        hrv: Math.floor(Math.random() * (60 - 30 + 1)) + 30, // HRV mock as usually calculated later
-        respiratoryRate: 16,
-        temperature: 36.8,
+        heartRate,
+        hrv,
+        respiratoryRate: null,
+        temperature: null,
       },
     });
   };

@@ -15,11 +15,8 @@ interface UseAIScoresResult {
   refresh: () => void;
 }
 
-// URL da Edge Function (Substitua gmrxhgcuwtghjskikfug pelo seu Project ID)
-const EDGE_FUNCTION_URL = "https://gmrxhgcuwtghjskikfug.supabase.co/functions/v1/calculate-longevity-score";
-
 export function useAIScores(): UseAIScoresResult {
-  const { session } = useAuth();
+  const { session, supabase } = useAuth();
   const [scores, setScores] = useState<AIScores | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -32,30 +29,22 @@ export function useAIScores(): UseAIScoresResult {
     setLoading(true);
     
     try {
-      const response = await fetch(EDGE_FUNCTION_URL, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await supabase.functions.invoke<AIScores>('calculate-longevity-score');
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Erro HTTP: ${response.status}`);
+      if (response.error || !response.data) {
+        throw new Error(response.error?.message || "Falha no cálculo local.");
       }
 
-      const data: AIScores = await response.json();
-      setScores(data);
+      setScores(response.data);
 
     } catch (error) {
       console.error("Error fetching AI scores:", error);
       toast.error("Erro ao calcular scores de IA.", { description: (error as Error).message });
-      setScores({ longevityScore: 5.0, readinessScore: 50 }); // Fallback
+      setScores(null);
     } finally {
       setLoading(false);
     }
-  }, [session]);
+  }, [session, supabase]);
 
   useEffect(() => {
     fetchScores();

@@ -4,478 +4,327 @@ import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Zap, Settings, Scale, ScrollText, Loader2, Search, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
-import { 
-    Form, 
-    FormControl, 
-    FormDescription, 
-    FormField, 
-    FormItem, 
-    FormLabel, 
-    FormMessage 
-} from "@/components/ui/form";
-import { Separator } from "@/components/ui/separator";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Loader2, RefreshCw, Settings, Zap } from "lucide-react";
+
 import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
 
-// URL da Edge Function de Teste
-const TEST_FUNCTION_URL = "https://gmrxhgcuwtghjskikfug.supabase.co/functions/v1/test-ai-connection";
-
-// Mock Logs for demonstration
-const mockLogs = [
-    { timestamp: "2024-07-25 10:30:01", level: "INFO", message: "Score calculation started for user: 12345..." },
-    { timestamp: "2024-07-25 10:30:05", level: "SUCCESS", message: "External AI API call successful. Longevity Score: 7.8" },
-    { timestamp: "2024-07-25 09:15:40", level: "WARNING", message: "Missing HRV data for user: 67890. Using default weight." },
-    { timestamp: "2024-07-24 18:00:12", level: "ERROR", message: "Database connection failed during metric fetch." },
-];
-
-// --- Zod Schema for AI Configuration ---
 const aiConfigSchema = z.object({
-    mission: z.string().min(10, "A missão deve ter pelo menos 10 caracteres."),
-    key_objectives: z.string().min(10, "Os objetivos devem ser detalhados."),
-    
-    // Ponderação de Métricas (Weights)
-    weight_hrv: z.coerce.number().min(0).max(100),
-    weight_sleep: z.coerce.number().min(0).max(100),
-    weight_activity: z.coerce.number().min(0).max(100),
-    weight_nutrition: z.coerce.number().min(0).max(100),
-    
-    // Integração (Campos de teste - Não salvos no DB)
-    training_endpoint: z.string().url("Deve ser uma URL válida.").optional().or(z.literal('')),
-    service_key: z.string().optional(),
-    model_name: z.string().min(1, "Selecione um modelo de IA.").optional(),
+  mission: z.string().min(20, "Descreva a missão com mais profundidade."),
+  key_objectives: z.string().min(20, "Detalhe melhor os objetivos principais."),
+  weight_hrv: z.coerce.number().min(0).max(100),
+  weight_sleep: z.coerce.number().min(0).max(100),
+  weight_activity: z.coerce.number().min(0).max(100),
+  weight_nutrition: z.coerce.number().min(0).max(100),
+  model_name: z.string().min(1, "Selecione um motor local."),
 });
 
 type AIConfigValues = z.infer<typeof aiConfigSchema>;
 
 export function AIConfigForm() {
-    const { supabase } = useAuth();
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
-    const [isFetchingModels, setIsFetchingModels] = React.useState(false);
-    const [isLoadingConfig, setIsLoadingConfig] = React.useState(true);
-    const [configId, setConfigId] = React.useState<string | null>(null);
-    const [availableModels, setAvailableModels] = React.useState<{ id: string, label: string }[]>([]); 
-    
-    const form = useForm<AIConfigValues>({
-        resolver: zodResolver(aiConfigSchema),
-        defaultValues: {
-            mission: "",
-            key_objectives: "",
-            weight_hrv: 30,
-            weight_sleep: 30,
-            weight_activity: 25,
-            weight_nutrition: 15,
-            training_endpoint: "https://api.external-ai.com/v1",
-            service_key: "",
-            model_name: "",
-        },
-    });
+  const { supabase } = useAuth();
+  const [configId, setConfigId] = React.useState<string | null>(null);
+  const [availableModels, setAvailableModels] = React.useState<Array<{ id: string; label: string }>>([]);
+  const [isLoadingConfig, setIsLoadingConfig] = React.useState(true);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isLoadingModels, setIsLoadingModels] = React.useState(false);
 
-    // --- Data Fetching ---
-    const fetchConfig = React.useCallback(async () => {
-        setIsLoadingConfig(true);
-        const { data, error } = await supabase
-            .from("ai_config")
-            .select("*")
-            .limit(1)
-            .single();
+  const form = useForm<AIConfigValues>({
+    resolver: zodResolver(aiConfigSchema),
+    defaultValues: {
+      mission: "",
+      key_objectives: "",
+      weight_hrv: 30,
+      weight_sleep: 30,
+      weight_activity: 25,
+      weight_nutrition: 15,
+      model_name: "",
+    },
+  });
 
-        if (error) {
-            console.error("Error fetching AI config:", error);
-            toast.error("Erro ao carregar configurações de IA.");
-        } else if (data) {
-            setConfigId(data.id);
-            form.reset({
-                mission: data.mission,
-                key_objectives: data.key_objectives,
-                weight_hrv: data.weight_hrv,
-                weight_sleep: data.weight_sleep,
-                weight_activity: data.weight_activity,
-                weight_nutrition: data.weight_nutrition,
-                model_name: data.model_name || "",
-                // Mantendo valores de teste no defaultValues, pois não são persistidos
-                training_endpoint: "https://api.external-ai.com/v1",
-                service_key: "",
-            });
-            if (data.model_name) {
-                // Simula que o modelo salvo está disponível
-                setAvailableModels([{ id: data.model_name, label: data.model_name }]);
-            }
-        }
-        setIsLoadingConfig(false);
-    }, [supabase, form]);
+  const loadConfig = React.useCallback(async () => {
+    setIsLoadingConfig(true);
+    const { data, error } = await supabase
+      .from("ai_config")
+      .select("*")
+      .limit(1)
+      .single();
 
-    React.useEffect(() => {
-        fetchConfig();
-    }, [fetchConfig]);
-
-
-    // --- Connection Test (Real Edge Function Call) ---
-    const handleFetchModels = async () => {
-        const isValid = await form.trigger(["training_endpoint", "service_key"]);
-        
-        if (!isValid) {
-            toast.error("Por favor, preencha o Endpoint e a Chave de Serviço com URLs e chaves válidas.");
-            return;
-        }
-        
-        const endpoint = form.getValues("training_endpoint");
-        const key = form.getValues("service_key");
-
-        if (!endpoint || !key) {
-             toast.error("Endpoint e Chave de Serviço são obrigatórios para o teste.");
-             return;
-        }
-
-        setIsFetchingModels(true);
-        setAvailableModels([]);
-        form.setValue("model_name", "");
-
-        try {
-            // 2. Chamar a Edge Function de teste (Chamada de rede real)
-            const response = await fetch(TEST_FUNCTION_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ endpoint, key })
-            });
-
-            const result = await response.json();
-
-            if (response.ok && result.success) {
-                setAvailableModels(result.models);
-                form.setValue("model_name", result.models[0]?.id || "");
-                toast.success(`Conexão bem-sucedida! ${result.models.length} modelos disponíveis carregados.`);
-            } else {
-                // Tratar falha de conexão ou autenticação
-                toast.error("Falha no Teste de Conexão.", {
-                    description: result.error || "Erro desconhecido ao tentar listar modelos.",
-                });
-            }
-
-        } catch (error) {
-            console.error("Network Error during AI test:", error);
-            toast.error("Erro de Rede.", {
-                description: "Não foi possível alcançar a Edge Function de teste.",
-            });
-        } finally {
-            setIsFetchingModels(false);
-        }
-    };
-
-    // --- Submission (Real DB Update) ---
-    const onSubmit = async (data: AIConfigValues) => {
-        if (!configId) {
-            toast.error("Erro: ID de configuração não encontrado. Tente recarregar a página.");
-            return;
-        }
-        
-        setIsSubmitting(true);
-        
-        // 1. Preparar dados para salvar (excluindo campos de teste)
-        const { training_endpoint, service_key, ...dataToSave } = data;
-
-        // 2. Salvar no Supabase (UPDATE)
-        const { error } = await supabase
-            .from("ai_config")
-            .update({
-                ...dataToSave,
-                updated_at: new Date().toISOString(),
-            })
-            .eq("id", configId);
-
-        setIsSubmitting(false);
-
-        if (error) {
-            toast.error("Ocorreu um erro ao salvar as configurações.", {
-                description: error.message,
-            });
-        } else {
-            toast.success("Configuração Salva e Modelo Selecionado!", {
-                description: `O modelo ${data.model_name} foi configurado com sucesso.`,
-            });
-            // Nota: A chave de serviço (service_key) deve ser salva manualmente nas Secrets do Supabase.
-        }
-    };
-
-    if (isLoadingConfig) {
-        return (
-            <div className="space-y-6">
-                <Skeleton className="h-32 w-full" />
-                <Skeleton className="h-48 w-full" />
-                <Skeleton className="h-48 w-full" />
-            </div>
-        );
+    if (error || !data) {
+      toast.error("Erro ao carregar configuração local de IA.", {
+        description: error?.message || "Registro de configuração não encontrado.",
+      });
+      setIsLoadingConfig(false);
+      return;
     }
 
+    setConfigId(String((data as { id: string }).id));
+    form.reset({
+      mission: String((data as { mission: string }).mission),
+      key_objectives: String((data as { key_objectives: string }).key_objectives),
+      weight_hrv: Number((data as { weight_hrv: number }).weight_hrv),
+      weight_sleep: Number((data as { weight_sleep: number }).weight_sleep),
+      weight_activity: Number((data as { weight_activity: number }).weight_activity),
+      weight_nutrition: Number((data as { weight_nutrition: number }).weight_nutrition),
+      model_name: String((data as { model_name: string | null }).model_name ?? ""),
+    });
+
+    if ((data as { model_name: string | null }).model_name) {
+      setAvailableModels([
+        {
+          id: String((data as { model_name: string | null }).model_name),
+          label: String((data as { model_name: string | null }).model_name),
+        },
+      ]);
+    }
+
+    setIsLoadingConfig(false);
+  }, [form, supabase]);
+
+  React.useEffect(() => {
+    loadConfig();
+  }, [loadConfig]);
+
+  const loadLocalModels = async () => {
+    setIsLoadingModels(true);
+    const { data, error } = await supabase.functions.invoke<{
+      success: boolean;
+      models: Array<{ id: string; label: string }>;
+      error?: string;
+    }>("test-ai-connection");
+    setIsLoadingModels(false);
+
+    if (error || !data?.success) {
+      toast.error("Falha ao consultar catálogo local.", {
+        description: error?.message || data?.error || "Motores locais indisponíveis.",
+      });
+      return;
+    }
+
+    setAvailableModels(data.models);
+    if (data.models[0]) {
+      form.setValue("model_name", data.models[0].id, { shouldValidate: true });
+    }
+    toast.success("Motores locais carregados.");
+  };
+
+  const onSubmit = async (values: AIConfigValues) => {
+    if (!configId) {
+      toast.error("Configuração principal não encontrada.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    const { error } = await supabase
+      .from("ai_config")
+      .update({
+        ...values,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", configId);
+    setIsSubmitting(false);
+
+    if (error) {
+      toast.error("Falha ao salvar configuração local.", { description: error.message });
+      return;
+    }
+
+    toast.success("Configuração local atualizada com sucesso.");
+  };
+
+  if (isLoadingConfig) {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {/* Coluna 1 & 2: Formulário de Configuração */}
-            <Card className="lg:col-span-2">
-                <CardHeader>
-                    <CardTitle className="text-2xl flex items-center">
-                        <Zap className="h-6 w-6 mr-2 text-green-600" />
-                        Configuração do Modelo de IA
-                    </CardTitle>
-                    <CardDescription>
-                        Defina a missão, objetivos e a ponderação das métricas para o cálculo do Índice de Longevidade.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            
-                            {/* Premissas Centrais */}
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-semibold border-b pb-2 flex items-center text-primary">
-                                    <Settings className="h-4 w-4 mr-2 text-muted-foreground" />
-                                    Premissas Centrais
-                                </h3>
-                                
-                                <FormField
-                                    control={form.control}
-                                    name="mission"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Missão do App</FormLabel>
-                                            <FormControl>
-                                                <Textarea rows={3} {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="key_objectives"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Objetivos de Longevidade (Valores Chave)</FormLabel>
-                                            <FormControl>
-                                                <Textarea rows={4} {...field} />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Liste os fatores biológicos que a IA deve priorizar (ex: Aumentar HRV, Otimizar Sono Profundo).
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-
-                            <Separator />
-
-                            {/* Ponderação de Métricas */}
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-semibold border-b pb-2 flex items-center text-primary">
-                                    <Scale className="h-4 w-4 mr-2 text-muted-foreground" />
-                                    Ponderação do Score (0-100)
-                                </h3>
-                                <p className="text-sm text-muted-foreground">Ajuste a importância relativa de cada pilar no cálculo do Índice de Longevidade.</p>
-                                
-                                <div className="grid grid-cols-2 gap-4">
-                                    <FormField
-                                        control={form.control}
-                                        name="weight_hrv"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>HRV & Recuperação</FormLabel>
-                                                <FormControl>
-                                                    <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="weight_sleep"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Sono Profundo & REM</FormLabel>
-                                                <FormControl>
-                                                    <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="weight_activity"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Atividade & Fitness</FormLabel>
-                                                <FormControl>
-                                                    <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="weight_nutrition"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Nutrição & Hidratação</FormLabel>
-                                                <FormControl>
-                                                    <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            </div>
-
-                            <Separator />
-
-                            {/* Integração */}
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-semibold border-b pb-2 flex items-center text-primary">
-                                    <UploadCloud className="h-4 w-4 mr-2 text-muted-foreground" />
-                                    Teste de Conexão e Seleção de Modelo
-                                </h3>
-                                
-                                <FormField
-                                    control={form.control}
-                                    name="training_endpoint"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Endpoint da API de Treinamento (Teste)</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="https://api.external-ai.com/v1" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                
-                                <FormField
-                                    control={form.control}
-                                    name="service_key"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Chave de Serviço (Teste)</FormLabel>
-                                            <FormControl>
-                                                <Input type="password" placeholder="********************" {...field} />
-                                            </FormControl>
-                                            <FormDescription className="text-red-500 dark:text-red-400">
-                                                ⚠️ **AVISO DE SEGURANÇA:** Use esta seção apenas para testar a conexão. A chave real deve ser configurada nas Secrets do Supabase.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <div className="flex items-end space-x-4">
-                                    <Button 
-                                        type="button" 
-                                        onClick={handleFetchModels} 
-                                        disabled={isFetchingModels}
-                                        variant="secondary"
-                                        className="flex-shrink-0"
-                                    >
-                                        {isFetchingModels ? (
-                                            <>
-                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                                Testando...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Search className="h-4 w-4 mr-2" />
-                                                Testar Conexão
-                                            </>
-                                        )}
-                                    </Button>
-                                    
-                                    <FormField
-                                        control={form.control}
-                                        name="model_name"
-                                        render={({ field }) => (
-                                            <FormItem className="flex-1">
-                                                <FormLabel>Modelo de IA Selecionado</FormLabel>
-                                                <Select
-                                                    onValueChange={field.onChange}
-                                                    value={field.value}
-                                                    disabled={availableModels.length === 0}
-                                                >
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder={availableModels.length === 0 ? "Nenhum modelo carregado" : "Selecione um modelo..."} />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {availableModels.map((model) => (
-                                                            <SelectItem key={model.id} value={model.id}>
-                                                                {model.label}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            </div>
-
-                            <Button type="submit" disabled={isSubmitting} className="w-full">
-                                {isSubmitting ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Salvando Configurações...
-                                    </>
-                                ) : (
-                                    "Salvar Configurações e Selecionar Modelo"
-                                )}
-                            </Button>
-                        </form>
-                    </Form>
-                </CardContent>
-            </Card>
-
-            {/* Coluna 3: Logs da Edge Function */}
-            <Card className="lg:col-span-1">
-                <CardHeader className="pb-2">
-                    <CardTitle className="text-xl flex items-center">
-                        <ScrollText className="h-5 w-5 mr-2 text-blue-600" />
-                        Logs Recentes (Edge Function)
-                    </CardTitle>
-                    <CardDescription>
-                        Monitoramento das chamadas de cálculo de score.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3 max-h-[600px] overflow-y-auto">
-                    {mockLogs.map((log, index) => (
-                        <div key={index} className="text-xs p-2 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                            <div className="flex justify-between font-mono">
-                                <span className="text-muted-foreground">{log.timestamp.split(' ')[1]}</span>
-                                <span className={log.level === 'ERROR' ? 'text-red-500 font-bold' : log.level === 'SUCCESS' ? 'text-green-500' : 'text-blue-500'}>
-                                    [{log.level}]
-                                </span>
-                            </div>
-                            <p className="mt-1 break-words">{log.message}</p>
-                        </div>
-                    ))}
-                </CardContent>
-            </Card>
-        </div>
+      <div className="space-y-6">
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
     );
+  }
+
+  return (
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-2xl">
+            <Zap className="h-6 w-6 text-teal-600" />
+            Configuração do Motor Local
+          </CardTitle>
+          <CardDescription>
+            Ajuste a missão, os pesos de biomarcadores e o motor de orquestração utilizado pelo backend MySQL.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="mission"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Missão clínica-operacional</FormLabel>
+                    <FormControl>
+                      <Textarea rows={4} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="key_objectives"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Objetivos-chave</FormLabel>
+                    <FormControl>
+                      <Textarea rows={4} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="weight_hrv"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Peso HRV</FormLabel>
+                      <FormControl>
+                        <Input type="number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="weight_sleep"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Peso Sono</FormLabel>
+                      <FormControl>
+                        <Input type="number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="weight_activity"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Peso Atividade</FormLabel>
+                      <FormControl>
+                        <Input type="number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="weight_nutrition"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Peso Nutrição</FormLabel>
+                      <FormControl>
+                        <Input type="number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="model_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Motor local ativo</FormLabel>
+                    <div className="flex gap-3">
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione um motor local..." />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {availableModels.map((model) => (
+                            <SelectItem key={model.id} value={model.id}>
+                              {model.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button type="button" variant="outline" onClick={loadLocalModels} disabled={isLoadingModels}>
+                        {isLoadingModels ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                          <RefreshCw className="mr-2 h-4 w-4" />
+                        )}
+                        Atualizar Catálogo
+                      </Button>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" disabled={isSubmitting} className="bg-teal-700 hover:bg-teal-800">
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Settings className="mr-2 h-4 w-4" />}
+                Salvar Configuração
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Estado Operacional</CardTitle>
+          <CardDescription>
+            O backend agora usa motor local, persistência MySQL e APIs internas do Next.js.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4 text-sm">
+          <div className="rounded-xl border p-4">
+            <p className="font-semibold">Processamento de score</p>
+            <p className="text-muted-foreground">Executado internamente via cálculo local sobre métricas persistidas.</p>
+          </div>
+          <div className="rounded-xl border p-4">
+            <p className="font-semibold">Geração de plano</p>
+            <p className="text-muted-foreground">Plano estruturado, persistido em MySQL e sem dependência de Edge Function externa.</p>
+          </div>
+          <div className="rounded-xl border p-4">
+            <p className="font-semibold">Assistente</p>
+            <p className="text-muted-foreground">Respostas contextuais locais com leitura de perfil, métricas e astrologia atual.</p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

@@ -21,10 +21,11 @@ const showPushAlert = (metric: string, value: number, threshold: number) => {
 
 export function RealTimeMonitoringContent() {
   const [liveData, setLiveData] = useState({
-    heartRate: 75,
-    hrv: 45,
-    respiratoryRate: 16,
-    temperature: 36.8,
+    heartRate: null as number | null,
+    hrv: null as number | null,
+    respiratoryRate: null as number | null,
+    temperature: null as number | null,
+    lastUpdatedAt: null as string | null,
   });
   const [isSpeaking, setIsSpeaking] = useState(false);
 
@@ -33,11 +34,19 @@ export function RealTimeMonitoringContent() {
     const channel = supabase
       .channel('realtime-wearable')
       .on('broadcast', { event: 'new_data' }, (payload) => {
-        const newData = payload.payload;
-        setLiveData(newData);
+        const newData = payload.payload as {
+          heartRate: number | null;
+          hrv: number | null;
+          respiratoryRate: number | null;
+          temperature: number | null;
+        };
+        setLiveData({
+          ...newData,
+          lastUpdatedAt: new Date().toISOString(),
+        });
 
         // Lógica de Alerta
-        if (newData.heartRate > 120) {
+        if (newData.heartRate && newData.heartRate > 120) {
           showPushAlert("Frequência Cardíaca", newData.heartRate, 120);
         }
       })
@@ -54,7 +63,7 @@ export function RealTimeMonitoringContent() {
     if ('speechSynthesis' in window) {
       setIsSpeaking(true);
       const utterance = new SpeechSynthesisUtterance(
-        `Atualização de métricas: Frequência cardíaca em ${liveData.heartRate} batimentos por minuto. HRV em ${liveData.hrv}.`
+        `Atualização de métricas: Frequência cardíaca em ${liveData.heartRate ?? 'indisponível'} batimentos por minuto. HRV em ${liveData.hrv ?? 'indisponível'}.`
       );
       utterance.lang = 'pt-BR';
       utterance.onend = () => setIsSpeaking(false);
@@ -71,25 +80,25 @@ export function RealTimeMonitoringContent() {
         <RealTimeMetricCard
           icon={HeartPulse}
           label="Batimentos"
-          value={liveData.heartRate}
+          value={liveData.heartRate ?? 0}
           unit="BPM"
         />
         <RealTimeMetricCard
           icon={Zap}
           label="HRV"
-          value={liveData.hrv}
+          value={liveData.hrv ?? 0}
           unit="ms"
         />
         <RealTimeMetricCard
           icon={Wind}
           label="Respiração"
-          value={liveData.respiratoryRate}
+          value={liveData.respiratoryRate ?? 0}
           unit="RPM"
         />
         <RealTimeMetricCard
           icon={Thermometer}
           label="Temperatura"
-          value={liveData.temperature}
+          value={liveData.temperature ?? 0}
           unit="°C"
         />
       </div>
@@ -97,7 +106,7 @@ export function RealTimeMonitoringContent() {
       {/* Gráfico e Mapa */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
         <div className="lg:col-span-2">
-          <LiveHeartRateChart initialData={liveData.heartRate} />
+          <LiveHeartRateChart initialData={liveData.heartRate ?? 0} />
         </div>
         <div className="lg:col-span-1">
           <MapPlaceholder />
@@ -110,9 +119,9 @@ export function RealTimeMonitoringContent() {
           <Mic className="mr-2 h-4 w-4" />
           {isSpeaking ? 'Falando...' : 'Atualização por Voz'}
         </Button>
-        <Button variant="outline" onClick={() => toast.info("Configurações de Alertas (Em Breve)")}>
+        <Button variant="outline" onClick={() => toast.info("Alertas locais habilitados para frequência cardíaca acima do limiar.")}>
           <Bell className="mr-2 h-4 w-4" />
-          Configurar Alertas
+          Status dos Alertas
         </Button>
       </div>
     </div>

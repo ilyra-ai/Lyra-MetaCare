@@ -97,11 +97,11 @@ export function AIPlanContent() {
         }
 
         if (syncError) {
-             toast.warning("Iniciando IA Remota sob Aviso", { description: "Nem todos os sensores biomédicos puderam ser lidos no seu dispositivo. A predição usará o trânsito astrológico real e dados disponíveis."});
+             toast.warning("Sincronização parcial", { description: "Nem todos os sensores biomédicos puderam ser lidos no seu dispositivo. O motor local usará apenas dados comprovadamente disponíveis."});
         }
 
         setIsGenerating(true);
-        toast.info("Delegação Autorizada: Transmitindo telemetria completa para o Modelo LLM Fronteira via Supabase Edge Function.");
+        toast.info("Processando plano localmente com motor determinístico e persistência MySQL.");
 
         try {
             // Buscando metas do paciente do banco local
@@ -115,7 +115,7 @@ export function AIPlanContent() {
             // A responsabilidade de gerar os outputs textuais é puramente da IA na Nuvem.
             const payload = {
                 metrics: {
-                    hrv_ms: vitals?.heartRate ? vitals.heartRate * 0.8 : null, // Simplificação para passar a demo
+                    hrv_ms: null,
                     sleep_duration_minutes: vitals?.sleepDurationMinutes || null,
                     steps: null,
                     blood_glucose_mgdl: vitals?.bloodGlucoseMgDl || null,
@@ -152,10 +152,10 @@ export function AIPlanContent() {
                  throw new Error(data.error); // Caso o proxy do Supabase retorne status 200, mas com {error: 'x'}
             }
 
-            toast.success("O Cérebro Remoto (GPT) concluiu o processamento cruzado Astrológico-Fisiológico.");
+            toast.success("O motor local concluiu o processamento cruzado astrológico-fisiológico.");
             setPlan(data as PlanData);
         } catch (error: any) {
-             toast.error("Processamento Interrompido pelo Proxy IA.", { description: error.message, duration: 10000 });
+             toast.error("Processamento interrompido.", { description: error.message, duration: 10000 });
         } finally {
             setIsGenerating(false);
         }
@@ -174,7 +174,7 @@ export function AIPlanContent() {
                     </div>
                     <CardTitle className="text-3xl font-light tracking-tight text-gray-900 dark:text-white mt-4">Pronto para sua Orquestração?</CardTitle>
                     <CardDescription className="text-lg mt-2 font-medium">
-                        Nossa IA de Fronteira processará seus sinais biológicos integrados aos ciclos astrométricos remotos sem intervenção humana.
+                        O motor local combinará seus sinais biológicos disponíveis com os ciclos astrométricos e persistirá o plano diretamente em MySQL.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="mt-8">
@@ -187,17 +187,17 @@ export function AIPlanContent() {
                         {isGenerating ? (
                             <>
                                 <Loader2 className="mr-3 h-6 w-6 animate-spin" />
-                                Modelando Sinergias (LLM API)...
+                                Modelando Sinergias Localmente...
                             </>
                         ) : isSyncing ? (
                              <>
                                 <RefreshCw className="mr-3 h-6 w-6 animate-spin" />
-                                Coletando Leituras Védicas & HeathKit...
+                                Coletando Leituras Védicas & Health Data...
                              </>
                         ) : (
                             <>
                                 <Zap className="mr-3 h-6 w-6" />
-                                Orquestrar Seu Bem-Estar (AI API)
+                                Orquestrar Seu Bem-Estar
                             </>
                         )}
                     </Button>
@@ -216,7 +216,7 @@ export function AIPlanContent() {
                     <CardTitle className="text-3xl text-teal-700 dark:text-teal-400 flex items-center justify-between font-light tracking-tight">
                         <div className="flex items-center">
                             <Zap className="h-8 w-8 mr-4 text-rose-500" />
-                            Seu Plano Orquestrado (GPT)
+                            Seu Plano Orquestrado
                         </div>
                         <Button
                             onClick={handleGeneratePlan}

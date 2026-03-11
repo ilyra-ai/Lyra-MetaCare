@@ -1,26 +1,26 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { Session, SupabaseClient } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useRouter } from "next/navigation";
+import { AppSession } from "@/types/app-session";
 
 type AuthContextType = {
-  session: Session | null;
-  supabase: SupabaseClient;
+  session: AppSession | null;
+  supabase: typeof supabase;
   userRole: string | null;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<AppSession | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   // Função de fallback para criar o perfil se o trigger falhar ou não tiver rodado
-  const ensureProfileExists = async (currentSession: Session) => {
+  const ensureProfileExists = async (currentSession: AppSession) => {
     const { data: profiles, error: fetchError } = await supabase
       .from("profiles")
       .select("onboarding_completed, role")
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
 
-  const handleRedirects = async (currentSession: Session | null) => {
+  const handleRedirects = async (currentSession: AppSession | null) => {
     if (!currentSession) {
       setUserRole(null);
       if (window.location.pathname !== "/login" && window.location.pathname !== "/") {

@@ -23,7 +23,7 @@ export function LiveHeartRateChart({ initialData }: { initialData: number }) {
 
   useEffect(() => {
     const channel = supabase
-      .channel('realtime-wearable-chart')
+      .channel('realtime-wearable')
       .on('broadcast', { event: 'new_data' }, (payload) => {
         const newPoint = {
           time: new Date().getTime(),
