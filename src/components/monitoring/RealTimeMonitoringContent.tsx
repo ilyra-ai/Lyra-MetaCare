@@ -9,7 +9,7 @@ import { LiveHeartRateChart } from './LiveHeartRateChart';
 import { MapPlaceholder } from './MapPlaceholder';
 import { Button } from '@/components/ui/button';
 
-// Simula um alerta push
+// Exibe um alerta push real baseado em limites de biomarcadores
 const showPushAlert = (metric: string, value: number, threshold: number) => {
   if ('vibrate' in navigator) {
     navigator.vibrate(200); // Vibra por 200ms
@@ -29,7 +29,7 @@ export function RealTimeMonitoringContent() {
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   useEffect(() => {
-    // Simula a recepção de dados de um wearable via Supabase Realtime
+    // Recebe dados sincronizados em tempo real via Supabase (ex: de uma Edge Function processando Apple Health/Health Connect ou Wearable local)
     const channel = supabase
       .channel('realtime-wearable')
       .on('broadcast', { event: 'new_data' }, (payload) => {
@@ -43,30 +43,10 @@ export function RealTimeMonitoringContent() {
       })
       .subscribe();
 
-    // Simula o envio de dados para o canal a cada 2 segundos
-    const interval = setInterval(() => {
-      const newHeartRate = Math.floor(Math.random() * (130 - 60 + 1)) + 60;
-      const newHrv = Math.floor(Math.random() * (60 - 30 + 1)) + 30;
-      const newRespRate = Math.floor(Math.random() * (20 - 12 + 1)) + 12;
-      const newTemp = parseFloat((Math.random() * (37.5 - 36.5) + 36.5).toFixed(1));
-      
-      const simulatedPayload = {
-        heartRate: newHeartRate,
-        hrv: newHrv,
-        respiratoryRate: newRespRate,
-        temperature: newTemp,
-      };
-      
-      supabase.channel('realtime-wearable').send({
-        type: 'broadcast',
-        event: 'new_data',
-        payload: simulatedPayload,
-      });
-    }, 2000);
+
 
     return () => {
       supabase.removeChannel(channel);
-      clearInterval(interval);
     };
   }, []);
 

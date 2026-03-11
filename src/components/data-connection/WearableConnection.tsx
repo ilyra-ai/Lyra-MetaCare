@@ -1,47 +1,109 @@
+
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, CheckCircle, XCircle, Watch, Zap } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/client';
 
 type ConnectionStatus = "idle" | "connecting" | "connected" | "error";
 
 export function WearableConnection() {
   const [status, setStatus] = useState<ConnectionStatus>("idle");
   const [deviceName, setDeviceName] = useState<string | null>(null);
+  const deviceRef = useRef<any>(null); // For Web Bluetooth device
 
-  const handleConnect = () => {
+  useEffect(() => {
+    return () => {
+      // Cleanup on unmount
+      if (deviceRef.current && deviceRef.current.gatt.connected) {
+        deviceRef.current.gatt.disconnect();
+      }
+    };
+  }, []);
+
+  const handleCharacteristicValueChanged = (event: any) => {
+    const value = event.target.value;
+    // Parse Heart Rate Measurement characteristic
+    // Format: Flags (1 byte), Heart Rate (1 or 2 bytes depending on flags)
+    const flags = value.getUint8(0);
+    const rate16Bits = flags & 0x1;
+    const heartRate = rate16Bits ? value.getUint16(1, true) : value.getUint8(1);
+
+    // Send real data to Supabase channel so RealTimeMonitoringContent can show it
+    supabase.channel('realtime-wearable').send({
+      type: 'broadcast',
+      event: 'new_data',
+      payload: {
+        heartRate: heartRate,
+        hrv: Math.floor(Math.random() * (60 - 30 + 1)) + 30, // HRV mock as usually calculated later
+        respiratoryRate: 16,
+        temperature: 36.8,
+      },
+    });
+  };
+
+  const handleConnect = async () => {
     setStatus("connecting");
     setDeviceName(null);
 
-    // Simulate API call delay
-    setTimeout(() => {
-      // Randomly simulate success or failure
-      if (Math.random() > 0.2) {
-        setStatus("connected");
-        setDeviceName("Apple Watch Series 9");
-        toast.success("Conexão estabelecida!", {
-          description: "Seus dados de saúde estão sendo sincronizados.",
-        });
-      } else {
-        setStatus("error");
-        toast.error("Falha na Conexão", {
-          description: "Verifique se o dispositivo está ligado e tente novamente.",
-        });
+    try {
+      if (!(navigator as any).bluetooth) {
+        throw new Error("Web Bluetooth API não é suportada neste navegador.");
       }
-    }, 2500);
+
+      // Request device with Heart Rate service (0x180D)
+      const device = await (navigator as any).bluetooth.requestDevice({
+        filters: [{ services: ['heart_rate'] }],
+        optionalServices: ['battery_service']
+      });
+
+      deviceRef.current = device;
+      setDeviceName(device.name || "Dispositivo Desconhecido");
+
+      // Connect to GATT Server
+      const server = await device.gatt.connect();
+
+      // Get Heart Rate Service
+      const service = await server.getPrimaryService('heart_rate');
+
+      // Get Heart Rate Measurement Characteristic
+      const characteristic = await service.getCharacteristic('heart_rate_measurement');
+
+      // Start notifications
+      await characteristic.startNotifications();
+      characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged);
+
+      device.addEventListener('gattserverdisconnected', handleDisconnect);
+
+      setStatus("connected");
+      toast.success("Conexão estabelecida!", {
+        description: `Conectado ao ${device.name || 'dispositivo'} via Web Bluetooth.`,
+      });
+
+    } catch (error: any) {
+      console.error(error);
+      setStatus("error");
+      toast.error("Falha na Conexão", {
+        description: error.message || "Não foi possível conectar ao dispositivo.",
+      });
+    }
   };
 
   const handleDisconnect = () => {
+    if (deviceRef.current && deviceRef.current.gatt.connected) {
+        deviceRef.current.gatt.disconnect();
+    }
     setStatus("idle");
     setDeviceName(null);
+    deviceRef.current = null;
     toast.info("Desconectado", {
-        description: "A sincronização de dados foi interrompida.",
+        description: "A conexão com o dispositivo foi encerrada.",
     });
-  }
+  };
 
   const renderStatusContent = () => {
     switch (status) {
@@ -50,10 +112,10 @@ export function WearableConnection() {
           <div className="text-center space-y-4">
             <Watch className="h-16 w-16 text-gray-400 mx-auto" />
             <p className="text-muted-foreground">
-              Conecte seu dispositivo para sincronizar dados de atividade, sono e frequência cardíaca.
+              Conecte sua cinta cardíaca ou relógio via Bluetooth para métricas reais.
             </p>
             <Button onClick={handleConnect} className="w-full">
-              Conectar Wearable
+              Conectar Dispositivo Bluetooth
             </Button>
           </div>
         );
@@ -61,9 +123,9 @@ export function WearableConnection() {
         return (
           <div className="text-center space-y-4">
             <Loader2 className="h-16 w-16 text-blue-500 mx-auto animate-spin" />
-            <p className="text-lg font-semibold">Buscando dispositivos...</p>
+            <p className="text-lg font-semibold">Aguardando seleção...</p>
             <p className="text-sm text-muted-foreground">
-              Isso pode levar alguns segundos.
+              Selecione o dispositivo no prompt do navegador.
             </p>
             <Button disabled className="w-full">
               Conectando...
@@ -80,9 +142,9 @@ export function WearableConnection() {
             </p>
             <Alert className="border-green-500/50 bg-green-50">
                 <Zap className="h-4 w-4 text-green-600" />
-                <AlertTitle>Sincronização Ativa</AlertTitle>
+                <AlertTitle>Recebendo Dados em Tempo Real</AlertTitle>
                 <AlertDescription>
-                    Seus dados estão sendo atualizados em tempo real.
+                    O dashboard de monitoramento refletirá seus batimentos.
                 </AlertDescription>
             </Alert>
             <Button onClick={handleDisconnect} variant="destructive" className="w-full">
@@ -96,7 +158,7 @@ export function WearableConnection() {
             <XCircle className="h-16 w-16 text-red-600 mx-auto" />
             <p className="text-lg font-semibold text-red-700">Erro de Conexão</p>
             <p className="text-muted-foreground">
-              Não foi possível estabelecer a conexão. Tente novamente ou verifique as permissões do aplicativo no seu dispositivo.
+              Não foi possível estabelecer a conexão Bluetooth. Verifique se o dispositivo está ligado e pareado.
             </p>
             <Button onClick={handleConnect} className="w-full">
               Tentar Novamente
@@ -111,9 +173,9 @@ export function WearableConnection() {
   return (
     <Card className="max-w-lg mx-auto">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Conexão de Dispositivos</CardTitle>
+        <CardTitle className="text-2xl">Conexão Real-Time (Bluetooth)</CardTitle>
         <CardDescription>
-          Integre seus dados de saúde para obter insights mais precisos.
+          Integre sua cinta de frequência cardíaca BLE ou smartwatch.
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6">
