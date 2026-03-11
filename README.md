@@ -1,50 +1,17 @@
 # Lyra MetaCare
 
-Uma aplicação web para acompanhamento de saúde e longevidade com foco em jornada do usuário, métricas diárias, plano assistido por IA, chat e operação administrativa.
+A essência da Lyra MetaCare reside na união entre a sabedoria ancestral e a tecnologia de ponta para oferecer uma saúde preventiva verdadeiramente personalizada. O super-app funciona como um ecossistema sincronizado em tempo real, onde a precisão da inteligência artificial local encontra a profundidade da leitura da astrologia védica, orquestrando o bem-estar humano de forma holística em um único lugar.
 
----
-
-## 🧭 1. Visão Geral do Projeto
-
-### O que é o projeto
-O Lyra MetaCare é um sistema web construído com Next.js (App Router), React e TypeScript, com backend em Supabase (Auth, Postgres, Storage e Edge Functions).
-
-### Qual problema resolve
-O projeto consolida em uma única experiência:
-- onboarding e perfil de usuário;
-- acompanhamento de métricas de saúde;
-- gestão de consultas/profissionais;
-- plano personalizado gerado por IA;
-- chat assistido por IA;
-- operação administrativa de usuários, conteúdo e configuração de IA.
-
-### Para quem foi criado
-- Usuários finais que acompanham sua jornada de saúde;
-- Administradores que operam conteúdo e parâmetros de IA;
-- Times técnicos que mantêm o produto (engenharia full-stack com Next.js + Supabase).
-
-### Cenários de uso reais (identificados no código)
-1. Usuário faz login, conclui onboarding e atualiza perfil.
-2. Usuário visualiza dashboard e métricas recentes.
-3. Usuário agenda, edita ou cancela consultas com profissionais cadastrados.
-4. Usuário gera plano de longevidade personalizado e consulta recomendações.
-5. Usuário interage com chat de assistência.
-6. Admin acessa áreas de conteúdo, usuários, relatórios e configuração de IA.
-
-### Nível de maturidade
-**Beta funcional**: há funcionalidades completas de produto, mas também existem trechos com fallback/mock explícito em partes de IA.
-
-### Diferenciais técnicos reais
-- RLS no banco para isolamento de dados por usuário;
-- RBAC com role em `profiles` e função SQL `is_admin()`;
-- Edge Functions para lógica de IA desacoplada da UI;
-- Componentização por domínio + biblioteca de UI reutilizável.
-
-### Sugestões de imagens para este README
-- 🖼️ Screenshot principal: dashboard autenticado (`/`).
-- 🖼️ Screenshot de jornada: fluxo Login → Onboarding → Home.
-- 🖼️ Screenshot administrativo: página `/admin/dashboard`.
-- 🖼️ Fluxo geral do sistema (diagrama abaixo).
+Abaixo estão os pilares desse resumo atualizado:
+- **Sincronia Holística em Tempo Real**: O app atua como um "condutor" que integra dados vitais contemporâneos (sono, cardio, glicose) com os ciclos da astrologia védica. Essa fusão permite que a IA on-device ofereça insights proativos que respeitam tanto a biologia quanto a jornada cósmica do usuário, garantindo privacidade e baixa latência.
+- **Identidade Visual e Simbolismo**:
+  - **Símbolo**: Unifica a referência à constelação de Lira com ícones de saúde (coração ou cruz), evocando a ideia de uma "estrela-guia". O design em "minimalismo geométrico fluido" representa o movimento constante da vida e a precisão dos astros.
+  - **Logotipo**: O uso de tipografia sans-serif em caixa-baixa reforça uma comunicação amigável, acessível e humana, essencial para um guia de bem-estar.
+- **Psicologia das Cores**:
+  - **Lyra Teal (Primária)**: Representa a calma restauradora e a convergência entre o futurismo tecnológico e a naturalidade da saúde.
+  - **Warm Coral (Secundária)**: Introduz o calor humano, a energia e o entusiasmo necessários para o engajamento emocional com o autocuidado.
+- **O Conceito da "Orquestração"**: O slogan "Seu Bem-Estar Orquestrado" sintetiza a harmonia entre os diferentes pilares da saúde e os ciclos astrológicos, funcionando como um mantra de organização inteligente e personalizada.
+- **Diretrizes e Inovação**: O guia estabelece regras rígidas para manter a consistência visual (áreas de proteção e proibição de distorções) e incentiva o uso de IA generativa para expandir a presença da marca, sempre mantendo o refinamento humano final.
 
 ---
 
