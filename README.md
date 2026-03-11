@@ -24,7 +24,7 @@
 
 Para que você possa sentir o poder do nosso design de ponta antes mesmo de rodar o projeto completo, nós codificamos uma **Visão UI/UX de Alta Fidelidade (Standalone)**. Ela simula o nosso *Bento Grid*, o majestoso *Glassmorphism* avançado e a harmonia das cores **Lyra Teal** e **Warm Coral**.
 
-👉 **[Clique aqui para visualizar o Protótipo HTML UI (Dashboard)](public/assets/lyra-ui-preview.html)**
+<img src="https://github.com/ilyra-ai/Lyra-MetaCare/blob/main/public/assets/mockup.png" width="500" height="300">
 
 <details>
 <summary><b>✨ Clique aqui para expandir e ver o código do protótipo UI 2026 (HTML/CSS Standalone)</b></summary>
@@ -491,3 +491,4 @@ Nossa jornada está apenas começando e as estrelas são o limite. O que já est
 *Feito com suor, dados e pó de estrelas.*
 
 </div>
+
