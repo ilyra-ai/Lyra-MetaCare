@@ -11,7 +11,9 @@ import { QueryRecord } from '@/lib/mysql/types';
 import {
   assertActiveRowsQuota,
   getMetricsHistoryLimit,
+  requireFeatureEnabled,
 } from '@/lib/plans/service';
+import { PlanFeatureKey } from '@/types/subscription';
 
 type SingleMode = 'single' | 'maybeSingle' | null;
 
@@ -86,6 +88,28 @@ const DATETIME_COLUMNS: Record<TableName, string[]> = {
 };
 
 type ColumnFilter = Exclude<QueryFilter, { type: 'or' }>;
+
+const TABLE_FEATURE_ACCESS: Partial<
+  Record<
+    TableName,
+    {
+      read?: PlanFeatureKey;
+      write?: PlanFeatureKey;
+    }
+  >
+> = {
+  goals: {
+    read: 'goal_progress_tracking',
+    write: 'goal_progress_tracking',
+  },
+  ai_tips: {
+    read: 'ai_tips_feed',
+  },
+  ai_plans: {
+    read: 'ai_plan_generations',
+    write: 'ai_plan_generations',
+  },
+};
 
 function pad(value: number) {
   return String(value).padStart(2, '0');
@@ -266,6 +290,23 @@ function ensureCanWrite(table: TableName, session: AppSession | null) {
       403
     );
   }
+}
+
+async function ensurePlanFeatureAccessForTable(
+  table: TableName,
+  session: AppSession | null,
+  mode: 'read' | 'write'
+) {
+  if (!session || isAdmin(session)) {
+    return;
+  }
+
+  const featureKey = TABLE_FEATURE_ACCESS[table]?.[mode];
+  if (!featureKey) {
+    return;
+  }
+
+  await requireFeatureEnabled(session, featureKey);
 }
 
 function sanitizeColumns(table: TableName, select: string) {
@@ -532,6 +573,7 @@ export async function runSelectQuery(options: {
   assertTable(options.table);
   const table = options.table;
   ensureCanRead(table, options.session);
+  await ensurePlanFeatureAccessForTable(table, options.session, 'read');
 
   const effectiveFilters = [...options.filters];
   if (
@@ -645,6 +687,7 @@ export async function runInsertQuery(options: {
   assertTable(options.table);
   const table = options.table;
   ensureCanWrite(table, options.session);
+  await ensurePlanFeatureAccessForTable(table, options.session, 'write');
 
   const config = TABLE_CONFIG[table];
   const payloads = Array.isArray(options.values)
@@ -757,6 +800,7 @@ export async function runUpsertQuery(options: {
   assertTable(options.table);
   const table = options.table;
   ensureCanWrite(table, options.session);
+  await ensurePlanFeatureAccessForTable(table, options.session, 'write');
 
   const config = TABLE_CONFIG[table];
   const payload: Record<string, unknown> = {};
@@ -803,6 +847,7 @@ export async function runUpdateQuery(options: {
   assertTable(options.table);
   const table = options.table;
   ensureCanWrite(table, options.session);
+  await ensurePlanFeatureAccessForTable(table, options.session, 'write');
 
   const entries = Object.entries(options.values)
     .filter(
@@ -891,6 +936,7 @@ export async function runDeleteQuery(options: {
   assertTable(options.table);
   const table = options.table;
   ensureCanWrite(table, options.session);
+  await ensurePlanFeatureAccessForTable(table, options.session, 'write');
 
   if (table === 'profiles' && isAdmin(options.session)) {
     const where = buildWhereClause(

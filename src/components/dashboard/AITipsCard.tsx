@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
+import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
+import { PlanKey } from '@/types/subscription';
 
 interface AITip {
   id: string | number;
@@ -16,15 +18,27 @@ interface AITip {
 
 interface AITipsCardProps {
   className?: string;
+  featureEnabled?: boolean;
+  currentPlanKey?: PlanKey;
 }
 
-export function AITipsCard({ className }: AITipsCardProps) {
+export function AITipsCard({
+  className,
+  featureEnabled = true,
+  currentPlanKey = 'free',
+}: AITipsCardProps) {
   const router = useRouter();
   const { db } = useAuth();
   const [tip, setTip] = React.useState<AITip | null>(null);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
+    if (!featureEnabled) {
+      setTip(null);
+      setLoading(false);
+      return;
+    }
+
     const fetchTip = async () => {
       setLoading(true);
 
@@ -61,7 +75,19 @@ export function AITipsCard({ className }: AITipsCardProps) {
     };
 
     fetchTip();
-  }, [db]);
+  }, [db, featureEnabled]);
+
+  if (!featureEnabled) {
+    return (
+      <div className={className}>
+        <PlanUpgradeNotice
+          currentPlanKey={currentPlanKey}
+          title="Feed premium de insights"
+          description="Seu plano atual não inclui a entrega contínua de insights inteligentes no dashboard. O bloqueio é aplicado pela matriz de capacidades e refletido no backend."
+        />
+      </div>
+    );
+  }
 
   if (loading) {
     return <Skeleton className={cn('h-full w-full', className)} />;

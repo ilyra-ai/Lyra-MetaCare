@@ -160,13 +160,17 @@ const defaultMetricValues = {
   afib_history_percent: null,
 };
 
-export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
+export function useDailyMetrics(
+  days: number = 7,
+  enabled = true
+): UseDailyMetricsResult {
   const { db, session } = useAuth();
   const [metrics, setMetrics] = useState<DailyMetric[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchMetrics = useCallback(async () => {
-    if (!session?.user) {
+    if (!enabled || !session?.user) {
+      setMetrics([]);
       setLoading(false);
       return;
     }
@@ -224,7 +228,7 @@ export function useDailyMetrics(days: number = 7): UseDailyMetricsResult {
       setMetrics(completeMetrics);
     }
     setLoading(false);
-  }, [session, db, days]);
+  }, [enabled, session, db, days]);
 
   useEffect(() => {
     fetchMetrics();

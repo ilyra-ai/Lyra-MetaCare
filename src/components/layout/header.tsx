@@ -15,11 +15,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LogOut, User } from 'lucide-react';
 import React from 'react';
 import { MobileSidebar } from './MobileSidebar';
+import { useAccountSubscription } from '@/hooks/use-account-subscription';
+import { PlanBadge } from '@/components/subscription/PlanBadge';
 
 export function Header() {
   const { session, db } = useAuth();
   const router = useRouter();
   const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+  const { data: subscription } = useAccountSubscription();
 
   const fetchAvatar = React.useCallback(async () => {
     if (!session?.user) return;
@@ -67,11 +70,16 @@ export function Header() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
+              <div className="flex flex-col space-y-2">
                 <p className="text-sm font-medium leading-none">Signed in as</p>
                 <p className="text-xs leading-none text-muted-foreground truncate">
                   {userEmail}
                 </p>
+                {subscription ? (
+                  <div className="pt-1">
+                    <PlanBadge planKey={subscription.plan.key} />
+                  </div>
+                ) : null}
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

@@ -3,6 +3,8 @@ import type { PoolConnection, RowDataPacket } from 'mysql2/promise';
 import { HttpError } from '@/lib/http-error';
 import { queryRows, withTransaction } from '@/lib/mysql/pool';
 import {
+  AdminUserListItem,
+  AdminUserListResponse,
   AccountSubscriptionSummary,
   PlanFeatureAccess,
   PlanFeatureKey,
@@ -95,6 +97,28 @@ interface UserIdentityRow {
   role: string;
 }
 
+interface AdminUserListRow {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
+  onboarding_completed: number;
+  created_at: string;
+  avatar_url: string | null;
+  age: number | null;
+  gender: string | null;
+  activity_level: number | null;
+  goals: string | string[] | null;
+  birth_date: string | null;
+  birth_time: string | null;
+  birth_location: string | null;
+  role: string;
+  plan_key: PlanKey | null;
+  plan_name: string | null;
+  billing_interval: string | null;
+  subscription_status: string | null;
+}
+
 type PlanMatrixUpdateInput = {
   name: string;
   tagline: string;
@@ -113,6 +137,14 @@ type PlanMatrixUpdateInput = {
     quotaValue: number | null;
     resetInterval: string | null;
   }>;
+};
+
+type AdminUserSortColumn = 'created_at' | 'first_name' | 'email';
+
+const ADMIN_USER_SORT_COLUMNS: Record<AdminUserSortColumn, string> = {
+  created_at: 'p.created_at',
+  first_name: 'p.first_name',
+  email: 'p.email',
 };
 
 function pad(value: number) {
@@ -144,6 +176,25 @@ function toPlanSummary(row: CurrentSubscriptionRow): SubscriptionPlanSummary {
     isActive: row.is_active === 1,
     isPublic: row.is_public === 1,
   };
+}
+
+function parseJsonArrayValue(value: string | string[] | null) {
+  if (Array.isArray(value)) {
+    return value;
+  }
+
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return Array.isArray(parsed)
+      ? parsed.filter((item): item is string => typeof item === 'string')
+      : null;
+  } catch {
+    return null;
+  }
 }
 
 async function queryWithConnection<TRow extends object>(
@@ -773,6 +824,123 @@ export async function assignPlanToUserByAdmin(options: {
   });
 
   return getUserSubscriptionAssignment(options.targetUserId);
+}
+
+export async function listAdminUsersWithSubscriptions(options: {
+  search?: string;
+  page?: number;
+  pageSize?: number;
+  sortColumn?: AdminUserSortColumn;
+  ascending?: boolean;
+}): Promise<AdminUserListResponse> {
+  const page = Math.max(0, Math.trunc(options.page ?? 0));
+  const pageSize = Math.min(
+    100,
+    Math.max(1, Math.trunc(options.pageSize ?? 10))
+  );
+  const sortColumn = options.sortColumn ?? 'created_at';
+  const sortSql =
+    ADMIN_USER_SORT_COLUMNS[sortColumn] ?? ADMIN_USER_SORT_COLUMNS.created_at;
+  const sortDirection = options.ascending ? 'ASC' : 'DESC';
+  const offset = page * pageSize;
+  const normalizedSearch = options.search?.trim().toLowerCase() ?? '';
+  const whereClauses: string[] = [];
+  const whereParams: unknown[] = [];
+
+  if (normalizedSearch) {
+    whereClauses.push(
+      `(LOWER(COALESCE(p.first_name, '')) LIKE ? OR LOWER(COALESCE(p.last_name, '')) LIKE ? OR LOWER(COALESCE(p.email, '')) LIKE ?)`
+    );
+    const likeTerm = `%${normalizedSearch}%`;
+    whereParams.push(likeTerm, likeTerm, likeTerm);
+  }
+
+  const whereClause =
+    whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+  const [rows, countRows] = await Promise.all([
+    queryRows<AdminUserListRow>(
+      `
+        SELECT
+          p.id,
+          p.first_name,
+          p.last_name,
+          p.email,
+          p.onboarding_completed,
+          p.created_at,
+          p.avatar_url,
+          p.age,
+          p.gender,
+          p.activity_level,
+          p.goals,
+          p.birth_date,
+          p.birth_time,
+          p.birth_location,
+          p.role,
+          sp.plan_key,
+          sp.name AS plan_name,
+          us.billing_interval,
+          us.status AS subscription_status
+        FROM profiles p
+        LEFT JOIN user_subscriptions us
+          ON us.id = (
+            SELECT us2.id
+            FROM user_subscriptions us2
+            WHERE us2.user_id = p.id
+              AND us2.status = 'active'
+              AND (us2.ended_at IS NULL OR us2.ended_at > UTC_TIMESTAMP())
+            ORDER BY us2.current_period_end DESC, us2.created_at DESC
+            LIMIT 1
+          )
+        LEFT JOIN subscription_plans sp ON sp.id = us.plan_id
+        ${whereClause}
+        ORDER BY ${sortSql} ${sortDirection}, p.id ASC
+        LIMIT ?
+        OFFSET ?
+      `,
+      [...whereParams, pageSize, offset]
+    ),
+    queryRows<{ total: number }>(
+      `
+        SELECT COUNT(*) AS total
+        FROM profiles p
+        ${whereClause}
+      `,
+      whereParams
+    ),
+  ]);
+
+  const users: AdminUserListItem[] = rows.map((row) => ({
+    id: row.id,
+    firstName: row.first_name,
+    lastName: row.last_name,
+    email: row.email,
+    onboardingCompleted: row.onboarding_completed === 1,
+    createdAt: row.created_at,
+    avatarUrl: row.avatar_url,
+    age: row.age === null ? null : Number(row.age),
+    gender: row.gender,
+    activityLevel:
+      row.activity_level === null ? null : Number(row.activity_level),
+    goals: parseJsonArrayValue(row.goals),
+    birthDate: row.birth_date,
+    birthTime: row.birth_time,
+    birthLocation: row.birth_location,
+    role: row.role,
+    plan: {
+      key: row.plan_key,
+      name: row.plan_name,
+      billingInterval: row.billing_interval,
+      status: row.subscription_status,
+    },
+  }));
+
+  return {
+    users,
+    total: Number(countRows[0]?.total ?? 0),
+    page,
+    pageSize,
+  };
 }
 
 export async function getUserSubscriptionAssignment(

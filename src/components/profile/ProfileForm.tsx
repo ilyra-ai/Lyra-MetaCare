@@ -49,6 +49,7 @@ import { AvatarUploader } from './AvatarUploader';
 import { HabitList } from './HabitList';
 import { DailyMetric } from '@/hooks/use-daily-metrics';
 import { db as databaseClient } from '@/integrations/mysql/client';
+import { AccountSubscriptionCard } from '@/components/subscription/AccountSubscriptionCard';
 
 // --- Data Definitions ---
 // --- Zod Schema ---
@@ -474,6 +475,7 @@ export function ProfileForm() {
       </div>
 
       <div className="lg:col-span-1 space-y-8">
+        <AccountSubscriptionCard />
         <Card>
           <CardHeader>
             <CardTitle>Ações da Conta</CardTitle>

@@ -20,6 +20,9 @@ import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AITipsCard } from './AITipsCard';
 import { MetricGrid } from './MetricGrid';
+import { useAccountSubscription } from '@/hooks/use-account-subscription';
+import { isPlanFeatureEnabled } from '@/lib/plans/access';
+import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
 
 const valueFormatter = (number: number) =>
   Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 }).format(number);
@@ -34,10 +37,24 @@ const deltaTypeForValue = (delta: number) => {
 };
 
 export function Dashboard() {
-  const { metrics, todayMetrics, loading: metricsLoading } = useDailyMetrics(7);
-  const { scores, loading: scoresLoading } = useAIScores();
+  const { data: subscription, loading: subscriptionLoading } =
+    useAccountSubscription();
 
-  const loading = metricsLoading || scoresLoading;
+  const dashboardEnabled = isPlanFeatureEnabled(
+    subscription,
+    'dashboard_access'
+  );
+  const aiScoresEnabled = isPlanFeatureEnabled(subscription, 'ai_scores');
+  const aiTipsEnabled = isPlanFeatureEnabled(subscription, 'ai_tips_feed');
+
+  const {
+    metrics,
+    todayMetrics,
+    loading: metricsLoading,
+  } = useDailyMetrics(7, dashboardEnabled);
+  const { scores, loading: scoresLoading } = useAIScores(aiScoresEnabled);
+
+  const loading = subscriptionLoading || metricsLoading || scoresLoading;
 
   if (loading) {
     return (
@@ -49,6 +66,16 @@ export function Dashboard() {
         <Skeleton className="h-[320px] w-full lg:col-span-2" />
         <Skeleton className="h-[320px] w-full lg:col-span-2" />
       </div>
+    );
+  }
+
+  if (!subscription || !dashboardEnabled) {
+    return (
+      <PlanUpgradeNotice
+        currentPlanKey={subscription?.plan.key ?? 'free'}
+        title="Dashboard bloqueado pelo plano"
+        description="O acesso à visão executiva do dashboard está vinculado ao entitlement `dashboard_access`. Hoje essa capacidade não está liberada para sua assinatura."
+      />
     );
   }
 
@@ -164,7 +191,9 @@ export function Dashboard() {
                     {title}
                   </Text>
                   <Metric className="mt-1 text-tremor-content-strong bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-400">
-                    {value}
+                    {title === 'Índice de Longevidade' && !aiScoresEnabled
+                      ? 'Bloqueado'
+                      : value}
                   </Metric>
                 </div>
                 <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/40 dark:to-teal-900/20 shadow-sm">
@@ -173,17 +202,22 @@ export function Dashboard() {
               </Flex>
               <Flex justifyContent="between" alignItems="center">
                 <Text className="text-sm text-tremor-content-subtle">
-                  {description}
+                  {title === 'Índice de Longevidade' && !aiScoresEnabled
+                    ? 'Seu plano atual não libera o cálculo de scores de IA.'
+                    : description}
                 </Text>
-                <BadgeDelta
-                  deltaType={deltaType}
-                  size="xs"
-                  className="rounded-full px-2 py-0.5"
-                >
-                  {delta === 0
-                    ? 'Estável'
-                    : `${delta > 0 ? '+' : ''}${delta.toFixed(1)}%`}
-                </BadgeDelta>
+                {title === 'Índice de Longevidade' &&
+                !aiScoresEnabled ? null : (
+                  <BadgeDelta
+                    deltaType={deltaType}
+                    size="xs"
+                    className="rounded-full px-2 py-0.5"
+                  >
+                    {delta === 0
+                      ? 'Estável'
+                      : `${delta > 0 ? '+' : ''}${delta.toFixed(1)}%`}
+                  </BadgeDelta>
+                )}
               </Flex>
             </Card>
           )
@@ -218,7 +252,11 @@ export function Dashboard() {
           />
         </Card>
         <div className="lg:col-span-1 h-full transition-all duration-300 hover:-translate-y-1">
-          <AITipsCard className="h-full shadow-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-white/20 hover:shadow-glass dark:hover:shadow-neon" />
+          <AITipsCard
+            className="h-full shadow-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-white/20 hover:shadow-glass dark:hover:shadow-neon"
+            featureEnabled={aiTipsEnabled}
+            currentPlanKey={subscription.plan.key}
+          />
         </div>
       </Grid>
 

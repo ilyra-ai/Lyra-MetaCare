@@ -15,13 +15,14 @@ interface UseAIScoresResult {
   refresh: () => void;
 }
 
-export function useAIScores(): UseAIScoresResult {
+export function useAIScores(enabled = true): UseAIScoresResult {
   const { session, db } = useAuth();
   const [scores, setScores] = useState<AIScores | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchScores = useCallback(async () => {
-    if (!session?.access_token) {
+    if (!enabled || !session?.access_token) {
+      setScores(null);
       setLoading(false);
       return;
     }
@@ -47,7 +48,7 @@ export function useAIScores(): UseAIScoresResult {
     } finally {
       setLoading(false);
     }
-  }, [session, db]);
+  }, [enabled, session, db]);
 
   useEffect(() => {
     fetchScores();

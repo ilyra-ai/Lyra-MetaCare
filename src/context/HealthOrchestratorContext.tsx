@@ -10,6 +10,7 @@ import React, {
 import {
   fetchRealTimeVitals,
   HealthDataMetrics,
+  getHealthRuntimeAvailability,
 } from '../lib/health/healthConnect';
 import {
   getAstrologicalContext,
@@ -55,12 +56,21 @@ export const HealthOrchestratorProvider: React.FC<{
       const currentAstro = getAstrologicalContext(new Date());
       setAstrology(currentAstro);
 
+      const availability = getHealthRuntimeAvailability();
+      if (!availability.hasSupportedRuntime) {
+        setVitals(null);
+        setSyncError(
+          'Nenhum runtime nativo de saúde foi detectado neste ambiente. O plano seguirá com contexto astrológico e biomarcadores apenas quando houver fonte real disponível.'
+        );
+        return;
+      }
+
       // 2. Coleta Nativa HealthKit/Health Connect (reais)
       const currentVitals = await fetchRealTimeVitals();
       setVitals(currentVitals);
     } catch (error) {
-      console.error(
-        '[Lyra MetaCare] Sincronização interrompida devido a falha sistêmica ou ausência de sensores:',
+      console.warn(
+        '[Lyra MetaCare] Sincronização parcial de saúde:',
         error instanceof Error ? error.message : 'Erro desconhecido'
       );
       setSyncError(

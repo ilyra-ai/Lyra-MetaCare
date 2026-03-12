@@ -6,12 +6,20 @@ import { Header } from '@/components/layout/header';
 import { useAuth } from '@/context/AuthContext';
 import { SplashScreen } from '@/components/SplashScreen';
 import { AIPlanContent } from '@/components/ai-plan/AIPlanContent';
+import { usePlanFeatureAccess } from '@/hooks/use-plan-feature-access';
+import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
+import { HealthOrchestratorProvider } from '@/context/HealthOrchestratorContext';
 
 export default function AIPlanPage() {
   const { session } = useAuth();
+  const {
+    subscription,
+    enabled: planEnabled,
+    loading: subscriptionLoading,
+  } = usePlanFeatureAccess('ai_plan_generations');
 
   // Use SplashScreen while session is loading
-  if (session === undefined) {
+  if (session === undefined || subscriptionLoading) {
     return <SplashScreen />;
   }
 
@@ -27,7 +35,17 @@ export default function AIPlanPage() {
         <Header />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           <h1 className="text-3xl font-bold mb-8">Seu Plano de IA</h1>
-          <AIPlanContent />
+          {planEnabled ? (
+            <HealthOrchestratorProvider>
+              <AIPlanContent />
+            </HealthOrchestratorProvider>
+          ) : (
+            <PlanUpgradeNotice
+              currentPlanKey={subscription?.plan.key ?? 'free'}
+              title="Plano de IA indisponível"
+              description="A geração e a reorquestração do plano de IA não estão liberadas para a sua assinatura atual. Essa restrição é aplicada no backend e refletida nesta tela."
+            />
+          )}
         </main>
         <MadeWithIlyra />
       </div>

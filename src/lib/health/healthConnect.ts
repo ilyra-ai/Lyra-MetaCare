@@ -35,6 +35,33 @@ type NativeHealthWindow = Window & {
 
 type BluetoothNavigator = Navigator & { bluetooth?: Bluetooth };
 
+export interface HealthRuntimeAvailability {
+  hasNativeHealthPlugin: boolean;
+  hasWebBluetooth: boolean;
+  hasSupportedRuntime: boolean;
+}
+
+export function getHealthRuntimeAvailability(): HealthRuntimeAvailability {
+  if (typeof window === 'undefined') {
+    return {
+      hasNativeHealthPlugin: false,
+      hasWebBluetooth: false,
+      hasSupportedRuntime: false,
+    };
+  }
+
+  const win = window as NativeHealthWindow;
+  const bluetoothNavigator = navigator as BluetoothNavigator;
+  const hasNativeHealthPlugin = Boolean(win.plugins?.health);
+  const hasWebBluetooth = Boolean(bluetoothNavigator.bluetooth);
+
+  return {
+    hasNativeHealthPlugin,
+    hasWebBluetooth,
+    hasSupportedRuntime: hasNativeHealthPlugin || hasWebBluetooth,
+  };
+}
+
 export async function fetchRealTimeVitals(): Promise<HealthDataMetrics> {
   const metrics: HealthDataMetrics = {
     heartRate: null,

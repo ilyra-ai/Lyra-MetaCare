@@ -91,3 +91,36 @@ export interface UserSubscriptionAssignment {
   role: string;
   subscription: AccountSubscriptionSummary;
 }
+
+export interface AdminUserPlanSummary {
+  key: PlanKey | null;
+  name: string | null;
+  billingInterval: string | null;
+  status: string | null;
+}
+
+export interface AdminUserListItem {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  onboardingCompleted: boolean;
+  createdAt: string;
+  avatarUrl: string | null;
+  age: number | null;
+  gender: string | null;
+  activityLevel: number | null;
+  goals: string[] | null;
+  birthDate: string | null;
+  birthTime: string | null;
+  birthLocation: string | null;
+  role: string;
+  plan: AdminUserPlanSummary;
+}
+
+export interface AdminUserListResponse {
+  users: AdminUserListItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+}

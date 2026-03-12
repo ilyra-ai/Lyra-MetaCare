@@ -7,12 +7,14 @@ import {
 import { getHttpErrorStatus } from '@/lib/http-error';
 import { queryRows } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
+import { requireFeatureEnabled } from '@/lib/plans/service';
 
 export const runtime = 'nodejs';
 
 export async function POST() {
   try {
     const session = await requireServerSession();
+    await requireFeatureEnabled(session, 'ai_scores');
     const [metric] = await queryRows<MetricSnapshot>(
       'SELECT * FROM daily_metrics WHERE user_id = ? ORDER BY date DESC LIMIT 1',
       [session.user.id]

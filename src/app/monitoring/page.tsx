@@ -6,11 +6,24 @@ import { Header } from '@/components/layout/header';
 import { useAuth } from '@/context/AuthContext';
 import { SplashScreen } from '@/components/SplashScreen';
 import { RealTimeMonitoringContent } from '@/components/monitoring/RealTimeMonitoringContent';
+import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
+import { useAccountSubscription } from '@/hooks/use-account-subscription';
+import { isPlanFeatureEnabled } from '@/lib/plans/access';
 
 export default function MonitoringPage() {
   const { session } = useAuth();
+  const { data: subscription, loading: subscriptionLoading } =
+    useAccountSubscription();
+  const monitoringEnabled = isPlanFeatureEnabled(
+    subscription,
+    'realtime_monitoring'
+  );
+  const voiceUpdatesEnabled = isPlanFeatureEnabled(
+    subscription,
+    'voice_monitoring_updates'
+  );
 
-  if (session === undefined) {
+  if (session === undefined || subscriptionLoading) {
     return <SplashScreen />;
   }
 
@@ -27,7 +40,18 @@ export default function MonitoringPage() {
           <h1 className="text-3xl font-bold mb-8">
             Monitoramento em Tempo Real
           </h1>
-          <RealTimeMonitoringContent />
+          {monitoringEnabled ? (
+            <RealTimeMonitoringContent
+              voiceUpdatesEnabled={voiceUpdatesEnabled}
+              currentPlanKey={subscription?.plan.key ?? 'free'}
+            />
+          ) : (
+            <PlanUpgradeNotice
+              currentPlanKey={subscription?.plan.key ?? 'free'}
+              title="Monitoramento premium bloqueado"
+              description="Seu plano atual não inclui o painel contínuo de monitoramento em tempo real. A liberação desta experiência depende do entitlement correspondente."
+            />
+          )}
         </main>
         <MadeWithIlyra />
       </div>

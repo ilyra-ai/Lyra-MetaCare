@@ -8,6 +8,7 @@ import { RealTimeMetricCard } from './RealTimeMetricCard';
 import { LiveHeartRateChart } from './LiveHeartRateChart';
 import { MapPlaceholder } from './MapPlaceholder';
 import { Button } from '@/components/ui/button';
+import { PlanKey } from '@/types/subscription';
 
 // Exibe um alerta push real baseado em limites de biomarcadores
 const showPushAlert = (metric: string, value: number, threshold: number) => {
@@ -19,7 +20,13 @@ const showPushAlert = (metric: string, value: number, threshold: number) => {
   });
 };
 
-export function RealTimeMonitoringContent() {
+export function RealTimeMonitoringContent({
+  voiceUpdatesEnabled = true,
+  currentPlanKey = 'free',
+}: {
+  voiceUpdatesEnabled?: boolean;
+  currentPlanKey?: PlanKey;
+}) {
   const [liveData, setLiveData] = useState({
     heartRate: null as number | null,
     hrv: null as number | null,
@@ -58,6 +65,13 @@ export function RealTimeMonitoringContent() {
   }, []);
 
   const handleVoiceUpdate = () => {
+    if (!voiceUpdatesEnabled) {
+      toast.info('Atualizações por voz indisponíveis', {
+        description: `O plano ${currentPlanKey.toUpperCase()} não libera a síntese de voz em tempo real.`,
+      });
+      return;
+    }
+
     if ('speechSynthesis' in window) {
       setIsSpeaking(true);
       const utterance = new SpeechSynthesisUtterance(
@@ -115,7 +129,11 @@ export function RealTimeMonitoringContent() {
       <div className="flex items-center justify-center space-x-4 p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg shadow-inner">
         <Button onClick={handleVoiceUpdate} disabled={isSpeaking}>
           <Mic className="mr-2 h-4 w-4" />
-          {isSpeaking ? 'Falando...' : 'Atualização por Voz'}
+          {isSpeaking
+            ? 'Falando...'
+            : voiceUpdatesEnabled
+              ? 'Atualização por Voz'
+              : 'Voz indisponível no plano'}
         </Button>
         <Button
           variant="outline"
