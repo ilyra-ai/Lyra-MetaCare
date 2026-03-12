@@ -83,6 +83,20 @@ async function ensureMigrationTable(connection) {
   `);
 }
 
+async function waitForDatabase(pool, attempts = 30, delayMs = 2000) {
+  for (let index = 0; index < attempts; index += 1) {
+    try {
+      await pool.query('SELECT 1');
+      return;
+    } catch (error) {
+      if (index === attempts - 1) {
+        throw error;
+      }
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+}
+
 async function main() {
   await loadEnvFile('.env.local');
   await loadEnvFile('.env');
@@ -93,11 +107,13 @@ async function main() {
     user: getRequiredEnv('MYSQL_USER'),
     password: getRequiredEnv('MYSQL_PASSWORD'),
     database: getRequiredEnv('MYSQL_DATABASE'),
+    charset: 'utf8mb4',
     decimalNumbers: true,
     multipleStatements: true,
   });
 
   try {
+    await waitForDatabase(pool);
     const files = (await readdir(migrationsDir))
       .filter((file) => file.endsWith('.sql'))
       .sort((left, right) => left.localeCompare(right));

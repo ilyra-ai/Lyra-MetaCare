@@ -43,6 +43,7 @@ function createLyraPool(): Pool {
     user: getRequiredEnv('MYSQL_USER'),
     password: getRequiredEnv('MYSQL_PASSWORD'),
     database: getRequiredEnv('MYSQL_DATABASE'),
+    charset: 'utf8mb4',
     connectionLimit: 10,
     namedPlaceholders: false,
     decimalNumbers: true,

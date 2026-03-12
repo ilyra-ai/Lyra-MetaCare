@@ -13,7 +13,7 @@
     "check:lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "check:format": "prettier --check .",
     "check:types": "tsc --noEmit",
-    "db:start": "docker compose up -d mysql",
+    "db:start": "docker compose up -d mysql && npm run db:migrate",
     "db:migrate": "node scripts/mysql-migrate.mjs",
     "db:stop": "docker compose down",
     "db:logs": "docker compose logs -f mysql"

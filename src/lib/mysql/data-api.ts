@@ -665,10 +665,13 @@ export async function runInsertQuery(options: {
   );
 
   await executeStatement(sql, params);
+  const normalizedPayloads = preparedPayloads.map((payload) =>
+    normalizeRow(table, payload as QueryRecord)
+  );
   return {
     data: Array.isArray(options.values)
-      ? preparedPayloads
-      : preparedPayloads[0],
+      ? normalizedPayloads
+      : normalizedPayloads[0],
     error: null,
   };
 }
@@ -716,7 +719,7 @@ export async function runUpsertQuery(options: {
     sql,
     columns.map((column) => payload[column])
   );
-  return { data: payload, error: null };
+  return { data: normalizeRow(table, payload as QueryRecord), error: null };
 }
 
 export async function runUpdateQuery(options: {
@@ -757,7 +760,10 @@ export async function runUpdateQuery(options: {
   const params = [...entries.map(([, value]) => value), ...where.params];
   await executeStatement(sql, params);
 
-  return { data: options.values, error: null };
+  return {
+    data: normalizeRow(table, Object.fromEntries(entries) as QueryRecord),
+    error: null,
+  };
 }
 
 export async function runDeleteQuery(options: {

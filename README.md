@@ -526,11 +526,10 @@ Crie o seu arquivo `.env.local` na raiz e insira a magia:
 
 ### 🚀 Decolando em Modo Desenvolvimento
 
-Antes de subir o app, inicialize o banco e aplique as migrações SQL reais:
+Antes de subir o app, inicialize o banco com as migrações SQL reais:
 
 ```bash
 npm run db:start
-npm run db:migrate
 ```
 
 Depois inicie a aplicação:
@@ -540,6 +539,12 @@ pnpm dev
 ```
 
 Abra o portal na sua máquina interdimensional acessando: [**http://localhost:3000**](http://localhost:3000).
+
+Se você adicionar uma nova migração depois que o banco já estiver em execução, reaplique manualmente:
+
+```bash
+npm run db:migrate
+```
 
 ### ✅ Garantindo a Perfeição (Testes)
 
