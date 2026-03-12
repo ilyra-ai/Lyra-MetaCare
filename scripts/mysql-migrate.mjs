@@ -1,9 +1,10 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
+import bcrypt from 'bcryptjs';
 import mysql from 'mysql2/promise';
 
 const projectRoot = path.resolve(
@@ -83,6 +84,102 @@ async function ensureMigrationTable(connection) {
   `);
 }
 
+async function ensureBootstrapAdmin(pool) {
+  const email = process.env.ADMIN_BOOTSTRAP_EMAIL?.trim().toLowerCase();
+  const password = process.env.ADMIN_BOOTSTRAP_PASSWORD?.trim();
+
+  if (!email || !password) {
+    console.log('Bootstrap admin: desativado.');
+    return;
+  }
+
+  if (password.length < 8) {
+    throw new Error(
+      'ADMIN_BOOTSTRAP_PASSWORD precisa ter pelo menos 8 caracteres.'
+    );
+  }
+
+  const firstName = process.env.ADMIN_BOOTSTRAP_FIRST_NAME?.trim() || 'Admin';
+  const lastName = process.env.ADMIN_BOOTSTRAP_LAST_NAME?.trim() || 'Local';
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  const [userRows] = await pool.query(
+    'SELECT id FROM users WHERE email = ? LIMIT 1',
+    [email]
+  );
+  const existingUser = userRows[0];
+  const userId = existingUser?.id ?? randomUUID();
+
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    if (existingUser) {
+      await connection.execute(
+        `
+          UPDATE users
+          SET email = ?, password_hash = ?
+          WHERE id = ?
+        `,
+        [email, passwordHash, userId]
+      );
+    } else {
+      await connection.execute(
+        `
+          INSERT INTO users (id, email, password_hash)
+          VALUES (?, ?, ?)
+        `,
+        [userId, email, passwordHash]
+      );
+    }
+
+    const [profileRows] = await connection.query(
+      'SELECT id FROM profiles WHERE id = ? LIMIT 1',
+      [userId]
+    );
+    const existingProfile = profileRows[0];
+
+    if (existingProfile) {
+      await connection.execute(
+        `
+          UPDATE profiles
+          SET
+            first_name = ?,
+            last_name = ?,
+            email = ?,
+            onboarding_completed = TRUE,
+            role = 'admin'
+          WHERE id = ?
+        `,
+        [firstName, lastName, email, userId]
+      );
+    } else {
+      await connection.execute(
+        `
+          INSERT INTO profiles (
+            id,
+            first_name,
+            last_name,
+            email,
+            onboarding_completed,
+            role
+          )
+          VALUES (?, ?, ?, ?, TRUE, 'admin')
+        `,
+        [userId, firstName, lastName, email]
+      );
+    }
+
+    await connection.commit();
+    console.log(`Bootstrap admin assegurado: ${email}`);
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
+}
+
 async function waitForDatabase(pool, attempts = 30, delayMs = 2000) {
   for (let index = 0; index < attempts; index += 1) {
     try {
@@ -158,6 +255,8 @@ async function main() {
         connection.release();
       }
     }
+
+    await ensureBootstrapAdmin(pool);
   } finally {
     await pool.end();
   }

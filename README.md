@@ -514,6 +514,10 @@ Crie o seu arquivo `.env.local` na raiz e insira a magia:
 | `MYSQL_PASSWORD` | Senha do usuário do banco. |
 | `MYSQL_DATABASE` | Schema principal da aplicação. |
 | `AUTH_SECRET` | Segredo criptográfico usado para assinar a sessão local. |
+| `ADMIN_BOOTSTRAP_EMAIL` | Email do administrador local garantido automaticamente após as migrações. |
+| `ADMIN_BOOTSTRAP_PASSWORD` | Senha do administrador local garantido automaticamente após as migrações. |
+| `ADMIN_BOOTSTRAP_FIRST_NAME` | Nome exibido no perfil do administrador local. |
+| `ADMIN_BOOTSTRAP_LAST_NAME` | Sobrenome exibido no perfil do administrador local. |
 | `NEXT_PUBLIC_SENTRY_DSN` | Ativa o monitoramento constante e protetor (opcional em dev). |
 
 **Para infraestrutura e IA local:**
