@@ -6,9 +6,11 @@ import mysql, {
 } from 'mysql2/promise';
 import { QueryRecord } from '@/lib/mysql/types';
 
+/* eslint-disable no-var */
 declare global {
   var __lyraMysqlPool: Pool | undefined;
 }
+/* eslint-enable no-var */
 
 type GlobalMysqlState = typeof globalThis & {
   __lyraMysqlPool?: Pool;
@@ -56,9 +58,7 @@ if (process.env.NODE_ENV !== 'production') {
   globalMysqlState.__lyraMysqlPool = mysqlPool;
 }
 
-export async function queryRows<
-  TRow extends object = QueryRecord,
->(
+export async function queryRows<TRow extends object = QueryRecord>(
   sql: string,
   params: readonly unknown[] = []
 ): Promise<TRow[]> {

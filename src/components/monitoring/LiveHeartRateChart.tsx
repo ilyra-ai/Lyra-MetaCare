@@ -48,7 +48,7 @@ export function LiveHeartRateChart({ initialData }: { initialData: number }) {
     return () => {
       db.removeChannel(channel);
     };
-  }, []);
+  }, [initialData]);
 
   return (
     <Card className="h-full flex flex-col">

@@ -60,10 +60,7 @@ function coerceWriteValue(table: TableName, column: string, value: unknown) {
   return value;
 }
 
-function normalizeRow<T extends QueryRecord>(
-  table: TableName,
-  row: T
-): T {
+function normalizeRow<T extends QueryRecord>(table: TableName, row: T): T {
   const jsonColumns = JSON_COLUMNS[table];
   const booleanColumns = BOOLEAN_COLUMNS[table];
   const normalizedEntries = Object.entries(row).map(([key, value]) => {
@@ -203,7 +200,10 @@ function buildWhereClause(
       continue;
     }
 
-    if (!isColumnFilter(filter) || !TABLE_CONFIG[table].columns.includes(filter.column)) {
+    if (
+      !isColumnFilter(filter) ||
+      !TABLE_CONFIG[table].columns.includes(filter.column)
+    ) {
       throw new Error(`Filtro inválido para ${table}.`);
     }
 
@@ -364,21 +364,12 @@ export async function runSelectQuery(options: {
   ensureCanRead(table, options.session);
 
   const specialAppointments =
-    table === 'appointments' &&
-    options.select.includes('professionals(');
+    table === 'appointments' && options.select.includes('professionals(');
   const specialProfiles =
     table === 'profiles' && options.select.includes('daily_metrics(');
 
-  const where = buildWhereClause(
-    table,
-    options.filters,
-    options.session
-  );
-  const order = buildOrderClause(
-    table,
-    options.orders,
-    specialProfiles
-  );
+  const where = buildWhereClause(table, options.filters, options.session);
+  const order = buildOrderClause(table, options.orders, specialProfiles);
   const limit =
     options.limit ??
     (options.rangeFrom !== null &&
@@ -490,11 +481,7 @@ export async function runInsertQuery(options: {
       nextPayload[config.userScopedBy] = options.session.user.id;
     }
 
-    if (
-      table === 'profiles' &&
-      options.session &&
-      !isAdmin(options.session)
-    ) {
+    if (table === 'profiles' && options.session && !isAdmin(options.session)) {
       nextPayload.id = options.session.user.id;
       nextPayload.email = options.session.user.email;
     }
@@ -537,11 +524,7 @@ export async function runUpsertQuery(options: {
     if (column === 'created_at' || column === 'updated_at') {
       continue;
     }
-    const value = coerceWriteValue(
-      table,
-      column,
-      options.values[column]
-    );
+    const value = coerceWriteValue(table, column, options.values[column]);
     if (value !== undefined) {
       payload[column] = value;
     }
@@ -582,7 +565,8 @@ export async function runUpdateQuery(options: {
 
   const entries = Object.entries(options.values)
     .filter(
-      ([column]) => TABLE_CONFIG[table].columns.includes(column) && column !== 'id'
+      ([column]) =>
+        TABLE_CONFIG[table].columns.includes(column) && column !== 'id'
     )
     .map(
       ([column, value]) =>
@@ -638,12 +622,7 @@ export async function runDeleteQuery(options: {
     return { data: { deleted: rows.length }, error: null };
   }
 
-  const where = buildWhereClause(
-    table,
-    options.filters,
-    options.session,
-    true
-  );
+  const where = buildWhereClause(table, options.filters, options.session, true);
   const result = await executeStatement(
     `DELETE FROM ${table} t ${where.clause}`,
     where.params

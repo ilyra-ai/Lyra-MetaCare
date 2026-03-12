@@ -42,10 +42,7 @@ interface BluetoothDevice extends EventTarget {
   gatt?: BluetoothRemoteGATTServer;
   addEventListener<K extends keyof BluetoothDeviceEventMap>(
     type: K,
-    listener: (
-      this: BluetoothDevice,
-      ev: BluetoothDeviceEventMap[K]
-    ) => unknown
+    listener: (this: BluetoothDevice, ev: BluetoothDeviceEventMap[K]) => unknown
   ): void;
 }
 

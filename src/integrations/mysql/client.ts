@@ -50,9 +50,9 @@ async function requestJson<T>(
   return response.json() as Promise<T>;
 }
 
-class QueryBuilder<TData = QueryRecord[]>
-  implements PromiseLike<QueryEnvelope<TData>>
-{
+class QueryBuilder<TData = QueryRecord[]> implements PromiseLike<
+  QueryEnvelope<TData>
+> {
   private operation: 'select' | 'insert' | 'update' | 'delete' | 'upsert' =
     'select';
   private selectColumns = '*';
@@ -138,7 +138,8 @@ class QueryBuilder<TData = QueryRecord[]>
     return this;
   }
 
-  limit(limit: number, _options?: { foreignTable?: string }) {
+  limit(limit: number, options?: { foreignTable?: string }) {
+    void options;
     this.limitValue = limit;
     return this;
   }
