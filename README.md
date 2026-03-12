@@ -5,7 +5,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-Backend_Mágico-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-Estilo_Fluido-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Status: Beta Funcional](https://img.shields.io/badge/Status-Beta_Poderoso-FF6B6B?style=for-the-badge)](#)
@@ -442,27 +442,27 @@ Para suportar algo tão grandioso e veloz, estruturamos uma base técnica de cla
 ### 🏛️ Modelo Arquitetural
 
 - 🖥️ **Front-end Monolítico Modular:** Vibrante, escalável e ultra-rápido usando o moderno **Next.js App Router**.
-- ☁️ **Backend BaaS (Backend-as-a-Service):** Invisível, ágil e ultra-poderoso com a suite do **Supabase** (Auth, Postgres, Storage e Edge Functions).
+- 🗄️ **Backend Aplicacional com Banco Próprio:** Autenticação, CRUD, storage e funções de IA executando em rotas locais do **Next.js** sobre **MySQL 8**.
 - 👁️ **Observabilidade Total:** Implementamos o **Sentry** (client, server e edge) para garantir que possamos caçar bugs antes mesmo que eles pisquem na sua tela.
 
 ### 🧱 Stack Tecnológica Detalhada
 
-| Camada Mágica 🌟              | Tecnologia Confirmada e Incrível 🛠️                                                                   |
-| :---------------------------- | :---------------------------------------------------------------------------------------------------- |
-| 🌐 **Aplicação Web**          | **Next.js 15, React 19, TypeScript** (Performance imbatível e tipagem estrita!)                       |
-| 🎨 **Beleza Visual (UI)**     | **Tailwind CSS, Radix UI, shadcn/ui, Lucide** (Acessibilidade de fábrica com design de cair o queixo) |
-| 📝 **Interação & Validação**  | **React Hook Form + Zod** (Segurança cirúrgica e fluidez extrema em cada input)                       |
-| 🔐 **Cofre & Identidade**     | **Supabase JS, Supabase SSR, Auth UI** (Sua identidade blindada ponta a ponta)                        |
-| 📊 **Vida aos Seus Dados**    | **Recharts, Tremor, react-big-calendar** (Os números frios se transformam em gráficos vibrantes)      |
-| 🧪 **O Laboratório (Testes)** | **Vitest** (Nossa garantia de que a mágica nunca quebra em atualizações)                              |
-| 🕵️‍♂️ **Olhos de Águia**         | **Sentry (`@sentry/nextjs`)** (A telemetria silenciosa e protetora)                                   |
-| ⚡ **Cérebro na Nuvem**       | **Supabase Edge Functions (Deno)** (Lógica e integração de IA ultrarrápida, direto na borda da rede)  |
+| Camada Mágica 🌟               | Tecnologia Confirmada e Incrível 🛠️                                                                   |
+| :----------------------------- | :---------------------------------------------------------------------------------------------------- |
+| 🌐 **Aplicação Web**           | **Next.js 15, React 19, TypeScript** (Performance imbatível e tipagem estrita!)                       |
+| 🎨 **Beleza Visual (UI)**      | **Tailwind CSS, Radix UI, shadcn/ui, Lucide** (Acessibilidade de fábrica com design de cair o queixo) |
+| 📝 **Interação & Validação**   | **React Hook Form + Zod** (Segurança cirúrgica e fluidez extrema em cada input)                       |
+| 🔐 **Cofre & Identidade**      | **JWT local, cookies HTTP-only, bcryptjs e rotas `/api/auth/*`** (Identidade blindada ponta a ponta)  |
+| 📊 **Vida aos Seus Dados**     | **Recharts, Tremor, react-big-calendar** (Os números frios se transformam em gráficos vibrantes)      |
+| 🧪 **O Laboratório (Testes)**  | **Vitest** (Nossa garantia de que a mágica nunca quebra em atualizações)                              |
+| 🕵️‍♂️ **Olhos de Águia**          | **Sentry (`@sentry/nextjs`)** (A telemetria silenciosa e protetora)                                   |
+| ⚡ **Cérebro de Orquestração** | **Route Handlers do Next.js + motores locais de IA** (Lógica analítica e planos personalizados)       |
 
 ### 📐 O Fluxo Mágico (A Dança dos Dados)
 
 ```mermaid
 flowchart TD
-    A([💖 Você, o Usuário]) --> B{Login Supabase Auth}
+    A([💖 Você, o Usuário]) --> B{Login Local com JWT}
     B -- "Nova Estrela?" --> C[🚀 O Despertar: Onboarding Empoderador]
     B -- "Já nos conhece!" --> D[🏡 Seu Centro de Comando: Home / Dashboard]
     C --> D
@@ -471,14 +471,14 @@ flowchart TD
     D --> G[🔮 Plano de IA: Seu Mapa do Tesouro]
     D --> H[🤖 Chat IA: Seu Guia Sábio e Compassivo]
 
-    G --> I((⚡ Edge Function: generate-ai-plan))
-    H --> J((⚡ Edge Function: ask-ai-assistant))
+    G --> I((⚡ Route Handler: generate-ai-plan))
+    H --> J((⚡ Route Handler: ask-ai-assistant))
 
     D --> K{É um Guardião (Admin)?}
     K -- "Sim, com grandes poderes!" --> L[⚙️ Rotas /admin/* (Governança Total)]
 ```
 
-_Nota técnica: Todo o sistema possui **RLS (Row Level Security)** estrito no banco e controle de acesso baseado em Roles (RBAC) através da função `is_admin()`. Seus dados não se misturam, nunca._
+_Nota técnica: Todo o sistema possui escopo de leitura e escrita por usuário na camada de API, autenticação por cookie HTTP-only assinado e controle de acesso baseado em papéis (`admin` e `patient`). Seus dados não se misturam._
 
 ---
 
@@ -490,7 +490,8 @@ Pronto para compilar e dar o primeiro passo na sua jornada como desenvolvedor ne
 
 - 🟢 **Node.js** instalado na sua máquina.
 - 📦 **pnpm** (Altamente recomendado e respeitado pelo nosso `pnpm-lock.yaml`).
-- ☁️ Um projeto **Supabase** pronto, com as migrações e _secrets_ no lugar.
+- 🐳 **Docker** e **Docker Compose** para subir o MySQL local com saúde e volume persistente.
+- 🗄️ Um ambiente MySQL acessível via `.env.local`.
 
 ### 🪄 Instalação (Um Passe de Mágica)
 
@@ -504,24 +505,35 @@ pnpm install
 
 Crie o seu arquivo `.env.local` na raiz e insira a magia:
 
-**Para o App Web (Client/Server):**
+**Para o App Web e API local:**
 | Variável | O Poder Que Ela Traz ⚡ |
 |:---|:---|
-| `NEXT_PUBLIC_SUPABASE_URL` | O portal de acesso direto ao seu banco Supabase. |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | A chave pública que abre a porta de entrada. |
+| `MYSQL_HOST` | Endereço do servidor MySQL. |
+| `MYSQL_PORT` | Porta interna do MySQL acessada pela aplicação. |
+| `MYSQL_USER` | Usuário de acesso ao banco. |
+| `MYSQL_PASSWORD` | Senha do usuário do banco. |
+| `MYSQL_DATABASE` | Schema principal da aplicação. |
+| `AUTH_SECRET` | Segredo criptográfico usado para assinar a sessão local. |
 | `NEXT_PUBLIC_SENTRY_DSN` | Ativa o monitoramento constante e protetor (opcional em dev). |
 
-**Para o Cérebro (Edge Functions Secrets):**
+**Para infraestrutura e IA local:**
 | Secret Oculta 🤫 | O Propósito Supremo 🔮 |
 |:---|:---|
-| `SUPABASE_URL` | Comunicação interna vital da function com o DB. |
-| `SUPABASE_ANON_KEY` | O contexto puro para atuar em nome do usuário. |
-| `SUPABASE_SERVICE_ROLE_KEY` | A "Master Key". Acesso supremo para ler configurações protegidas da IA. |
+| `MYSQL_HOST_PORT` | Porta publicada pelo container MySQL na máquina local. |
 | `OPENAI_API_KEY` | A centelha de genialidade para as respostas reais e humanas do assistente! |
 
-> **Observação de Ouro 🔐:** Lembre-se, segurança é hábito! Nunca faça commit de chaves reais. Sempre utilize `.env.local` e gerencie as _secrets_ via CLI do Supabase para o ambiente de _Edge_.
+> **Observação de Ouro 🔐:** Nunca faça commit de chaves reais. Sempre utilize `.env.local` para segredos locais e mantenha as credenciais de produção fora do repositório.
 
 ### 🚀 Decolando em Modo Desenvolvimento
+
+Antes de subir o app, inicialize o banco e aplique as migrações SQL reais:
+
+```bash
+npm run db:start
+npm run db:migrate
+```
+
+Depois inicie a aplicação:
 
 ```bash
 pnpm dev
@@ -595,13 +607,13 @@ Nós levamos a sua paz de espírito – e a velocidade da sua experiência – i
 ### 💪 Nossos Escudos de Defesa de Dados
 
 - **Validação de Aço**: A biblioteca `Zod` analisa e sanitiza impecavelmente todos os formulários. Lixo não entra, lixo não sai.
-- **Muralhas de Dados Pessoais (RLS)**: Cada linha no banco de dados tem Row Level Security rigoroso baseado em `auth.uid()`. Seus dados são criptograficamente _apenas seus_. Ninguém mais vê.
-- **Guardiões dos Portões (RBAC)**: Controle de acesso implacável usando _roles_ (papéis de usuário) e a função SQL nativa `is_admin()`.
+- **Muralhas de Dados Pessoais**: Toda leitura e escrita passa por escopo de usuário na camada `/api/data/*`, com isolamento de registros e bloqueio explícito para operações não autorizadas.
+- **Guardiões dos Portões (RBAC)**: Controle de acesso por papéis (`admin` e `patient`) aplicado nas rotas de autenticação, CRUD, storage e painéis administrativos.
 
 ### 🏎️ Performance Que Desafia a Luz
 
 - **Sem Gargalos na Rede**: Nossas telas fazem consultas ao banco de dados utilizando paralelismo brutal via `Promise.all()`. O tempo de carregamento cai instantaneamente pela metade!
-- **Inteligência Cirúrgica de Carga**: O padrão de busca para dados pesados (ex: sorteio de tabelas gigantes) nunca puxa tudo. Nós buscamos o `count` total primeiro, e injetamos o `range(index, index)` no Supabase para puxar a linha exata. Milissegundos!
+- **Inteligência Cirúrgica de Carga**: O padrão de busca para dados pesados usa paginação com `count`, `limit`, `range` e filtros SQL seguros na camada MySQL, reduzindo payload e mantendo as consultas objetivas.
 
 ---
 
@@ -609,8 +621,8 @@ Nós levamos a sua paz de espírito – e a velocidade da sua experiência – i
 
 Nossa jornada está apenas começando e as estrelas são o limite. O que já está no nosso radar de inovação:
 
-1. 🤝 **Contrato Universal IA-UI:** Consolidar o grande pacto versionado de _request/response_ entre a bela Interface e as Edge Functions, pavimentando o caminho para o uso agnóstico de qualquer grande modelo fundacional de IA do mercado.
-2. 🛡️ **Expandir a Armadura de Testes:** Aumentar massivamente a cobertura de _End-to-End_ (E2E) E testes automatizados nas Edge Functions (para dormirmos ainda mais tranquilos).
+1. 🤝 **Contrato Universal IA-UI:** Consolidar o pacto versionado de _request/response_ entre a interface e as rotas de IA, pavimentando o caminho para uso agnóstico de modelos fundacionais.
+2. 🛡️ **Expandir a Armadura de Testes:** Aumentar massivamente a cobertura de _End-to-End_ (E2E) e testes automatizados nas rotas analíticas e de geração de plano.
 3. 📜 **O Grande Livro de Feitiços (Runbook):** Escrever a enciclopédia operacional definitiva para provisionamentos, deploys _zero-downtime_ e estratégias infalíveis de rollback majestoso.
 
 ---

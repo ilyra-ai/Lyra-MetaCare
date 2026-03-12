@@ -162,6 +162,30 @@ function normalizeDateTimeReadValue(value: unknown) {
   return value;
 }
 
+function coerceFilterValue(table: TableName, column: string, value: unknown) {
+  if (BOOLEAN_COLUMNS[table].includes(column)) {
+    if (typeof value === 'boolean') {
+      return value ? 1 : 0;
+    }
+    if (value === 'true') {
+      return 1;
+    }
+    if (value === 'false') {
+      return 0;
+    }
+  }
+  if (DATE_COLUMNS[table].includes(column)) {
+    return normalizeDateWriteValue(value);
+  }
+  if (TIME_COLUMNS[table].includes(column)) {
+    return normalizeTimeWriteValue(value);
+  }
+  if (DATETIME_COLUMNS[table].includes(column)) {
+    return normalizeDateTimeWriteValue(value);
+  }
+  return value;
+}
+
 function assertTable(table: string): asserts table is TableName {
   if (!(table in TABLE_CONFIG)) {
     throw new HttpError(`Tabela não suportada: ${table}`, 400);
@@ -263,7 +287,7 @@ function sanitizeColumns(table: TableName, select: string) {
     .filter(Boolean);
   for (const column of columns) {
     if (!TABLE_CONFIG[table].columns.includes(column)) {
-      throw new Error(`Coluna não permitida em ${table}: ${column}`);
+      throw new HttpError(`Coluna não permitida em ${table}: ${column}`, 400);
     }
   }
   return columns.map((column) => `t.${column}`).join(', ');
@@ -284,7 +308,7 @@ function parseOrExpression(expression: string, table: TableName) {
     }
     const [, column, term] = match;
     if (!TABLE_CONFIG[table].columns.includes(column)) {
-      throw new Error(`Filtro OR inválido em ${table}: ${column}`);
+      throw new HttpError(`Filtro OR inválido em ${table}: ${column}`, 400);
     }
     sqlChunks.push(`LOWER(t.${column}) LIKE ?`);
     params.push(`%${term.toLowerCase()}%`);
@@ -342,26 +366,27 @@ function buildWhereClause(
       !isColumnFilter(filter) ||
       !TABLE_CONFIG[table].columns.includes(filter.column)
     ) {
-      throw new Error(`Filtro inválido para ${table}.`);
+      throw new HttpError(`Filtro inválido para ${table}.`, 400);
     }
 
     const column = filter.column;
+    const filterValue = coerceFilterValue(table, column, filter.value);
 
     if (filter.type === 'eq') {
       whereParts.push(`t.${column} = ?`);
-      params.push(filter.value);
+      params.push(filterValue);
       continue;
     }
 
     if (filter.type === 'gte') {
       whereParts.push(`t.${column} >= ?`);
-      params.push(filter.value);
+      params.push(filterValue);
       continue;
     }
 
     if (filter.type === 'lte') {
       whereParts.push(`t.${column} <= ?`);
-      params.push(filter.value);
+      params.push(filterValue);
       continue;
     }
 
@@ -370,7 +395,7 @@ function buildWhereClause(
         whereParts.push(`t.${column} IS NOT NULL`);
       } else {
         whereParts.push(`t.${column} <> ?`);
-        params.push(filter.value);
+        params.push(filterValue);
       }
     }
   }

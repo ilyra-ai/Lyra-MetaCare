@@ -16,7 +16,7 @@ O projeto utiliza uma stack moderna e robusta baseada em React e TypeScript:
   - **Notificações**: Sonner.
   - **Gráficos**: Recharts, Tremor React.
 - **Formulários**: React Hook Form com validação Zod.
-- **Backend & Banco de Dados**: Supabase (Autenticação, Banco de Dados, Funções Edge).
+- **Backend & Banco de Dados**: MySQL 8 com rotas API locais em Next.js para autenticação, CRUD, storage e funções de IA.
 - **Gerenciamento de Estado**: React Context API, Hooks (`useState`, `useReducer`).
 - **Monitoramento**: Sentry.
 - **Outras Bibliotecas Importantes**:
