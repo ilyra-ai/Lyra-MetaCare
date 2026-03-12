@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAccountSubscription } from '@/hooks/use-account-subscription';
 import { getQuotaUsagePercentage } from '@/lib/plans/access';
 import { PlanBadge } from '@/components/subscription/PlanBadge';
+import { BillingActionPanel } from '@/components/subscription/BillingActionPanel';
 
 function formatDate(dateString: string) {
   return new Intl.DateTimeFormat('pt-BR', {
@@ -145,6 +146,15 @@ export function AccountSubscriptionCard() {
             Seu plano atual não possui quotas numéricas expostas nesta tela.
           </div>
         )}
+
+        <div className="space-y-3 rounded-2xl border bg-white/80 p-4 backdrop-blur dark:bg-slate-950/50">
+          <p className="text-sm font-semibold">Ações comerciais</p>
+          <p className="text-sm text-muted-foreground">
+            Checkout e portal de cobrança ficam disponíveis aqui quando o
+            ambiente Stripe estiver configurado com chaves e webhook reais.
+          </p>
+          <BillingActionPanel currentPlanKey={data.plan.key} />
+        </div>
       </CardContent>
     </Card>
   );

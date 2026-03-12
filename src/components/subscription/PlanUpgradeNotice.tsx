@@ -1,17 +1,18 @@
 'use client';
 
-import { ArrowUpRight, LockKeyhole, Sparkles } from 'lucide-react';
+import { LockKeyhole } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { PlanBadge } from '@/components/subscription/PlanBadge';
 import { PlanKey } from '@/types/subscription';
+import { BillingActionPanel } from '@/components/subscription/BillingActionPanel';
 
 interface PlanUpgradeNoticeProps {
   currentPlanKey: PlanKey;
   title: string;
   description: string;
   showAction?: boolean;
+  preferredPlanKey?: PlanKey;
 }
 
 export function PlanUpgradeNotice({
@@ -19,6 +20,7 @@ export function PlanUpgradeNotice({
   title,
   description,
   showAction = false,
+  preferredPlanKey,
 }: PlanUpgradeNoticeProps) {
   return (
     <Card className="overflow-hidden border-0 shadow-2xl ring-1 ring-slate-200/70 dark:ring-slate-800/80">
@@ -39,15 +41,11 @@ export function PlanUpgradeNotice({
       <CardContent className="space-y-4 p-6">
         <p className="text-sm leading-7 text-muted-foreground">{description}</p>
         {showAction ? (
-          <Button
-            variant="outline"
-            className="rounded-full border-slate-300 bg-white/80 backdrop-blur dark:border-slate-700 dark:bg-slate-950/60"
-            disabled
-          >
-            <Sparkles className="mr-2 h-4 w-4" />
-            Gestão comercial via plano administrado
-            <ArrowUpRight className="ml-2 h-4 w-4" />
-          </Button>
+          <BillingActionPanel
+            currentPlanKey={currentPlanKey}
+            compact
+            preferredPlanKey={preferredPlanKey}
+          />
         ) : null}
       </CardContent>
     </Card>

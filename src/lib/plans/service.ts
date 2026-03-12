@@ -41,6 +41,9 @@ interface CurrentSubscriptionRow {
   display_order: number;
   is_active: number;
   is_public: number;
+  external_product_id: string | null;
+  external_monthly_price_id: string | null;
+  external_annual_price_id: string | null;
 }
 
 interface EntitlementRow {
@@ -72,6 +75,9 @@ interface PlanMatrixRow {
   display_order: number;
   is_active: number;
   is_public: number;
+  external_product_id: string | null;
+  external_monthly_price_id: string | null;
+  external_annual_price_id: string | null;
   feature_key: PlanFeatureKey;
   feature_name: string;
   feature_description: string;
@@ -131,6 +137,9 @@ type PlanMatrixUpdateInput = {
   accentTo: string;
   isActive: boolean;
   isPublic: boolean;
+  externalProductId: string | null;
+  externalMonthlyPriceId: string | null;
+  externalAnnualPriceId: string | null;
   features: Array<{
     key: PlanFeatureKey;
     enabled: boolean;
@@ -175,6 +184,9 @@ function toPlanSummary(row: CurrentSubscriptionRow): SubscriptionPlanSummary {
     displayOrder: Number(row.display_order),
     isActive: row.is_active === 1,
     isPublic: row.is_public === 1,
+    externalProductId: row.external_product_id,
+    externalMonthlyPriceId: row.external_monthly_price_id,
+    externalAnnualPriceId: row.external_annual_price_id,
   };
 }
 
@@ -255,7 +267,10 @@ async function fetchCurrentSubscriptionRow(
       p.accent_to,
       p.display_order,
       p.is_active,
-      p.is_public
+      p.is_public,
+      p.external_product_id,
+      p.external_monthly_price_id,
+      p.external_annual_price_id
     FROM user_subscriptions us
     INNER JOIN subscription_plans p ON p.id = us.plan_id
     WHERE us.user_id = ?
@@ -584,6 +599,9 @@ export async function getPlanMatrix(): Promise<PlanMatrixResponse> {
       p.display_order,
       p.is_active,
       p.is_public,
+      p.external_product_id,
+      p.external_monthly_price_id,
+      p.external_annual_price_id,
       f.feature_key,
       f.name AS feature_name,
       f.description AS feature_description,
@@ -621,6 +639,9 @@ export async function getPlanMatrix(): Promise<PlanMatrixResponse> {
         displayOrder: Number(row.display_order),
         isActive: row.is_active === 1,
         isPublic: row.is_public === 1,
+        externalProductId: row.external_product_id,
+        externalMonthlyPriceId: row.external_monthly_price_id,
+        externalAnnualPriceId: row.external_annual_price_id,
         features: [],
       });
     }
@@ -670,7 +691,10 @@ export async function updatePlanMatrixByKey(
           accent_from = ?,
           accent_to = ?,
           is_active = ?,
-          is_public = ?
+          is_public = ?,
+          external_product_id = ?,
+          external_monthly_price_id = ?,
+          external_annual_price_id = ?
         WHERE id = ?
       `,
       [
@@ -685,6 +709,9 @@ export async function updatePlanMatrixByKey(
         input.accentTo.trim(),
         input.isActive ? 1 : 0,
         input.isPublic ? 1 : 0,
+        input.externalProductId?.trim() || null,
+        input.externalMonthlyPriceId?.trim() || null,
+        input.externalAnnualPriceId?.trim() || null,
         planId,
       ]
     );

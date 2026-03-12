@@ -50,6 +50,8 @@ export default function MonitoringPage() {
               currentPlanKey={subscription?.plan.key ?? 'free'}
               title="Monitoramento premium bloqueado"
               description="Seu plano atual não inclui o painel contínuo de monitoramento em tempo real. A liberação desta experiência depende do entitlement correspondente."
+              showAction
+              preferredPlanKey="meta"
             />
           )}
         </main>

@@ -43,6 +43,8 @@ export default function DataConnectionPage() {
               currentPlanKey={subscription?.plan.key ?? 'free'}
               title="Conexão Bluetooth indisponível"
               description="Seu plano atual não inclui a camada de conexão com wearables via Bluetooth. O entitlement é aplicado de forma real na matriz de capacidades."
+              showAction
+              preferredPlanKey="meta"
             />
           )}
         </main>

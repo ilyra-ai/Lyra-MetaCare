@@ -41,6 +41,7 @@ export default function GoalTrackingPage() {
               currentPlanKey={subscription?.plan.key ?? 'free'}
               title="Acompanhamento de metas indisponível"
               description="Seu plano atual não libera a gestão e o acompanhamento detalhado de metas. A restrição está aplicada de forma real na camada de capacidades."
+              showAction
             />
           )}
         </main>

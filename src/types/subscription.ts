@@ -61,6 +61,9 @@ export interface SubscriptionPlanSummary {
   displayOrder: number;
   isActive: boolean;
   isPublic: boolean;
+  externalProductId: string | null;
+  externalMonthlyPriceId: string | null;
+  externalAnnualPriceId: string | null;
 }
 
 export interface AccountSubscriptionSummary {
@@ -123,4 +126,34 @@ export interface AdminUserListResponse {
   total: number;
   page: number;
   pageSize: number;
+}
+
+export interface BillingCatalogPlan {
+  key: PlanKey;
+  name: string;
+  tagline: string;
+  description: string;
+  monthlyPrice: number;
+  annualPrice: number;
+  currencyCode: string;
+  highlightText: string | null;
+  accentFrom: string;
+  accentTo: string;
+  current: boolean;
+  purchaseEnabled: boolean;
+  availableIntervals: Array<'monthly' | 'annual'>;
+}
+
+export interface BillingEnvironmentStatus {
+  provider: 'stripe';
+  configured: boolean;
+  portalEnabled: boolean;
+  missingKeys: string[];
+}
+
+export interface AccountBillingContext {
+  environment: BillingEnvironmentStatus;
+  customerLinked: boolean;
+  subscriptionSource: string | null;
+  plans: BillingCatalogPlan[];
 }
