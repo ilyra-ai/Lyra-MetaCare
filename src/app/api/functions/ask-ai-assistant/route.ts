@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { generateLocalAssistantReply } from '@/lib/ai/chat-engine';
 import { getAstrologicalContext } from '@/lib/astrology/engine';
+import { getHttpErrorStatus } from '@/lib/http-error';
 import { queryRows } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 
@@ -63,7 +64,7 @@ export async function POST(request: Request) {
         error:
           error instanceof Error ? error.message : 'Falha no assistente local.',
       },
-      { status: 500 }
+      { status: getHttpErrorStatus(error) }
     );
   }
 }

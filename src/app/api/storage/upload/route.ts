@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import { NextResponse } from 'next/server';
 
+import { getHttpErrorStatus } from '@/lib/http-error';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 
 export const runtime = 'nodejs';
@@ -53,7 +54,7 @@ export async function POST(request: Request) {
             error instanceof Error ? error.message : 'Falha no upload local.',
         },
       },
-      { status: 500 }
+      { status: getHttpErrorStatus(error) }
     );
   }
 }

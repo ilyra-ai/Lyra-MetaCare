@@ -4,6 +4,7 @@ import {
   extractMetricCompleteness,
   MetricSnapshot,
 } from '@/lib/ai/score-engine';
+import { getHttpErrorStatus } from '@/lib/http-error';
 import { NUMERIC_METRIC_COLUMNS } from '@/lib/mysql/table-config';
 import { queryRows } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
@@ -40,7 +41,7 @@ export async function GET() {
             error instanceof Error ? error.message : 'Falha no RPC analítico.',
         },
       },
-      { status: 500 }
+      { status: getHttpErrorStatus(error) }
     );
   }
 }

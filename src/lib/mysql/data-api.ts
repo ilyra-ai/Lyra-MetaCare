@@ -6,6 +6,7 @@ import {
   TableName,
   TABLE_CONFIG,
 } from '@/lib/mysql/table-config';
+import { HttpError } from '@/lib/http-error';
 import { QueryRecord } from '@/lib/mysql/types';
 
 type SingleMode = 'single' | 'maybeSingle' | null;
@@ -38,11 +39,132 @@ const BOOLEAN_COLUMNS: Record<TableName, string[]> = {
   instruments: [],
 };
 
+const DATE_COLUMNS: Record<TableName, string[]> = {
+  profiles: ['birth_date'],
+  daily_metrics: ['date'],
+  goals: [],
+  habits: [],
+  suggested_habits: [],
+  ai_tips: [],
+  ai_config: [],
+  ai_plans: [],
+  appointments: [],
+  professionals: [],
+  instruments: [],
+};
+
+const TIME_COLUMNS: Record<TableName, string[]> = {
+  profiles: ['birth_time'],
+  daily_metrics: [],
+  goals: [],
+  habits: [],
+  suggested_habits: [],
+  ai_tips: [],
+  ai_config: [],
+  ai_plans: [],
+  appointments: [],
+  professionals: [],
+  instruments: [],
+};
+
+const DATETIME_COLUMNS: Record<TableName, string[]> = {
+  profiles: ['created_at', 'updated_at'],
+  daily_metrics: ['created_at'],
+  goals: ['created_at', 'updated_at'],
+  habits: ['created_at'],
+  suggested_habits: ['created_at'],
+  ai_tips: ['created_at'],
+  ai_config: ['updated_at'],
+  ai_plans: ['created_at', 'updated_at'],
+  appointments: ['appointment_time', 'created_at', 'updated_at'],
+  professionals: ['created_at', 'updated_at'],
+  instruments: [],
+};
+
 type ColumnFilter = Exclude<QueryFilter, { type: 'or' }>;
+
+function pad(value: number) {
+  return String(value).padStart(2, '0');
+}
+
+function formatUtcDate(date: Date) {
+  return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`;
+}
+
+function formatUtcTime(date: Date) {
+  return `${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:${pad(date.getUTCSeconds())}`;
+}
+
+function formatUtcDateTime(date: Date) {
+  return `${formatUtcDate(date)} ${formatUtcTime(date)}`;
+}
+
+function normalizeDateWriteValue(value: unknown) {
+  if (typeof value === 'string') {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      return value;
+    }
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) {
+      return formatUtcDate(parsed);
+    }
+  }
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return formatUtcDate(value);
+  }
+  return value;
+}
+
+function normalizeTimeWriteValue(value: unknown) {
+  if (typeof value === 'string') {
+    if (/^\d{2}:\d{2}:\d{2}$/.test(value)) {
+      return value;
+    }
+    if (/^\d{2}:\d{2}$/.test(value)) {
+      return `${value}:00`;
+    }
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) {
+      return formatUtcTime(parsed);
+    }
+  }
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return formatUtcTime(value);
+  }
+  return value;
+}
+
+function normalizeDateTimeWriteValue(value: unknown) {
+  if (typeof value === 'string') {
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)) {
+      return value;
+    }
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) {
+      return formatUtcDateTime(parsed);
+    }
+  }
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return formatUtcDateTime(value);
+  }
+  return value;
+}
+
+function normalizeDateTimeReadValue(value: unknown) {
+  if (typeof value === 'string') {
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)) {
+      return `${value.replace(' ', 'T')}Z`;
+    }
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(value)) {
+      return `${value}Z`;
+    }
+  }
+  return value;
+}
 
 function assertTable(table: string): asserts table is TableName {
   if (!(table in TABLE_CONFIG)) {
-    throw new Error(`Tabela não suportada: ${table}`);
+    throw new HttpError(`Tabela não suportada: ${table}`, 400);
   }
 }
 
@@ -57,12 +179,22 @@ function coerceWriteValue(table: TableName, column: string, value: unknown) {
   if (JSON_COLUMNS[table].includes(column) && value !== null) {
     return JSON.stringify(value);
   }
+  if (DATE_COLUMNS[table].includes(column)) {
+    return normalizeDateWriteValue(value);
+  }
+  if (TIME_COLUMNS[table].includes(column)) {
+    return normalizeTimeWriteValue(value);
+  }
+  if (DATETIME_COLUMNS[table].includes(column)) {
+    return normalizeDateTimeWriteValue(value);
+  }
   return value;
 }
 
 function normalizeRow<T extends QueryRecord>(table: TableName, row: T): T {
   const jsonColumns = JSON_COLUMNS[table];
   const booleanColumns = BOOLEAN_COLUMNS[table];
+  const dateTimeColumns = DATETIME_COLUMNS[table];
   const normalizedEntries = Object.entries(row).map(([key, value]) => {
     if (jsonColumns.includes(key) && typeof value === 'string') {
       try {
@@ -73,6 +205,9 @@ function normalizeRow<T extends QueryRecord>(table: TableName, row: T): T {
     }
     if (booleanColumns.includes(key) && typeof value === 'number') {
       return [key, value === 1];
+    }
+    if (dateTimeColumns.includes(key)) {
+      return [key, normalizeDateTimeReadValue(value)];
     }
     return [key, value];
   });
@@ -89,16 +224,19 @@ function ensureCanRead(table: TableName, session: AppSession | null) {
     return;
   }
   if (!session) {
-    throw new Error('Sessão autenticada obrigatória para leitura.');
+    throw new HttpError('Sessão autenticada obrigatória para leitura.', 401);
   }
 }
 
 function ensureCanWrite(table: TableName, session: AppSession | null) {
   if (!session) {
-    throw new Error('Sessão autenticada obrigatória para escrita.');
+    throw new HttpError('Sessão autenticada obrigatória para escrita.', 401);
   }
   if (TABLE_CONFIG[table].adminOnlyCrud && !isAdmin(session)) {
-    throw new Error('Apenas administradores podem alterar este recurso.');
+    throw new HttpError(
+      'Apenas administradores podem alterar este recurso.',
+      403
+    );
   }
 }
 
@@ -292,24 +430,27 @@ async function selectAppointmentsWithProfessionals(
     where.params
   );
 
-  return rows.map((row) => ({
-    id: row.id,
-    user_id: row.user_id,
-    professional_id: row.professional_id,
-    appointment_time: row.appointment_time,
-    status: row.status,
-    notes: row.notes,
-    meeting_link: row.meeting_link,
-    created_at: row.created_at,
-    updated_at: row.updated_at,
-    professionals: row.professional_name
-      ? {
-          name: row.professional_name,
-          specialty: row.professional_specialty,
-          avatar_url: row.professional_avatar_url,
-        }
-      : null,
-  }));
+  return rows.map((rawRow) => {
+    const row = normalizeRow('appointments', rawRow);
+    return {
+      id: row.id,
+      user_id: row.user_id,
+      professional_id: row.professional_id,
+      appointment_time: row.appointment_time,
+      status: row.status,
+      notes: row.notes,
+      meeting_link: row.meeting_link,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      professionals: row.professional_name
+        ? {
+            name: row.professional_name,
+            specialty: row.professional_specialty,
+            avatar_url: row.professional_avatar_url,
+          }
+        : null,
+    };
+  });
 }
 
 async function selectProfilesWithDailyMetrics(

@@ -4,6 +4,7 @@ import {
   getServerSessionToken,
   verifySessionToken,
 } from '@/lib/auth/session';
+import { HttpError } from '@/lib/http-error';
 import { AppSession } from '@/types/app-session';
 
 interface ProfileRow {
@@ -14,7 +15,7 @@ interface ProfileRow {
 export async function requireServerSession(): Promise<AppSession> {
   const session = await getServerSession();
   if (!session) {
-    throw new Error('Usuário não autenticado.');
+    throw new HttpError('Usuário não autenticado.', 401);
   }
   return session;
 }

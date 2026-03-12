@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { generateLocalWellnessPlan } from '@/lib/ai/plan-engine';
 import { getAstrologicalContext } from '@/lib/astrology/engine';
+import { getHttpErrorStatus } from '@/lib/http-error';
 import { executeStatement, queryRows } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 
@@ -89,7 +90,7 @@ export async function POST(request: Request) {
             ? error.message
             : 'Falha ao gerar plano local.',
       },
-      { status: 500 }
+      { status: getHttpErrorStatus(error) }
     );
   }
 }

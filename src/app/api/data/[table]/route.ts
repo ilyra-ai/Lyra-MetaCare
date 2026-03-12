@@ -7,6 +7,7 @@ import {
   runUpdateQuery,
   runUpsertQuery,
 } from '@/lib/mysql/data-api';
+import { getHttpErrorStatus } from '@/lib/http-error';
 import { getServerSession } from '@/lib/mysql/server-auth';
 
 export const runtime = 'nodejs';
@@ -55,7 +56,7 @@ export async function GET(
             error instanceof Error ? error.message : 'Falha na consulta.',
         },
       },
-      { status: 500 }
+      { status: getHttpErrorStatus(error) }
     );
   }
 }
@@ -97,7 +98,7 @@ export async function POST(
             error instanceof Error ? error.message : 'Falha na gravação.',
         },
       },
-      { status: 500 }
+      { status: getHttpErrorStatus(error) }
     );
   }
 }
@@ -132,7 +133,7 @@ export async function PATCH(
             error instanceof Error ? error.message : 'Falha na atualização.',
         },
       },
-      { status: 500 }
+      { status: getHttpErrorStatus(error) }
     );
   }
 }
@@ -165,7 +166,7 @@ export async function DELETE(
             error instanceof Error ? error.message : 'Falha na exclusão.',
         },
       },
-      { status: 500 }
+      { status: getHttpErrorStatus(error) }
     );
   }
 }

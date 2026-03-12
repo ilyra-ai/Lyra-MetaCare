@@ -4,6 +4,7 @@ import {
   calculateLongevityScores,
   MetricSnapshot,
 } from '@/lib/ai/score-engine';
+import { getHttpErrorStatus } from '@/lib/http-error';
 import { queryRows } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 
@@ -34,7 +35,7 @@ export async function POST() {
         error:
           error instanceof Error ? error.message : 'Falha no cálculo local.',
       },
-      { status: 500 }
+      { status: getHttpErrorStatus(error) }
     );
   }
 }
