@@ -10,6 +10,13 @@ import {
 import { LineChart, Line, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { db } from '@/integrations/mysql/client';
 
+interface WearableRealtimePayload {
+  heartRate: number | null;
+  hrv: number | null;
+  respiratoryRate: number | null;
+  temperature: number | null;
+}
+
 const chartConfig = {
   heartRate: {
     label: 'BPM',
@@ -29,9 +36,10 @@ export function LiveHeartRateChart({ initialData }: { initialData: number }) {
     const channel = db
       .channel('realtime-wearable')
       .on('broadcast', { event: 'new_data' }, (payload) => {
+        const realtimePayload = payload.payload as WearableRealtimePayload;
         const newPoint = {
           time: new Date().getTime(),
-          heartRate: payload.payload.heartRate,
+          heartRate: realtimePayload.heartRate ?? initialData,
         };
         setData((currentData) => [...currentData.slice(1), newPoint]);
       })

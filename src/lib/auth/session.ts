@@ -1,11 +1,11 @@
-import { SignJWT, jwtVerify } from 'jose';
+import { JWTPayload, SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
 import { AppSession } from '@/types/app-session';
 
 export const SESSION_COOKIE_NAME = 'lyra_metacare_session';
 
-interface SessionPayload {
+interface SessionPayload extends JWTPayload {
   sub: string;
   email: string;
   role: string;

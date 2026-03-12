@@ -45,25 +45,26 @@ export async function fetchRealTimeVitals(): Promise<HealthDataMetrics> {
   };
 
   const win = window as NativeHealthWindow;
+  const healthPlugin = win.plugins?.health;
 
-  if (win.plugins && win.plugins.health) {
+  if (healthPlugin) {
     try {
-      const hasPermission = await new Promise((resolve, reject) => {
-        win.plugins.health.isAvailable(resolve, reject);
+      const hasPermission = await new Promise<boolean>((resolve, reject) => {
+        healthPlugin.isAvailable(resolve, reject);
       });
 
       if (hasPermission) {
-        await new Promise((resolve, reject) => {
-          win.plugins.health.requestAuthorization(
+        await new Promise<void>((resolve, reject) => {
+          healthPlugin.requestAuthorization(
             ['heart_rate', 'sleep', 'blood_glucose', 'weight'],
-            resolve,
+            () => resolve(),
             reject
           );
         });
 
         const hrData = await new Promise<NativeHealthRecord[]>(
           (resolve, reject) => {
-            win.plugins.health.query(
+            healthPlugin.query(
               {
                 startDate: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
                 endDate: new Date(),

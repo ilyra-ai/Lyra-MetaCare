@@ -4,10 +4,27 @@ import mysql, {
   ResultSetHeader,
   RowDataPacket,
 } from 'mysql2/promise';
+import { QueryRecord } from '@/lib/mysql/types';
 
 declare global {
-  let __lyraMysqlPool: Pool | undefined;
+  var __lyraMysqlPool: Pool | undefined;
 }
+
+type GlobalMysqlState = typeof globalThis & {
+  __lyraMysqlPool?: Pool;
+};
+
+type MySqlParameter =
+  | string
+  | number
+  | bigint
+  | boolean
+  | Date
+  | null
+  | Buffer
+  | Uint8Array
+  | MySqlParameter[]
+  | { [key: string]: MySqlParameter };
 
 function getRequiredEnv(name: string): string {
   const value = process.env[name];
@@ -31,25 +48,35 @@ function createLyraPool(): Pool {
   });
 }
 
-export const mysqlPool = global.__lyraMysqlPool ?? createLyraPool();
+const globalMysqlState = globalThis as GlobalMysqlState;
+
+export const mysqlPool = globalMysqlState.__lyraMysqlPool ?? createLyraPool();
 
 if (process.env.NODE_ENV !== 'production') {
-  global.__lyraMysqlPool = mysqlPool;
+  globalMysqlState.__lyraMysqlPool = mysqlPool;
 }
 
-export async function queryRows<T extends RowDataPacket[] = RowDataPacket[]>(
+export async function queryRows<
+  TRow extends object = QueryRecord,
+>(
   sql: string,
-  params: unknown[] = []
-): Promise<T> {
-  const [rows] = await mysqlPool.query<T>(sql, params);
-  return rows;
+  params: readonly unknown[] = []
+): Promise<TRow[]> {
+  const [rows] = await mysqlPool.query<RowDataPacket[]>(
+    sql,
+    params as MySqlParameter[]
+  );
+  return rows as TRow[];
 }
 
 export async function executeStatement(
   sql: string,
-  params: unknown[] = []
+  params: readonly unknown[] = []
 ): Promise<ResultSetHeader> {
-  const [result] = await mysqlPool.execute<ResultSetHeader>(sql, params);
+  const [result] = await mysqlPool.execute<ResultSetHeader>(
+    sql,
+    params as MySqlParameter[]
+  );
   return result;
 }
 

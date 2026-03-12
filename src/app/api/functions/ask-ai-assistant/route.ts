@@ -18,27 +18,23 @@ export async function POST(request: Request) {
       );
     }
 
-    const [profile] = await queryRows<
-      Array<{
-        first_name: string | null;
-        goals: string | null;
-        birth_date: string | null;
-        birth_time: string | null;
-        birth_location: string | null;
-      }>
-    >(
+    const [profile] = await queryRows<{
+      first_name: string | null;
+      goals: string | null;
+      birth_date: string | null;
+      birth_time: string | null;
+      birth_location: string | null;
+    }>(
       'SELECT first_name, goals, birth_date, birth_time, birth_location FROM profiles WHERE id = ? LIMIT 1',
       [session.user.id]
     );
-    const [latestMetric] = await queryRows<
-      Array<{
-        steps: number | null;
-        sleep_duration_minutes: number | null;
-        hrv_ms: number | null;
-        readiness_score: number | null;
-        blood_glucose_mgdl: number | null;
-      }>
-    >(
+    const [latestMetric] = await queryRows<{
+      steps: number | null;
+      sleep_duration_minutes: number | null;
+      hrv_ms: number | null;
+      readiness_score: number | null;
+      blood_glucose_mgdl: number | null;
+    }>(
       `
         SELECT steps, sleep_duration_minutes, hrv_ms, readiness_score, blood_glucose_mgdl
         FROM daily_metrics

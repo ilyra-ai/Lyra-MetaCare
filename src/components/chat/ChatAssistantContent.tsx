@@ -131,9 +131,12 @@ export function ChatAssistantContent() {
     setIsNearBottom(true);
 
     try {
-      const { data, error } = await db.functions.invoke('ask-ai-assistant', {
-        body: { query: text },
-      });
+      const { data, error } = await db.functions.invoke<{ response: string }>(
+        'ask-ai-assistant',
+        {
+          body: { query: text },
+        }
+      );
 
       if (error) {
         throw new Error(error.message);

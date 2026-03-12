@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const existing = await queryRows<Array<{ id: string }>>(
+    const existing = await queryRows<{ id: string }>(
       'SELECT id FROM users WHERE email = ? LIMIT 1',
       [email]
     );
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
 
     const passwordHash = await hashPassword(password);
     const userId = crypto.randomUUID();
-    const totalUsers = await queryRows<Array<{ total: number }>>(
+    const totalUsers = await queryRows<{ total: number }>(
       'SELECT COUNT(*) AS total FROM users'
     );
     const role = Number(totalUsers[0]?.total ?? 0) === 0 ? 'admin' : 'patient';

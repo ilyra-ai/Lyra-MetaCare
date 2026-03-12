@@ -43,7 +43,7 @@ export function WearableConnection() {
   useEffect(() => {
     return () => {
       // Cleanup on unmount
-      if (deviceRef.current && deviceRef.current.gatt.connected) {
+      if (deviceRef.current?.gatt?.connected) {
         deviceRef.current.gatt.disconnect();
       }
     };
@@ -149,7 +149,7 @@ export function WearableConnection() {
   };
 
   const handleDisconnect = () => {
-    if (deviceRef.current && deviceRef.current.gatt.connected) {
+    if (deviceRef.current?.gatt?.connected) {
       deviceRef.current.gatt.disconnect();
     }
     setStatus('idle');

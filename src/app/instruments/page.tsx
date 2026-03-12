@@ -23,7 +23,7 @@ export default async function InstrumentsPage() {
           </p>
           {error ? (
             <div className="text-red-500">
-              Erro ao buscar instrumentos: {error.message}
+              Erro ao buscar instrumentos: {error?.message}
             </div>
           ) : (
             <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto text-sm">

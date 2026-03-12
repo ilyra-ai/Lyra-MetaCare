@@ -1,5 +1,7 @@
 'use client';
 
+import { TableName } from '@/lib/mysql/table-config';
+import { QueryRecord, TableRowMap } from '@/lib/mysql/types';
 import { AppSession } from '@/types/app-session';
 
 type QueryFilter =
@@ -20,6 +22,8 @@ type QueryEnvelope<T> = {
   error: { message: string } | null;
   count?: number | null;
 };
+
+type InferSingle<TData> = TData extends Array<infer TItem> ? TItem : TData;
 
 type AuthChangeListener = (_event: string, session: AppSession | null) => void;
 
@@ -46,7 +50,9 @@ async function requestJson<T>(
   return response.json() as Promise<T>;
 }
 
-class QueryBuilder<T = unknown> implements PromiseLike<QueryEnvelope<T>> {
+class QueryBuilder<TData = QueryRecord[]>
+  implements PromiseLike<QueryEnvelope<TData>>
+{
   private operation: 'select' | 'insert' | 'update' | 'delete' | 'upsert' =
     'select';
   private selectColumns = '*';
@@ -58,8 +64,7 @@ class QueryBuilder<T = unknown> implements PromiseLike<QueryEnvelope<T>> {
   private rangeFrom: number | null = null;
   private rangeTo: number | null = null;
   private singleMode: 'single' | 'maybeSingle' | null = null;
-  private values: Record<string, unknown> | Record<string, unknown>[] | null =
-    null;
+  private values: QueryRecord | QueryRecord[] | null = null;
   private onConflict: string | null = null;
 
   constructor(private readonly table: string) {}
@@ -72,19 +77,19 @@ class QueryBuilder<T = unknown> implements PromiseLike<QueryEnvelope<T>> {
     return this;
   }
 
-  insert(values: Record<string, unknown> | Record<string, unknown>[]) {
+  insert(values: QueryRecord | QueryRecord[]) {
     this.operation = 'insert';
     this.values = values;
     return this;
   }
 
-  update(values: Record<string, unknown>) {
+  update(values: QueryRecord) {
     this.operation = 'update';
     this.values = values;
     return this;
   }
 
-  upsert(values: Record<string, unknown>, options?: { onConflict?: string }) {
+  upsert(values: QueryRecord, options?: { onConflict?: string }) {
     this.operation = 'upsert';
     this.values = values;
     this.onConflict = options?.onConflict ?? 'id';
@@ -133,7 +138,7 @@ class QueryBuilder<T = unknown> implements PromiseLike<QueryEnvelope<T>> {
     return this;
   }
 
-  limit(limit: number) {
+  limit(limit: number, _options?: { foreignTable?: string }) {
     this.limitValue = limit;
     return this;
   }
@@ -146,17 +151,17 @@ class QueryBuilder<T = unknown> implements PromiseLike<QueryEnvelope<T>> {
 
   single() {
     this.singleMode = 'single';
-    return this;
+    return this as unknown as QueryBuilder<InferSingle<TData>>;
   }
 
   maybeSingle() {
     this.singleMode = 'maybeSingle';
-    return this;
+    return this as unknown as QueryBuilder<InferSingle<TData> | null>;
   }
 
-  then<TResult1 = QueryEnvelope<T>, TResult2 = never>(
+  then<TResult1 = QueryEnvelope<TData>, TResult2 = never>(
     onfulfilled?:
-      | ((value: QueryEnvelope<T>) => TResult1 | PromiseLike<TResult1>)
+      | ((value: QueryEnvelope<TData>) => TResult1 | PromiseLike<TResult1>)
       | null,
     onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
   ) {
@@ -166,7 +171,7 @@ class QueryBuilder<T = unknown> implements PromiseLike<QueryEnvelope<T>> {
     );
   }
 
-  private async execute(): Promise<QueryEnvelope<T>> {
+  private async execute(): Promise<QueryEnvelope<TData>> {
     if (this.operation === 'select') {
       const params = new URLSearchParams();
       params.set('select', this.selectColumns);
@@ -232,11 +237,18 @@ class QueryBuilder<T = unknown> implements PromiseLike<QueryEnvelope<T>> {
 class StorageBucketClient {
   constructor(private readonly bucket: string) {}
 
-  async upload(path: string, file: File, options?: { upsert?: boolean }) {
+  async upload(
+    path: string,
+    file: File,
+    options?: { upsert?: boolean; cacheControl?: string }
+  ) {
     const formData = new FormData();
     formData.set('bucket', this.bucket);
     formData.set('path', path);
     formData.set('upsert', String(options?.upsert ?? false));
+    if (options?.cacheControl) {
+      formData.set('cacheControl', options.cacheControl);
+    }
     formData.set('file', file);
 
     const response = await fetch('/api/storage/upload', {
@@ -303,10 +315,14 @@ class RealtimeChannel {
   }
 }
 
+function from<K extends TableName>(table: K): QueryBuilder<TableRowMap[K][]>;
+function from<TData>(table: string): QueryBuilder<TData>;
+function from(table: string) {
+  return new QueryBuilder(table);
+}
+
 export const db = {
-  from<T = unknown>(table: string) {
-    return new QueryBuilder<T>(table);
-  },
+  from,
   auth: {
     async getSession() {
       const result = await requestJson<{ session: AppSession | null }>(

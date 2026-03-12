@@ -6,6 +6,7 @@ import {
   TableName,
   TABLE_CONFIG,
 } from '@/lib/mysql/table-config';
+import { QueryRecord } from '@/lib/mysql/types';
 
 type SingleMode = 'single' | 'maybeSingle' | null;
 
@@ -22,6 +23,22 @@ const JSON_COLUMNS: Record<TableName, string[]> = {
   professionals: [],
   instruments: [],
 };
+
+const BOOLEAN_COLUMNS: Record<TableName, string[]> = {
+  profiles: ['onboarding_completed'],
+  daily_metrics: [],
+  goals: [],
+  habits: ['is_active'],
+  suggested_habits: ['is_active'],
+  ai_tips: ['is_active'],
+  ai_config: [],
+  ai_plans: [],
+  appointments: [],
+  professionals: [],
+  instruments: [],
+};
+
+type ColumnFilter = Exclude<QueryFilter, { type: 'or' }>;
 
 function assertTable(table: string): asserts table is TableName {
   if (!(table in TABLE_CONFIG)) {
@@ -43,11 +60,12 @@ function coerceWriteValue(table: TableName, column: string, value: unknown) {
   return value;
 }
 
-function normalizeRow<T extends Record<string, unknown>>(
+function normalizeRow<T extends QueryRecord>(
   table: TableName,
   row: T
 ): T {
   const jsonColumns = JSON_COLUMNS[table];
+  const booleanColumns = BOOLEAN_COLUMNS[table];
   const normalizedEntries = Object.entries(row).map(([key, value]) => {
     if (jsonColumns.includes(key) && typeof value === 'string') {
       try {
@@ -56,9 +74,16 @@ function normalizeRow<T extends Record<string, unknown>>(
         return [key, value];
       }
     }
+    if (booleanColumns.includes(key) && typeof value === 'number') {
+      return [key, value === 1];
+    }
     return [key, value];
   });
   return Object.fromEntries(normalizedEntries) as T;
+}
+
+function isColumnFilter(filter: QueryFilter): filter is ColumnFilter {
+  return filter.type !== 'or';
 }
 
 function ensureCanRead(table: TableName, session: AppSession | null) {
@@ -178,36 +203,35 @@ function buildWhereClause(
       continue;
     }
 
-    if (
-      !filter.column ||
-      !TABLE_CONFIG[table].columns.includes(filter.column)
-    ) {
+    if (!isColumnFilter(filter) || !TABLE_CONFIG[table].columns.includes(filter.column)) {
       throw new Error(`Filtro inválido para ${table}.`);
     }
 
+    const column = filter.column;
+
     if (filter.type === 'eq') {
-      whereParts.push(`t.${filter.column} = ?`);
+      whereParts.push(`t.${column} = ?`);
       params.push(filter.value);
       continue;
     }
 
     if (filter.type === 'gte') {
-      whereParts.push(`t.${filter.column} >= ?`);
+      whereParts.push(`t.${column} >= ?`);
       params.push(filter.value);
       continue;
     }
 
     if (filter.type === 'lte') {
-      whereParts.push(`t.${filter.column} <= ?`);
+      whereParts.push(`t.${column} <= ?`);
       params.push(filter.value);
       continue;
     }
 
     if (filter.type === 'not') {
       if (filter.operator === 'is' && filter.value === null) {
-        whereParts.push(`t.${filter.column} IS NOT NULL`);
+        whereParts.push(`t.${column} IS NOT NULL`);
       } else {
-        whereParts.push(`t.${filter.column} <> ?`);
+        whereParts.push(`t.${column} <> ?`);
         params.push(filter.value);
       }
     }
@@ -245,7 +269,7 @@ async function selectAppointmentsWithProfessionals(
 ) {
   const where = buildWhereClause('appointments', filters, session);
   const order = buildOrderClause('appointments', orders);
-  const rows = await queryRows<Record<string, unknown>[]>(
+  const rows = await queryRows<QueryRecord>(
     `
       SELECT
         t.id,
@@ -293,7 +317,7 @@ async function selectProfilesWithDailyMetrics(
   session: AppSession | null
 ) {
   const where = buildWhereClause('profiles', filters, session);
-  const rows = await queryRows<Record<string, unknown>[]>(
+  const rows = await queryRows<QueryRecord>(
     `
       SELECT
         t.id,
@@ -336,21 +360,22 @@ export async function runSelectQuery(options: {
   session: AppSession | null;
 }) {
   assertTable(options.table);
-  ensureCanRead(options.table, options.session);
+  const table = options.table;
+  ensureCanRead(table, options.session);
 
   const specialAppointments =
-    options.table === 'appointments' &&
+    table === 'appointments' &&
     options.select.includes('professionals(');
   const specialProfiles =
-    options.table === 'profiles' && options.select.includes('daily_metrics(');
+    table === 'profiles' && options.select.includes('daily_metrics(');
 
   const where = buildWhereClause(
-    options.table,
+    table,
     options.filters,
     options.session
   );
   const order = buildOrderClause(
-    options.table,
+    table,
     options.orders,
     specialProfiles
   );
@@ -366,7 +391,7 @@ export async function runSelectQuery(options: {
   const limitClause = limit ? `LIMIT ${limit}` : '';
   const offsetClause = offset !== null ? `OFFSET ${offset}` : '';
 
-  let data: Record<string, unknown>[];
+  let data: QueryRecord[];
 
   if (specialAppointments) {
     data = await selectAppointmentsWithProfessionals(
@@ -380,11 +405,11 @@ export async function runSelectQuery(options: {
       options.session
     );
   } else {
-    const selectedColumns = sanitizeColumns(options.table, options.select);
-    data = await queryRows<Record<string, unknown>[]>(
+    const selectedColumns = sanitizeColumns(table, options.select);
+    data = await queryRows<QueryRecord>(
       `
         SELECT ${selectedColumns}
-        FROM ${options.table} t
+        FROM ${table} t
         ${where.clause}
         ${order}
         ${limitClause}
@@ -392,13 +417,13 @@ export async function runSelectQuery(options: {
       `,
       where.params
     );
-    data = data.map((row) => normalizeRow(options.table, row));
+    data = data.map((row) => normalizeRow(table, row));
   }
 
   let count: number | null = null;
   if (options.count === 'exact') {
-    const countRows = await queryRows<Array<{ total: number }>>(
-      `SELECT COUNT(*) AS total FROM ${options.table} t ${where.clause}`,
+    const countRows = await queryRows<{ total: number }>(
+      `SELECT COUNT(*) AS total FROM ${table} t ${where.clause}`,
       where.params
     );
     count = Number(countRows[0]?.total ?? 0);
@@ -432,9 +457,10 @@ export async function runInsertQuery(options: {
   session: AppSession | null;
 }) {
   assertTable(options.table);
-  ensureCanWrite(options.table, options.session);
+  const table = options.table;
+  ensureCanWrite(table, options.session);
 
-  const config = TABLE_CONFIG[options.table];
+  const config = TABLE_CONFIG[table];
   const payloads = Array.isArray(options.values)
     ? options.values
     : [options.values];
@@ -446,11 +472,7 @@ export async function runInsertQuery(options: {
         continue;
       }
       const incomingValue = payload[column];
-      const coercedValue = coerceWriteValue(
-        options.table,
-        column,
-        incomingValue
-      );
+      const coercedValue = coerceWriteValue(table, column, incomingValue);
       if (coercedValue !== undefined) {
         nextPayload[column] = coercedValue;
       }
@@ -469,7 +491,7 @@ export async function runInsertQuery(options: {
     }
 
     if (
-      options.table === 'profiles' &&
+      table === 'profiles' &&
       options.session &&
       !isAdmin(options.session)
     ) {
@@ -482,7 +504,7 @@ export async function runInsertQuery(options: {
 
   const columns = Object.keys(preparedPayloads[0]);
   const placeholders = `(${columns.map(() => '?').join(', ')})`;
-  const sql = `INSERT INTO ${options.table} (${columns.join(', ')}) VALUES ${preparedPayloads
+  const sql = `INSERT INTO ${table} (${columns.join(', ')}) VALUES ${preparedPayloads
     .map(() => placeholders)
     .join(', ')}`;
   const params = preparedPayloads.flatMap((payload) =>
@@ -505,9 +527,10 @@ export async function runUpsertQuery(options: {
   session: AppSession | null;
 }) {
   assertTable(options.table);
-  ensureCanWrite(options.table, options.session);
+  const table = options.table;
+  ensureCanWrite(table, options.session);
 
-  const config = TABLE_CONFIG[options.table];
+  const config = TABLE_CONFIG[table];
   const payload: Record<string, unknown> = {};
 
   for (const column of config.columns) {
@@ -515,7 +538,7 @@ export async function runUpsertQuery(options: {
       continue;
     }
     const value = coerceWriteValue(
-      options.table,
+      table,
       column,
       options.values[column]
     );
@@ -527,7 +550,7 @@ export async function runUpsertQuery(options: {
   if (!payload.id && config.columns.includes('id')) {
     payload.id = crypto.randomUUID();
   }
-  if (config.userScopedBy && options.session && options.table !== 'profiles') {
+  if (config.userScopedBy && options.session && table !== 'profiles') {
     payload[config.userScopedBy] = options.session.user.id;
   }
 
@@ -536,7 +559,7 @@ export async function runUpsertQuery(options: {
     (column) => column !== options.onConflict && column !== 'id'
   );
   const sql = `
-    INSERT INTO ${options.table} (${columns.join(', ')})
+    INSERT INTO ${table} (${columns.join(', ')})
     VALUES (${columns.map(() => '?').join(', ')})
     ON DUPLICATE KEY UPDATE ${updateColumns.map((column) => `${column} = VALUES(${column})`).join(', ')}
   `;
@@ -554,16 +577,16 @@ export async function runUpdateQuery(options: {
   session: AppSession | null;
 }) {
   assertTable(options.table);
-  ensureCanWrite(options.table, options.session);
+  const table = options.table;
+  ensureCanWrite(table, options.session);
 
   const entries = Object.entries(options.values)
     .filter(
-      ([column]) =>
-        TABLE_CONFIG[options.table].columns.includes(column) && column !== 'id'
+      ([column]) => TABLE_CONFIG[table].columns.includes(column) && column !== 'id'
     )
     .map(
       ([column, value]) =>
-        [column, coerceWriteValue(options.table, column, value)] as const
+        [column, coerceWriteValue(table, column, value)] as const
     )
     .filter(([, value]) => value !== undefined);
 
@@ -580,7 +603,7 @@ export async function runUpdateQuery(options: {
     options.session,
     true
   );
-  const sql = `UPDATE ${options.table} t SET ${entries.map(([column]) => `${column} = ?`).join(', ')} ${where.clause}`;
+  const sql = `UPDATE ${table} t SET ${entries.map(([column]) => `${column} = ?`).join(', ')} ${where.clause}`;
   const params = [...entries.map(([, value]) => value), ...where.params];
   await executeStatement(sql, params);
 
@@ -593,16 +616,17 @@ export async function runDeleteQuery(options: {
   session: AppSession | null;
 }) {
   assertTable(options.table);
-  ensureCanWrite(options.table, options.session);
+  const table = options.table;
+  ensureCanWrite(table, options.session);
 
-  if (options.table === 'profiles' && isAdmin(options.session)) {
+  if (table === 'profiles' && isAdmin(options.session)) {
     const where = buildWhereClause(
-      options.table,
+      table,
       options.filters,
       options.session,
       true
     );
-    const rows = await queryRows<Array<{ id: string }>>(
+    const rows = await queryRows<{ id: string }>(
       `SELECT t.id FROM profiles t ${where.clause}`,
       where.params
     );
@@ -615,13 +639,13 @@ export async function runDeleteQuery(options: {
   }
 
   const where = buildWhereClause(
-    options.table,
+    table,
     options.filters,
     options.session,
     true
   );
   const result = await executeStatement(
-    `DELETE FROM ${options.table} t ${where.clause}`,
+    `DELETE FROM ${table} t ${where.clause}`,
     where.params
   );
   return { data: { deleted: result.affectedRows }, error: null };

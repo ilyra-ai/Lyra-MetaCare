@@ -11,14 +11,12 @@ export async function POST(request: Request) {
   try {
     const session = await requireServerSession();
     const payload = await request.json();
-    const [profile] = await queryRows<
-      Array<{
-        goals: string | null;
-        birth_date: string | null;
-        birth_time: string | null;
-        birth_location: string | null;
-      }>
-    >(
+    const [profile] = await queryRows<{
+      goals: string | null;
+      birth_date: string | null;
+      birth_time: string | null;
+      birth_location: string | null;
+    }>(
       `
         SELECT goals, birth_date, birth_time, birth_location
         FROM profiles
@@ -27,15 +25,13 @@ export async function POST(request: Request) {
       `,
       [session.user.id]
     );
-    const [latestMetrics] = await queryRows<
-      Array<{
-        hrv_ms: number | null;
-        sleep_duration_minutes: number | null;
-        steps: number | null;
-        blood_glucose_mgdl: number | null;
-        weight_kg: number | null;
-      }>
-    >(
+    const [latestMetrics] = await queryRows<{
+      hrv_ms: number | null;
+      sleep_duration_minutes: number | null;
+      steps: number | null;
+      blood_glucose_mgdl: number | null;
+      weight_kg: number | null;
+    }>(
       `
         SELECT hrv_ms, sleep_duration_minutes, steps, blood_glucose_mgdl, weight_kg
         FROM daily_metrics

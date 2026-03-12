@@ -30,7 +30,7 @@ export async function getServerSession(): Promise<AppSession | null> {
     return null;
   }
 
-  const profiles = await queryRows<ProfileRow[]>(
+  const profiles = await queryRows<ProfileRow>(
     'SELECT first_name, last_name FROM profiles WHERE id = ? LIMIT 1',
     [payload.sub]
   );

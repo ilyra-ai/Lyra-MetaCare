@@ -34,7 +34,7 @@ export function AITipsCard({ className }: AITipsCardProps) {
           .select('*', { count: 'exact', head: true })
           .eq('is_active', true);
 
-        if (countError || count === null || count === 0) {
+        if (countError || count == null || count === 0) {
           throw new Error('No tips found or error fetching count');
         }
 

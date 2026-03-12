@@ -32,11 +32,11 @@ const messages = {
   showMore: (total: number) => `+ Ver mais (${total})`,
 };
 
-interface Event {
+export interface AgendaEvent<TResource extends object> {
   title: string;
   start: Date;
   end: Date;
-  resource: Record<string, unknown>;
+  resource: TResource;
 }
 
 interface SlotInfo {
@@ -46,16 +46,20 @@ interface SlotInfo {
   action: 'select' | 'click' | 'doubleClick';
 }
 
-interface AgendaProps {
-  events: Event[];
+interface AgendaProps<TResource extends object> {
+  events: AgendaEvent<TResource>[];
   onSelectSlot: (slotInfo: SlotInfo) => void;
-  onSelectEvent: (event: Event) => void;
+  onSelectEvent: (event: AgendaEvent<TResource>) => void;
 }
 
-export function Agenda({ events, onSelectSlot, onSelectEvent }: AgendaProps) {
+export function Agenda<TResource extends object>({
+  events,
+  onSelectSlot,
+  onSelectEvent,
+}: AgendaProps<TResource>) {
   return (
     <div className="h-[300px]">
-      <Calendar
+      <Calendar<AgendaEvent<TResource>, object>
         localizer={localizer}
         events={events}
         startAccessor="start"

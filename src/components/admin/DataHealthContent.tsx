@@ -151,9 +151,9 @@ export function DataHealthContent() {
         setStaleUsers(filteredStale);
 
         // Set stats that depend on this query
-        if (statsResult.count !== null && activeUsersResult.count !== null) {
+        if (statsResult.count != null && activeUsersResult.count != null) {
           setStats({
-            total_metrics_records: statsResult.count,
+            total_metrics_records: statsResult.count ?? 0,
             active_users_24h: new Set(
               activeUsersResult.data?.map((d) => d.user_id)
             ).size,

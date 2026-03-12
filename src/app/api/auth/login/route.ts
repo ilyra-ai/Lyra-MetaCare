@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const users = await queryRows<UserRow[]>(
+    const users = await queryRows<UserRow>(
       `
         SELECT
           u.id,

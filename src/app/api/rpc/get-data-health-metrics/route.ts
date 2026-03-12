@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 
-import { extractMetricCompleteness } from '@/lib/ai/score-engine';
+import {
+  extractMetricCompleteness,
+  MetricSnapshot,
+} from '@/lib/ai/score-engine';
 import { NUMERIC_METRIC_COLUMNS } from '@/lib/mysql/table-config';
 import { queryRows } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
@@ -21,7 +24,7 @@ export async function GET() {
     }
 
     const columns = NUMERIC_METRIC_COLUMNS.join(', ');
-    const metrics = await queryRows<Record<string, unknown>[]>(
+    const metrics = await queryRows<MetricSnapshot>(
       `SELECT ${columns} FROM daily_metrics`
     );
     return NextResponse.json({

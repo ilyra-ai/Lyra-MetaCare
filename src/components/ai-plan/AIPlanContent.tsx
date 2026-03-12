@@ -56,6 +56,19 @@ interface PlanData {
   pillars: Record<string, PillarData>;
 }
 
+function isPlanData(value: unknown): value is PlanData {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const candidate = value as Partial<PlanData>;
+  return (
+    typeof candidate.summary === 'string' &&
+    !!candidate.pillars &&
+    typeof candidate.pillars === 'object'
+  );
+}
+
 // --- Icon Mapping ---
 const IconMap: Record<string, React.ElementType> = {
   Utensils,
@@ -125,8 +138,13 @@ export function AIPlanContent() {
       toast.error('Erro ao carregar seu plano do banco de dados principal.', {
         description: error.message,
       });
+    } else if (data && isPlanData(data.plan_data)) {
+      setPlan(data.plan_data);
     } else if (data) {
-      setPlan(data.plan_data as PlanData);
+      toast.error('Plano persistido em formato inválido.', {
+        description:
+          'O registro encontrado em ai_plans não corresponde ao contrato esperado do motor local.',
+      });
     }
     setLoading(false);
   }, [session, db]);
@@ -165,9 +183,12 @@ export function AIPlanContent() {
         },
       };
 
-      const { data, error } = await db.functions.invoke('generate-ai-plan', {
-        body: payload,
-      });
+      const { data, error } = await db.functions.invoke<PlanData>(
+        'generate-ai-plan',
+        {
+          body: payload,
+        }
+      );
 
       if (error) {
         console.error('Falha completa no motor local de orquestração:', error);
@@ -176,14 +197,10 @@ export function AIPlanContent() {
         );
       }
 
-      if (data && typeof data === 'object' && 'error' in data && data.error) {
-        throw new Error(String(data.error));
-      }
-
       toast.success(
         'O motor local concluiu o processamento cruzado astrológico-fisiológico.'
       );
-      setPlan(data as PlanData);
+      setPlan(data);
     } catch (error) {
       toast.error('Processamento interrompido.', {
         description:
