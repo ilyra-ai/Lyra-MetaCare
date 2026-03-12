@@ -170,6 +170,72 @@ async function ensureBootstrapAdmin(pool) {
       );
     }
 
+    const [carePlanRows] = await connection.query(
+      `
+        SELECT id
+        FROM subscription_plans
+        WHERE plan_key = 'care'
+        LIMIT 1
+      `
+    );
+    const carePlanId = carePlanRows[0]?.id;
+
+    if (carePlanId) {
+      const [activeSubscriptionRows] = await connection.query(
+        `
+          SELECT plan_id
+          FROM user_subscriptions
+          WHERE user_id = ?
+            AND status = 'active'
+            AND (ended_at IS NULL OR ended_at > UTC_TIMESTAMP())
+          ORDER BY current_period_end DESC, created_at DESC
+          LIMIT 1
+        `,
+        [userId]
+      );
+      const activePlanId = activeSubscriptionRows[0]?.plan_id;
+
+      if (activePlanId !== carePlanId) {
+        await connection.execute(
+          `
+            UPDATE user_subscriptions
+            SET
+              status = 'replaced',
+              ended_at = UTC_TIMESTAMP(),
+              cancel_at_period_end = FALSE
+            WHERE user_id = ?
+              AND status = 'active'
+              AND (ended_at IS NULL OR ended_at > UTC_TIMESTAMP())
+          `,
+          [userId]
+        );
+
+        await connection.execute(
+          `
+            INSERT INTO user_subscriptions (
+              id,
+              user_id,
+              plan_id,
+              status,
+              billing_interval,
+              source,
+              starts_at,
+              current_period_start,
+              current_period_end,
+              cancel_at_period_end,
+              metadata
+            )
+            VALUES (
+              ?, ?, ?, 'active', 'monthly', 'bootstrap_admin',
+              UTC_TIMESTAMP(), UTC_TIMESTAMP(), DATE_ADD(UTC_TIMESTAMP(), INTERVAL 1 MONTH),
+              FALSE, JSON_OBJECT('reason', 'bootstrap_admin_care')
+            )
+          `,
+          [randomUUID(), userId, carePlanId]
+        );
+      }
+    }
+
     await connection.commit();
     console.log(`Bootstrap admin assegurado: ${email}`);
   } catch (error) {

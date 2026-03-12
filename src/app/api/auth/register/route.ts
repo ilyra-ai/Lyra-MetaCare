@@ -7,6 +7,7 @@ import {
   signSessionToken,
 } from '@/lib/auth/session';
 import { queryRows, withTransaction } from '@/lib/mysql/pool';
+import { ensureUserSubscription } from '@/lib/plans/service';
 
 export const runtime = 'nodejs';
 
@@ -82,6 +83,12 @@ export async function POST(request: Request) {
         ]
       );
     });
+
+    await ensureUserSubscription(
+      userId,
+      role === 'admin' ? 'care' : 'free',
+      'auth_register'
+    );
 
     const token = await signSessionToken({
       sub: userId,

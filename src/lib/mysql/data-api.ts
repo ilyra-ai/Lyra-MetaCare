@@ -8,6 +8,10 @@ import {
 } from '@/lib/mysql/table-config';
 import { HttpError } from '@/lib/http-error';
 import { QueryRecord } from '@/lib/mysql/types';
+import {
+  assertActiveRowsQuota,
+  getMetricsHistoryLimit,
+} from '@/lib/plans/service';
 
 type SingleMode = 'single' | 'maybeSingle' | null;
 
@@ -529,12 +533,37 @@ export async function runSelectQuery(options: {
   const table = options.table;
   ensureCanRead(table, options.session);
 
+  const effectiveFilters = [...options.filters];
+  if (
+    table === 'daily_metrics' &&
+    options.session &&
+    !isAdmin(options.session)
+  ) {
+    const historyDays = await getMetricsHistoryLimit(options.session);
+    if (historyDays === 0) {
+      throw new HttpError(
+        'Seu plano atual não permite consultar o histórico biométrico.',
+        403
+      );
+    }
+
+    if (historyDays !== null) {
+      const cutoffDate = new Date();
+      cutoffDate.setUTCDate(cutoffDate.getUTCDate() - historyDays + 1);
+      effectiveFilters.push({
+        type: 'gte',
+        column: 'date',
+        value: formatUtcDate(cutoffDate),
+      });
+    }
+  }
+
   const specialAppointments =
     table === 'appointments' && options.select.includes('professionals(');
   const specialProfiles =
     table === 'profiles' && options.select.includes('daily_metrics(');
 
-  const where = buildWhereClause(table, options.filters, options.session);
+  const where = buildWhereClause(table, effectiveFilters, options.session);
   const order = buildOrderClause(table, options.orders, specialProfiles);
   const limit =
     options.limit ??
@@ -552,13 +581,13 @@ export async function runSelectQuery(options: {
 
   if (specialAppointments) {
     data = await selectAppointmentsWithProfessionals(
-      options.filters,
+      effectiveFilters,
       options.orders,
       options.session
     );
   } else if (specialProfiles) {
     data = await selectProfilesWithDailyMetrics(
-      options.filters,
+      effectiveFilters,
       options.session
     );
   } else {
@@ -654,6 +683,49 @@ export async function runInsertQuery(options: {
 
     return nextPayload;
   });
+
+  if (options.session && !isAdmin(options.session)) {
+    if (table === 'professionals') {
+      const countRows = await queryRows<{ total: number }>(
+        'SELECT COUNT(*) AS total FROM professionals WHERE user_id = ?',
+        [options.session.user.id]
+      );
+      await assertActiveRowsQuota({
+        session: options.session,
+        featureKey: 'professionals_total',
+        currentCount: Number(countRows[0]?.total ?? 0),
+        increment: preparedPayloads.length,
+      });
+    }
+
+    if (table === 'appointments') {
+      const countRows = await queryRows<{ total: number }>(
+        `
+          SELECT COUNT(*) AS total
+          FROM appointments
+          WHERE user_id = ?
+            AND appointment_time >= UTC_TIMESTAMP()
+        `,
+        [options.session.user.id]
+      );
+      const futureInserts = preparedPayloads.filter((payload) => {
+        const appointmentTime = payload.appointment_time;
+        return (
+          typeof appointmentTime === 'string' &&
+          new Date(appointmentTime).getTime() >= Date.now()
+        );
+      }).length;
+
+      if (futureInserts > 0) {
+        await assertActiveRowsQuota({
+          session: options.session,
+          featureKey: 'appointments_active',
+          currentCount: Number(countRows[0]?.total ?? 0),
+          increment: futureInserts,
+        });
+      }
+    }
+  }
 
   const columns = Object.keys(preparedPayloads[0]);
   const placeholders = `(${columns.map(() => '?').join(', ')})`;
@@ -756,6 +828,51 @@ export async function runUpdateQuery(options: {
     options.session,
     true
   );
+
+  if (
+    table === 'appointments' &&
+    options.session &&
+    !isAdmin(options.session) &&
+    Object.prototype.hasOwnProperty.call(options.values, 'appointment_time')
+  ) {
+    const normalizedAppointmentTime = coerceWriteValue(
+      table,
+      'appointment_time',
+      options.values.appointment_time
+    );
+    const targetWillBeActive =
+      typeof normalizedAppointmentTime === 'string' &&
+      new Date(normalizedAppointmentTime).getTime() >= Date.now();
+
+    if (targetWillBeActive) {
+      const scopedRows = await queryRows<{ id: string }>(
+        `SELECT t.id FROM appointments t ${where.clause}`,
+        where.params
+      );
+
+      if (scopedRows.length > 0) {
+        const placeholders = scopedRows.map(() => '?').join(', ');
+        const countRows = await queryRows<{ total: number }>(
+          `
+            SELECT COUNT(*) AS total
+            FROM appointments
+            WHERE user_id = ?
+              AND appointment_time >= UTC_TIMESTAMP()
+              AND id NOT IN (${placeholders})
+          `,
+          [options.session.user.id, ...scopedRows.map((row) => row.id)]
+        );
+
+        await assertActiveRowsQuota({
+          session: options.session,
+          featureKey: 'appointments_active',
+          currentCount: Number(countRows[0]?.total ?? 0),
+          increment: scopedRows.length,
+        });
+      }
+    }
+  }
+
   const sql = `UPDATE ${table} t SET ${entries.map(([column]) => `${column} = ?`).join(', ')} ${where.clause}`;
   const params = [...entries.map(([, value]) => value), ...where.params];
   await executeStatement(sql, params);

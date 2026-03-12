@@ -17,6 +17,7 @@ import {
   Users,
   LayoutGrid,
   ClipboardList,
+  Gem,
 } from 'lucide-react';
 import { useIsAdmin } from '@/hooks/use-is-admin';
 import { Separator } from '@/components/ui/separator';
@@ -81,6 +82,9 @@ export function MobileSidebar() {
               </SidebarLink>
               <SidebarLink href="/admin/users" icon={Users}>
                 Usuários
+              </SidebarLink>
+              <SidebarLink href="/admin/plans" icon={Gem}>
+                Planos
               </SidebarLink>
               <SidebarLink href="/admin/data-health" icon={HeartPulse}>
                 Saúde dos Dados

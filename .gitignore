@@ -16,20 +16,31 @@
 # next.js
 /.next/
 /out/
+/dist/
+/.turbo/
 
 # production
 /build
 /storage
+/output/
+/playwright-report/
+/test-results/
 
 # misc
 .DS_Store
 *.pem
+*.seed
+*.pid
+*.pid.lock
+.idea/
+.vscode/
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
 .env*

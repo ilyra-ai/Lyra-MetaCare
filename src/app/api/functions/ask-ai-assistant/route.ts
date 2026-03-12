@@ -5,6 +5,7 @@ import { getAstrologicalContext } from '@/lib/astrology/engine';
 import { getHttpErrorStatus } from '@/lib/http-error';
 import { queryRows } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
+import { consumeUsageQuota } from '@/lib/plans/service';
 
 export const runtime = 'nodejs';
 
@@ -46,18 +47,23 @@ export async function POST(request: Request) {
       [session.user.id]
     );
 
-    return NextResponse.json({
-      response: generateLocalAssistantReply(query, {
-        profile: profile
-          ? {
-              first_name: profile.first_name,
-              goals: profile.goals ? JSON.parse(profile.goals) : null,
-            }
-          : null,
-        latestMetric: latestMetric ?? null,
-        astrology: getAstrologicalContext(new Date(), profile ?? undefined),
-      }),
+    const response = generateLocalAssistantReply(query, {
+      profile: profile
+        ? {
+            first_name: profile.first_name,
+            goals: profile.goals ? JSON.parse(profile.goals) : null,
+          }
+        : null,
+      latestMetric: latestMetric ?? null,
+      astrology: getAstrologicalContext(new Date(), profile ?? undefined),
     });
+
+    await consumeUsageQuota({
+      session,
+      featureKey: 'ai_chat_messages',
+    });
+
+    return NextResponse.json({ response });
   } catch (error) {
     return NextResponse.json(
       {

@@ -3,8 +3,9 @@ import { NextResponse } from 'next/server';
 import { generateLocalWellnessPlan } from '@/lib/ai/plan-engine';
 import { getAstrologicalContext } from '@/lib/astrology/engine';
 import { getHttpErrorStatus } from '@/lib/http-error';
-import { executeStatement, queryRows } from '@/lib/mysql/pool';
+import { queryRows, withTransaction } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
+import { consumeUsageQuota } from '@/lib/plans/service';
 
 export const runtime = 'nodejs';
 
@@ -70,16 +71,24 @@ export async function POST(request: Request) {
     });
     const planId = crypto.randomUUID();
 
-    await executeStatement(
-      `
-        INSERT INTO ai_plans (id, user_id, plan_data)
-        VALUES (?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-          plan_data = VALUES(plan_data),
-          updated_at = CURRENT_TIMESTAMP
-      `,
-      [planId, session.user.id, JSON.stringify(plan)]
-    );
+    await withTransaction(async (connection) => {
+      await consumeUsageQuota({
+        session,
+        featureKey: 'ai_plan_generations',
+        connection,
+      });
+
+      await connection.execute(
+        `
+          INSERT INTO ai_plans (id, user_id, plan_data)
+          VALUES (?, ?, ?)
+          ON DUPLICATE KEY UPDATE
+            plan_data = VALUES(plan_data),
+            updated_at = CURRENT_TIMESTAMP
+        `,
+        [planId, session.user.id, JSON.stringify(plan)]
+      );
+    });
 
     return NextResponse.json(plan);
   } catch (error) {

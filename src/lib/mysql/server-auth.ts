@@ -20,6 +20,14 @@ export async function requireServerSession(): Promise<AppSession> {
   return session;
 }
 
+export async function requireAdminSession(): Promise<AppSession> {
+  const session = await requireServerSession();
+  if (session.user.role !== 'admin') {
+    throw new HttpError('Acesso restrito a administradores.', 403);
+  }
+  return session;
+}
+
 export async function getServerSession(): Promise<AppSession | null> {
   const token = await getServerSessionToken();
   if (!token) {
