@@ -97,6 +97,34 @@ As linhas abaixo combinam fatos explícitos das fontes oficiais com inferências
 - `profiles` não recebe bloqueio bruto por plano no `data-api` porque autenticação, bootstrap de perfil e onboarding dependem dele. O bloqueio do perfil fica na experiência do produto, não na infraestrutura mínima de sessão.
 - `dashboard_access`, `wearable_bluetooth_connection` e `realtime_monitoring` hoje são governados principalmente pela camada de experiência porque não existem endpoints dedicados equivalentes que precisem ser fechados além da UI atual.
 
+## Revalidação objetiva em 2026-03-13
+
+### Billing externo Stripe
+
+- Confirmado em código:
+  - checkout em `src/app/api/billing/checkout/route.ts`;
+  - portal em `src/app/api/billing/portal/route.ts`;
+  - webhook assinado em `src/app/api/webhooks/stripe/route.ts`;
+  - sincronização e persistência em `src/lib/billing/service.ts`.
+- Confirmado no ambiente auditado:
+  - `.env.local` sem `STRIPE_SECRET_KEY`;
+  - `.env.local` sem `STRIPE_WEBHOOK_SECRET`;
+  - shell desta thread sem `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `APP_BASE_URL` e `NEXT_PUBLIC_APP_URL` exportadas.
+- Conclusão: a implementação existe, mas o billing externo real permanece bloqueado neste ambiente por ausência de credenciais Stripe comprováveis. O `origin` da request cobre URL base em runtime, porém não substitui as chaves secretas e de webhook.
+
+### Multi-tenant
+
+- Busca por `tenant`, `workspace`, `organization`, `org_id`, `tenant_id` e `membership` em `src`, `mysql` e `docs` retornou apenas referências documentais.
+- As migrações `001_schema.sql`, `003_add_saas_plans.sql` e `004_add_stripe_billing.sql` não criam tabelas ou chaves de tenant, workspace, organização ou membership.
+- Conclusão: não existe fundação estrutural multi-tenant pronta no estado atual do código. Qualquer implementação agora exigiria mudança arquitetural real em schema, auth, isolamento de dados e governança de acesso.
+
+### Enforcement que segue no nível de experiência
+
+- `profile_management`: a edição do perfil continua bloqueada na UX porque `profiles` é superfície estrutural usada por autenticação, bootstrap e onboarding.
+- `dashboard_access`: bloqueio concentrado na experiência do dashboard; não há endpoint dedicado independente além das leituras já necessárias a outros fluxos.
+- `wearable_bluetooth_connection`: não existe backend próprio de pareamento para endurecer além da tela.
+- `realtime_monitoring`: não existe endpoint exclusivo separado do conteúdo já governado pela própria experiência de monitoramento.
+
 ## Próximo encaixe natural de evolução
 
 Quando a integração de billing externo for ligada, o encaixe correto é:

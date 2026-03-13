@@ -1,3 +1,5 @@
+import { ZodError } from 'zod';
+
 export class HttpError extends Error {
   constructor(
     message: string,
@@ -12,5 +14,13 @@ export function getHttpErrorStatus(
   error: unknown,
   fallbackStatus = 500
 ): number {
-  return error instanceof HttpError ? error.statusCode : fallbackStatus;
+  if (error instanceof HttpError) {
+    return error.statusCode;
+  }
+
+  if (error instanceof ZodError) {
+    return 400;
+  }
+
+  return fallbackStatus;
 }
