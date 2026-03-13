@@ -87,6 +87,29 @@ export interface PlanMatrixResponse {
   plans: PlanMatrixPlan[];
 }
 
+export interface PlanMatrixUpdateInput {
+  name: string;
+  tagline: string;
+  description: string;
+  monthlyPrice: number;
+  annualPrice: number;
+  currencyCode: string;
+  highlightText: string | null;
+  accentFrom: string;
+  accentTo: string;
+  isActive: boolean;
+  isPublic: boolean;
+  externalProductId: string | null;
+  externalMonthlyPriceId: string | null;
+  externalAnnualPriceId: string | null;
+  features: Array<{
+    key: PlanFeatureKey;
+    enabled: boolean;
+    quotaValue: number | null;
+    resetInterval: string | null;
+  }>;
+}
+
 export interface UserSubscriptionAssignment {
   userId: string;
   email: string | null;

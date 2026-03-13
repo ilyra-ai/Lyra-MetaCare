@@ -11,6 +11,7 @@ import {
   PlanKey,
   PlanMatrixPlan,
   PlanMatrixResponse,
+  PlanMatrixUpdateInput,
   SubscriptionPlanSummary,
   UserSubscriptionAssignment,
 } from '@/types/subscription';
@@ -124,29 +125,6 @@ interface AdminUserListRow {
   billing_interval: string | null;
   subscription_status: string | null;
 }
-
-type PlanMatrixUpdateInput = {
-  name: string;
-  tagline: string;
-  description: string;
-  monthlyPrice: number;
-  annualPrice: number;
-  currencyCode: string;
-  highlightText: string | null;
-  accentFrom: string;
-  accentTo: string;
-  isActive: boolean;
-  isPublic: boolean;
-  externalProductId: string | null;
-  externalMonthlyPriceId: string | null;
-  externalAnnualPriceId: string | null;
-  features: Array<{
-    key: PlanFeatureKey;
-    enabled: boolean;
-    quotaValue: number | null;
-    resetInterval: string | null;
-  }>;
-};
 
 type AdminUserSortColumn = 'created_at' | 'first_name' | 'email';
 

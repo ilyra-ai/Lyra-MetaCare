@@ -42,7 +42,10 @@ export function BillingActionPanel({
   const [actionKey, setActionKey] = React.useState<string | null>(null);
 
   const handleRedirectAction = React.useCallback(
-    async (path: '/api/billing/checkout' | '/api/billing/portal', body?: object) => {
+    async (
+      path: '/api/billing/checkout' | '/api/billing/portal',
+      body?: object
+    ) => {
       setActionKey(path + JSON.stringify(body ?? {}));
       try {
         const response = await fetch(path, {
@@ -54,7 +57,10 @@ export function BillingActionPanel({
           body: body ? JSON.stringify(body) : undefined,
         });
 
-        const payload = (await response.json()) as { url?: string; error?: string };
+        const payload = (await response.json()) as {
+          url?: string;
+          error?: string;
+        };
 
         if (!response.ok || typeof payload.url !== 'string') {
           throw new Error(

@@ -1,16 +1,18 @@
+import type Stripe from 'stripe';
+
 import { PlanKey, SubscriptionPlanSummary } from '@/types/subscription';
 
 import { BillingEnvironmentStatus } from '@/types/subscription';
 
 const STRIPE_PROVIDER = 'stripe' as const;
-const STRIPE_API_VERSION = '2025-03-31.basil';
+const STRIPE_API_VERSION: Stripe.LatestApiVersion = '2026-02-25.clover';
 
 function readOptionalEnv(name: string) {
   const value = process.env[name]?.trim();
   return value && value.length > 0 ? value : null;
 }
 
-export function getStripeApiVersion() {
+export function getStripeApiVersion(): Stripe.LatestApiVersion {
   return STRIPE_API_VERSION;
 }
 
@@ -57,7 +59,9 @@ export function getStripeEnvironmentStatus(
 }
 
 function getStripeEnvPriceId(planKey: PlanKey, interval: 'monthly' | 'annual') {
-  return readOptionalEnv(`STRIPE_PRICE_${planKey.toUpperCase()}_${interval.toUpperCase()}`);
+  return readOptionalEnv(
+    `STRIPE_PRICE_${planKey.toUpperCase()}_${interval.toUpperCase()}`
+  );
 }
 
 export function resolveStripePriceId(

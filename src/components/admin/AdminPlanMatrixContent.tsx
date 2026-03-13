@@ -37,6 +37,7 @@ import {
   PlanKey,
   PlanMatrixPlan,
   PlanMatrixResponse,
+  PlanMatrixUpdateInput,
 } from '@/types/subscription';
 
 const planDescriptions: Record<PlanKey, string> = {
@@ -186,29 +187,34 @@ export function AdminPlanMatrixContent() {
 
       setSavingPlanKey(planKey);
       try {
+        const requestPayload: PlanMatrixUpdateInput = {
+          name: plan.name,
+          tagline: plan.tagline,
+          description: plan.description,
+          monthlyPrice: plan.monthlyPrice,
+          annualPrice: plan.annualPrice,
+          currencyCode: plan.currencyCode,
+          highlightText: plan.highlightText,
+          accentFrom: plan.accentFrom,
+          accentTo: plan.accentTo,
+          isActive: plan.isActive,
+          isPublic: plan.isPublic,
+          externalProductId: plan.externalProductId,
+          externalMonthlyPriceId: plan.externalMonthlyPriceId,
+          externalAnnualPriceId: plan.externalAnnualPriceId,
+          features: plan.features.map((feature) => ({
+            key: feature.key,
+            enabled: feature.enabled,
+            quotaValue: feature.quotaValue,
+            resetInterval: feature.resetInterval,
+          })),
+        };
+
         const response = await fetch(`/api/admin/plans/${planKey}`, {
           method: 'PATCH',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: plan.name,
-            tagline: plan.tagline,
-            description: plan.description,
-            monthlyPrice: plan.monthlyPrice,
-            annualPrice: plan.annualPrice,
-            currencyCode: plan.currencyCode,
-            highlightText: plan.highlightText,
-            accentFrom: plan.accentFrom,
-            accentTo: plan.accentTo,
-            isActive: plan.isActive,
-            isPublic: plan.isPublic,
-            features: plan.features.map((feature) => ({
-              key: feature.key,
-              enabled: feature.enabled,
-              quotaValue: feature.quotaValue,
-              resetInterval: feature.resetInterval,
-            })),
-          }),
+          body: JSON.stringify(requestPayload),
         });
         const payload = (await response.json()) as
           | PlanMatrixResponse

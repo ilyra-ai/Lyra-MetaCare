@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import type { PoolConnection, RowDataPacket } from 'mysql2/promise';
 
 import {
   getBillingBaseUrl,
@@ -68,6 +69,8 @@ interface BillingWebhookEventRow {
   status: string;
 }
 
+type QueryableConnection = PoolConnection;
+
 function pad(value: number) {
   return String(value).padStart(2, '0');
 }
@@ -82,6 +85,18 @@ function formatUtcDateTimeFromUnix(unixSeconds: number | null | undefined) {
   }
 
   return formatUtcDateTime(new Date(unixSeconds * 1000));
+}
+
+async function queryWithConnection<TRow extends object>(
+  connection: QueryableConnection,
+  sql: string,
+  params: readonly unknown[] = []
+): Promise<TRow[]> {
+  const [rows] = await connection.query<RowDataPacket[]>(
+    sql,
+    params as unknown[]
+  );
+  return rows as TRow[];
 }
 
 function toPlanSummary(row: BillingPlanRow): SubscriptionPlanSummary {
@@ -356,56 +371,17 @@ function resolveInternalPlanForDowngrade(role: string): PlanKey {
   return role === 'admin' ? 'care' : 'free';
 }
 
-async function insertInternalSubscription(options: {
-  userId: string;
-  planId: string;
-  billingInterval: 'monthly' | 'annual';
-  source: string;
-  externalCustomerId?: string | null;
-  externalSubscriptionId?: string | null;
-  externalPriceId?: string | null;
-  startsAt: string;
-  currentPeriodStart: string;
-  currentPeriodEnd: string;
-  cancelAtPeriodEnd: boolean;
-  metadata?: Record<string, unknown> | null;
-}) {
-  await executeStatement(
-    `
-      INSERT INTO user_subscriptions (
-        id,
-        user_id,
-        plan_id,
-        status,
-        billing_interval,
-        source,
-        starts_at,
-        current_period_start,
-        current_period_end,
-        cancel_at_period_end,
-        external_customer_id,
-        external_subscription_id,
-        external_price_id,
-        metadata
-      )
-      VALUES (?, ?, ?, 'active', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `,
-    [
-      crypto.randomUUID(),
-      options.userId,
-      options.planId,
-      options.billingInterval,
-      options.source,
-      options.startsAt,
-      options.currentPeriodStart,
-      options.currentPeriodEnd,
-      options.cancelAtPeriodEnd ? 1 : 0,
-      options.externalCustomerId ?? null,
-      options.externalSubscriptionId ?? null,
-      options.externalPriceId ?? null,
-      options.metadata ? JSON.stringify(options.metadata) : null,
-    ]
-  );
+function getPrimaryStripeSubscriptionItem(subscription: Stripe.Subscription) {
+  const item = subscription.items.data[0];
+
+  if (!item) {
+    throw new HttpError(
+      `A assinatura Stripe ${subscription.id} não possui itens sincronizáveis.`,
+      400
+    );
+  }
+
+  return item;
 }
 
 async function replaceSubscriptionWithPlan(options: {
@@ -437,18 +413,19 @@ async function replaceSubscriptionWithPlan(options: {
       [options.userId]
     );
 
-    const existingRows = await connection.query<ExistingExternalSubscriptionRow[]>(
-      `
+    const existingRows =
+      await queryWithConnection<ExistingExternalSubscriptionRow>(
+        connection,
+        `
         SELECT id
         FROM user_subscriptions
         WHERE external_subscription_id = ?
         LIMIT 1
       `,
-      [options.externalSubscriptionId ?? '__lyra_no_external_subscription__']
-    );
+        [options.externalSubscriptionId ?? '__lyra_no_external_subscription__']
+      );
 
-    const [rows] = existingRows;
-    const existing = rows[0];
+    const existing = existingRows[0];
 
     if (existing && options.externalSubscriptionId) {
       await connection.execute(
@@ -564,12 +541,8 @@ async function downgradeUserToInternalPlan(options: {
   const now = formatUtcDateTime(new Date());
   const nextPeriodEnd =
     preferredPlanKey === 'care'
-      ? formatUtcDateTime(
-          new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        )
-      : formatUtcDateTime(
-          new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        );
+      ? formatUtcDateTime(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000))
+      : formatUtcDateTime(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000));
 
   await replaceSubscriptionWithPlan({
     userId: options.userId,
@@ -616,7 +589,9 @@ function buildBillingCatalogPlans(options: {
       accentTo: plan.accentTo,
       current: plan.key === options.currentPlanKey,
       purchaseEnabled:
-        options.billingConfigured && plan.key !== 'free' && availableIntervals.length > 0,
+        options.billingConfigured &&
+        plan.key !== 'free' &&
+        availableIntervals.length > 0,
       availableIntervals,
     };
   });
@@ -637,15 +612,15 @@ export async function getAccountBillingContext(options: {
   return {
     environment,
     customerLinked: Boolean(
-      linkedCustomer?.external_customer_id || activeSubscription?.external_customer_id
+      linkedCustomer?.external_customer_id ||
+      activeSubscription?.external_customer_id
     ),
     subscriptionSource: activeSubscription?.source ?? null,
     plans: buildBillingCatalogPlans({
       plans,
       currentPlanKey:
-        (plans.find((plan) => plan.id === activeSubscription?.plan_id)?.key as
-          | PlanKey
-          | null) ?? null,
+        (plans.find((plan) => plan.id === activeSubscription?.plan_id)
+          ?.key as PlanKey | null) ?? null,
       billingConfigured: environment.configured,
     }),
   };
@@ -720,7 +695,10 @@ export async function createStripeCheckoutUrl(options: {
   });
 
   if (!session.url) {
-    throw new HttpError('A Stripe não retornou uma URL de checkout válida.', 500);
+    throw new HttpError(
+      'A Stripe não retornou uma URL de checkout válida.',
+      500
+    );
   }
 
   return session.url;
@@ -746,9 +724,12 @@ export async function createStripePortalUrl(options: {
     );
   }
 
-  const linkedCustomer = await getBillingCustomerByUserId(options.session.user.id);
+  const linkedCustomer = await getBillingCustomerByUserId(
+    options.session.user.id
+  );
   const customerId =
-    linkedCustomer?.external_customer_id || (await ensureStripeCustomer(options.session));
+    linkedCustomer?.external_customer_id ||
+    (await ensureStripeCustomer(options.session));
 
   const stripe = getStripeClient();
   const portalSession = await stripe.billingPortal.sessions.create({
@@ -823,7 +804,9 @@ async function ensureWebhookEventRecord(event: Stripe.Event) {
   return rows[0] ?? null;
 }
 
-async function resolveUserForStripeSubscription(subscription: Stripe.Subscription) {
+async function resolveUserForStripeSubscription(
+  subscription: Stripe.Subscription
+) {
   const metadataUserId =
     typeof subscription.metadata?.lyra_user_id === 'string'
       ? subscription.metadata.lyra_user_id
@@ -850,7 +833,7 @@ async function resolveUserForStripeSubscription(subscription: Stripe.Subscriptio
 }
 
 function getStripeSubscriptionInterval(subscription: Stripe.Subscription) {
-  const item = subscription.items.data[0];
+  const item = getPrimaryStripeSubscriptionItem(subscription);
   const interval = item?.price?.recurring?.interval;
 
   return interval === 'year' ? 'annual' : 'monthly';
@@ -860,8 +843,11 @@ function isStripeSubscriptionAccessActive(status: Stripe.Subscription.Status) {
   return ['active', 'trialing', 'past_due'].includes(status);
 }
 
-async function syncStripeSubscription(subscription: Stripe.Subscription, source: string) {
-  const item = subscription.items.data[0];
+async function syncStripeSubscription(
+  subscription: Stripe.Subscription,
+  source: string
+) {
+  const item = getPrimaryStripeSubscriptionItem(subscription);
   const priceId = item?.price?.id;
 
   if (!priceId) {
@@ -907,7 +893,7 @@ async function syncStripeSubscription(subscription: Stripe.Subscription, source:
       `,
       [
         formatUtcDateTimeFromUnix(subscription.canceled_at ?? undefined),
-        formatUtcDateTimeFromUnix(subscription.current_period_end),
+        formatUtcDateTimeFromUnix(item.current_period_end),
         subscription.cancel_at_period_end ? 1 : 0,
         JSON.stringify({
           provider: getStripeProviderName(),
@@ -935,10 +921,8 @@ async function syncStripeSubscription(subscription: Stripe.Subscription, source:
     externalSubscriptionId: subscription.id,
     externalPriceId: priceId,
     startsAt: formatUtcDateTimeFromUnix(subscription.start_date),
-    currentPeriodStart: formatUtcDateTimeFromUnix(
-      subscription.current_period_start
-    ),
-    currentPeriodEnd: formatUtcDateTimeFromUnix(subscription.current_period_end),
+    currentPeriodStart: formatUtcDateTimeFromUnix(item.current_period_start),
+    currentPeriodEnd: formatUtcDateTimeFromUnix(item.current_period_end),
     cancelAtPeriodEnd: subscription.cancel_at_period_end,
     metadata: {
       provider: getStripeProviderName(),
@@ -1002,7 +986,10 @@ export async function processStripeWebhook(options: {
           });
         }
 
-        if (checkoutSession.mode === 'subscription' && checkoutSession.subscription) {
+        if (
+          checkoutSession.mode === 'subscription' &&
+          checkoutSession.subscription
+        ) {
           const subscription = await stripe.subscriptions.retrieve(
             typeof checkoutSession.subscription === 'string'
               ? checkoutSession.subscription
@@ -1042,7 +1029,8 @@ export async function processStripeWebhook(options: {
       externalEventId: event.id,
       status: 'error',
       payload: event,
-      errorMessage: error instanceof Error ? error.message : 'Erro desconhecido.',
+      errorMessage:
+        error instanceof Error ? error.message : 'Erro desconhecido.',
     });
     throw error;
   }
