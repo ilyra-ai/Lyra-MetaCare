@@ -34,11 +34,15 @@ readonly DEFAULT_APP_PORT="3000"
 
 readonly C_RESET=$'\033[0m'
 readonly C_BOLD=$'\033[1m'
+readonly C_DIM=$'\033[2m'
+readonly C_WHITE=$'\033[37m'
+readonly C_GRAY=$'\033[90m'
 readonly C_CYAN=$'\033[36m'
 readonly C_GREEN=$'\033[32m'
 readonly C_YELLOW=$'\033[33m'
 readonly C_RED=$'\033[31m'
 readonly C_BLUE=$'\033[34m'
+readonly C_BG_HOVER=$'\033[48;5;236m'
 
 declare -g PACKAGE_MANAGER=""
 declare -ga PACKAGE_RUN=()
@@ -1650,27 +1654,831 @@ application_menu() {
   done
 }
 
-menu() {
-  local choice=""
-  while true; do
-    banner
-    printf '%sMenu principal%s\n' "$C_BOLD" "$C_RESET"
-    printf '  1. Preparacao e diagnostico\n'
-    printf '  2. Banco de dados MySQL\n'
-    printf '  3. Backup e restore\n'
-    printf '  4. Aplicacao web\n'
-    printf '  0. Sair\n\n'
-    read -r -p "Escolha uma opcao: " choice
-    case "$choice" in
-      1) environment_menu ;;
-      2) database_menu ;;
-      3) backup_menu ;;
-      4) application_menu ;;
-      0) break ;;
-      *) log_warn "Opcao invalida." ;;
-    esac
-    clear
+ensure_schema_action() {
+  install_deps
+  section "Preparando MySQL nativo local"
+  prepare_mysql_runtime
+  log_ok "Schema do app garantido sem apagar dados existentes."
+}
+
+verify_db_action() {
+  install_deps
+  section "Preparando MySQL nativo local"
+  prepare_mysql_runtime
+  verify_database_state
+}
+
+list_backups_action() {
+  ensure_backup_dir
+  if compgen -G "$BACKUP_DIR/*.sql*" >/dev/null; then
+    ls -1t "$BACKUP_DIR" | head -n 10
+  else
+    log_warn "Nenhum backup encontrado em $BACKUP_DIR"
+  fi
+}
+
+help_cli_action() {
+  help_text
+}
+
+repeat_char() {
+  local char="$1"
+  local count="$2"
+  local buffer=""
+  while (( count > 0 )); do
+    buffer+="$char"
+    (( count -= 1 ))
   done
+  printf '%s' "$buffer"
+}
+
+fit_text() {
+  local text="$1"
+  local width="$2"
+  if (( width <= 0 )); then
+    printf ''
+  elif (( ${#text} > width )); then
+    if (( width <= 3 )); then
+      printf '%s' "${text:0:width}"
+    else
+      printf '%s...' "${text:0:width-3}"
+    fi
+  else
+    printf "%-${width}s" "$text"
+  fi
+}
+
+tui_menu_title() {
+  case "$1" in
+    main) printf 'Menu principal' ;;
+    environment) printf 'Preparacao e diagnostico' ;;
+    database) printf 'Banco de dados MySQL' ;;
+    backup) printf 'Backup e restore' ;;
+    application) printf 'Aplicacao web' ;;
+    *) printf 'Menu' ;;
+  esac
+}
+
+tui_menu_items_name() {
+  case "$1" in
+    main) printf 'TUI_MAIN_ITEMS' ;;
+    environment) printf 'TUI_ENV_ITEMS' ;;
+    database) printf 'TUI_DB_ITEMS' ;;
+    backup) printf 'TUI_BACKUP_ITEMS' ;;
+    application) printf 'TUI_APP_ITEMS' ;;
+    *) return 1 ;;
+  esac
+}
+
+declare -ga TUI_MAIN_ITEMS=(
+  "submenu|environment|Preparacao e diagnostico|Validacoes do host, dependencias, configuracao e saude operacional"
+  "submenu|database|Banco de dados MySQL|Instalacao nativa, servico local, schema, grants e migracoes"
+  "submenu|backup|Backup e restore|Backup full do banco do app e restore seguro em schema isolado"
+  "submenu|application|Aplicacao web|Subida dev/prod e controle do processo local"
+  "action|help_cli_action|Ajuda rapida|Mostra os comandos CLI e a trilha suportada pelo orquestrador"
+  "exit|exit|Sair|Encerra a interface interativa"
+)
+
+declare -ga TUI_ENV_ITEMS=(
+  "action|doctor|Validar requisitos do sistema|Checa Bash, SO, Node, pacote do projeto, MySQL e ferramentas"
+  "action|install_deps|Instalar dependencias do projeto|Instala apenas se o estado atual exigir"
+  "action|ensure_env|Configurar ambiente local|Atualiza .env.local com secrets, portas e credenciais"
+  "action|show_config_summary|Mostrar configuracao efetiva|Exibe a configuracao ativa com segredos mascarados"
+  "action|status_report|Mostrar status consolidado|Resume app, MySQL, bootstrap admin e autenticacao"
+  "action|health_report|Rodar check de saude operacional|Valida ambiente, acesso e prontidao operacional"
+  "back|main|Voltar ao menu principal|Retorna para a camada raiz do orquestrador"
+)
+
+declare -ga TUI_DB_ITEMS=(
+  "action|install_native_mysql|Instalar MySQL nativo|Instala apenas se o host ainda nao possuir MySQL local"
+  "action|mysql_up|Preparar MySQL local para o app|Inicia o servico e garante schema e grants sem apagar dados"
+  "action|ensure_schema_action|Garantir schema e grants|Prepara schema e usuario do app sem substituir dados existentes"
+  "action|mysql_migrate|Aplicar migracoes MySQL|Executa o motor real de migracao do projeto"
+  "action|verify_db_action|Verificar schema e tabelas|Confere consistencia basica e tabela de migracoes"
+  "action|show_mysql_logs|Acompanhar logs do MySQL|Abre o stream real do servico local do banco"
+  "back|main|Voltar ao menu principal|Retorna para a camada raiz do orquestrador"
+)
+
+declare -ga TUI_BACKUP_ITEMS=(
+  "action|backup_database|Gerar backup full|Executa dump completo do schema do app"
+  "action|restore_database|Restaurar backup full|Restaura para um schema seguro sem sobrescrever o schema ativo"
+  "action|list_backups_action|Listar backups disponiveis|Mostra os backups locais mais recentes"
+  "back|main|Voltar ao menu principal|Retorna para a camada raiz do orquestrador"
+)
+
+declare -ga TUI_APP_ITEMS=(
+  "action|dev_mode|Subir stack completa em desenvolvimento|Instala, prepara MySQL, migra e sobe Next em dev"
+  "action|prod_mode|Subir stack completa em producao|Instala, prepara MySQL, migra, builda e sobe Next em start"
+  "action|fast_dev_mode|Modo desenvolvimento rapido|Usa dependencias existentes e sobe o ambiente mais rapido"
+  "action|fast_prod_mode|Modo producao rapido|Usa build existente e valida MySQL antes de subir"
+  "action|stop_app|Encerrar aplicacao|Finaliza somente o processo do app gerenciado por este script"
+  "action|stop_all|Encerrar tudo|Encerra o app e preserva o MySQL sob controle do sistema"
+  "back|main|Voltar ao menu principal|Retorna para a camada raiz do orquestrador"
+)
+
+tui_enter_screen() {
+  printf '\033[?1049h\033[?25l'
+}
+
+tui_leave_screen() {
+  printf '\033[?25h\033[?1049l'
+}
+
+tui_draw_screen() {
+  local menu_name="$1"
+  local selected_index="$2"
+  local status_kind="$3"
+  local status_message="$4"
+  local width height left_width right_width separator
+  local items_name title
+
+  width="$(tput cols 2>/dev/null || printf '120')"
+  height="$(tput lines 2>/dev/null || printf '32')"
+  (( width < 90 )) && width=90
+  left_width=42
+  right_width=$(( width - left_width - 7 ))
+  (( right_width < 30 )) && right_width=30
+  separator="$(repeat_char "-" "$width")"
+
+  resolve_commands
+  select_package_manager
+  export_runtime_env
+
+  items_name="$(tui_menu_items_name "$menu_name")"
+  local -n menu_items="$items_name"
+  title="$(tui_menu_title "$menu_name")"
+
+  if (( selected_index < 0 )); then
+    selected_index=0
+  elif (( selected_index >= ${#menu_items[@]} )); then
+    selected_index=$((${#menu_items[@]} - 1))
+  fi
+
+  local selected_record selected_kind selected_target selected_label selected_desc
+  selected_record="${menu_items[$selected_index]}"
+  IFS='|' read -r selected_kind selected_target selected_label selected_desc <<< "$selected_record"
+
+  printf '\033[H\033[2J'
+  printf '%s%s%s\n' "$C_BOLD" "$(fit_text "Lyra MetaCare Local Orchestrator" "$width")" "$C_RESET"
+  printf '%s\n' "$separator"
+  printf '%s\n' "$(fit_text "Tela: $title | SO: $OS_LABEL | pacote: $PACKAGE_MANAGER | app: 127.0.0.1:$PORT | mysql: $MYSQL_HOST:$MYSQL_PORT" "$width")"
+  printf '%s\n' "$separator"
+
+  local max_rows=0
+  max_rows=${#menu_items[@]}
+  local row=0
+  while (( row < max_rows )); do
+    local left_text=""
+    local right_text=""
+    if (( row < ${#menu_items[@]} )); then
+      local record kind target label desc prefix
+      record="${menu_items[$row]}"
+      IFS='|' read -r kind target label desc <<< "$record"
+      prefix="  "
+      (( row == selected_index )) && prefix="> "
+      left_text="${prefix}${label}"
+      if (( row == 0 )); then
+        right_text="Descricao: $selected_desc"
+      elif (( row == 1 )); then
+        right_text="Acao: ${selected_target}"
+      elif (( row == 2 )); then
+        right_text="Admin MySQL: $(mysql_admin_strategy)"
+      elif (( row == 3 )); then
+        if admin_bootstrap_ready; then
+          right_text="Bootstrap admin: ${ADMIN_BOOTSTRAP_EMAIL}"
+        else
+          right_text="Bootstrap admin: desabilitado"
+        fi
+      elif (( row == 4 )); then
+        if mysql_tcp_open; then
+          right_text="MySQL: porta local respondendo"
+        else
+          right_text="MySQL: porta local sem resposta"
+        fi
+      elif (( row == 5 )); then
+        local pid
+        pid="$(app_pid || true)"
+        if [[ -n "$pid" ]] && pid_running "$pid"; then
+          right_text="App: ativo em $(read_meta port || printf "$DEFAULT_APP_PORT")"
+        else
+          right_text="App: parado"
+        fi
+      fi
+    fi
+    printf '| %s | %s |\n' "$(fit_text "$left_text" "$left_width")" "$(fit_text "$right_text" "$right_width")"
+    (( row += 1 ))
+  done
+
+  local filler_rows
+  filler_rows=$(( height - max_rows - 10 ))
+  while (( filler_rows > 0 )); do
+    printf '| %s | %s |\n' "$(fit_text "" "$left_width")" "$(fit_text "" "$right_width")"
+    (( filler_rows -= 1 ))
+  done
+
+  printf '%s\n' "$separator"
+  case "$status_kind" in
+    ok) printf '%s\n' "$(fit_text "Status: OK - $status_message" "$width")" ;;
+    err) printf '%s\n' "$(fit_text "Status: ERRO - $status_message" "$width")" ;;
+    warn) printf '%s\n' "$(fit_text "Status: AVISO - $status_message" "$width")" ;;
+    *) printf '%s\n' "$(fit_text "Status: $status_message" "$width")" ;;
+  esac
+  printf '%s\n' "$(fit_text "Atalhos: seta/j-k navega | Enter executa | b volta | q sai" "$width")"
+}
+
+tui_run_action() {
+  local action_fn="$1"
+  local action_label="$2"
+  local status_kind_ref="$3"
+  local status_message_ref="$4"
+
+  tui_leave_screen
+  printf '\n%s%s%s\n' "$C_BOLD" "$action_label" "$C_RESET"
+  printf '%s\n\n' "$(repeat_char "=" 72)"
+
+  local exit_code=0
+  if "$action_fn"; then
+    printf '\n%s[OK]%s %s\n' "$C_GREEN" "$C_RESET" "$action_label"
+    printf -v "$status_kind_ref" '%s' "ok"
+    printf -v "$status_message_ref" '%s' "$action_label concluido"
+  else
+    exit_code=$?
+    printf '\n%s[ERRO]%s %s\n' "$C_RED" "$C_RESET" "$action_label"
+    printf -v "$status_kind_ref" '%s' "err"
+    printf -v "$status_message_ref" '%s' "$action_label falhou com codigo $exit_code"
+  fi
+
+  printf '\nPressione Enter para voltar ao menu...'
+  read -r _
+  tui_enter_screen
+  return 0
+}
+
+interactive_tui_menu() {
+  local current_menu="main"
+  local selected_index=0
+  local status_kind="info"
+  local status_message="Pronto para operar localmente com MySQL nativo e app sem containers."
+  local key="" seq="" items_name="" selected_record="" kind="" target="" label="" desc=""
+
+  tui_enter_screen
+  trap 'tui_leave_screen' INT TERM
+
+  while true; do
+    items_name="$(tui_menu_items_name "$current_menu")"
+    local -n current_items="$items_name"
+    (( selected_index < 0 )) && selected_index=0
+    (( selected_index >= ${#current_items[@]} )) && selected_index=$((${#current_items[@]} - 1))
+    tui_draw_screen "$current_menu" "$selected_index" "$status_kind" "$status_message"
+
+    read -rsn1 key
+    case "$key" in
+      $'\x1b')
+        read -rsn2 -t 0.05 seq || true
+        case "$seq" in
+          "[A") (( selected_index > 0 )) && (( selected_index -= 1 )) ;;
+          "[B") (( selected_index < ${#current_items[@]} - 1 )) && (( selected_index += 1 )) ;;
+          "[D") current_menu="main"; selected_index=0 ;;
+        esac
+        ;;
+      k) (( selected_index > 0 )) && (( selected_index -= 1 )) ;;
+      j) (( selected_index < ${#current_items[@]} - 1 )) && (( selected_index += 1 )) ;;
+      b|B)
+        current_menu="main"
+        selected_index=0
+        status_kind="info"
+        status_message="Retornado ao menu principal."
+        ;;
+      q|Q)
+        break
+        ;;
+      "")
+        selected_record="${current_items[$selected_index]}"
+        IFS='|' read -r kind target label desc <<< "$selected_record"
+        case "$kind" in
+          submenu)
+            current_menu="$target"
+            selected_index=0
+            status_kind="info"
+            status_message="$label aberto."
+            ;;
+          back)
+            current_menu="$target"
+            selected_index=0
+            status_kind="info"
+            status_message="Retornado ao menu principal."
+            ;;
+          exit)
+            break
+            ;;
+          action)
+            tui_run_action "$target" "$label" status_kind status_message
+            ;;
+        esac
+        ;;
+    esac
+  done
+
+  trap - INT TERM
+  tui_leave_screen
+}
+
+menu() {
+  if [[ ! -t 0 || ! -t 1 ]]; then
+    help_text
+    return 0
+  fi
+  template_tui_menu
+}
+
+declare -ga TEMPLATE_TUI_OUTPUT_LINES=()
+declare -g TEMPLATE_TUI_OUTPUT_LIMIT=240
+declare -g TEMPLATE_TUI_PROGRESS=0
+declare -g TEMPLATE_TUI_TASK="Standby"
+declare -g TEMPLATE_TUI_STARTED_AT=0
+declare -g TEMPLATE_TUI_SCROLL=0
+declare -g TEMPLATE_TUI_LAST_SNAPSHOT_AT=0
+declare -g TEMPLATE_TUI_MYSQL_STATE="MySQL nao verificado"
+declare -g TEMPLATE_TUI_APP_STATE="Aplicacao nao verificada"
+declare -g TEMPLATE_TUI_BOOTSTRAP_STATE="Bootstrap admin nao verificado"
+declare -g TEMPLATE_TUI_MIN_OUTPUT_HEIGHT=6
+
+template_tui_timer() {
+  local elapsed=0
+  elapsed=$(( $(date +%s) - TEMPLATE_TUI_STARTED_AT ))
+  printf '%02d:%02d:%02d' $((elapsed / 3600)) $(((elapsed % 3600) / 60)) $((elapsed % 60))
+}
+
+template_tui_append_output() {
+  local line="${1//$'\r'/}"
+  line="${line//$'\t'/  }"
+  [[ -n "$line" ]] || line=" "
+  TEMPLATE_TUI_OUTPUT_LINES+=("$line")
+  while (( ${#TEMPLATE_TUI_OUTPUT_LINES[@]} > TEMPLATE_TUI_OUTPUT_LIMIT )); do
+    TEMPLATE_TUI_OUTPUT_LINES=("${TEMPLATE_TUI_OUTPUT_LINES[@]:1}")
+  done
+  if (( TEMPLATE_TUI_SCROLL < 3 )); then
+    TEMPLATE_TUI_SCROLL=0
+  fi
+}
+
+template_tui_status_prefix() {
+  local status_kind="$1"
+  case "$status_kind" in
+    ok) printf '[OK]' ;;
+    err) printf '[ERRO]' ;;
+    warn) printf '[AVISO]' ;;
+    *) printf '[INFO]' ;;
+  esac
+}
+
+template_tui_status_color() {
+  local status_kind="$1"
+  case "$status_kind" in
+    ok) printf '%s' "$C_GREEN" ;;
+    err) printf '%s' "$C_RED" ;;
+    warn) printf '%s' "$C_YELLOW" ;;
+    *) printf '%s' "$C_CYAN" ;;
+  esac
+}
+
+template_tui_output_height() {
+  local menu_name="$1"
+  local height items_name
+  height="$(tput lines 2>/dev/null || printf '32')"
+  items_name="$(tui_menu_items_name "$menu_name")"
+  local -n menu_items="$items_name"
+  local output_height=$(( height - ${#menu_items[@]} - 14 ))
+  if (( output_height < TEMPLATE_TUI_MIN_OUTPUT_HEIGHT )); then
+    output_height="$TEMPLATE_TUI_MIN_OUTPUT_HEIGHT"
+  fi
+  printf '%s' "$output_height"
+}
+
+template_tui_max_scroll() {
+  local visible_lines="$1"
+  local max_scroll=$(( ${#TEMPLATE_TUI_OUTPUT_LINES[@]} - visible_lines ))
+  if (( max_scroll < 0 )); then
+    max_scroll=0
+  fi
+  printf '%s' "$max_scroll"
+}
+
+template_tui_clamp_scroll() {
+  local menu_name="$1"
+  local visible_lines max_scroll
+  visible_lines="$(template_tui_output_height "$menu_name")"
+  max_scroll="$(template_tui_max_scroll "$visible_lines")"
+  if (( TEMPLATE_TUI_SCROLL < 0 )); then
+    TEMPLATE_TUI_SCROLL=0
+  elif (( TEMPLATE_TUI_SCROLL > max_scroll )); then
+    TEMPLATE_TUI_SCROLL="$max_scroll"
+  fi
+}
+
+template_tui_scroll_lines() {
+  local menu_name="$1"
+  local delta="$2"
+  TEMPLATE_TUI_SCROLL=$(( TEMPLATE_TUI_SCROLL + delta ))
+  template_tui_clamp_scroll "$menu_name"
+}
+
+template_tui_scroll_page() {
+  local menu_name="$1"
+  local direction="$2"
+  local page_size
+  page_size="$(template_tui_output_height "$menu_name")"
+  if [[ "$direction" == "up" ]]; then
+    TEMPLATE_TUI_SCROLL=$(( TEMPLATE_TUI_SCROLL + page_size ))
+  else
+    TEMPLATE_TUI_SCROLL=$(( TEMPLATE_TUI_SCROLL - page_size ))
+  fi
+  template_tui_clamp_scroll "$menu_name"
+}
+
+template_tui_refresh_snapshot() {
+  local now pid
+  now="$(date +%s)"
+  if (( now - TEMPLATE_TUI_LAST_SNAPSHOT_AT < 2 )); then
+    return 0
+  fi
+
+  export_runtime_env
+
+  if mysql_tcp_open; then
+    TEMPLATE_TUI_MYSQL_STATE="MySQL local respondendo em $MYSQL_HOST:$MYSQL_PORT"
+  else
+    TEMPLATE_TUI_MYSQL_STATE="MySQL local indisponivel em $MYSQL_HOST:$MYSQL_PORT"
+  fi
+
+  pid="$(app_pid || true)"
+  if [[ -n "$pid" ]] && pid_running "$pid"; then
+    TEMPLATE_TUI_APP_STATE="Aplicacao local ativa na porta $(read_meta port || printf '%s' "$DEFAULT_APP_PORT")"
+  else
+    TEMPLATE_TUI_APP_STATE="Aplicacao local parada"
+  fi
+
+  if admin_bootstrap_ready; then
+    TEMPLATE_TUI_BOOTSTRAP_STATE="Bootstrap admin pronto para ${ADMIN_BOOTSTRAP_EMAIL}"
+  else
+    TEMPLATE_TUI_BOOTSTRAP_STATE="Bootstrap admin desabilitado"
+  fi
+
+  TEMPLATE_TUI_LAST_SNAPSHOT_AT="$now"
+}
+
+template_tui_boot_sequence() {
+  local width height left frames frame i
+  local -a frames=('|' '/' '-' '\\')
+
+  width="$(tput cols 2>/dev/null || printf '120')"
+  height="$(tput lines 2>/dev/null || printf '32')"
+  left=$(( (width - 44) / 2 ))
+  (( left < 2 )) && left=2
+
+  for i in $(seq 0 15); do
+    frame="${frames[$(( i % ${#frames[@]} ))]}"
+    printf '\033[H\033[2J'
+    printf '\033[%d;%dH%s.%s LYRA METACARE %sv%s%s\n' $(( height / 2 - 1 )) "$left" "$C_GRAY" "$C_RESET" "$C_BOLD" "$SCRIPT_VERSION" "$C_RESET"
+    printf '\033[%d;%dH%s%s%s\n' $(( height / 2 )) "$left" "$C_BOLD" "Carregando interface operacional local" "$C_RESET"
+    printf '\033[%d;%dH%s[%s]%s preparando TUI com MySQL nativo e app local real\n' $(( height / 2 + 1 )) "$left" "$C_CYAN" "$frame" "$C_RESET"
+    sleep 0.04
+  done
+}
+
+template_tui_show_output_viewer() {
+  local key="" seq="" width height visible_lines start_line row total_lines max_scroll viewer_scroll=0 line=""
+
+  while true; do
+    width="$(tput cols 2>/dev/null || printf '120')"
+    height="$(tput lines 2>/dev/null || printf '32')"
+    (( width < 88 )) && width=88
+    visible_lines=$(( height - 7 ))
+    (( visible_lines < 5 )) && visible_lines=5
+    total_lines="${#TEMPLATE_TUI_OUTPUT_LINES[@]}"
+    max_scroll=$(( total_lines - visible_lines ))
+    (( max_scroll < 0 )) && max_scroll=0
+    (( viewer_scroll < 0 )) && viewer_scroll=0
+    (( viewer_scroll > max_scroll )) && viewer_scroll=max_scroll
+    start_line=$(( total_lines - visible_lines - viewer_scroll ))
+    (( start_line < 0 )) && start_line=0
+
+    printf '\033[H\033[2J'
+    printf '  %s.%s LIVE OUTPUT HISTORICO %sv%s%s\n' "$C_BLUE" "$C_RESET" "$C_BOLD" "$SCRIPT_VERSION" "$C_RESET"
+    printf '  %s%s%s\n' "$C_BOLD" "$(fit_text "Saida real capturada das acoes executadas" $((width - 4)))" "$C_RESET"
+    printf '  %s%s%s\n' "$C_BLUE" "$(repeat_char "-" $((width - 4)))" "$C_RESET"
+
+    row=0
+    while (( row < visible_lines )); do
+      line=""
+      if (( start_line + row < total_lines )); then
+        line="${TEMPLATE_TUI_OUTPUT_LINES[$(( start_line + row ))]}"
+      fi
+      printf '  %s|%s %s%s%s\n' "$C_BLUE" "$C_RESET" "$C_YELLOW" "$(fit_text "$line" $((width - 8)))" "$C_RESET"
+      (( row += 1 ))
+    done
+
+    printf '  %s%s%s\n' "$C_BLUE" "$(repeat_char "-" $((width - 4)))" "$C_RESET"
+    printf '  %s\n' "$(fit_text "Atalhos: setas/j-k mover | a/z linha | PgUp/v pagina | q ou Enter voltar" $((width - 4)))"
+
+    read -rsn1 key
+    case "$key" in
+      $'\x1b')
+        read -rsn2 -t 0.05 seq || true
+        case "$seq" in
+          "[A") (( viewer_scroll < max_scroll )) && (( viewer_scroll += 1 )) ;;
+          "[B") (( viewer_scroll > 0 )) && (( viewer_scroll -= 1 )) ;;
+          "[5~") viewer_scroll=$(( viewer_scroll + visible_lines )) ;;
+          "[6~") viewer_scroll=$(( viewer_scroll - visible_lines )) ;;
+        esac
+        ;;
+      k|a|A) (( viewer_scroll < max_scroll )) && (( viewer_scroll += 1 )) ;;
+      j|z|Z) (( viewer_scroll > 0 )) && (( viewer_scroll -= 1 )) ;;
+      v|V) viewer_scroll=$(( viewer_scroll - visible_lines )) ;;
+      q|Q|"") break ;;
+    esac
+  done
+}
+
+template_tui_action_requires_direct_terminal() {
+  case "$1" in
+    ensure_env|restore_database|show_mysql_logs|install_native_mysql)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+template_tui_draw() {
+  local menu_name="$1"
+  local selected_index="$2"
+  local status_kind="$3"
+  local status_message="$4"
+  local width height items_name title timer bar_width filled empty menu_height output_height start_line
+  local selected_record selected_kind selected_target selected_label selected_desc
+  local desc_width content_width max_scroll status_prefix status_color line row
+  local selected_mode info_line_1 info_line_2 progress_prefix progress_suffix footer_text
+  local buffer=""
+
+  width="$(tput cols 2>/dev/null || printf '120')"
+  height="$(tput lines 2>/dev/null || printf '32')"
+  (( width < 88 )) && width=88
+  resolve_commands
+  select_package_manager
+  export_runtime_env
+
+  items_name="$(tui_menu_items_name "$menu_name")"
+  local -n menu_items="$items_name"
+  title="$(tui_menu_title "$menu_name")"
+  timer="$(template_tui_timer)"
+  bar_width=$(( width - 12 ))
+  (( bar_width < 10 )) && bar_width=10
+  filled=$(( TEMPLATE_TUI_PROGRESS * bar_width / 100 ))
+  empty=$(( bar_width - filled ))
+  menu_height=${#menu_items[@]}
+  output_height="$(template_tui_output_height "$menu_name")"
+  template_tui_clamp_scroll "$menu_name"
+  max_scroll="$(template_tui_max_scroll "$output_height")"
+  start_line=$((${#TEMPLATE_TUI_OUTPUT_LINES[@]} - output_height - TEMPLATE_TUI_SCROLL))
+  (( start_line < 0 )) && start_line=0
+
+  selected_record="${menu_items[$selected_index]}"
+  IFS='|' read -r selected_kind selected_target selected_label selected_desc <<< "$selected_record"
+  selected_mode="stream ao vivo"
+  if template_tui_action_requires_direct_terminal "$selected_target"; then
+    selected_mode="execucao direta no terminal"
+  fi
+
+  template_tui_refresh_snapshot
+  content_width=$(( width - 4 ))
+  desc_width=$(( width - 44 ))
+  (( desc_width < 18 )) && desc_width=18
+  status_prefix="$(template_tui_status_prefix "$status_kind")"
+  status_color="$(template_tui_status_color "$status_kind")"
+  info_line_1="Tela: $title | SO: $OS_LABEL | pacote: $PACKAGE_MANAGER | app: 127.0.0.1:$PORT"
+  info_line_2="Menu: $selected_label | modo: $selected_mode | admin mysql: ${MYSQL_ADMIN_USER:-nao configurado}"
+  progress_prefix="$(repeat_char "=" "$filled")"
+  progress_suffix="$(repeat_char "-" "$empty")"
+  footer_text="Atalhos: setas/j-k mover | Enter executar | a/z linha | PgUp/v pagina | l live | b voltar | q sair"
+
+  buffer+=$'\033[H\033[2J'
+  buffer+="  ${C_GRAY}.${C_RESET} LYRA METACARE ${C_BOLD}v${SCRIPT_VERSION}${C_RESET} - ${timer}\n"
+  buffer+="  ${C_BOLD}$(fit_text "$TEMPLATE_TUI_TASK" "$content_width")${C_RESET}\n"
+  buffer+="  ${C_GREEN}${progress_prefix}${C_BLUE}${progress_suffix}${C_RESET} ${C_CYAN}${TEMPLATE_TUI_PROGRESS}%${C_RESET}\n"
+  buffer+="  ${C_BLUE}$(repeat_char "-" "$content_width")${C_RESET}\n"
+  buffer+="  ${C_DIM}$(fit_text "$info_line_1" "$content_width")${C_RESET}\n"
+  buffer+="  ${C_DIM}$(fit_text "$info_line_2" "$content_width")${C_RESET}\n\n"
+
+  row=0
+  while (( row < menu_height )); do
+    local record kind target label desc
+    record="${menu_items[$row]}"
+    IFS='|' read -r kind target label desc <<< "$record"
+    if (( row == selected_index )); then
+      printf -v line '> %-32s %s' "$(fit_text "$label" 32)" "$(fit_text "$desc" "$desc_width")"
+      buffer+="  ${C_BG_HOVER}${C_CYAN}${C_BOLD}$(fit_text "$line" "$content_width")${C_RESET}\n"
+    else
+      printf -v line '  %-32s %s' "$(fit_text "$label" 32)" "$(fit_text "$desc" "$desc_width")"
+      buffer+="  ${C_WHITE}$(fit_text "$line" "$content_width")${C_RESET}\n"
+    fi
+    (( row += 1 ))
+  done
+
+  buffer+=$'\n'
+  if (( TEMPLATE_TUI_SCROLL > 0 )); then
+    buffer+="  ${C_BLUE}>${C_RESET} SAIDA AO VIVO ${C_YELLOW}[SCROLL -${TEMPLATE_TUI_SCROLL}/${max_scroll}]${C_RESET}\n"
+  else
+    buffer+="  ${C_BLUE}>${C_RESET} SAIDA AO VIVO\n"
+  fi
+  buffer+="  ${C_BLUE}$(repeat_char "-" "$content_width")${C_RESET}\n"
+
+  row=0
+  while (( row < output_height )); do
+    local idx=$(( start_line + row ))
+    local live_line="" output_prefix="|"
+    if (( idx < ${#TEMPLATE_TUI_OUTPUT_LINES[@]} )); then
+      live_line="${TEMPLATE_TUI_OUTPUT_LINES[$idx]}"
+    fi
+    buffer+="  ${C_BLUE}${output_prefix}${C_RESET} ${C_YELLOW}$(fit_text "$live_line" $((content_width - 4)))${C_RESET}\n"
+    (( row += 1 ))
+  done
+
+  buffer+="  ${C_BLUE}$(repeat_char "-" "$content_width")${C_RESET}\n"
+  buffer+="  ${status_color}$(fit_text "${status_prefix} ${status_message}" "$content_width")${C_RESET}\n"
+  buffer+="  ${C_DIM}$(fit_text "$TEMPLATE_TUI_MYSQL_STATE" "$content_width")${C_RESET}\n"
+  buffer+="  ${C_DIM}$(fit_text "$TEMPLATE_TUI_APP_STATE" "$content_width")${C_RESET}\n"
+  buffer+="  ${C_DIM}$(fit_text "$TEMPLATE_TUI_BOOTSTRAP_STATE" "$content_width")${C_RESET}\n"
+  buffer+="  ${C_DIM}$(fit_text "$footer_text" "$content_width")${C_RESET}"
+
+  printf '%b\033[J' "$buffer"
+}
+
+template_tui_run_action() {
+  local action_fn="$1"
+  local action_label="$2"
+  local menu_name="$3"
+  local selected_index="$4"
+  local status_kind_ref="$5"
+  local status_message_ref="$6"
+  local line="" action_fd="" action_pid=""
+  local exit_code=0
+
+  TEMPLATE_TUI_TASK="$action_label"
+  TEMPLATE_TUI_PROGRESS=12
+  TEMPLATE_TUI_SCROLL=0
+  TEMPLATE_TUI_OUTPUT_LINES=()
+  template_tui_append_output "[INFO] Iniciando: $action_label"
+  printf -v "$status_kind_ref" '%s' "info"
+  printf -v "$status_message_ref" '%s' "Executando $action_label"
+  template_tui_draw "$menu_name" "$selected_index" "${!status_kind_ref}" "${!status_message_ref}"
+
+  if template_tui_action_requires_direct_terminal "$action_fn"; then
+    template_tui_append_output "[INFO] Esta acao precisa do terminal direto para preservar prompts e credenciais reais."
+    template_tui_draw "$menu_name" "$selected_index" "${!status_kind_ref}" "${!status_message_ref}"
+    tui_leave_screen
+    printf '\n%s%s%s\n' "$C_BOLD" "$action_label" "$C_RESET"
+    if [[ "$action_fn" == "show_mysql_logs" ]]; then
+      printf 'Use Ctrl+C para interromper o stream e voltar ao menu.\n\n'
+    else
+      printf 'A execucao abaixo esta no terminal direto para manter prompts e interacoes reais.\n\n'
+    fi
+    set +e
+    "$action_fn"
+    exit_code=$?
+    set -e
+    tui_enter_screen
+  else
+    set +e
+    coproc TEMPLATE_TUI_ACTION { "$action_fn" 2>&1; }
+    action_fd="${TEMPLATE_TUI_ACTION[0]}"
+    action_pid="$TEMPLATE_TUI_ACTION_PID"
+    while true; do
+      if IFS= read -r -t 0.1 -u "$action_fd" line 2>/dev/null; then
+        template_tui_append_output "$line"
+        if (( TEMPLATE_TUI_PROGRESS < 90 )); then
+          (( TEMPLATE_TUI_PROGRESS += 2 ))
+        fi
+      else
+        if ! kill -0 "$action_pid" 2>/dev/null; then
+          break
+        fi
+        if (( TEMPLATE_TUI_PROGRESS < 90 )); then
+          (( TEMPLATE_TUI_PROGRESS += 1 ))
+        fi
+      fi
+      template_tui_draw "$menu_name" "$selected_index" "${!status_kind_ref}" "${!status_message_ref}"
+    done
+    wait "$action_pid"
+    exit_code=$?
+    set -e
+  fi
+
+  TEMPLATE_TUI_PROGRESS=100
+  if (( exit_code == 0 )); then
+    template_tui_append_output "[OK] Concluido: $action_label"
+    printf -v "$status_kind_ref" '%s' "ok"
+    printf -v "$status_message_ref" '%s' "$action_label concluido. Pressione Enter para continuar."
+  else
+    template_tui_append_output "[ERRO] Falha: $action_label (codigo $exit_code)"
+    printf -v "$status_kind_ref" '%s' "err"
+    printf -v "$status_message_ref" '%s' "$action_label falhou com codigo $exit_code. Pressione Enter para continuar."
+  fi
+
+  template_tui_draw "$menu_name" "$selected_index" "${!status_kind_ref}" "${!status_message_ref}"
+  while true; do
+    read -rsn1 line
+    [[ -z "$line" ]] && break
+  done
+  TEMPLATE_TUI_TASK="Standby"
+  TEMPLATE_TUI_PROGRESS=0
+  return 0
+}
+
+template_tui_menu() {
+  local current_menu="main"
+  local selected_index=0
+  local status_kind="info"
+  local status_message="Pronto para operar localmente com MySQL nativo e app sem containers."
+  local key="" seq="" items_name="" selected_record="" kind="" target="" label="" desc=""
+
+  TEMPLATE_TUI_STARTED_AT="$(date +%s)"
+  TEMPLATE_TUI_TASK="Standby"
+  TEMPLATE_TUI_PROGRESS=0
+  TEMPLATE_TUI_OUTPUT_LINES=("Aguardando uma acao do operador.")
+  TEMPLATE_TUI_SCROLL=0
+  TEMPLATE_TUI_LAST_SNAPSHOT_AT=0
+
+  tui_enter_screen
+  trap 'tui_leave_screen' INT TERM
+  template_tui_boot_sequence
+
+  while true; do
+    items_name="$(tui_menu_items_name "$current_menu")"
+    local -n current_items="$items_name"
+    (( selected_index < 0 )) && selected_index=0
+    (( selected_index >= ${#current_items[@]} )) && selected_index=$((${#current_items[@]} - 1))
+    template_tui_draw "$current_menu" "$selected_index" "$status_kind" "$status_message"
+
+    if read -rsn1 -t 0.25 key; then
+      case "$key" in
+        $'\x1b')
+          read -rsn2 -t 0.05 seq || true
+          case "$seq" in
+            "[A") (( selected_index > 0 )) && (( selected_index -= 1 )) ;;
+            "[B") (( selected_index < ${#current_items[@]} - 1 )) && (( selected_index += 1 )) ;;
+            "[D") current_menu="main"; selected_index=0 ;;
+            "[5~") template_tui_scroll_page "$current_menu" "up" ;;
+            "[6~") template_tui_scroll_page "$current_menu" "down" ;;
+          esac
+          ;;
+        k) (( selected_index > 0 )) && (( selected_index -= 1 )) ;;
+        j) (( selected_index < ${#current_items[@]} - 1 )) && (( selected_index += 1 )) ;;
+        a|A) template_tui_scroll_lines "$current_menu" 1 ;;
+        z|Z) template_tui_scroll_lines "$current_menu" -1 ;;
+        v|V) template_tui_scroll_page "$current_menu" "down" ;;
+        l|L) template_tui_show_output_viewer ;;
+        b|B)
+          current_menu="main"
+          selected_index=0
+          status_kind="info"
+          status_message="Retornado ao menu principal."
+          ;;
+        q|Q)
+          break
+          ;;
+        "")
+          TEMPLATE_TUI_SCROLL=0
+          selected_record="${current_items[$selected_index]}"
+          IFS='|' read -r kind target label desc <<< "$selected_record"
+          case "$kind" in
+            submenu)
+              current_menu="$target"
+              selected_index=0
+              status_kind="info"
+              status_message="$label aberto."
+              ;;
+            back)
+              current_menu="$target"
+              selected_index=0
+              status_kind="info"
+              status_message="Retornado ao menu principal."
+              ;;
+            exit)
+              break
+              ;;
+            action)
+              template_tui_run_action "$target" "$label" "$current_menu" "$selected_index" status_kind status_message
+              ;;
+          esac
+          ;;
+      esac
+    fi
+  done
+
+  trap - INT TERM
+  tui_leave_screen
 }
 
 help_text() {
