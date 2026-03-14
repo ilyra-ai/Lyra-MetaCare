@@ -294,11 +294,11 @@ export function LandingPage() {
             className="mt-5 rounded-full border-primary/20 bg-primary/5 px-3.5 py-1.5 text-primary"
           >
             <Sparkles className="mr-2 h-3.5 w-3.5" />
-            Landing 2026
+            Plataforma de saúde inteligente
           </Badge>
           <p className="mt-4 text-sm leading-7 text-muted-foreground">
-            Base mobile-first, mas com presença editorial no desktop e mais
-            coerência com o produto real.
+            Cuidado contínuo, monitoramento, IA e governança comercial reunidos
+            em uma única experiência.
           </p>
         </div>
 
@@ -329,11 +329,11 @@ export function LandingPage() {
 
         <div className="mt-auto rounded-[30px] border border-primary/15 bg-[radial-gradient(circle_at_top_left,_hsla(var(--primary),0.15),_transparent_38%),linear-gradient(180deg,_hsla(var(--card),0.98),_hsla(var(--card),0.88))] p-5">
           <p className="text-sm font-semibold tracking-tight">
-            Amplo no desktop, leve no mobile
+            Cuidado com clareza do início ao acompanhamento
           </p>
           <p className="mt-2 text-sm leading-7 text-muted-foreground">
-            A lateral só aparece em telas realmente largas para não estrangular
-            a composição principal.
+            A MetaCare traduz dados, rotina, contexto e assinatura em uma
+            jornada mais simples de entender e usar.
           </p>
           <Button
             onClick={goToLogin}
@@ -346,7 +346,7 @@ export function LandingPage() {
       </aside>
 
       <div
-        className={`fixed inset-0 z-50 2xl:hidden ${mobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+        className={`fixed inset-0 z-50 xl:hidden ${mobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
       >
         <button
           type="button"
@@ -420,7 +420,7 @@ export function LandingPage() {
                 type="button"
                 aria-label="Abrir navegação"
                 onClick={() => setMobileMenuOpen(true)}
-                className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border/60 bg-card/75 2xl:hidden"
+                className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border/60 bg-card/75 xl:hidden"
               >
                 <Menu className="h-5 w-5" />
               </button>
@@ -576,12 +576,12 @@ export function LandingPage() {
                   </div>
                   <div className="space-y-3">
                     <CardTitle className="text-3xl tracking-[-0.03em]">
-                      Desktop amplo, mobile limpo, a mesma lógica de produto
+                      Uma experiência fluida do primeiro acesso ao cuidado
+                      contínuo
                     </CardTitle>
                     <CardDescription className="max-w-xl text-sm leading-7 text-muted-foreground">
-                      A lateral só entra quando há espaço suficiente. Em telas
-                      menores, a página respira melhor e o CTA certo continua em
-                      destaque.
+                      A plataforma apresenta contexto, monitoramento e operação
+                      comercial de forma clara para quem precisa confiar e agir.
                     </CardDescription>
                   </div>
                 </CardHeader>
@@ -659,12 +659,12 @@ export function LandingPage() {
                     Jornada do cuidado
                   </Badge>
                   <CardTitle className="text-3xl tracking-[-0.03em]">
-                    Mobile-first sem sacrificar a presença do desktop
+                    Uma jornada simples para quem cuida da saúde todos os dias
                   </CardTitle>
                   <CardDescription className="text-base leading-8 text-muted-foreground">
-                    O fluxo visual agora prioriza leitura limpa em telas menores
-                    e amplitude editorial quando o desktop comporta mais
-                    densidade.
+                    Da organização inicial do perfil à continuidade com IA,
+                    monitoramento e assinatura, cada etapa foi pensada para
+                    orientar sem confundir.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -893,13 +893,13 @@ export function LandingPage() {
                     Porta de entrada certa para a MetaCare
                   </Badge>
                   <h2 className="text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                    Uma landing mais bonita, mais clara e mais alinhada ao valor
-                    real do produto.
+                    Entre na MetaCare e transforme dados, rotina e contexto em
+                    cuidado contínuo.
                   </h2>
                   <p className="max-w-3xl text-base leading-8 text-muted-foreground">
-                    A experiência agora prioriza acolhimento, hierarquia visual,
-                    clareza comercial e consistência entre o que a MetaCare
-                    promete e o que ela realmente entrega dentro da conta.
+                    A experiência conecta perfil, score, monitoramento, agenda e
+                    assinatura para sustentar uma jornada mais lúcida,
+                    consistente e humana.
                   </p>
                 </div>
 
