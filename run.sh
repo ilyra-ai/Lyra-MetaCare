@@ -14,13 +14,11 @@ readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly STATE_DIR="$ROOT_DIR/.lyra-run"
 readonly ENV_FILE="$ROOT_DIR/.env.local"
 readonly BACKUP_DIR="$ROOT_DIR/backups/mysql"
-readonly COMPOSE_FILE="$ROOT_DIR/compose.yaml"
 readonly PACKAGE_FILE="$ROOT_DIR/package.json"
 readonly MIGRATE_SCRIPT="$ROOT_DIR/scripts/mysql-migrate.mjs"
 readonly APP_PID_FILE="$STATE_DIR/app.pid"
 readonly APP_META_FILE="$STATE_DIR/app.meta"
 readonly INSTALL_HASH_FILE="$STATE_DIR/install.hash"
-readonly MYSQL_CONTAINER_NAME="lyra-metacare-mysql"
 
 readonly DEFAULT_MYSQL_HOST="127.0.0.1"
 readonly DEFAULT_MYSQL_HOST_PORT="3307"
@@ -43,10 +41,8 @@ readonly C_BLUE=$'\033[34m'
 
 declare -g PACKAGE_MANAGER=""
 declare -ga PACKAGE_RUN=()
-declare -ga COMPOSE_CMD=()
 declare -ga NPM_CMD=()
 declare -ga PNPM_CMD=()
-declare -ga DOCKER_CMD=()
 declare -ga TASKKILL_CMD=()
 declare -ga COREPACK_CMD=()
 declare -ga MYSQL_CLIENT_CMD=()
@@ -125,7 +121,6 @@ resolve_commands() {
       path="$(find_cmd node.exe node || true)"; [[ -n "$path" ]] && NODE_CMD="$path"
       path="$(find_cmd npm.cmd npm || true)"; [[ -n "$path" ]] && NPM_CMD=("$path")
       path="$(find_cmd pnpm.cmd pnpm || true)"; [[ -n "$path" ]] && PNPM_CMD=("$path")
-      path="$(find_cmd docker.exe docker || true)"; [[ -n "$path" ]] && DOCKER_CMD=("$path")
       path="$(find_cmd taskkill.exe taskkill || true)"; [[ -n "$path" ]] && TASKKILL_CMD=("$path")
       path="$(find_cmd corepack.cmd corepack || true)"; [[ -n "$path" ]] && COREPACK_CMD=("$path")
       path="$(find_cmd mysql.exe mysql || true)"; [[ -n "$path" ]] && MYSQL_CLIENT_CMD=("$path")
@@ -143,7 +138,6 @@ resolve_commands() {
       path="$(find_cmd node || true)"; [[ -n "$path" ]] && NODE_CMD="$path"
       path="$(find_cmd npm || true)"; [[ -n "$path" ]] && NPM_CMD=("$path")
       path="$(find_cmd pnpm || true)"; [[ -n "$path" ]] && PNPM_CMD=("$path")
-      path="$(find_cmd docker || true)"; [[ -n "$path" ]] && DOCKER_CMD=("$path")
       path="$(find_cmd taskkill || true)"; [[ -n "$path" ]] && TASKKILL_CMD=("$path")
       path="$(find_cmd corepack || true)"; [[ -n "$path" ]] && COREPACK_CMD=("$path")
       path="$(find_cmd mysql || true)"; [[ -n "$path" ]] && MYSQL_CLIENT_CMD=("$path")
@@ -271,12 +265,14 @@ export_runtime_env() {
   export MYSQL_USER="$(env_value MYSQL_USER "$DEFAULT_MYSQL_USER")"
   export MYSQL_PASSWORD="$(env_value MYSQL_PASSWORD "$DEFAULT_MYSQL_PASSWORD")"
   export MYSQL_ROOT_PASSWORD="$(env_value MYSQL_ROOT_PASSWORD "$DEFAULT_MYSQL_ROOT_PASSWORD")"
+  export MYSQL_ADMIN_USER="$(env_value MYSQL_ADMIN_USER "root")"
+  export MYSQL_ADMIN_PASSWORD="$(env_value MYSQL_ADMIN_PASSWORD "$(env_value MYSQL_ROOT_PASSWORD "")")"
   export AUTH_SECRET="$(env_value AUTH_SECRET "")"
   export ADMIN_BOOTSTRAP_EMAIL="$(env_value ADMIN_BOOTSTRAP_EMAIL "$DEFAULT_ADMIN_EMAIL")"
   export ADMIN_BOOTSTRAP_PASSWORD="$(env_value ADMIN_BOOTSTRAP_PASSWORD "")"
   export ADMIN_BOOTSTRAP_FIRST_NAME="$(env_value ADMIN_BOOTSTRAP_FIRST_NAME "$DEFAULT_ADMIN_FIRST_NAME")"
   export ADMIN_BOOTSTRAP_LAST_NAME="$(env_value ADMIN_BOOTSTRAP_LAST_NAME "$DEFAULT_ADMIN_LAST_NAME")"
-  export MYSQL_LOCAL_RUNTIME="$(env_value MYSQL_LOCAL_RUNTIME "")"
+  export MYSQL_LOCAL_RUNTIME="native"
   export PORT="$(env_value PORT "$DEFAULT_APP_PORT")"
   APP_PORT="$PORT"
 }
@@ -306,17 +302,7 @@ native_mysql_installed() {
 }
 
 mysql_runtime() {
-  export_runtime_env
-  if [[ -n "${MYSQL_LOCAL_RUNTIME:-}" ]]; then
-    printf '%s' "$MYSQL_LOCAL_RUNTIME"
-    return 0
-  fi
-
-  if native_mysql_installed; then
-    printf 'native'
-  else
-    printf 'docker'
-  fi
+  printf 'native'
 }
 
 require_file() {
@@ -350,29 +336,8 @@ ensure_package_manager() {
   fi
 }
 
-ensure_compose() {
-  if (( ${#COMPOSE_CMD[@]} > 0 )); then
-    return 0
-  fi
-  resolve_commands
-  if (( ${#DOCKER_CMD[@]} > 0 )) && "${DOCKER_CMD[@]}" compose version >/dev/null 2>&1; then
-    COMPOSE_CMD=("${DOCKER_CMD[@]}" compose)
-  elif path="$(find_cmd docker-compose docker-compose.exe || true)" && [[ -n "$path" ]]; then
-    COMPOSE_CMD=("$path")
-  else
-    die "Docker Compose nao encontrado."
-  fi
-}
-
-compose() {
-  ensure_compose
-  export_runtime_env
-  "${COMPOSE_CMD[@]}" -f "$COMPOSE_FILE" "$@"
-}
-
 validate_layout() {
   require_file "$PACKAGE_FILE"
-  require_file "$COMPOSE_FILE"
   require_file "$MIGRATE_SCRIPT"
 }
 
@@ -387,8 +352,6 @@ doctor() {
   have git && log_ok "Git disponivel." || die "Git nao encontrado."
   [[ -n "$NODE_CMD" ]] && log_ok "Node.js disponivel: $("$NODE_CMD" --version)" || die "Node.js nao encontrado."
   (( ${#NPM_CMD[@]} > 0 )) && log_ok "npm disponivel: $("${NPM_CMD[@]}" --version)" || die "npm nao encontrado."
-  (( ${#DOCKER_CMD[@]} > 0 )) && log_ok "Docker CLI disponivel." || die "Docker nao encontrado."
-  "${DOCKER_CMD[@]}" info >/dev/null 2>&1 && log_ok "Docker daemon acessivel." || die "Docker daemon indisponivel."
 
   if [[ "$PACKAGE_MANAGER" == "pnpm" ]]; then
     if (( ${#PNPM_CMD[@]} > 0 )); then
@@ -400,8 +363,9 @@ doctor() {
     fi
   fi
 
-  ensure_compose
-  log_ok "Docker Compose disponivel."
+  native_mysql_installed && log_ok "Servico MySQL nativo detectado." || log_warn "Nao foi detectado servico MySQL nativo instalado."
+  (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) && log_ok "Cliente mysql disponivel." || log_warn "Cliente mysql nao encontrado."
+  (( ${#MYSQLDUMP_CMD[@]} > 0 )) && log_ok "mysqldump disponivel." || log_warn "mysqldump nao encontrado."
 }
 
 hash_files() {
@@ -484,13 +448,13 @@ ensure_env() {
 
   local mysql_host
   local mysql_host_port
-  local mysql_host_port_default
   local mysql_port
-  local mysql_runtime_value
   local mysql_database
   local mysql_user
   local mysql_password
   local mysql_root_password
+  local mysql_admin_user
+  local mysql_admin_password
   local auth_secret
   local admin_email
   local admin_password
@@ -498,22 +462,15 @@ ensure_env() {
   local admin_last_name
   local port_value
 
-  mysql_runtime_value="$(ask_value "Runtime MySQL local (native/docker)" "$(env_value MYSQL_LOCAL_RUNTIME "$(mysql_runtime)")")"
-  case "$mysql_runtime_value" in
-    native|docker) ;;
-    *) die "MYSQL_LOCAL_RUNTIME invalido. Use native ou docker." ;;
-  esac
   mysql_host="$(ask_value "Host do MySQL local" "$(env_value MYSQL_HOST "$DEFAULT_MYSQL_HOST")")"
-  mysql_host_port_default="$DEFAULT_MYSQL_HOST_PORT"
-  if [[ "$mysql_runtime_value" == "native" ]]; then
-    mysql_host_port_default="3306"
-  fi
-  mysql_host_port="$(ask_value "Porta publicada do MySQL" "$(env_value MYSQL_HOST_PORT "$mysql_host_port_default")")"
+  mysql_host_port="$(ask_value "Porta publicada do MySQL" "$(env_value MYSQL_HOST_PORT "3306")")"
   mysql_port="$(ask_value "Porta do MySQL para a aplicacao" "$(env_value MYSQL_PORT "$mysql_host_port")")"
   mysql_database="$(ask_value "Banco MySQL" "$(env_value MYSQL_DATABASE "$DEFAULT_MYSQL_DATABASE")")"
   mysql_user="$(ask_value "Usuario MySQL da aplicacao" "$(env_value MYSQL_USER "$DEFAULT_MYSQL_USER")")"
   mysql_password="$(ask_value "Senha MySQL da aplicacao" "$(env_value MYSQL_PASSWORD "$DEFAULT_MYSQL_PASSWORD")" 1)"
-  mysql_root_password="$(ask_value "Senha root do MySQL" "$(env_value MYSQL_ROOT_PASSWORD "$DEFAULT_MYSQL_ROOT_PASSWORD")" 1)"
+  mysql_root_password="$(ask_value "Senha root do MySQL (opcional se usar admin dedicado ou sudo)" "$(env_value MYSQL_ROOT_PASSWORD "")" 1)"
+  mysql_admin_user="$(ask_value "Usuario administrativo do MySQL" "$(env_value MYSQL_ADMIN_USER "root")")"
+  mysql_admin_password="$(ask_value "Senha do usuario administrativo do MySQL" "$(env_value MYSQL_ADMIN_PASSWORD "$(env_value MYSQL_ROOT_PASSWORD "")")" 1)"
   auth_secret="$(env_value AUTH_SECRET "")"
   admin_email="$(ask_value "Email do admin bootstrap" "$(env_value ADMIN_BOOTSTRAP_EMAIL "$DEFAULT_ADMIN_EMAIL")")"
   admin_password="$(ask_value "Senha do admin bootstrap" "$(env_value ADMIN_BOOTSTRAP_PASSWORD "")" 1)"
@@ -525,13 +482,15 @@ ensure_env() {
   [[ -z "$admin_password" ]] && admin_password="$(generate_password)"
 
   upsert_env "MYSQL_HOST" "$mysql_host"
-  upsert_env "MYSQL_LOCAL_RUNTIME" "$mysql_runtime_value"
+  upsert_env "MYSQL_LOCAL_RUNTIME" "native"
   upsert_env "MYSQL_HOST_PORT" "$mysql_host_port"
   upsert_env "MYSQL_PORT" "$mysql_port"
   upsert_env "MYSQL_DATABASE" "$mysql_database"
   upsert_env "MYSQL_USER" "$mysql_user"
   upsert_env "MYSQL_PASSWORD" "$mysql_password"
   upsert_env "MYSQL_ROOT_PASSWORD" "$mysql_root_password"
+  upsert_env "MYSQL_ADMIN_USER" "$mysql_admin_user"
+  upsert_env "MYSQL_ADMIN_PASSWORD" "$mysql_admin_password"
   upsert_env "AUTH_SECRET" "$auth_secret"
   upsert_env "ADMIN_BOOTSTRAP_EMAIL" "$admin_email"
   upsert_env "ADMIN_BOOTSTRAP_PASSWORD" "$admin_password"
@@ -547,14 +506,13 @@ ensure_env() {
 validate_env() {
   export_runtime_env
   local missing=()
-  [[ -n "$MYSQL_LOCAL_RUNTIME" && "$MYSQL_LOCAL_RUNTIME" != "native" && "$MYSQL_LOCAL_RUNTIME" != "docker" ]] && die "MYSQL_LOCAL_RUNTIME invalido. Use native ou docker."
+  [[ "$MYSQL_LOCAL_RUNTIME" != "native" ]] && die "MYSQL_LOCAL_RUNTIME invalido. O run.sh trabalha somente com MySQL nativo local."
   [[ -z "$MYSQL_HOST" ]] && missing+=("MYSQL_HOST")
   [[ -z "$MYSQL_HOST_PORT" ]] && missing+=("MYSQL_HOST_PORT")
   [[ -z "$MYSQL_PORT" ]] && missing+=("MYSQL_PORT")
   [[ -z "$MYSQL_DATABASE" ]] && missing+=("MYSQL_DATABASE")
   [[ -z "$MYSQL_USER" ]] && missing+=("MYSQL_USER")
   [[ -z "$MYSQL_PASSWORD" ]] && missing+=("MYSQL_PASSWORD")
-  [[ -z "$MYSQL_ROOT_PASSWORD" ]] && missing+=("MYSQL_ROOT_PASSWORD")
   [[ -z "$AUTH_SECRET" ]] && missing+=("AUTH_SECRET")
   [[ -z "$ADMIN_BOOTSTRAP_EMAIL" ]] && missing+=("ADMIN_BOOTSTRAP_EMAIL")
   [[ -z "$ADMIN_BOOTSTRAP_PASSWORD" ]] && missing+=("ADMIN_BOOTSTRAP_PASSWORD")
@@ -581,6 +539,28 @@ ensure_env_ready() {
   done
   validate_env
   log_ok ".env.local ja esta completo."
+}
+
+mysql_tcp_open() {
+  export_runtime_env
+  resolve_commands
+  "$NODE_CMD" - <<'NODE' >/dev/null 2>&1
+const net = require('node:net');
+const socket = net.createConnection({
+  host: process.env.MYSQL_HOST,
+  port: Number(process.env.MYSQL_PORT),
+});
+socket.setTimeout(2500);
+socket.on('connect', () => {
+  socket.end();
+  process.exit(0);
+});
+socket.on('timeout', () => {
+  socket.destroy();
+  process.exit(1);
+});
+socket.on('error', () => process.exit(1));
+NODE
 }
 
 native_mysql_responding() {
@@ -629,7 +609,7 @@ NODE
 start_native_mysql() {
   resolve_commands
   export_runtime_env
-  native_mysql_responding && return 0
+  mysql_tcp_open && return 0
 
   section "MySQL nativo detectado"
 
@@ -641,7 +621,7 @@ start_native_mysql() {
     "${SERVICE_CMD[@]}" mysql status >/dev/null 2>&1 || "${SERVICE_CMD[@]}" mysql start >/dev/null 2>&1 || "${SERVICE_CMD[@]}" mariadb start >/dev/null 2>&1 || true
   fi
 
-  native_mysql_responding || die "MySQL nativo foi detectado, mas nao esta acessivel com as credenciais configuradas."
+  mysql_tcp_open || die "MySQL nativo foi detectado, mas a porta configurada nao respondeu apos a tentativa de inicializacao."
 }
 
 ensure_database_exists() {
@@ -667,28 +647,51 @@ const database = process.env.MYSQL_DATABASE;
     process.exit(0);
   } catch {}
 
-  const rootConnection = await mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    port: Number(process.env.MYSQL_PORT),
-    user: 'root',
-    password: process.env.MYSQL_ROOT_PASSWORD,
-    multipleStatements: true,
-  });
+  if (process.env.MYSQL_ADMIN_PASSWORD) {
+    const adminConnection = await mysql.createConnection({
+      host: process.env.MYSQL_HOST,
+      port: Number(process.env.MYSQL_PORT),
+      user: process.env.MYSQL_ADMIN_USER || 'root',
+      password: process.env.MYSQL_ADMIN_PASSWORD,
+      multipleStatements: true,
+    });
 
-  const escapedUser = rootConnection.escape(process.env.MYSQL_USER);
-  const escapedPassword = rootConnection.escape(process.env.MYSQL_PASSWORD);
-  await rootConnection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
-  await rootConnection.query(`CREATE USER IF NOT EXISTS ${escapedUser}@'%' IDENTIFIED BY ${escapedPassword}`);
-  await rootConnection.query(`CREATE USER IF NOT EXISTS ${escapedUser}@'localhost' IDENTIFIED BY ${escapedPassword}`);
-  await rootConnection.query(`GRANT ALL PRIVILEGES ON \`${database}\`.* TO ${escapedUser}@'%'`);
-  await rootConnection.query(`GRANT ALL PRIVILEGES ON \`${database}\`.* TO ${escapedUser}@'localhost'`);
-  await rootConnection.query('FLUSH PRIVILEGES');
-  await rootConnection.end();
+    const escapedUser = adminConnection.escape(process.env.MYSQL_USER);
+    const escapedPassword = adminConnection.escape(process.env.MYSQL_PASSWORD);
+    await adminConnection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+    await adminConnection.query(`CREATE USER IF NOT EXISTS ${escapedUser}@'%' IDENTIFIED BY ${escapedPassword}`);
+    await adminConnection.query(`CREATE USER IF NOT EXISTS ${escapedUser}@'localhost' IDENTIFIED BY ${escapedPassword}`);
+    await adminConnection.query(`GRANT ALL PRIVILEGES ON \`${database}\`.* TO ${escapedUser}@'%'`);
+    await adminConnection.query(`GRANT ALL PRIVILEGES ON \`${database}\`.* TO ${escapedUser}@'localhost'`);
+    await adminConnection.query('FLUSH PRIVILEGES');
+    await adminConnection.end();
+    process.exit(0);
+  }
+
+  throw new Error('Nao foi possivel preparar o banco com o usuario da aplicacao. Configure MYSQL_ADMIN_USER/MYSQL_ADMIN_PASSWORD validos ou execute o script em um ambiente com sudo sem senha para mysql.');
 })().then(() => process.exit(0)).catch((error) => {
   console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
 });
 NODE
+
+  if [[ $? -eq 0 ]]; then
+    return 0
+  fi
+
+  if [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
+    local sql
+    sql="CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+    sql+=" CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
+    sql+=" CREATE USER IF NOT EXISTS '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';"
+    sql+=" GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%';"
+    sql+=" GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'localhost';"
+    sql+=" FLUSH PRIVILEGES;"
+    sudo -n mysql -e "$sql"
+    return 0
+  fi
+
+  die "Nao foi possivel criar ou validar o schema do app no MySQL nativo. Informe credenciais administrativas validas ou habilite acesso sudo ao mysql."
 }
 
 verify_database_state() {
@@ -762,7 +765,8 @@ ensure_restore_target_safe() {
   local target_database="$1"
   export_runtime_env
   [[ -d "$ROOT_DIR/node_modules" ]] || die "Dependencias ausentes. Execute ./run.sh install antes de restaurar."
-  TARGET_DATABASE="$target_database" "$NODE_CMD" - <<'NODE'
+  if [[ -n "$MYSQL_ADMIN_PASSWORD" ]]; then
+    TARGET_DATABASE="$target_database" "$NODE_CMD" - <<'NODE'
 const mysql = require('mysql2/promise');
 
 (async () => {
@@ -791,6 +795,20 @@ const mysql = require('mysql2/promise');
   process.exit(1);
 });
 NODE
+    return 0
+  fi
+
+  if [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
+    local check_sql
+    check_sql="CREATE DATABASE IF NOT EXISTS \`$target_database\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+    sudo -n mysql -e "$check_sql"
+    local table_count
+    table_count="$(sudo -n mysql -N -B -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$target_database';")"
+    [[ "${table_count:-0}" == "0" ]] || die "O schema alvo $target_database ja possui tabelas. O restore full exige um schema vazio."
+    return 0
+  fi
+
+  die "Restore full exige credenciais administrativas validas ou acesso sudo ao mysql."
 }
 
 backup_database() {
