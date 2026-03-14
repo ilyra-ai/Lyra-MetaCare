@@ -710,6 +710,28 @@ doctor() {
   (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) && log_ok "Cliente mysql disponivel." || log_warn "Cliente mysql nao encontrado."
   (( ${#MYSQLDUMP_CMD[@]} > 0 )) && log_ok "mysqldump disponivel." || log_warn "mysqldump nao encontrado."
   log_ok "Estrategia administrativa MySQL: $(mysql_admin_strategy)"
+
+  # OS-specific diagnostics
+  export_runtime_env
+  case "$OS_FAMILY" in
+    windows)
+      have powershell.exe && log_ok "PowerShell disponivel (necessario para gerenciamento do MySQL no Windows)." || log_warn "PowerShell nao encontrado. Gerenciamento de servicos MySQL no Windows sera limitado."
+      if [[ -z "$MYSQL_ADMIN_USER" ]]; then
+        log_warn "MYSQL_ADMIN_USER nao configurado. No Windows, backup, restore e criacao de schema dependem de credenciais administrativas explicitas."
+      fi
+      ;;
+    wsl)
+      log_info "WSL detectado: o MySQL local roda no ambiente Linux do WSL, nao no Windows host."
+      if ! sudo_mysql_available && [[ -z "$MYSQL_ADMIN_USER" ]]; then
+        log_warn "Sem sudo passwordless e sem MYSQL_ADMIN_USER. Configure um deles para operacoes administrativas do MySQL."
+      fi
+      ;;
+    linux)
+      if ! sudo_mysql_available && [[ -z "$MYSQL_ADMIN_USER" ]]; then
+        log_warn "Sem sudo passwordless e sem MYSQL_ADMIN_USER. Configure um deles para operacoes administrativas do MySQL."
+      fi
+      ;;
+  esac
 }
 
 hash_files() {
@@ -1076,6 +1098,24 @@ NODE
     return 0
   fi
 
+  # Fallback: mysql client with admin credentials (cross-platform, works on Windows/Linux/WSL)
+  if (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) && [[ -n "$MYSQL_ADMIN_USER" ]]; then
+    local escaped_user escaped_password
+    escaped_user="${MYSQL_USER//\'/\'\'}"
+    escaped_password="${MYSQL_PASSWORD//\'/\'\'}"
+    local sql
+    sql="CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+    sql+=" CREATE USER IF NOT EXISTS '${escaped_user}'@'%' IDENTIFIED BY '${escaped_password}';"
+    sql+=" CREATE USER IF NOT EXISTS '${escaped_user}'@'localhost' IDENTIFIED BY '${escaped_password}';"
+    sql+=" GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '${escaped_user}'@'%';"
+    sql+=" GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '${escaped_user}'@'localhost';"
+    sql+=" FLUSH PRIVILEGES;"
+    set_mysql_auth_args "$MYSQL_ADMIN_USER" "$MYSQL_ADMIN_PASSWORD"
+    "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" -e "$sql"
+    return 0
+  fi
+
+  # Fallback: sudo mysql (Linux/WSL only)
   if [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
     local escaped_user escaped_password
     escaped_user="${MYSQL_USER//\'/\'\'}"
@@ -1091,7 +1131,7 @@ NODE
     return 0
   fi
 
-  die "Nao foi possivel criar ou validar o schema do app no MySQL nativo. Informe credenciais administrativas validas ou habilite acesso sudo ao mysql."
+  die "Nao foi possivel criar ou validar o schema do app no MySQL nativo. Informe credenciais administrativas validas (MYSQL_ADMIN_USER/MYSQL_ADMIN_PASSWORD) ou habilite acesso sudo ao mysql."
 }
 
 verify_database_state() {
@@ -1198,6 +1238,19 @@ NODE
     return 0
   fi
 
+  # Fallback: mysql client with admin credentials (cross-platform)
+  if (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) && [[ -n "$MYSQL_ADMIN_USER" ]]; then
+    set_mysql_auth_args "$MYSQL_ADMIN_USER" "$MYSQL_ADMIN_PASSWORD"
+    local check_sql
+    check_sql="CREATE DATABASE IF NOT EXISTS \`$target_database\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+    "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" -e "$check_sql"
+    local table_count
+    table_count="$("${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" -N -B -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '$target_database';")"
+    [[ "${table_count:-0}" == "0" ]] || die "O schema alvo $target_database ja possui tabelas. O restore full exige um schema vazio."
+    return 0
+  fi
+
+  # Fallback: sudo mysql (Linux/WSL only)
   if [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
     local check_sql
     check_sql="CREATE DATABASE IF NOT EXISTS \`$target_database\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
@@ -1208,7 +1261,7 @@ NODE
     return 0
   fi
 
-  die "Restore full exige credenciais administrativas validas ou acesso sudo ao mysql."
+  die "Restore full exige credenciais administrativas validas (MYSQL_ADMIN_USER/MYSQL_ADMIN_PASSWORD) ou acesso sudo ao mysql."
 }
 
 backup_database() {
@@ -1224,15 +1277,20 @@ backup_database() {
   backup_file="$BACKUP_DIR/${MYSQL_DATABASE}_${timestamp}.sql"
 
   section "Backup full do banco"
+  (( ${#MYSQLDUMP_CMD[@]} > 0 )) || die "mysqldump nao encontrado no ambiente local. Instale o pacote mysql-client (Linux) ou adicione o mysqldump ao PATH (Windows)."
+
   if [[ -n "$MYSQL_ADMIN_USER" ]]; then
-    (( ${#MYSQLDUMP_CMD[@]} > 0 )) || die "mysqldump nao encontrado no ambiente local."
     set_mysql_auth_args "$MYSQL_ADMIN_USER" "$MYSQL_ADMIN_PASSWORD"
     "${MYSQLDUMP_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" --single-transaction --routines --triggers --events --hex-blob --set-gtid-purged=OFF --no-tablespaces "$MYSQL_DATABASE" > "$backup_file"
+  elif [[ -n "$MYSQL_USER" ]]; then
+    # Fallback: use app credentials (may lack SUPER/PROCESS privileges for --events/--routines)
+    set_mysql_auth_args "$MYSQL_USER" "$MYSQL_PASSWORD"
+    "${MYSQLDUMP_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" --single-transaction --hex-blob --set-gtid-purged=OFF --no-tablespaces "$MYSQL_DATABASE" > "$backup_file"
+    log_warn "Backup gerado com usuario do app. Rotinas, eventos e triggers podem nao estar incluidos por falta de privilegios."
   elif [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
-    (( ${#MYSQLDUMP_CMD[@]} > 0 )) || die "mysqldump nao encontrado no ambiente local."
     sudo -n "${MYSQLDUMP_CMD[@]}" --single-transaction --routines --triggers --events --hex-blob --set-gtid-purged=OFF --no-tablespaces "$MYSQL_DATABASE" > "$backup_file"
   else
-    die "Backup full exige credenciais administrativas validas ou acesso sudo ao mysql."
+    die "Backup full exige mysqldump e ao menos um metodo de autenticacao: MYSQL_ADMIN_USER, MYSQL_USER, ou acesso sudo ao mysql."
   fi
 
   if (( ${#GZIP_CMD[@]} > 0 )); then
@@ -1265,26 +1323,37 @@ restore_database() {
   ensure_restore_target_safe "$target_database"
 
   section "Restore full do banco"
+  (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) || die "Cliente mysql nao encontrado no ambiente local. Instale o pacote mysql-client (Linux) ou adicione o mysql ao PATH (Windows)."
+
+  # Determine authentication method: admin > app user > sudo
+  local -a restore_auth_args=()
+  local restore_via=""
+  if [[ -n "$MYSQL_ADMIN_USER" ]]; then
+    set_mysql_auth_args "$MYSQL_ADMIN_USER" "$MYSQL_ADMIN_PASSWORD"
+    restore_auth_args=("-h$MYSQL_HOST" "-P$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}")
+    restore_via="admin"
+  elif [[ -n "$MYSQL_USER" ]]; then
+    set_mysql_auth_args "$MYSQL_USER" "$MYSQL_PASSWORD"
+    restore_auth_args=("-h$MYSQL_HOST" "-P$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}")
+    restore_via="app"
+  elif [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
+    restore_via="sudo"
+  else
+    die "Restore full exige ao menos um metodo de autenticacao: MYSQL_ADMIN_USER, MYSQL_USER, ou acesso sudo ao mysql."
+  fi
+
   if [[ "$backup_path" == *.gz ]]; then
     (( ${#GZIP_CMD[@]} > 0 )) || die "gzip nao encontrado para restaurar arquivo compactado."
-    (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) || die "Cliente mysql nao encontrado no ambiente local."
-    if [[ -n "$MYSQL_ADMIN_USER" ]]; then
-      set_mysql_auth_args "$MYSQL_ADMIN_USER" "$MYSQL_ADMIN_PASSWORD"
-      "${GZIP_CMD[@]}" -dc "$backup_path" | "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" "$target_database"
-    elif [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
+    if [[ "$restore_via" == "sudo" ]]; then
       "${GZIP_CMD[@]}" -dc "$backup_path" | sudo -n "${MYSQL_CLIENT_CMD[@]}" "$target_database"
     else
-      die "Restore full exige credenciais administrativas validas ou acesso sudo ao mysql."
+      "${GZIP_CMD[@]}" -dc "$backup_path" | "${MYSQL_CLIENT_CMD[@]}" "${restore_auth_args[@]}" "$target_database"
     fi
   else
-    (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) || die "Cliente mysql nao encontrado no ambiente local."
-    if [[ -n "$MYSQL_ADMIN_USER" ]]; then
-      set_mysql_auth_args "$MYSQL_ADMIN_USER" "$MYSQL_ADMIN_PASSWORD"
-      "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" "$target_database" < "$backup_path"
-    elif [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
+    if [[ "$restore_via" == "sudo" ]]; then
       sudo -n "${MYSQL_CLIENT_CMD[@]}" "$target_database" < "$backup_path"
     else
-      die "Restore full exige credenciais administrativas validas ou acesso sudo ao mysql."
+      "${MYSQL_CLIENT_CMD[@]}" "${restore_auth_args[@]}" "$target_database" < "$backup_path"
     fi
   fi
 
@@ -1293,16 +1362,90 @@ restore_database() {
 
 show_mysql_logs() {
   if [[ "$OS_FAMILY" == "windows" ]] && have powershell.exe; then
-    powershell.exe -NoProfile -Command "$err = Get-ChildItem 'C:\\ProgramData\\MySQL' -Recurse -Filter *.err -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1; if (-not \$err) { throw 'Arquivo de log MySQL nao encontrado em C:\\ProgramData\\MySQL' }; Get-Content -Path \$err.FullName -Wait"
+    # Detect MySQL data directory dynamically via registry, mysqld --help, or common locations
+    powershell.exe -NoProfile -Command "
+      \$searchPaths = @()
+
+      # Try reading MySQL base/data path from registry
+      \$regPaths = @(
+        'HKLM:\\SOFTWARE\\MySQL AB',
+        'HKLM:\\SOFTWARE\\WOW6432Node\\MySQL AB'
+      )
+      foreach (\$rp in \$regPaths) {
+        if (Test-Path \$rp) {
+          Get-ChildItem \$rp -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+            \$dp = (Get-ItemProperty \$_.PSPath -ErrorAction SilentlyContinue).DataPath
+            if (\$dp -and (Test-Path \$dp)) { \$searchPaths += \$dp }
+            \$lp = (Get-ItemProperty \$_.PSPath -ErrorAction SilentlyContinue).Location
+            if (\$lp -and (Test-Path \$lp)) { \$searchPaths += \$lp }
+          }
+        }
+      }
+
+      # Common installation paths
+      \$searchPaths += @(
+        'C:\\ProgramData\\MySQL',
+        'C:\\Program Files\\MySQL',
+        'C:\\Program Files (x86)\\MySQL',
+        'C:\\MySQL',
+        \"\$env:APPDATA\\MySQL\",
+        \"\$env:LOCALAPPDATA\\MySQL\"
+      )
+
+      \$err = \$null
+      foreach (\$sp in \$searchPaths) {
+        if (Test-Path \$sp) {
+          \$found = Get-ChildItem \$sp -Recurse -Filter *.err -ErrorAction SilentlyContinue |
+                    Sort-Object LastWriteTime -Descending |
+                    Select-Object -First 1
+          if (\$found) { \$err = \$found; break }
+        }
+      }
+
+      if (-not \$err) {
+        throw 'Arquivo de log MySQL nao encontrado. Verifique a instalacao do MySQL ou execute: mysqld --help --verbose 2>nul | findstr datadir'
+      }
+
+      Write-Host \"Log encontrado: \$(\$err.FullName)\" -ForegroundColor Green
+      Get-Content -Path \$err.FullName -Wait
+    "
     return 0
   fi
 
+  # Linux / WSL: try known log file locations first
   local service_name
   service_name="$(native_mysql_service_name || true)"
   local log_file=""
-  for log_file in /var/log/mysql/error.log /var/log/mysql/mysql-error.log /var/log/mysql/mysql.log; do
+  local candidate_logs=(
+    /var/log/mysql/error.log
+    /var/log/mysql/mysql-error.log
+    /var/log/mysql/mysql.log
+    /var/log/mysqld.log
+    /var/log/mariadb/mariadb.log
+  )
+
+  # Try to detect the actual datadir from mysqld for non-standard installations
+  if (( ${#MYSQLD_CMD[@]} > 0 )); then
+    local datadir_log=""
+    datadir_log="$("${MYSQLD_CMD[@]}" --help --verbose 2>/dev/null | awk '/^datadir/ {print $2}' || true)"
+    if [[ -n "$datadir_log" ]]; then
+      local hostname_short
+      hostname_short="$(hostname -s 2>/dev/null || printf 'localhost')"
+      candidate_logs+=("${datadir_log%/}/${hostname_short}.err")
+      candidate_logs+=("${datadir_log%/}/error.log")
+    fi
+  fi
+
+  for log_file in "${candidate_logs[@]}"; do
     if [[ -f "$log_file" ]]; then
+      log_info "Log encontrado: $log_file"
       tail -f "$log_file"
+      return 0
+    fi
+    # Try with sudo if file exists but is unreadable
+    if [[ "$OS_FAMILY" != "windows" ]] && sudo -n test -f "$log_file" 2>/dev/null; then
+      log_info "Log encontrado (acesso root): $log_file"
+      run_privileged tail -f "$log_file"
       return 0
     fi
   done
