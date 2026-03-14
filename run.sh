@@ -566,12 +566,13 @@ NODE
 native_mysql_responding() {
   resolve_commands
   export_runtime_env
-  if (( ${#MYSQLADMIN_CMD[@]} > 0 )); then
-    if "${MYSQLADMIN_CMD[@]}" ping -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_USER" "-p$MYSQL_PASSWORD" --silent >/dev/null 2>&1; then
+  if (( ${#MYSQL_CLIENT_CMD[@]} > 0 )); then
+    if "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_USER" "-p$MYSQL_PASSWORD" -N -B -e "SELECT 1" >/dev/null 2>&1; then
       return 0
     fi
-    "${MYSQLADMIN_CMD[@]}" ping -h"$MYSQL_HOST" -P"$MYSQL_PORT" -uroot "-p$MYSQL_ROOT_PASSWORD" --silent >/dev/null 2>&1
-    return $?
+    if [[ -n "$MYSQL_ADMIN_PASSWORD" ]] && "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_ADMIN_USER" "-p$MYSQL_ADMIN_PASSWORD" -N -B -e "SELECT 1" >/dev/null 2>&1; then
+      return 0
+    fi
   fi
 
   if [[ -n "$NODE_CMD" && -d "$ROOT_DIR/node_modules" ]]; then
@@ -580,7 +581,7 @@ const mysql = require('mysql2/promise');
 (async () => {
   const attempts = [
     { user: process.env.MYSQL_USER, password: process.env.MYSQL_PASSWORD },
-    { user: 'root', password: process.env.MYSQL_ROOT_PASSWORD },
+    { user: process.env.MYSQL_ADMIN_USER || 'root', password: process.env.MYSQL_ADMIN_PASSWORD },
   ];
 
   for (const attempt of attempts) {
@@ -627,7 +628,7 @@ start_native_mysql() {
 ensure_database_exists() {
   export_runtime_env
   [[ -d "$ROOT_DIR/node_modules" ]] || die "Dependencias ausentes. Execute ./run.sh install antes de preparar o banco."
-  "$NODE_CMD" - <<'NODE'
+  if "$NODE_CMD" - <<'NODE'; then
 const mysql = require('mysql2/promise');
 const database = process.env.MYSQL_DATABASE;
 
@@ -674,8 +675,6 @@ const database = process.env.MYSQL_DATABASE;
   process.exit(1);
 });
 NODE
-
-  if [[ $? -eq 0 ]]; then
     return 0
   fi
 
@@ -823,11 +822,14 @@ backup_database() {
   backup_file="$BACKUP_DIR/${MYSQL_DATABASE}_${timestamp}.sql"
 
   section "Backup full do banco"
-  if [[ "$(mysql_runtime)" == "docker" ]]; then
-    "${DOCKER_CMD[@]}" exec "$MYSQL_CONTAINER_NAME" sh -lc "exec mysqldump -uroot -p\"$MYSQL_ROOT_PASSWORD\" --single-transaction --routines --triggers --events --hex-blob --set-gtid-purged=OFF --no-tablespaces \"$MYSQL_DATABASE\"" > "$backup_file"
+  if [[ -n "$MYSQL_ADMIN_PASSWORD" ]]; then
+    (( ${#MYSQLDUMP_CMD[@]} > 0 )) || die "mysqldump nao encontrado no ambiente local."
+    "${MYSQLDUMP_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_ADMIN_USER" "-p$MYSQL_ADMIN_PASSWORD" --single-transaction --routines --triggers --events --hex-blob --set-gtid-purged=OFF --no-tablespaces "$MYSQL_DATABASE" > "$backup_file"
+  elif [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
+    (( ${#MYSQLDUMP_CMD[@]} > 0 )) || die "mysqldump nao encontrado no ambiente local."
+    sudo -n "${MYSQLDUMP_CMD[@]}" --single-transaction --routines --triggers --events --hex-blob --set-gtid-purged=OFF --no-tablespaces "$MYSQL_DATABASE" > "$backup_file"
   else
-    (( ${#MYSQLDUMP_CMD[@]} > 0 )) || die "mysqldump nao encontrado no ambiente nativo."
-    "${MYSQLDUMP_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -uroot "-p$MYSQL_ROOT_PASSWORD" --single-transaction --routines --triggers --events --hex-blob --set-gtid-purged=OFF --no-tablespaces "$MYSQL_DATABASE" > "$backup_file"
+    die "Backup full exige credenciais administrativas validas ou acesso sudo ao mysql."
   fi
 
   if (( ${#GZIP_CMD[@]} > 0 )); then
@@ -861,71 +863,53 @@ restore_database() {
   section "Restore full do banco"
   if [[ "$backup_path" == *.gz ]]; then
     (( ${#GZIP_CMD[@]} > 0 )) || die "gzip nao encontrado para restaurar arquivo compactado."
-    if [[ "$(mysql_runtime)" == "docker" ]]; then
-      "${GZIP_CMD[@]}" -dc "$backup_path" | "${DOCKER_CMD[@]}" exec -i "$MYSQL_CONTAINER_NAME" mysql -uroot "-p$MYSQL_ROOT_PASSWORD" "$target_database"
+    (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) || die "Cliente mysql nao encontrado no ambiente local."
+    if [[ -n "$MYSQL_ADMIN_PASSWORD" ]]; then
+      "${GZIP_CMD[@]}" -dc "$backup_path" | "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_ADMIN_USER" "-p$MYSQL_ADMIN_PASSWORD" "$target_database"
+    elif [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
+      "${GZIP_CMD[@]}" -dc "$backup_path" | sudo -n "${MYSQL_CLIENT_CMD[@]}" "$target_database"
     else
-      (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) || die "Cliente mysql nao encontrado no ambiente nativo."
-      "${GZIP_CMD[@]}" -dc "$backup_path" | "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -uroot "-p$MYSQL_ROOT_PASSWORD" "$target_database"
+      die "Restore full exige credenciais administrativas validas ou acesso sudo ao mysql."
     fi
   else
-    if [[ "$(mysql_runtime)" == "docker" ]]; then
-      "${DOCKER_CMD[@]}" exec -i "$MYSQL_CONTAINER_NAME" mysql -uroot "-p$MYSQL_ROOT_PASSWORD" "$target_database" < "$backup_path"
+    (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) || die "Cliente mysql nao encontrado no ambiente local."
+    if [[ -n "$MYSQL_ADMIN_PASSWORD" ]]; then
+      "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_ADMIN_USER" "-p$MYSQL_ADMIN_PASSWORD" "$target_database" < "$backup_path"
+    elif [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
+      sudo -n "${MYSQL_CLIENT_CMD[@]}" "$target_database" < "$backup_path"
     else
-      (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) || die "Cliente mysql nao encontrado no ambiente nativo."
-      "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -uroot "-p$MYSQL_ROOT_PASSWORD" "$target_database" < "$backup_path"
+      die "Restore full exige credenciais administrativas validas ou acesso sudo ao mysql."
     fi
   fi
 
   log_ok "Restore full concluido no schema seguro: $target_database"
 }
 
-docker_mysql_running() {
-  local id
-  id="$(compose ps -q mysql 2>/dev/null || true)"
-  [[ -n "$id" ]] || return 1
-  "${DOCKER_CMD[@]}" inspect --format '{{.State.Running}}' "$id" 2>/dev/null | grep -qi '^true$'
-}
+show_mysql_logs() {
+  if [[ "$OS_FAMILY" == "windows" ]] && have powershell.exe; then
+    powershell.exe -NoProfile -Command "$err = Get-ChildItem 'C:\\ProgramData\\MySQL' -Recurse -Filter *.err -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1; if (-not \$err) { throw 'Arquivo de log MySQL nao encontrado em C:\\ProgramData\\MySQL' }; Get-Content -Path \$err.FullName -Wait"
+    return 0
+  fi
 
-docker_mysql_health() {
-  local id
-  id="$(compose ps -q mysql 2>/dev/null || true)"
-  [[ -n "$id" ]] || return 1
-  "${DOCKER_CMD[@]}" inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}unknown{{end}}' "$id" 2>/dev/null
-}
-
-wait_mysql() {
-  local attempt=1
-  while (( attempt <= 60 )); do
-    if [[ "$(docker_mysql_health || true)" == "healthy" ]]; then
-      log_ok "MySQL local esta saudavel."
+  local log_file=""
+  for log_file in /var/log/mysql/error.log /var/log/mysql/mysql-error.log /var/log/mysql/mysql.log; do
+    if [[ -f "$log_file" ]]; then
+      tail -f "$log_file"
       return 0
     fi
-    log_info "Aguardando saude do MySQL ($attempt/60)."
-    sleep 2
-    (( attempt += 1 ))
   done
-  die "MySQL nao ficou saudavel dentro do tempo esperado."
+
+  die "Nao foi possivel localizar um arquivo de log do MySQL nativo neste sistema."
 }
 
 mysql_up() {
   install_deps
   ensure_env_ready
   doctor
-  local runtime
-  runtime="$(mysql_runtime)"
-
-  if [[ "$runtime" == "native" ]]; then
-    start_native_mysql
-    ensure_database_exists
-    log_ok "MySQL nativo pronto para uso pelo app."
-    return 0
-  fi
-
-  section "Subindo MySQL local via Docker"
-  compose up -d mysql
-  wait_mysql
+  section "Preparando MySQL nativo local"
+  start_native_mysql
   ensure_database_exists
-  log_ok "MySQL local via Docker pronto para uso pelo app."
+  log_ok "MySQL nativo local pronto para uso pelo app."
 }
 
 mysql_migrate() {
@@ -1086,15 +1070,7 @@ stop_app() {
 }
 
 mysql_down() {
-  local runtime
-  runtime="$(mysql_runtime)"
-  if [[ "$runtime" == "native" ]]; then
-    log_warn "MySQL nativo detectado. O run.sh nao encerra servicos nativos automaticamente."
-    return 0
-  fi
-  section "Parando MySQL local"
-  compose stop mysql
-  log_ok "MySQL local parado."
+  log_warn "O run.sh nao encerra automaticamente o servico MySQL nativo do sistema."
 }
 
 status_report() {
@@ -1111,22 +1087,16 @@ status_report() {
     log_warn "Dependencias do projeto ausentes."
   fi
 
-  local runtime
-  runtime="$(mysql_runtime)"
-  log_ok "Runtime MySQL selecionado: $runtime"
-
-  if [[ "$runtime" == "native" ]]; then
+  log_ok "Runtime MySQL selecionado: native"
+  if mysql_tcp_open; then
+    log_ok "MySQL nativo respondendo em ${MYSQL_HOST:-127.0.0.1}:${MYSQL_PORT:-3306}."
     if native_mysql_responding; then
-      log_ok "MySQL nativo acessivel."
+      log_ok "Autenticacao MySQL valida com as credenciais configuradas."
     else
-      log_warn "MySQL nativo detectado, mas nao acessivel com as credenciais atuais."
+      log_warn "MySQL nativo esta ativo, mas as credenciais configuradas ainda nao autenticam."
     fi
   else
-    if docker_mysql_running; then
-      log_ok "MySQL em execucao via Docker. Health: $(docker_mysql_health || printf 'desconhecido')"
-    else
-      log_warn "MySQL local via Docker parado."
-    fi
+    log_warn "MySQL nativo nao respondeu na porta configurada."
   fi
 
   local pid
@@ -1148,20 +1118,14 @@ health_report() {
     log_warn ".env.local ainda nao existe."
   fi
 
-  local runtime
-  runtime="$(mysql_runtime)"
-  if [[ "$runtime" == "native" ]]; then
+  if mysql_tcp_open; then
     if native_mysql_responding; then
       log_ok "MySQL nativo em execucao e acessivel."
     else
-      log_warn "MySQL nativo detectado, mas ainda nao esta acessivel."
+      log_warn "MySQL nativo esta em execucao, mas as credenciais atuais nao autenticam."
     fi
   else
-    if docker_mysql_running; then
-      log_ok "MySQL via Docker em execucao."
-    else
-      log_warn "MySQL via Docker nao esta ativo."
-    fi
+    log_warn "MySQL nativo nao esta acessivel na porta configurada."
   fi
   local pid
   pid="$(app_pid || true)"
@@ -1174,7 +1138,7 @@ health_report() {
 
 stop_all() {
   stop_app
-  mysql_down
+  log_warn "O servico MySQL nativo permanece sob controle do sistema operacional."
 }
 
 pause_menu() {
@@ -1217,8 +1181,7 @@ database_menu() {
     printf '  2. Criar schema do app se necessario\n'
     printf '  3. Aplicar migracoes MySQL\n'
     printf '  4. Verificar schema e tabelas do app\n'
-    printf '  5. Logs do MySQL em Docker\n'
-    printf '  6. Parar MySQL gerenciado por Docker\n'
+    printf '  5. Acompanhar logs do MySQL local\n'
     printf '  0. Voltar\n\n'
     read -r -p "Escolha uma opcao: " choice
     case "$choice" in
@@ -1226,11 +1189,7 @@ database_menu() {
       2) install_deps; ensure_env_ready; mysql_up; ensure_database_exists; log_ok "Schema do app garantido sem apagar dados existentes." ;;
       3) mysql_migrate ;;
       4) install_deps; ensure_env_ready; mysql_up; verify_database_state ;;
-      5)
-        [[ "$(mysql_runtime)" == "docker" ]] || die "Logs integrados so estao disponiveis quando o MySQL esta sendo gerenciado via Docker."
-        compose logs -f mysql
-        ;;
-      6) mysql_down ;;
+      5) show_mysql_logs ;;
       0) break ;;
       *) log_warn "Opcao invalida." ;;
     esac
@@ -1328,16 +1287,15 @@ Uso:
   ./run.sh verify-db      verifica se o schema e as tabelas do app estao consistentes
   ./run.sh backup         gera backup full do banco do app
   ./run.sh restore        restaura backup full para um schema alvo seguro
+  ./run.sh logs mysql     acompanha os logs do MySQL nativo local
   ./run.sh dev            instala, configura, sobe MySQL, migra e inicia o app em desenvolvimento
   ./run.sh fast-dev       sobe MySQL e inicia o app sem reinstalar
   ./run.sh prod           instala, configura, sobe MySQL, migra, builda e inicia o app em producao
   ./run.sh fast-prod      sobe MySQL e inicia o app com build existente
   ./run.sh status         mostra status do ambiente local
   ./run.sh health         mostra checks operacionais
-  ./run.sh logs mysql     acompanha logs do MySQL quando o runtime estiver em Docker
   ./run.sh stop-app       encerra a aplicacao gerenciada por este script
-  ./run.sh mysql-down     para apenas o MySQL gerenciado por Docker
-  ./run.sh stop-all       encerra app e MySQL local
+  ./run.sh stop-all       encerra apenas a aplicacao gerenciada pelo script
   ./run.sh help           mostra esta ajuda
 HELP
 }
@@ -1362,12 +1320,10 @@ main() {
     status) status_report ;;
     health) health_report ;;
     logs)
-      [[ "${2:-mysql}" == "mysql" ]] || die "Apenas logs do MySQL estao disponiveis sem persistencia em arquivo."
-      [[ "$(mysql_runtime)" == "docker" ]] || die "Logs integrados so estao disponiveis quando o MySQL esta sendo gerenciado via Docker."
-      compose logs -f mysql
+      [[ "${2:-mysql}" == "mysql" ]] || die "Apenas logs do MySQL nativo estao disponiveis no run.sh."
+      show_mysql_logs
       ;;
     stop-app) stop_app ;;
-    mysql-down) mysql_down ;;
     stop-all) stop_all ;;
     help|-h|--help) help_text ;;
     *) die "Comando desconhecido: $1" ;;
