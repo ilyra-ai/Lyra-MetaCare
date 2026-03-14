@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -Eeuo pipefail
+#set -Eeuo pipefail
 
 readonly SCRIPT_VERSION="2026.03.14"
 readonly REQUIRED_BASH_VERSION=4
@@ -32,17 +32,33 @@ readonly DEFAULT_ADMIN_FIRST_NAME=""
 readonly DEFAULT_ADMIN_LAST_NAME=""
 readonly DEFAULT_APP_PORT="3000"
 
+# --- Paleta Noir Elite (TrueColor RGB 24-bit) ---
 readonly C_RESET=$'\033[0m'
 readonly C_BOLD=$'\033[1m'
 readonly C_DIM=$'\033[2m'
-readonly C_WHITE=$'\033[37m'
-readonly C_GRAY=$'\033[90m'
-readonly C_CYAN=$'\033[36m'
-readonly C_GREEN=$'\033[32m'
-readonly C_YELLOW=$'\033[33m'
-readonly C_RED=$'\033[31m'
-readonly C_BLUE=$'\033[34m'
-readonly C_BG_HOVER=$'\033[48;5;236m'
+readonly C_WHITE=$'\033[38;2;230;237;243m'
+readonly C_GRAY=$'\033[38;2;110;118;129m'
+readonly C_SEC=$'\033[38;2;139;148;158m'
+readonly C_CYAN=$'\033[38;2;86;211;255m'
+readonly C_GREEN=$'\033[38;2;63;185;80m'
+readonly C_MINT=$'\033[38;2;125;239;161m'
+readonly C_YELLOW=$'\033[38;2;210;153;34m'
+readonly C_AMBER=$'\033[38;2;255;183;77m'
+readonly C_RED=$'\033[38;2;248;81;73m'
+readonly C_ROSE=$'\033[38;2;255;107;129m'
+readonly C_BLUE=$'\033[38;2;86;211;255m'
+readonly C_VIOLET=$'\033[38;2;187;128;255m'
+readonly C_BG_HOVER=$'\033[48;2;33;38;45m'
+readonly EL=$'\033[K'
+
+# --- Iconografia Minimalista Unicode ---
+readonly I_DOT='•'
+readonly I_ARR='→'
+readonly I_CHECK='✔'
+readonly I_WARN='⚠'
+readonly I_CROSS='✖'
+readonly I_TERM='❯'
+readonly I_DNA='🧬'
 
 declare -g PACKAGE_MANAGER=""
 declare -ga PACKAGE_RUN=()
@@ -67,10 +83,10 @@ declare -gA ENV_MAP=()
 
 mkdir -p "$STATE_DIR"
 
-log_info() { printf '%s[INFO]%s %s\n' "$C_CYAN" "$C_RESET" "$1"; }
-log_ok() { printf '%s[OK]%s %s\n' "$C_GREEN" "$C_RESET" "$1"; }
-log_warn() { printf '%s[AVISO]%s %s\n' "$C_YELLOW" "$C_RESET" "$1"; }
-log_error() { printf '%s[ERRO]%s %s\n' "$C_RED" "$C_RESET" "$1" >&2; }
+log_info() { printf '%s%s%s %s\n' "$C_CYAN" "$I_DOT" "$C_RESET" "$1"; }
+log_ok() { printf '%s%s%s %s\n' "$C_GREEN" "$I_CHECK" "$C_RESET" "$1"; }
+log_warn() { printf '%s%s%s %s\n' "$C_AMBER" "$I_WARN" "$C_RESET" "$1"; }
+log_error() { printf '%s%s%s %s\n' "$C_RED" "$I_CROSS" "$C_RESET" "$1" >&2; }
 die() { log_error "$1"; exit 1; }
 have() { command -v "$1" >/dev/null 2>&1; }
 
@@ -217,14 +233,28 @@ banner() {
   resolve_commands
   select_package_manager
   export_runtime_env
-  printf '\n%sLyra MetaCare Local Orchestrator%s\n' "$C_BOLD" "$C_RESET"
-  printf '%sVersao:%s %s\n' "$C_BLUE" "$C_RESET" "$SCRIPT_VERSION"
-  printf '%sRaiz:%s %s\n' "$C_BLUE" "$C_RESET" "$ROOT_DIR"
-  printf '%sAmbiente:%s %s | pacote=%s | app=%s | mysql=%s:%s\n\n' "$C_BLUE" "$C_RESET" "$OS_LABEL" "$PACKAGE_MANAGER" "$PORT" "$MYSQL_HOST" "$MYSQL_PORT"
+  local width
+  width="$(tput cols 2>/dev/null || printf '120')"
+  (( width < 60 )) && width=60
+  local sep
+  sep="$(repeat_char '─' "$((width - 4))")"
+  printf '\n  %s%s%s LYRA METACARE %sv%s%s\n' "$C_GRAY" "$I_DOT" "$C_RESET" "$C_BOLD" "$SCRIPT_VERSION" "$C_RESET"
+  printf '  %s%s%s\n' "$C_SEC" "$sep" "$C_RESET"
+  printf '  %s%s Raiz:%s     %s\n' "$C_CYAN" "$I_ARR" "$C_RESET" "$ROOT_DIR"
+  printf '  %s%s Ambiente:%s %s %s|%s pacote=%s %s|%s app=%s\n' "$C_CYAN" "$I_ARR" "$C_RESET" "$OS_LABEL" "$C_SEC" "$C_RESET" "$PACKAGE_MANAGER" "$C_SEC" "$C_RESET" "$PORT"
+  printf '  %s%s MySQL:%s   %s:%s\n' "$C_CYAN" "$I_ARR" "$C_RESET" "$MYSQL_HOST" "$MYSQL_PORT"
+  printf '  %s%s%s\n\n' "$C_SEC" "$sep" "$C_RESET"
 }
 
 section() {
-  printf '\n%s== %s ==%s\n' "$C_BLUE" "$1" "$C_RESET"
+  local width
+  width="$(tput cols 2>/dev/null || printf '120')"
+  (( width < 60 )) && width=60
+  local sep
+  sep="$(repeat_char '─' "$((width - 4))")"
+  printf '\n  %s%s%s\n' "$C_SEC" "$sep" "$C_RESET"
+  printf '  %s%s%s %s%s\n' "$C_CYAN" "$I_TERM" "$C_RESET" "$C_BOLD$1" "$C_RESET"
+  printf '  %s%s%s\n' "$C_SEC" "$sep" "$C_RESET"
 }
 
 trim() {
@@ -2025,10 +2055,10 @@ template_tui_append_output() {
 template_tui_status_prefix() {
   local status_kind="$1"
   case "$status_kind" in
-    ok) printf '[OK]' ;;
-    err) printf '[ERRO]' ;;
-    warn) printf '[AVISO]' ;;
-    *) printf '[INFO]' ;;
+    ok) printf '%s' "$I_CHECK" ;;
+    err) printf '%s' "$I_CROSS" ;;
+    warn) printf '%s' "$I_WARN" ;;
+    *) printf '%s' "$I_DOT" ;;
   esac
 }
 
@@ -2037,7 +2067,7 @@ template_tui_status_color() {
   case "$status_kind" in
     ok) printf '%s' "$C_GREEN" ;;
     err) printf '%s' "$C_RED" ;;
-    warn) printf '%s' "$C_YELLOW" ;;
+    warn) printf '%s' "$C_AMBER" ;;
     *) printf '%s' "$C_CYAN" ;;
   esac
 }
@@ -2128,20 +2158,20 @@ template_tui_refresh_snapshot() {
 }
 
 template_tui_boot_sequence() {
-  local width height left frames frame i
-  local -a frames=('|' '/' '-' '\\')
+  local width height left i frame
+  local -a frames=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
 
   width="$(tput cols 2>/dev/null || printf '120')"
   height="$(tput lines 2>/dev/null || printf '32')"
-  left=$(( (width - 44) / 2 ))
+  left=$(( (width - 52) / 2 ))
   (( left < 2 )) && left=2
 
-  for i in $(seq 0 15); do
+  for i in $(seq 0 19); do
     frame="${frames[$(( i % ${#frames[@]} ))]}"
     printf '\033[H\033[2J'
-    printf '\033[%d;%dH%s.%s LYRA METACARE %sv%s%s\n' $(( height / 2 - 1 )) "$left" "$C_GRAY" "$C_RESET" "$C_BOLD" "$SCRIPT_VERSION" "$C_RESET"
-    printf '\033[%d;%dH%s%s%s\n' $(( height / 2 )) "$left" "$C_BOLD" "Carregando interface operacional local" "$C_RESET"
-    printf '\033[%d;%dH%s[%s]%s preparando TUI com MySQL nativo e app local real\n' $(( height / 2 + 1 )) "$left" "$C_CYAN" "$frame" "$C_RESET"
+    printf '\033[%d;%dH%s%s%s LYRA METACARE %sv%s%s\n' $(( height / 2 - 1 )) "$left" "$C_GRAY" "$I_DOT" "$C_RESET" "$C_BOLD" "$SCRIPT_VERSION" "$C_RESET"
+    printf '\033[%d;%dH%s%sCarregando interface operacional local%s\n' $(( height / 2 )) "$left" "$C_CYAN" "$C_BOLD" "$C_RESET"
+    printf '\033[%d;%dH%s%s%s preparando TUI com MySQL nativo e app local real\n' $(( height / 2 + 1 )) "$left" "$C_MINT" "$frame" "$C_RESET"
     sleep 0.04
   done
 }
@@ -2163,10 +2193,15 @@ template_tui_show_output_viewer() {
     start_line=$(( total_lines - visible_lines - viewer_scroll ))
     (( start_line < 0 )) && start_line=0
 
-    printf '\033[H\033[2J'
-    printf '  %s.%s LIVE OUTPUT HISTORICO %sv%s%s\n' "$C_BLUE" "$C_RESET" "$C_BOLD" "$SCRIPT_VERSION" "$C_RESET"
-    printf '  %s%s%s\n' "$C_BOLD" "$(fit_text "Saida real capturada das acoes executadas" $((width - 4)))" "$C_RESET"
-    printf '  %s%s%s\n' "$C_BLUE" "$(repeat_char "-" $((width - 4)))" "$C_RESET"
+    local sb_indicator_pos=0
+    if (( total_lines > visible_lines && max_scroll > 0 )); then
+      sb_indicator_pos=$(( viewer_scroll * (visible_lines - 1) / max_scroll ))
+    fi
+
+    printf '\033[H'
+    printf '%b' "${EL}  ${C_GRAY}${I_DOT}${C_RESET} LIVE OUTPUT HISTORICO ${C_BOLD}v${SCRIPT_VERSION}${C_RESET}\n"
+    printf '%b' "${EL}  ${C_CYAN}${C_BOLD}$(fit_text 'Saida real capturada das acoes executadas' $((width - 4)))${C_RESET}\n"
+    printf '%b' "${EL}  ${C_SEC}${C_DIM}$(repeat_char '─' $((width - 4)))${C_RESET}\n"
 
     row=0
     while (( row < visible_lines )); do
@@ -2174,12 +2209,19 @@ template_tui_show_output_viewer() {
       if (( start_line + row < total_lines )); then
         line="${TEMPLATE_TUI_OUTPUT_LINES[$(( start_line + row ))]}"
       fi
-      printf '  %s|%s %s%s%s\n' "$C_BLUE" "$C_RESET" "$C_YELLOW" "$(fit_text "$line" $((width - 8)))" "$C_RESET"
+      local sb_char="${C_SEC}┃${C_RESET}"
+      if (( total_lines > visible_lines )); then
+        if (( (visible_lines - 1 - row) == sb_indicator_pos )); then
+          sb_char="${C_CYAN}█${C_RESET}"
+        fi
+      fi
+      printf '%b' "${EL}  ${sb_char} ${C_AMBER}$(fit_text "$line" $((width - 10)))${C_RESET}\n"
       (( row += 1 ))
     done
 
-    printf '  %s%s%s\n' "$C_BLUE" "$(repeat_char "-" $((width - 4)))" "$C_RESET"
-    printf '  %s\n' "$(fit_text "Atalhos: setas/j-k mover | a/z linha | PgUp/v pagina | q ou Enter voltar" $((width - 4)))"
+    printf '%b' "${EL}  ${C_SEC}${C_DIM}$(repeat_char '─' $((width - 4)))${C_RESET}\n"
+    printf '%b' "${EL}  ${C_SEC}${C_DIM}[${I_ARR}${I_ARR}] Mover  [a/z] Linha  [PgUp/v] Pagina  [q/Enter] Voltar${C_RESET}"
+    printf '\033[J'
 
     read -rsn1 key
     case "$key" in
@@ -2219,7 +2261,7 @@ template_tui_draw() {
   local width height items_name title timer bar_width filled empty menu_height output_height start_line
   local selected_record selected_kind selected_target selected_label selected_desc
   local desc_width content_width max_scroll status_prefix status_color line row
-  local selected_mode info_line_1 info_line_2 progress_prefix progress_suffix footer_text
+  local selected_mode info_line_1 info_line_2 footer_text
   local buffer=""
 
   width="$(tput cols 2>/dev/null || printf '120')"
@@ -2233,7 +2275,7 @@ template_tui_draw() {
   local -n menu_items="$items_name"
   title="$(tui_menu_title "$menu_name")"
   timer="$(template_tui_timer)"
-  bar_width=$(( width - 12 ))
+  bar_width=$(( width - 13 ))
   (( bar_width < 10 )) && bar_width=10
   filled=$(( TEMPLATE_TUI_PROGRESS * bar_width / 100 ))
   empty=$(( bar_width - filled ))
@@ -2259,58 +2301,86 @@ template_tui_draw() {
   status_color="$(template_tui_status_color "$status_kind")"
   info_line_1="Tela: $title | SO: $OS_LABEL | pacote: $PACKAGE_MANAGER | app: 127.0.0.1:$PORT"
   info_line_2="Menu: $selected_label | modo: $selected_mode | admin mysql: ${MYSQL_ADMIN_USER:-nao configurado}"
-  progress_prefix="$(repeat_char "=" "$filled")"
-  progress_suffix="$(repeat_char "-" "$empty")"
-  footer_text="Atalhos: setas/j-k mover | Enter executar | a/z linha | PgUp/v pagina | l live | b voltar | q sair"
+  footer_text="[${I_ARR}${I_ARR}] Mover  [Enter] Executar  [a/z] Scroll  [PgUp/v] Pagina  [l] Live  [b] Voltar  [q] Sair"
 
-  buffer+=$'\033[H\033[2J'
-  buffer+="  ${C_GRAY}.${C_RESET} LYRA METACARE ${C_BOLD}v${SCRIPT_VERSION}${C_RESET} - ${timer}\n"
-  buffer+="  ${C_BOLD}$(fit_text "$TEMPLATE_TUI_TASK" "$content_width")${C_RESET}\n"
-  buffer+="  ${C_GREEN}${progress_prefix}${C_BLUE}${progress_suffix}${C_RESET} ${C_CYAN}${TEMPLATE_TUI_PROGRESS}%${C_RESET}\n"
-  buffer+="  ${C_BLUE}$(repeat_char "-" "$content_width")${C_RESET}\n"
-  buffer+="  ${C_DIM}$(fit_text "$info_line_1" "$content_width")${C_RESET}\n"
-  buffer+="  ${C_DIM}$(fit_text "$info_line_2" "$content_width")${C_RESET}\n\n"
+  # --- Header ---
+  buffer+=$'\033[H'
+  buffer+="${EL}\\n"
+  buffer+="${EL}  ${C_GRAY}${I_DOT}${C_RESET} LYRA METACARE ${C_BOLD}v${SCRIPT_VERSION}${C_RESET} ${C_GRAY}— ${timer}${C_RESET}\\n"
+  buffer+="${EL}  ${C_CYAN}${C_BOLD}$(fit_text "$TEMPLATE_TUI_TASK" "$content_width")${C_RESET}\\n"
 
+  # --- Barra de progresso premium ━/─ ---
+  buffer+="${EL}  "
+  if (( filled > 0 )); then
+    buffer+="${C_MINT}$(repeat_char '━' "$filled")"
+  fi
+  if (( empty > 0 )); then
+    buffer+="${C_SEC}$(repeat_char '─' "$empty")"
+  fi
+  buffer+=" ${C_CYAN}${C_BOLD}${TEMPLATE_TUI_PROGRESS}%${C_RESET}\\n"
+  buffer+="${EL}  ${C_SEC}${C_DIM}$(repeat_char '─' "$content_width")${C_RESET}\\n"
+
+  # --- Info lines ---
+  buffer+="${EL}  ${C_SEC}${C_DIM}$(fit_text "$info_line_1" "$content_width")${C_RESET}\\n"
+  buffer+="${EL}  ${C_SEC}${C_DIM}$(fit_text "$info_line_2" "$content_width")${C_RESET}\\n"
+  buffer+="${EL}\\n"
+
+  # --- Menu items com seta → ---
   row=0
   while (( row < menu_height )); do
     local record kind target label desc
     record="${menu_items[$row]}"
     IFS='|' read -r kind target label desc <<< "$record"
+    local padded_label
+    padded_label="$(printf '%-28s' "$(fit_text "$label" 28)")"
     if (( row == selected_index )); then
-      printf -v line '> %-32s %s' "$(fit_text "$label" 32)" "$(fit_text "$desc" "$desc_width")"
-      buffer+="  ${C_BG_HOVER}${C_CYAN}${C_BOLD}$(fit_text "$line" "$content_width")${C_RESET}\n"
+      buffer+="${EL}  ${C_BG_HOVER}${C_CYAN}${C_BOLD}${I_ARR}  ${padded_label} ${C_RESET} ${C_SEC}$(fit_text "$desc" "$desc_width")${C_RESET}\\n"
     else
-      printf -v line '  %-32s %s' "$(fit_text "$label" 32)" "$(fit_text "$desc" "$desc_width")"
-      buffer+="  ${C_WHITE}$(fit_text "$line" "$content_width")${C_RESET}\n"
+      buffer+="${EL}     ${C_SEC}${padded_label} ${C_RESET} ${C_GRAY}$(fit_text "$desc" "$desc_width")${C_RESET}\\n"
     fi
     (( row += 1 ))
   done
 
-  buffer+=$'\n'
+  # --- Live output com scrollbar visual ---
+  buffer+="${EL}\\n"
   if (( TEMPLATE_TUI_SCROLL > 0 )); then
-    buffer+="  ${C_BLUE}>${C_RESET} SAIDA AO VIVO ${C_YELLOW}[SCROLL -${TEMPLATE_TUI_SCROLL}/${max_scroll}]${C_RESET}\n"
+    buffer+="${EL}  ${C_GRAY}${I_TERM} LIVE OUTPUT:${C_RESET} ${C_AMBER}[SCROLL: -${TEMPLATE_TUI_SCROLL}]${C_RESET}\\n"
   else
-    buffer+="  ${C_BLUE}>${C_RESET} SAIDA AO VIVO\n"
+    buffer+="${EL}  ${C_GRAY}${I_TERM} LIVE OUTPUT:${C_RESET}\\n"
   fi
-  buffer+="  ${C_BLUE}$(repeat_char "-" "$content_width")${C_RESET}\n"
+
+  local total_live=${#TEMPLATE_TUI_OUTPUT_LINES[@]}
+  local sb_indicator_pos=0
+  if (( total_live > output_height )); then
+    local max_sc=$(( total_live - output_height ))
+    (( max_sc > 0 )) && sb_indicator_pos=$(( TEMPLATE_TUI_SCROLL * (output_height - 1) / max_sc ))
+  fi
 
   row=0
   while (( row < output_height )); do
     local idx=$(( start_line + row ))
-    local live_line="" output_prefix="|"
-    if (( idx < ${#TEMPLATE_TUI_OUTPUT_LINES[@]} )); then
+    local live_line=""
+    if (( idx < total_live )); then
       live_line="${TEMPLATE_TUI_OUTPUT_LINES[$idx]}"
     fi
-    buffer+="  ${C_BLUE}${output_prefix}${C_RESET} ${C_YELLOW}$(fit_text "$live_line" $((content_width - 4)))${C_RESET}\n"
+    local sb_char="${C_SEC}┃${C_RESET}"
+    if (( total_live > output_height )); then
+      if (( (output_height - 1 - row) == sb_indicator_pos )); then
+        sb_char="${C_CYAN}█${C_RESET}"
+      fi
+    fi
+    buffer+="${EL}  ${sb_char} ${C_AMBER}$(fit_text "$live_line" $((content_width - 6)))${C_RESET}\\n"
     (( row += 1 ))
   done
 
-  buffer+="  ${C_BLUE}$(repeat_char "-" "$content_width")${C_RESET}\n"
-  buffer+="  ${status_color}$(fit_text "${status_prefix} ${status_message}" "$content_width")${C_RESET}\n"
-  buffer+="  ${C_DIM}$(fit_text "$TEMPLATE_TUI_MYSQL_STATE" "$content_width")${C_RESET}\n"
-  buffer+="  ${C_DIM}$(fit_text "$TEMPLATE_TUI_APP_STATE" "$content_width")${C_RESET}\n"
-  buffer+="  ${C_DIM}$(fit_text "$TEMPLATE_TUI_BOOTSTRAP_STATE" "$content_width")${C_RESET}\n"
-  buffer+="  ${C_DIM}$(fit_text "$footer_text" "$content_width")${C_RESET}"
+  # --- Status bar ---
+  buffer+="${EL}\\n"
+  buffer+="${EL}  ${C_SEC}${C_DIM}STATUS:${C_RESET} ${status_color}${status_prefix} $(fit_text "$status_message" $((content_width - 12)))${C_RESET}\\n"
+  buffer+="${EL}  ${C_GRAY}$(fit_text "$TEMPLATE_TUI_MYSQL_STATE" "$content_width")${C_RESET}\\n"
+  buffer+="${EL}  ${C_GRAY}$(fit_text "$TEMPLATE_TUI_APP_STATE" "$content_width")${C_RESET}\\n"
+  buffer+="${EL}  ${C_GRAY}$(fit_text "$TEMPLATE_TUI_BOOTSTRAP_STATE" "$content_width")${C_RESET}\\n"
+  buffer+="${EL}\\n"
+  buffer+="${EL}  ${C_SEC}${C_DIM}$(fit_text "$footer_text" "$content_width")${C_RESET}"
 
   printf '%b\033[J' "$buffer"
 }
