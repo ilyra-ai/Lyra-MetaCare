@@ -185,11 +185,7 @@ const governanceItems: GovernanceItem[] = [
   },
 ];
 
-function PhonePreview({
-  onPrimaryAction,
-}: {
-  onPrimaryAction: () => void;
-}) {
+function PhonePreview({ onPrimaryAction }: { onPrimaryAction: () => void }) {
   return (
     <div className="relative z-10 mx-auto w-full max-w-[22rem] rounded-[2.2rem] border border-white/80 bg-white p-3 shadow-[0_40px_140px_-60px_rgba(42,16,92,0.55)]">
       <div className="overflow-hidden rounded-[1.8rem] bg-[#fcfaff]">
@@ -275,7 +271,9 @@ function PhonePreview({
                 <ShieldCheck className="h-4.5 w-4.5" />
               </div>
               <div>
-                <p className="text-sm font-semibold">Sessão, plano e cobrança</p>
+                <p className="text-sm font-semibold">
+                  Sessão, plano e cobrança
+                </p>
                 <p className="mt-1 text-xs leading-5 text-white/80">
                   Segurança, entitlement e camada comercial dentro da mesma
                   jornada.

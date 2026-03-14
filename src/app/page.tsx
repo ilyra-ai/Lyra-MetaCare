@@ -49,10 +49,8 @@ export default function Home() {
     }
   }, [db, session]);
 
+  // Para visitantes sem sessão, a landing deve ser a primeira experiência.
   if (!session) {
-    if (session === undefined || !isMinimumTimeElapsed) {
-      return <SplashScreen />;
-    }
     return <LandingPage />;
   }
 
