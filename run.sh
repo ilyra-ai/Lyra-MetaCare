@@ -21,11 +21,11 @@ readonly APP_META_FILE="$STATE_DIR/app.meta"
 readonly INSTALL_HASH_FILE="$STATE_DIR/install.hash"
 
 readonly DEFAULT_MYSQL_HOST="127.0.0.1"
-readonly DEFAULT_MYSQL_HOST_PORT="3307"
+readonly DEFAULT_MYSQL_HOST_PORT="3306"
 readonly DEFAULT_MYSQL_DATABASE="lyra_metacare"
 readonly DEFAULT_MYSQL_USER="lyra"
-readonly DEFAULT_MYSQL_PASSWORD="lyra_mysql_local_2026"
-readonly DEFAULT_MYSQL_ROOT_PASSWORD="lyra_mysql_root_2026"
+readonly DEFAULT_MYSQL_PASSWORD=""
+readonly DEFAULT_MYSQL_ROOT_PASSWORD=""
 readonly DEFAULT_ADMIN_EMAIL="admin@admin.com"
 readonly DEFAULT_ADMIN_FIRST_NAME="Admin"
 readonly DEFAULT_ADMIN_LAST_NAME="Local"
@@ -52,6 +52,7 @@ declare -ga MYSQLDUMP_CMD=()
 declare -ga SYSTEMCTL_CMD=()
 declare -ga SERVICE_CMD=()
 declare -ga GZIP_CMD=()
+declare -ga MYSQL_AUTH_ARGS=()
 declare -g APP_PORT="$DEFAULT_APP_PORT"
 declare -g OS_FAMILY=""
 declare -g OS_LABEL=""
@@ -277,6 +278,18 @@ export_runtime_env() {
   APP_PORT="$PORT"
 }
 
+set_mysql_auth_args() {
+  local user="$1"
+  local password="${2:-}"
+
+  [[ -n "$user" ]] || die "Usuario MySQL nao informado para montar os argumentos de autenticacao."
+
+  MYSQL_AUTH_ARGS=("-u$user")
+  if [[ -n "$password" ]]; then
+    MYSQL_AUTH_ARGS+=("-p$password")
+  fi
+}
+
 native_mysql_installed() {
   resolve_commands
   if [[ "$OS_FAMILY" == "windows" ]] && have powershell.exe; then
@@ -478,6 +491,7 @@ ensure_env() {
   admin_last_name="$(ask_value "Sobrenome do admin bootstrap" "$(env_value ADMIN_BOOTSTRAP_LAST_NAME "$DEFAULT_ADMIN_LAST_NAME")")"
   port_value="$(ask_value "Porta HTTP local da aplicacao" "$(env_value PORT "$DEFAULT_APP_PORT")")"
 
+  [[ -z "$mysql_password" ]] && mysql_password="$(generate_password)"
   [[ -z "$auth_secret" ]] && auth_secret="$(generate_hex)"
   [[ -z "$admin_password" ]] && admin_password="$(generate_password)"
 
@@ -526,7 +540,7 @@ ensure_env_ready() {
   load_env_map
   local required=(
     MYSQL_HOST MYSQL_HOST_PORT MYSQL_PORT MYSQL_DATABASE MYSQL_USER
-    MYSQL_PASSWORD MYSQL_ROOT_PASSWORD AUTH_SECRET ADMIN_BOOTSTRAP_EMAIL
+    MYSQL_PASSWORD AUTH_SECRET ADMIN_BOOTSTRAP_EMAIL
     ADMIN_BOOTSTRAP_PASSWORD ADMIN_BOOTSTRAP_FIRST_NAME ADMIN_BOOTSTRAP_LAST_NAME PORT
   )
   local key
@@ -567,11 +581,15 @@ native_mysql_responding() {
   resolve_commands
   export_runtime_env
   if (( ${#MYSQL_CLIENT_CMD[@]} > 0 )); then
-    if "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_USER" "-p$MYSQL_PASSWORD" -N -B -e "SELECT 1" >/dev/null 2>&1; then
+    set_mysql_auth_args "$MYSQL_USER" "$MYSQL_PASSWORD"
+    if "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" -N -B -e "SELECT 1" >/dev/null 2>&1; then
       return 0
     fi
-    if [[ -n "$MYSQL_ADMIN_PASSWORD" ]] && "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_ADMIN_USER" "-p$MYSQL_ADMIN_PASSWORD" -N -B -e "SELECT 1" >/dev/null 2>&1; then
-      return 0
+    if [[ -n "$MYSQL_ADMIN_USER" ]]; then
+      set_mysql_auth_args "$MYSQL_ADMIN_USER" "$MYSQL_ADMIN_PASSWORD"
+      if "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" -N -B -e "SELECT 1" >/dev/null 2>&1; then
+        return 0
+      fi
     fi
   fi
 
@@ -648,12 +666,12 @@ const database = process.env.MYSQL_DATABASE;
     process.exit(0);
   } catch {}
 
-  if (process.env.MYSQL_ADMIN_PASSWORD) {
+  if (process.env.MYSQL_ADMIN_USER) {
     const adminConnection = await mysql.createConnection({
       host: process.env.MYSQL_HOST,
       port: Number(process.env.MYSQL_PORT),
       user: process.env.MYSQL_ADMIN_USER || 'root',
-      password: process.env.MYSQL_ADMIN_PASSWORD,
+      password: process.env.MYSQL_ADMIN_PASSWORD || '',
       multipleStatements: true,
     });
 
@@ -764,7 +782,7 @@ ensure_restore_target_safe() {
   local target_database="$1"
   export_runtime_env
   [[ -d "$ROOT_DIR/node_modules" ]] || die "Dependencias ausentes. Execute ./run.sh install antes de restaurar."
-  if [[ -n "$MYSQL_ADMIN_PASSWORD" ]]; then
+  if [[ -n "$MYSQL_ADMIN_USER" ]]; then
     TARGET_DATABASE="$target_database" "$NODE_CMD" - <<'NODE'
 const mysql = require('mysql2/promise');
 
@@ -773,8 +791,8 @@ const mysql = require('mysql2/promise');
   const connection = await mysql.createConnection({
     host: process.env.MYSQL_HOST,
     port: Number(process.env.MYSQL_PORT),
-    user: 'root',
-    password: process.env.MYSQL_ROOT_PASSWORD,
+    user: process.env.MYSQL_ADMIN_USER || 'root',
+    password: process.env.MYSQL_ADMIN_PASSWORD || '',
   });
 
   await connection.query(`CREATE DATABASE IF NOT EXISTS \`${target}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
@@ -822,9 +840,10 @@ backup_database() {
   backup_file="$BACKUP_DIR/${MYSQL_DATABASE}_${timestamp}.sql"
 
   section "Backup full do banco"
-  if [[ -n "$MYSQL_ADMIN_PASSWORD" ]]; then
+  if [[ -n "$MYSQL_ADMIN_USER" ]]; then
     (( ${#MYSQLDUMP_CMD[@]} > 0 )) || die "mysqldump nao encontrado no ambiente local."
-    "${MYSQLDUMP_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_ADMIN_USER" "-p$MYSQL_ADMIN_PASSWORD" --single-transaction --routines --triggers --events --hex-blob --set-gtid-purged=OFF --no-tablespaces "$MYSQL_DATABASE" > "$backup_file"
+    set_mysql_auth_args "$MYSQL_ADMIN_USER" "$MYSQL_ADMIN_PASSWORD"
+    "${MYSQLDUMP_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" --single-transaction --routines --triggers --events --hex-blob --set-gtid-purged=OFF --no-tablespaces "$MYSQL_DATABASE" > "$backup_file"
   elif [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
     (( ${#MYSQLDUMP_CMD[@]} > 0 )) || die "mysqldump nao encontrado no ambiente local."
     sudo -n "${MYSQLDUMP_CMD[@]}" --single-transaction --routines --triggers --events --hex-blob --set-gtid-purged=OFF --no-tablespaces "$MYSQL_DATABASE" > "$backup_file"
@@ -864,8 +883,9 @@ restore_database() {
   if [[ "$backup_path" == *.gz ]]; then
     (( ${#GZIP_CMD[@]} > 0 )) || die "gzip nao encontrado para restaurar arquivo compactado."
     (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) || die "Cliente mysql nao encontrado no ambiente local."
-    if [[ -n "$MYSQL_ADMIN_PASSWORD" ]]; then
-      "${GZIP_CMD[@]}" -dc "$backup_path" | "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_ADMIN_USER" "-p$MYSQL_ADMIN_PASSWORD" "$target_database"
+    if [[ -n "$MYSQL_ADMIN_USER" ]]; then
+      set_mysql_auth_args "$MYSQL_ADMIN_USER" "$MYSQL_ADMIN_PASSWORD"
+      "${GZIP_CMD[@]}" -dc "$backup_path" | "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" "$target_database"
     elif [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
       "${GZIP_CMD[@]}" -dc "$backup_path" | sudo -n "${MYSQL_CLIENT_CMD[@]}" "$target_database"
     else
@@ -873,8 +893,9 @@ restore_database() {
     fi
   else
     (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) || die "Cliente mysql nao encontrado no ambiente local."
-    if [[ -n "$MYSQL_ADMIN_PASSWORD" ]]; then
-      "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_ADMIN_USER" "-p$MYSQL_ADMIN_PASSWORD" "$target_database" < "$backup_path"
+    if [[ -n "$MYSQL_ADMIN_USER" ]]; then
+      set_mysql_auth_args "$MYSQL_ADMIN_USER" "$MYSQL_ADMIN_PASSWORD"
+      "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" "$target_database" < "$backup_path"
     elif [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
       sudo -n "${MYSQL_CLIENT_CMD[@]}" "$target_database" < "$backup_path"
     else
