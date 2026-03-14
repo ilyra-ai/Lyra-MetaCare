@@ -2,7 +2,7 @@
 
 set -Eeuo pipefail
 
-readonly SCRIPT_VERSION="2026.03.13"
+readonly SCRIPT_VERSION="2026.03.14"
 readonly REQUIRED_BASH_VERSION=4
 
 if (( BASH_VERSINFO[0] < REQUIRED_BASH_VERSION )); then
@@ -26,9 +26,10 @@ readonly DEFAULT_MYSQL_DATABASE="lyra_metacare"
 readonly DEFAULT_MYSQL_USER="lyra"
 readonly DEFAULT_MYSQL_PASSWORD=""
 readonly DEFAULT_MYSQL_ROOT_PASSWORD=""
-readonly DEFAULT_ADMIN_EMAIL="admin@admin.com"
-readonly DEFAULT_ADMIN_FIRST_NAME="Admin"
-readonly DEFAULT_ADMIN_LAST_NAME="Local"
+readonly DEFAULT_MYSQL_ADMIN_USER="root"
+readonly DEFAULT_ADMIN_EMAIL=""
+readonly DEFAULT_ADMIN_FIRST_NAME=""
+readonly DEFAULT_ADMIN_LAST_NAME=""
 readonly DEFAULT_APP_PORT="3000"
 
 readonly C_RESET=$'\033[0m'
@@ -56,6 +57,7 @@ declare -ga MYSQL_AUTH_ARGS=()
 declare -g APP_PORT="$DEFAULT_APP_PORT"
 declare -g OS_FAMILY=""
 declare -g OS_LABEL=""
+declare -g MYSQL_SERVICE_NAME=""
 declare -g NODE_CMD=""
 declare -gA ENV_MAP=()
 
@@ -68,6 +70,25 @@ log_error() { printf '%s[ERRO]%s %s\n' "$C_RED" "$C_RESET" "$1" >&2; }
 die() { log_error "$1"; exit 1; }
 have() { command -v "$1" >/dev/null 2>&1; }
 
+refresh_commands() {
+  PACKAGE_MANAGER=""
+  PACKAGE_RUN=()
+  NPM_CMD=()
+  PNPM_CMD=()
+  TASKKILL_CMD=()
+  COREPACK_CMD=()
+  MYSQL_CLIENT_CMD=()
+  MYSQLADMIN_CMD=()
+  MYSQLD_CMD=()
+  MYSQLDUMP_CMD=()
+  SYSTEMCTL_CMD=()
+  SERVICE_CMD=()
+  GZIP_CMD=()
+  MYSQL_AUTH_ARGS=()
+  MYSQL_SERVICE_NAME=""
+  NODE_CMD=""
+}
+
 find_cmd() {
   local candidate
   for candidate in "$@"; do
@@ -77,6 +98,42 @@ find_cmd() {
     fi
   done
   return 1
+}
+
+linux_distribution_value() {
+  local key="$1"
+  [[ -r /etc/os-release ]] || return 1
+  awk -F= -v target="$key" '
+    $1 == target {
+      gsub(/"/, "", $2)
+      print tolower($2)
+      exit
+    }
+  ' /etc/os-release
+}
+
+linux_distribution_id() {
+  linux_distribution_value "ID"
+}
+
+linux_distribution_like() {
+  linux_distribution_value "ID_LIKE"
+}
+
+linux_package_manager() {
+  if have apt-get; then
+    printf 'apt'
+  elif have dnf; then
+    printf 'dnf'
+  elif have yum; then
+    printf 'yum'
+  elif have zypper; then
+    printf 'zypper'
+  elif have pacman; then
+    printf 'pacman'
+  else
+    printf 'unknown'
+  fi
 }
 
 detect_os() {
@@ -153,9 +210,13 @@ resolve_commands() {
 }
 
 banner() {
+  resolve_commands
+  select_package_manager
+  export_runtime_env
   printf '\n%sLyra MetaCare Local Orchestrator%s\n' "$C_BOLD" "$C_RESET"
   printf '%sVersao:%s %s\n' "$C_BLUE" "$C_RESET" "$SCRIPT_VERSION"
-  printf '%sRaiz:%s %s\n\n' "$C_BLUE" "$C_RESET" "$ROOT_DIR"
+  printf '%sRaiz:%s %s\n' "$C_BLUE" "$C_RESET" "$ROOT_DIR"
+  printf '%sAmbiente:%s %s | pacote=%s | app=%s | mysql=%s:%s\n\n' "$C_BLUE" "$C_RESET" "$OS_LABEL" "$PACKAGE_MANAGER" "$PORT" "$MYSQL_HOST" "$MYSQL_PORT"
 }
 
 section() {
@@ -266,7 +327,7 @@ export_runtime_env() {
   export MYSQL_USER="$(env_value MYSQL_USER "$DEFAULT_MYSQL_USER")"
   export MYSQL_PASSWORD="$(env_value MYSQL_PASSWORD "$DEFAULT_MYSQL_PASSWORD")"
   export MYSQL_ROOT_PASSWORD="$(env_value MYSQL_ROOT_PASSWORD "$DEFAULT_MYSQL_ROOT_PASSWORD")"
-  export MYSQL_ADMIN_USER="$(env_value MYSQL_ADMIN_USER "root")"
+  export MYSQL_ADMIN_USER="$(env_value MYSQL_ADMIN_USER "$DEFAULT_MYSQL_ADMIN_USER")"
   export MYSQL_ADMIN_PASSWORD="$(env_value MYSQL_ADMIN_PASSWORD "$(env_value MYSQL_ROOT_PASSWORD "")")"
   export AUTH_SECRET="$(env_value AUTH_SECRET "")"
   export ADMIN_BOOTSTRAP_EMAIL="$(env_value ADMIN_BOOTSTRAP_EMAIL "$DEFAULT_ADMIN_EMAIL")"
@@ -290,32 +351,255 @@ set_mysql_auth_args() {
   fi
 }
 
-native_mysql_installed() {
-  resolve_commands
-  if [[ "$OS_FAMILY" == "windows" ]] && have powershell.exe; then
-    (( ${#MYSQLD_CMD[@]} > 0 )) && return 0
-    powershell.exe -NoProfile -Command "if (Get-Service -ErrorAction SilentlyContinue | Where-Object { \$_.Name -match 'mysql|mariadb' }) { exit 0 } else { exit 1 }" >/dev/null 2>&1
-    return $?
-  fi
+admin_bootstrap_configured() {
+  export_runtime_env
+  [[ -n "$ADMIN_BOOTSTRAP_EMAIL" || -n "$ADMIN_BOOTSTRAP_PASSWORD" || -n "$ADMIN_BOOTSTRAP_FIRST_NAME" || -n "$ADMIN_BOOTSTRAP_LAST_NAME" ]]
+}
 
-  if (( ${#MYSQLD_CMD[@]} > 0 )); then
+admin_bootstrap_ready() {
+  export_runtime_env
+  [[ -n "$ADMIN_BOOTSTRAP_EMAIL" && -n "$ADMIN_BOOTSTRAP_PASSWORD" ]]
+}
+
+mask_secret() {
+  local value="${1:-}"
+  local length="${#value}"
+
+  if [[ -z "$value" ]]; then
+    printf '(vazio)'
+  elif (( length <= 4 )); then
+    printf '****'
+  else
+    printf '%s****%s' "${value:0:2}" "${value:length-2:2}"
+  fi
+}
+
+sudo_mysql_available() {
+  [[ "$OS_FAMILY" != "windows" ]] || return 1
+  have sudo || return 1
+  sudo -n true >/dev/null 2>&1
+}
+
+native_mysql_service_name() {
+  resolve_commands
+  if [[ -n "$MYSQL_SERVICE_NAME" ]]; then
+    printf '%s' "$MYSQL_SERVICE_NAME"
     return 0
   fi
 
-  if (( ${#SYSTEMCTL_CMD[@]} > 0 )); then
-    "${SYSTEMCTL_CMD[@]}" list-unit-files mysql.service >/dev/null 2>&1 && return 0
-    "${SYSTEMCTL_CMD[@]}" list-unit-files mariadb.service >/dev/null 2>&1 && return 0
+  local service_name=""
+  local candidate=""
+
+  if [[ "$OS_FAMILY" == "windows" ]] && have powershell.exe; then
+    service_name="$(
+      powershell.exe -NoProfile -Command "\$svc = Get-Service -ErrorAction SilentlyContinue | Where-Object { \$_.Name -match 'mysql|mariadb' } | Select-Object -First 1 -ExpandProperty Name; if (\$svc) { \$svc }" 2>/dev/null | tr -d '\r'
+    )"
+  elif (( ${#SYSTEMCTL_CMD[@]} > 0 )); then
+    for candidate in mysql mysqld mariadb; do
+      if "${SYSTEMCTL_CMD[@]}" list-unit-files "${candidate}.service" >/dev/null 2>&1 || "${SYSTEMCTL_CMD[@]}" status "$candidate" >/dev/null 2>&1; then
+        service_name="$candidate"
+        break
+      fi
+    done
+  elif (( ${#SERVICE_CMD[@]} > 0 )); then
+    for candidate in mysql mysqld mariadb; do
+      if "${SERVICE_CMD[@]}" "$candidate" status >/dev/null 2>&1; then
+        service_name="$candidate"
+        break
+      fi
+    done
   fi
 
-  if (( ${#SERVICE_CMD[@]} > 0 )); then
-    "${SERVICE_CMD[@]}" --status-all 2>&1 | grep -Eiq 'mysql|mariadb' && return 0
+  [[ -n "$service_name" ]] || return 1
+  MYSQL_SERVICE_NAME="$service_name"
+  printf '%s' "$service_name"
+}
+
+mysql_admin_auth_works() {
+  resolve_commands
+  export_runtime_env
+
+  [[ -n "$MYSQL_ADMIN_USER" ]] || return 1
+
+  if (( ${#MYSQL_CLIENT_CMD[@]} > 0 )); then
+    set_mysql_auth_args "$MYSQL_ADMIN_USER" "$MYSQL_ADMIN_PASSWORD"
+    "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" -N -B -e "SELECT 1" >/dev/null 2>&1
+    return $?
+  fi
+
+  if [[ -n "$NODE_CMD" && -d "$ROOT_DIR/node_modules" ]]; then
+    "$NODE_CMD" - <<'NODE' >/dev/null 2>&1
+const mysql = require('mysql2/promise');
+(async () => {
+  const connection = await mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    port: Number(process.env.MYSQL_PORT),
+    user: process.env.MYSQL_ADMIN_USER,
+    password: process.env.MYSQL_ADMIN_PASSWORD || '',
+  });
+  await connection.query('SELECT 1');
+  await connection.end();
+})().then(() => process.exit(0)).catch(() => process.exit(1));
+NODE
+    return $?
   fi
 
   return 1
 }
 
+mysql_admin_strategy() {
+  export_runtime_env
+
+  if mysql_admin_auth_works; then
+    printf 'credenciais administrativas validadas (%s)' "$MYSQL_ADMIN_USER"
+  elif sudo_mysql_available; then
+    printf 'sudo mysql sem senha'
+  elif [[ -n "$MYSQL_ADMIN_USER" ]]; then
+    printf 'usuario administrativo configurado, mas ainda nao validado'
+  else
+    printf 'sem acesso administrativo configurado'
+  fi
+}
+
+show_config_summary() {
+  resolve_commands
+  select_package_manager
+  export_runtime_env
+  section "Configuracao efetiva"
+  printf '  SO detectado: %s\n' "${OS_LABEL:-nao detectado}"
+  printf '  Gerenciador Node: %s\n' "${PACKAGE_MANAGER:-nao definido}"
+  printf '  App: http://127.0.0.1:%s\n' "$PORT"
+  printf '  MySQL host: %s:%s\n' "$MYSQL_HOST" "$MYSQL_PORT"
+  printf '  MySQL schema: %s\n' "$MYSQL_DATABASE"
+  printf '  MySQL usuario app: %s\n' "$MYSQL_USER"
+  printf '  MySQL senha app: %s\n' "$(mask_secret "$MYSQL_PASSWORD")"
+  printf '  MySQL usuario admin: %s\n' "${MYSQL_ADMIN_USER:-nao configurado}"
+  printf '  MySQL senha admin: %s\n' "$(mask_secret "$MYSQL_ADMIN_PASSWORD")"
+  printf '  Estrategia admin MySQL: %s\n' "$(mysql_admin_strategy)"
+  printf '  AUTH_SECRET: %s\n' "$(mask_secret "$AUTH_SECRET")"
+  if admin_bootstrap_ready; then
+    printf '  Bootstrap admin: habilitado (%s)\n' "$ADMIN_BOOTSTRAP_EMAIL"
+  else
+    printf '  Bootstrap admin: desabilitado\n'
+  fi
+}
+
+native_mysql_installed() {
+  resolve_commands
+  (( ${#MYSQLD_CMD[@]} > 0 )) && return 0
+  native_mysql_service_name >/dev/null 2>&1
+}
+
 mysql_runtime() {
   printf 'native'
+}
+
+run_privileged() {
+  if [[ "$OS_FAMILY" == "windows" ]] || (( EUID == 0 )); then
+    "$@"
+    return 0
+  fi
+
+  have sudo || die "Permissao elevada necessaria, mas o comando sudo nao esta disponivel."
+  if sudo -n true >/dev/null 2>&1; then
+    sudo -n "$@"
+  elif [[ -t 0 ]]; then
+    sudo "$@"
+  else
+    die "Permissao elevada necessaria para concluir a operacao neste ambiente nao interativo."
+  fi
+}
+
+enable_native_mysql_service() {
+  local service_name
+  service_name="$(native_mysql_service_name || true)"
+  [[ -n "$service_name" ]] || return 0
+
+  if [[ "$OS_FAMILY" == "windows" ]] && have powershell.exe; then
+    powershell.exe -NoProfile -Command "Set-Service -Name '$service_name' -StartupType Automatic -ErrorAction Stop; Start-Service -Name '$service_name' -ErrorAction SilentlyContinue" >/dev/null 2>&1 || true
+    return 0
+  fi
+
+  if (( ${#SYSTEMCTL_CMD[@]} > 0 )); then
+    run_privileged "${SYSTEMCTL_CMD[@]}" enable "$service_name" >/dev/null 2>&1 || true
+    run_privileged "${SYSTEMCTL_CMD[@]}" start "$service_name" >/dev/null 2>&1 || true
+  elif (( ${#SERVICE_CMD[@]} > 0 )); then
+    run_privileged "${SERVICE_CMD[@]}" "$service_name" start >/dev/null 2>&1 || true
+  fi
+}
+
+install_mysql_windows() {
+  have powershell.exe || die "powershell.exe nao encontrado para instalar o MySQL no Windows."
+  powershell.exe -NoProfile -Command "
+    if (Get-Command winget -ErrorAction SilentlyContinue) {
+      Start-Process -FilePath 'winget' -ArgumentList 'install --id Oracle.MySQL --exact --accept-package-agreements --accept-source-agreements --disable-interactivity' -Verb RunAs -Wait
+      exit \$LASTEXITCODE
+    }
+
+    if (Get-Command choco -ErrorAction SilentlyContinue) {
+      Start-Process -FilePath 'choco' -ArgumentList 'install mysql -y' -Verb RunAs -Wait
+      exit \$LASTEXITCODE
+    }
+
+    throw 'Nao foi encontrado winget nem choco para instalar o MySQL no Windows.'
+  "
+}
+
+install_mysql_linux() {
+  local package_manager
+  package_manager="$(linux_package_manager)"
+
+  case "$package_manager" in
+    apt)
+      run_privileged apt-get update
+      run_privileged env DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server mysql-client
+      ;;
+    dnf)
+      run_privileged dnf install -y community-mysql-server
+      ;;
+    yum)
+      run_privileged yum install -y community-mysql-server
+      ;;
+    zypper)
+      die "Nao implementei instalacao automatica segura para zypper porque o nome do pacote Oracle MySQL depende do repositório configurado neste host."
+      ;;
+    pacman)
+      die "Arch e derivados nao expõem Oracle MySQL nativamente de forma padronizada no pacote oficial. O run.sh nao vai simular uma instalacao incorreta."
+      ;;
+    *)
+      die "Nao foi possivel determinar um gerenciador de pacotes suportado para instalar o MySQL nativo neste Linux."
+      ;;
+  esac
+}
+
+install_native_mysql() {
+  resolve_commands
+  detect_os
+
+  if native_mysql_installed; then
+    log_ok "MySQL nativo ja esta instalado neste ambiente."
+    enable_native_mysql_service
+    return 0
+  fi
+
+  section "Instalacao do MySQL nativo"
+  case "$OS_FAMILY" in
+    windows)
+      install_mysql_windows
+      ;;
+    linux|wsl)
+      install_mysql_linux
+      ;;
+    *)
+      die "Sistema operacional sem suporte para instalacao automatica do MySQL nativo: $OS_LABEL"
+      ;;
+  esac
+
+  refresh_commands
+  resolve_commands
+  native_mysql_installed || die "A instalacao foi executada, mas o MySQL nativo nao foi detectado ao final."
+  enable_native_mysql_service
+  log_ok "MySQL nativo instalado e habilitado no sistema."
 }
 
 require_file() {
@@ -362,9 +646,14 @@ doctor() {
 
   log_ok "Sistema operacional detectado: $OS_LABEL"
   log_ok "Runtime MySQL preferencial: $(mysql_runtime)"
+  if [[ "$OS_FAMILY" == "linux" || "$OS_FAMILY" == "wsl" ]]; then
+    log_ok "Distribuicao Linux detectada: $(linux_distribution_id || printf 'desconhecida')"
+    log_ok "Gerenciador de pacotes do SO: $(linux_package_manager)"
+  fi
   have git && log_ok "Git disponivel." || die "Git nao encontrado."
   [[ -n "$NODE_CMD" ]] && log_ok "Node.js disponivel: $("$NODE_CMD" --version)" || die "Node.js nao encontrado."
   (( ${#NPM_CMD[@]} > 0 )) && log_ok "npm disponivel: $("${NPM_CMD[@]}" --version)" || die "npm nao encontrado."
+  log_ok "Gerenciador do projeto: $PACKAGE_MANAGER"
 
   if [[ "$PACKAGE_MANAGER" == "pnpm" ]]; then
     if (( ${#PNPM_CMD[@]} > 0 )); then
@@ -376,9 +665,17 @@ doctor() {
     fi
   fi
 
-  native_mysql_installed && log_ok "Servico MySQL nativo detectado." || log_warn "Nao foi detectado servico MySQL nativo instalado."
+  if native_mysql_installed; then
+    log_ok "Servico MySQL nativo detectado."
+    local service_name
+    service_name="$(native_mysql_service_name || true)"
+    [[ -n "$service_name" ]] && log_ok "Servico MySQL do host: $service_name"
+  else
+    log_warn "Nao foi detectado servico MySQL nativo instalado."
+  fi
   (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) && log_ok "Cliente mysql disponivel." || log_warn "Cliente mysql nao encontrado."
   (( ${#MYSQLDUMP_CMD[@]} > 0 )) && log_ok "mysqldump disponivel." || log_warn "mysqldump nao encontrado."
+  log_ok "Estrategia administrativa MySQL: $(mysql_admin_strategy)"
 }
 
 hash_files() {
@@ -421,9 +718,9 @@ install_deps() {
   (
     cd "$ROOT_DIR"
     if [[ "$PACKAGE_MANAGER" == "pnpm" ]]; then
-      CI=true pnpm install --frozen-lockfile
+      CI=true "${PACKAGE_RUN[@]}" install --frozen-lockfile
     else
-      npm install
+      "${PACKAGE_RUN[@]}" install
     fi
   )
 
@@ -456,6 +753,24 @@ ask_value() {
   printf '%s' "${answer:-$current}"
 }
 
+ask_yes_no() {
+  local label="$1"
+  local default_answer="${2:-n}"
+  local answer=""
+  local prompt="[s/N]"
+
+  [[ "$default_answer" =~ ^[SsYy1]$ ]] && prompt="[S/n]"
+
+  if [[ ! -t 0 ]]; then
+    [[ "$default_answer" =~ ^[SsYy1]$ ]]
+    return $?
+  fi
+
+  read -r -p "$label $prompt: " answer
+  answer="${answer:-$default_answer}"
+  [[ "$answer" =~ ^[SsYy1]$ ]]
+}
+
 ensure_env() {
   load_env_map
 
@@ -474,6 +789,11 @@ ensure_env() {
   local admin_first_name
   local admin_last_name
   local port_value
+  local bootstrap_default="n"
+  local generated_mysql_password=0
+  local generated_admin_password=0
+
+  admin_bootstrap_configured && bootstrap_default="s"
 
   mysql_host="$(ask_value "Host do MySQL local" "$(env_value MYSQL_HOST "$DEFAULT_MYSQL_HOST")")"
   mysql_host_port="$(ask_value "Porta publicada do MySQL" "$(env_value MYSQL_HOST_PORT "3306")")"
@@ -482,18 +802,33 @@ ensure_env() {
   mysql_user="$(ask_value "Usuario MySQL da aplicacao" "$(env_value MYSQL_USER "$DEFAULT_MYSQL_USER")")"
   mysql_password="$(ask_value "Senha MySQL da aplicacao" "$(env_value MYSQL_PASSWORD "$DEFAULT_MYSQL_PASSWORD")" 1)"
   mysql_root_password="$(ask_value "Senha root do MySQL (opcional se usar admin dedicado ou sudo)" "$(env_value MYSQL_ROOT_PASSWORD "")" 1)"
-  mysql_admin_user="$(ask_value "Usuario administrativo do MySQL" "$(env_value MYSQL_ADMIN_USER "root")")"
+  mysql_admin_user="$(ask_value "Usuario administrativo do MySQL" "$(env_value MYSQL_ADMIN_USER "$DEFAULT_MYSQL_ADMIN_USER")")"
   mysql_admin_password="$(ask_value "Senha do usuario administrativo do MySQL" "$(env_value MYSQL_ADMIN_PASSWORD "$(env_value MYSQL_ROOT_PASSWORD "")")" 1)"
   auth_secret="$(env_value AUTH_SECRET "")"
-  admin_email="$(ask_value "Email do admin bootstrap" "$(env_value ADMIN_BOOTSTRAP_EMAIL "$DEFAULT_ADMIN_EMAIL")")"
-  admin_password="$(ask_value "Senha do admin bootstrap" "$(env_value ADMIN_BOOTSTRAP_PASSWORD "")" 1)"
-  admin_first_name="$(ask_value "Nome do admin bootstrap" "$(env_value ADMIN_BOOTSTRAP_FIRST_NAME "$DEFAULT_ADMIN_FIRST_NAME")")"
-  admin_last_name="$(ask_value "Sobrenome do admin bootstrap" "$(env_value ADMIN_BOOTSTRAP_LAST_NAME "$DEFAULT_ADMIN_LAST_NAME")")"
   port_value="$(ask_value "Porta HTTP local da aplicacao" "$(env_value PORT "$DEFAULT_APP_PORT")")"
 
-  [[ -z "$mysql_password" ]] && mysql_password="$(generate_password)"
+  if [[ -z "$mysql_password" ]]; then
+    mysql_password="$(generate_password)"
+    generated_mysql_password=1
+  fi
   [[ -z "$auth_secret" ]] && auth_secret="$(generate_hex)"
-  [[ -z "$admin_password" ]] && admin_password="$(generate_password)"
+
+  if ask_yes_no "Deseja habilitar o bootstrap de usuario administrador no app" "$bootstrap_default"; then
+    admin_email="$(ask_value "Email do admin bootstrap" "$(env_value ADMIN_BOOTSTRAP_EMAIL "$DEFAULT_ADMIN_EMAIL")")"
+    admin_password="$(ask_value "Senha do admin bootstrap" "$(env_value ADMIN_BOOTSTRAP_PASSWORD "")" 1)"
+    admin_first_name="$(ask_value "Nome do admin bootstrap" "$(env_value ADMIN_BOOTSTRAP_FIRST_NAME "$DEFAULT_ADMIN_FIRST_NAME")")"
+    admin_last_name="$(ask_value "Sobrenome do admin bootstrap" "$(env_value ADMIN_BOOTSTRAP_LAST_NAME "$DEFAULT_ADMIN_LAST_NAME")")"
+    [[ -n "$admin_email" ]] || die "Bootstrap admin habilitado, mas o email nao foi informado."
+    if [[ -z "$admin_password" ]]; then
+      admin_password="$(generate_password)"
+      generated_admin_password=1
+    fi
+  else
+    admin_email=""
+    admin_password=""
+    admin_first_name=""
+    admin_last_name=""
+  fi
 
   upsert_env "MYSQL_HOST" "$mysql_host"
   upsert_env "MYSQL_LOCAL_RUNTIME" "native"
@@ -514,6 +849,10 @@ ensure_env() {
 
   export_runtime_env
   validate_env
+  (( generated_mysql_password == 1 )) && log_info "Uma nova senha forte para o usuario MySQL do app foi gerada e gravada em .env.local."
+  if (( generated_admin_password == 1 )); then
+    printf 'Senha gerada para o admin bootstrap: %s\n' "$admin_password"
+  fi
   log_ok ".env.local configurado e validado."
 }
 
@@ -528,20 +867,20 @@ validate_env() {
   [[ -z "$MYSQL_USER" ]] && missing+=("MYSQL_USER")
   [[ -z "$MYSQL_PASSWORD" ]] && missing+=("MYSQL_PASSWORD")
   [[ -z "$AUTH_SECRET" ]] && missing+=("AUTH_SECRET")
-  [[ -z "$ADMIN_BOOTSTRAP_EMAIL" ]] && missing+=("ADMIN_BOOTSTRAP_EMAIL")
-  [[ -z "$ADMIN_BOOTSTRAP_PASSWORD" ]] && missing+=("ADMIN_BOOTSTRAP_PASSWORD")
-  [[ -z "$ADMIN_BOOTSTRAP_FIRST_NAME" ]] && missing+=("ADMIN_BOOTSTRAP_FIRST_NAME")
-  [[ -z "$ADMIN_BOOTSTRAP_LAST_NAME" ]] && missing+=("ADMIN_BOOTSTRAP_LAST_NAME")
   [[ -z "$PORT" ]] && missing+=("PORT")
   (( ${#missing[@]} == 0 )) || die "Variaveis obrigatorias ausentes em .env.local: ${missing[*]}"
+
+  if admin_bootstrap_configured; then
+    [[ -n "$ADMIN_BOOTSTRAP_EMAIL" ]] || die "Bootstrap admin configurado de forma incompleta: ADMIN_BOOTSTRAP_EMAIL e obrigatorio."
+    [[ -n "$ADMIN_BOOTSTRAP_PASSWORD" ]] || die "Bootstrap admin configurado de forma incompleta: ADMIN_BOOTSTRAP_PASSWORD e obrigatorio."
+  fi
 }
 
 ensure_env_ready() {
   load_env_map
   local required=(
     MYSQL_HOST MYSQL_HOST_PORT MYSQL_PORT MYSQL_DATABASE MYSQL_USER
-    MYSQL_PASSWORD AUTH_SECRET ADMIN_BOOTSTRAP_EMAIL
-    ADMIN_BOOTSTRAP_PASSWORD ADMIN_BOOTSTRAP_FIRST_NAME ADMIN_BOOTSTRAP_LAST_NAME PORT
+    MYSQL_PASSWORD AUTH_SECRET PORT
   )
   local key
   for key in "${required[@]}"; do
@@ -631,13 +970,18 @@ start_native_mysql() {
   mysql_tcp_open && return 0
 
   section "MySQL nativo detectado"
+  local service_name
+  service_name="$(native_mysql_service_name || true)"
+  [[ -n "$service_name" ]] || die "MySQL nativo nao foi detectado no sistema. Execute ./run.sh mysql-install primeiro."
 
   if [[ "$OS_FAMILY" == "windows" ]] && have powershell.exe; then
-    powershell.exe -NoProfile -Command "\$service = Get-Service -ErrorAction SilentlyContinue | Where-Object { \$_.Name -match 'mysql|mariadb' } | Select-Object -First 1; if (-not \$service) { exit 1 }; if (\$service.Status -ne 'Running') { Start-Service -Name \$service.Name }; exit 0" >/dev/null 2>&1 || die "MySQL nativo detectado, mas nao foi possivel iniciar o servico no Windows."
+    powershell.exe -NoProfile -Command "Set-Service -Name '$service_name' -StartupType Automatic -ErrorAction Stop; Start-Service -Name '$service_name' -ErrorAction Stop" >/dev/null 2>&1 || die "MySQL nativo detectado, mas nao foi possivel iniciar o servico no Windows."
   elif (( ${#SYSTEMCTL_CMD[@]} > 0 )); then
-    "${SYSTEMCTL_CMD[@]}" is-active --quiet mysql >/dev/null 2>&1 || "${SYSTEMCTL_CMD[@]}" start mysql >/dev/null 2>&1 || "${SYSTEMCTL_CMD[@]}" start mariadb >/dev/null 2>&1 || true
+    run_privileged "${SYSTEMCTL_CMD[@]}" start "$service_name" >/dev/null 2>&1 || die "Falha ao iniciar o servico $service_name via systemctl."
   elif (( ${#SERVICE_CMD[@]} > 0 )); then
-    "${SERVICE_CMD[@]}" mysql status >/dev/null 2>&1 || "${SERVICE_CMD[@]}" mysql start >/dev/null 2>&1 || "${SERVICE_CMD[@]}" mariadb start >/dev/null 2>&1 || true
+    run_privileged "${SERVICE_CMD[@]}" "$service_name" start >/dev/null 2>&1 || die "Falha ao iniciar o servico $service_name via service."
+  else
+    die "Nao encontrei um gerenciador de servico compativel para iniciar o MySQL nativo."
   fi
 
   mysql_tcp_open || die "MySQL nativo foi detectado, mas a porta configurada nao respondeu apos a tentativa de inicializacao."
@@ -830,7 +1174,8 @@ NODE
 
 backup_database() {
   install_deps
-  mysql_up
+  section "Preparando MySQL nativo local"
+  prepare_mysql_runtime
   export_runtime_env
   ensure_backup_dir
 
@@ -861,7 +1206,8 @@ backup_database() {
 
 restore_database() {
   install_deps
-  mysql_up
+  section "Preparando MySQL nativo local"
+  prepare_mysql_runtime
   export_runtime_env
 
   local default_backup=""
@@ -912,6 +1258,8 @@ show_mysql_logs() {
     return 0
   fi
 
+  local service_name
+  service_name="$(native_mysql_service_name || true)"
   local log_file=""
   for log_file in /var/log/mysql/error.log /var/log/mysql/mysql-error.log /var/log/mysql/mysql.log; do
     if [[ -f "$log_file" ]]; then
@@ -920,23 +1268,32 @@ show_mysql_logs() {
     fi
   done
 
+  if [[ -n "$service_name" ]] && have journalctl; then
+    run_privileged journalctl -u "$service_name" -f -n 100
+    return 0
+  fi
+
   die "Nao foi possivel localizar um arquivo de log do MySQL nativo neste sistema."
+}
+
+prepare_mysql_runtime() {
+  ensure_env_ready
+  start_native_mysql
+  ensure_database_exists
 }
 
 mysql_up() {
   install_deps
-  ensure_env_ready
   doctor
   section "Preparando MySQL nativo local"
-  start_native_mysql
-  ensure_database_exists
+  prepare_mysql_runtime
   log_ok "MySQL nativo local pronto para uso pelo app."
 }
 
 mysql_migrate() {
   install_deps
-  ensure_env_ready
-  mysql_up
+  section "Preparando MySQL nativo local"
+  prepare_mysql_runtime
   section "Aplicando migracoes MySQL"
   (
     cd "$ROOT_DIR"
@@ -1047,8 +1404,8 @@ dev_mode() {
 
 fast_dev_mode() {
   ensure_package_manager
-  ensure_env_ready
-  mysql_up
+  [[ -d "$ROOT_DIR/node_modules" ]] || die "Dependencias ausentes. Execute ./run.sh install antes de usar o modo rapido."
+  prepare_mysql_runtime
   section "Subindo modo desenvolvimento rapido"
   start_app "dev" "${PACKAGE_RUN[@]}" run dev
   wait_http "http://127.0.0.1:${APP_PORT}"
@@ -1072,8 +1429,8 @@ prod_mode() {
 
 fast_prod_mode() {
   ensure_package_manager
-  ensure_env_ready
-  mysql_up
+  [[ -d "$ROOT_DIR/node_modules" ]] || die "Dependencias ausentes. Execute ./run.sh install antes de usar o modo rapido."
+  prepare_mysql_runtime
   [[ -f "$ROOT_DIR/.next/BUILD_ID" ]] || die "Build inexistente. Execute ./run.sh prod primeiro."
   section "Subindo modo producao rapido"
   start_app "prod" "${PACKAGE_RUN[@]}" run start
@@ -1095,6 +1452,7 @@ mysql_down() {
 }
 
 status_report() {
+  export_runtime_env
   section "Status geral"
   if [[ -f "$ENV_FILE" ]]; then
     log_ok ".env.local presente."
@@ -1109,8 +1467,12 @@ status_report() {
   fi
 
   log_ok "Runtime MySQL selecionado: native"
+  local service_name
+  service_name="$(native_mysql_service_name || true)"
+  [[ -n "$service_name" ]] && log_ok "Servico MySQL do host: $service_name"
+  log_ok "Estrategia administrativa MySQL: $(mysql_admin_strategy)"
   if mysql_tcp_open; then
-    log_ok "MySQL nativo respondendo em ${MYSQL_HOST:-127.0.0.1}:${MYSQL_PORT:-3306}."
+    log_ok "MySQL nativo respondendo em ${MYSQL_HOST}:${MYSQL_PORT}."
     if native_mysql_responding; then
       log_ok "Autenticacao MySQL valida com as credenciais configuradas."
     else
@@ -1118,6 +1480,11 @@ status_report() {
     fi
   else
     log_warn "MySQL nativo nao respondeu na porta configurada."
+  fi
+  if admin_bootstrap_ready; then
+    log_ok "Bootstrap admin habilitado para ${ADMIN_BOOTSTRAP_EMAIL}."
+  else
+    log_warn "Bootstrap admin desabilitado."
   fi
 
   local pid
@@ -1130,6 +1497,7 @@ status_report() {
 }
 
 health_report() {
+  export_runtime_env
   doctor
   section "Saude operacional"
   if [[ -f "$ENV_FILE" ]]; then
@@ -1147,6 +1515,11 @@ health_report() {
     fi
   else
     log_warn "MySQL nativo nao esta acessivel na porta configurada."
+  fi
+  if mysql_admin_auth_works || sudo_mysql_available; then
+    log_ok "O ambiente possui caminho administrativo valido para schema, grants, backup e restore."
+  else
+    log_warn "O ambiente ainda nao possui caminho administrativo comprovado para schema, grants, backup e restore."
   fi
   local pid
   pid="$(app_pid || true)"
@@ -1176,16 +1549,18 @@ environment_menu() {
     printf '  1. Validar requisitos do sistema\n'
     printf '  2. Instalar dependencias do projeto\n'
     printf '  3. Configurar ambiente local (.env.local)\n'
-    printf '  4. Mostrar status consolidado\n'
-    printf '  5. Rodar check de saude operacional\n'
+    printf '  4. Mostrar configuracao efetiva segura\n'
+    printf '  5. Mostrar status consolidado\n'
+    printf '  6. Rodar check de saude operacional\n'
     printf '  0. Voltar\n\n'
     read -r -p "Escolha uma opcao: " choice
     case "$choice" in
       1) doctor ;;
       2) install_deps ;;
       3) ensure_env ;;
-      4) status_report ;;
-      5) health_report ;;
+      4) show_config_summary ;;
+      5) status_report ;;
+      6) health_report ;;
       0) break ;;
       *) log_warn "Opcao invalida." ;;
     esac
@@ -1198,19 +1573,21 @@ database_menu() {
   while true; do
     banner
     printf '%sBanco de dados MySQL%s\n' "$C_BOLD" "$C_RESET"
-    printf '  1. Preparar MySQL local para o app\n'
-    printf '  2. Criar schema do app se necessario\n'
-    printf '  3. Aplicar migracoes MySQL\n'
-    printf '  4. Verificar schema e tabelas do app\n'
-    printf '  5. Acompanhar logs do MySQL local\n'
+    printf '  1. Instalar MySQL nativo se ainda nao existir\n'
+    printf '  2. Preparar MySQL local para o app\n'
+    printf '  3. Criar schema e grants do app sem apagar dados\n'
+    printf '  4. Aplicar migracoes MySQL\n'
+    printf '  5. Verificar schema e tabelas do app\n'
+    printf '  6. Acompanhar logs do MySQL local\n'
     printf '  0. Voltar\n\n'
     read -r -p "Escolha uma opcao: " choice
     case "$choice" in
-      1) mysql_up ;;
-      2) install_deps; ensure_env_ready; mysql_up; ensure_database_exists; log_ok "Schema do app garantido sem apagar dados existentes." ;;
-      3) mysql_migrate ;;
-      4) install_deps; ensure_env_ready; mysql_up; verify_database_state ;;
-      5) show_mysql_logs ;;
+      1) install_native_mysql ;;
+      2) mysql_up ;;
+      3) install_deps; section "Preparando MySQL nativo local"; prepare_mysql_runtime; log_ok "Schema do app garantido sem apagar dados existentes." ;;
+      4) mysql_migrate ;;
+      5) install_deps; section "Preparando MySQL nativo local"; prepare_mysql_runtime; verify_database_state ;;
+      6) show_mysql_logs ;;
       0) break ;;
       *) log_warn "Opcao invalida." ;;
     esac
@@ -1303,6 +1680,8 @@ Uso:
   ./run.sh doctor         valida requisitos do sistema
   ./run.sh install        instala dependencias somente se necessario
   ./run.sh config         cria ou atualiza .env.local
+  ./run.sh show-config    mostra configuracao efetiva com segredos mascarados
+  ./run.sh mysql-install  instala o MySQL nativo se ele ainda nao existir
   ./run.sh mysql-up       sobe o MySQL local
   ./run.sh migrate        sobe MySQL e aplica migracoes
   ./run.sh verify-db      verifica se o schema e as tabelas do app estao consistentes
@@ -1329,9 +1708,11 @@ main() {
     doctor) doctor ;;
     install) install_deps ;;
     config|configure) ensure_env ;;
+    show-config) show_config_summary ;;
+    mysql-install) install_native_mysql ;;
     mysql-up) mysql_up ;;
     migrate) mysql_migrate ;;
-    verify-db) install_deps; ensure_env_ready; mysql_up; verify_database_state ;;
+    verify-db) install_deps; section "Preparando MySQL nativo local"; prepare_mysql_runtime; verify_database_state ;;
     backup) backup_database ;;
     restore) restore_database ;;
     dev) dev_mode ;;
