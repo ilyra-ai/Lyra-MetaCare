@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#set -Eeuo pipefail
+set -uo pipefail
 
 readonly SCRIPT_VERSION="2026.03.14"
 readonly REQUIRED_BASH_VERSION=4
@@ -1042,7 +1042,9 @@ const database = process.env.MYSQL_DATABASE;
     await appConnection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
     await appConnection.end();
     process.exit(0);
-  } catch {}
+  } catch (appErr) {
+    // App user could not create the database; fall through to admin credentials
+  }
 
   if (process.env.MYSQL_ADMIN_USER) {
     const adminConnection = await mysql.createConnection({
@@ -1075,12 +1077,15 @@ NODE
   fi
 
   if [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
+    local escaped_user escaped_password
+    escaped_user="${MYSQL_USER//\'/\'\'}"
+    escaped_password="${MYSQL_PASSWORD//\'/\'\'}"
     local sql
     sql="CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-    sql+=" CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
-    sql+=" CREATE USER IF NOT EXISTS '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';"
-    sql+=" GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%';"
-    sql+=" GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'localhost';"
+    sql+=" CREATE USER IF NOT EXISTS '${escaped_user}'@'%' IDENTIFIED BY '${escaped_password}';"
+    sql+=" CREATE USER IF NOT EXISTS '${escaped_user}'@'localhost' IDENTIFIED BY '${escaped_password}';"
+    sql+=" GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '${escaped_user}'@'%';"
+    sql+=" GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '${escaped_user}'@'localhost';"
     sql+=" FLUSH PRIVILEGES;"
     sudo -n mysql -e "$sql"
     return 0
@@ -2267,9 +2272,6 @@ template_tui_draw() {
   width="$(tput cols 2>/dev/null || printf '120')"
   height="$(tput lines 2>/dev/null || printf '32')"
   (( width < 88 )) && width=88
-  resolve_commands
-  select_package_manager
-  export_runtime_env
 
   items_name="$(tui_menu_items_name "$menu_name")"
   local -n menu_items="$items_name"
@@ -2440,6 +2442,10 @@ template_tui_run_action() {
       fi
       template_tui_draw "$menu_name" "$selected_index" "${!status_kind_ref}" "${!status_message_ref}"
     done
+    # Drain any remaining output from the coproc after process exits
+    while IFS= read -r -t 0.1 -u "$action_fd" line 2>/dev/null; do
+      template_tui_append_output "$line"
+    done
     wait "$action_pid"
     exit_code=$?
     set -e
@@ -2457,9 +2463,16 @@ template_tui_run_action() {
   fi
 
   template_tui_draw "$menu_name" "$selected_index" "${!status_kind_ref}" "${!status_message_ref}"
+
+  # Drain any leftover bytes from terminal input buffer (escape sequences, etc.)
+  while read -rsn1 -t 0.05 _ 2>/dev/null; do :; done
+
+  # Wait for Enter (empty key = Enter pressed), with a timeout-based redraw
+  # to keep the screen responsive and avoid permanent hang
   while true; do
-    read -rsn1 line
-    [[ -z "$line" ]] && break
+    if read -rsn1 -t 2 line; then
+      [[ -z "$line" ]] && break
+    fi
   done
   TEMPLATE_TUI_TASK="Standby"
   TEMPLATE_TUI_PROGRESS=0
@@ -2472,6 +2485,10 @@ template_tui_menu() {
   local status_kind="info"
   local status_message="Pronto para operar localmente com MySQL nativo e app sem containers."
   local key="" seq="" items_name="" selected_record="" kind="" target="" label="" desc=""
+
+  resolve_commands
+  select_package_manager
+  export_runtime_env
 
   TEMPLATE_TUI_STARTED_AT="$(date +%s)"
   TEMPLATE_TUI_TASK="Standby"
