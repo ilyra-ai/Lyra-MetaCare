@@ -35,6 +35,8 @@ describe('cn utility', () => {
         { 'extra-class': true },
         ['array-class-1', 'array-class-2']
       )
-    ).toBe('base-style active-style enabled-style extra-class array-class-1 array-class-2');
+    ).toBe(
+      'base-style active-style enabled-style extra-class array-class-1 array-class-2'
+    );
   });
 });
