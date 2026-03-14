@@ -411,7 +411,9 @@ mask_secret() {
 sudo_mysql_available() {
   [[ "$OS_FAMILY" != "windows" ]] || return 1
   have sudo || return 1
-  sudo -n true >/dev/null 2>&1
+  sudo -n true >/dev/null 2>&1 || return 1
+  # Verify that sudo mysql actually connects (auth_socket may or may not work)
+  sudo -n mysql -N -B -e "SELECT 1" >/dev/null 2>&1
 }
 
 native_mysql_service_name() {
@@ -1115,20 +1117,24 @@ NODE
     return 0
   fi
 
-  # Fallback: sudo mysql (Linux/WSL only)
+  # Fallback: sudo mysql via unix socket auth (Linux/WSL only)
+  # This works on Ubuntu/Debian where root uses auth_socket plugin
   if [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
-    local escaped_user escaped_password
-    escaped_user="${MYSQL_USER//\'/\'\'}"
-    escaped_password="${MYSQL_PASSWORD//\'/\'\'}"
-    local sql
-    sql="CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-    sql+=" CREATE USER IF NOT EXISTS '${escaped_user}'@'%' IDENTIFIED BY '${escaped_password}';"
-    sql+=" CREATE USER IF NOT EXISTS '${escaped_user}'@'localhost' IDENTIFIED BY '${escaped_password}';"
-    sql+=" GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '${escaped_user}'@'%';"
-    sql+=" GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '${escaped_user}'@'localhost';"
-    sql+=" FLUSH PRIVILEGES;"
-    sudo -n mysql -e "$sql"
-    return 0
+    # Verify sudo mysql actually works before attempting schema operations
+    if sudo -n mysql -N -B -e "SELECT 1" >/dev/null 2>&1; then
+      local escaped_user escaped_password
+      escaped_user="${MYSQL_USER//\'/\'\'}"
+      escaped_password="${MYSQL_PASSWORD//\'/\'\'}"
+      local sql
+      sql="CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+      sql+=" CREATE USER IF NOT EXISTS '${escaped_user}'@'%' IDENTIFIED BY '${escaped_password}';"
+      sql+=" CREATE USER IF NOT EXISTS '${escaped_user}'@'localhost' IDENTIFIED BY '${escaped_password}';"
+      sql+=" GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '${escaped_user}'@'%';"
+      sql+=" GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '${escaped_user}'@'localhost';"
+      sql+=" FLUSH PRIVILEGES;"
+      sudo -n mysql -e "$sql"
+      return 0
+    fi
   fi
 
   die "Nao foi possivel criar ou validar o schema do app no MySQL nativo. Informe credenciais administrativas validas (MYSQL_ADMIN_USER/MYSQL_ADMIN_PASSWORD) ou habilite acesso sudo ao mysql."
@@ -1250,8 +1256,8 @@ NODE
     return 0
   fi
 
-  # Fallback: sudo mysql (Linux/WSL only)
-  if [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
+  # Fallback: sudo mysql via unix socket auth (Linux/WSL only)
+  if sudo_mysql_available; then
     local check_sql
     check_sql="CREATE DATABASE IF NOT EXISTS \`$target_database\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
     sudo -n mysql -e "$check_sql"
@@ -1287,7 +1293,7 @@ backup_database() {
     set_mysql_auth_args "$MYSQL_USER" "$MYSQL_PASSWORD"
     "${MYSQLDUMP_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}" --single-transaction --hex-blob --set-gtid-purged=OFF --no-tablespaces "$MYSQL_DATABASE" > "$backup_file"
     log_warn "Backup gerado com usuario do app. Rotinas, eventos e triggers podem nao estar incluidos por falta de privilegios."
-  elif [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
+  elif sudo_mysql_available; then
     sudo -n "${MYSQLDUMP_CMD[@]}" --single-transaction --routines --triggers --events --hex-blob --set-gtid-purged=OFF --no-tablespaces "$MYSQL_DATABASE" > "$backup_file"
   else
     die "Backup full exige mysqldump e ao menos um metodo de autenticacao: MYSQL_ADMIN_USER, MYSQL_USER, ou acesso sudo ao mysql."
@@ -1336,7 +1342,7 @@ restore_database() {
     set_mysql_auth_args "$MYSQL_USER" "$MYSQL_PASSWORD"
     restore_auth_args=("-h$MYSQL_HOST" "-P$MYSQL_PORT" "${MYSQL_AUTH_ARGS[@]}")
     restore_via="app"
-  elif [[ "$OS_FAMILY" != "windows" ]] && sudo -n true >/dev/null 2>&1; then
+  elif sudo_mysql_available; then
     restore_via="sudo"
   else
     die "Restore full exige ao menos um metodo de autenticacao: MYSQL_ADMIN_USER, MYSQL_USER, ou acesso sudo ao mysql."
@@ -2177,6 +2183,16 @@ declare -g TEMPLATE_TUI_STARTED_AT=0
 declare -g TEMPLATE_TUI_SCROLL=0
 declare -g TEMPLATE_TUI_LAST_SNAPSHOT_AT=0
 declare -g TEMPLATE_TUI_MYSQL_STATE="MySQL nao verificado"
+declare -g TEMPLATE_TUI_NEED_REPAINT=true
+declare -g TEMPLATE_TUI_TERM_COLS=120
+declare -g TEMPLATE_TUI_TERM_LINES=32
+
+template_tui_update_dimensions() {
+  TEMPLATE_TUI_TERM_COLS=$(tput cols 2>/dev/null || printf '120')
+  TEMPLATE_TUI_TERM_LINES=$(tput lines 2>/dev/null || printf '32')
+  (( TEMPLATE_TUI_TERM_COLS < 88 )) && TEMPLATE_TUI_TERM_COLS=88
+  TEMPLATE_TUI_NEED_REPAINT=true
+}
 declare -g TEMPLATE_TUI_APP_STATE="Aplicacao nao verificada"
 declare -g TEMPLATE_TUI_BOOTSTRAP_STATE="Bootstrap admin nao verificado"
 declare -g TEMPLATE_TUI_MIN_OUTPUT_HEIGHT=6
@@ -2406,87 +2422,144 @@ template_tui_draw() {
   local selected_index="$2"
   local status_kind="$3"
   local status_message="$4"
-  local width height items_name title timer bar_width filled empty menu_height output_height start_line
-  local selected_record selected_kind selected_target selected_label selected_desc
-  local desc_width content_width max_scroll status_prefix status_color line row
-  local selected_mode info_line_1 info_line_2 footer_text
-  local buffer=""
+  local width height bar_width filled empty menu_height output_height start_line
+  local content_width desc_width max_scroll total_live sb_indicator_pos
+  local row idx buffer=""
 
-  width="$(tput cols 2>/dev/null || printf '120')"
-  height="$(tput lines 2>/dev/null || printf '32')"
-  (( width < 88 )) && width=88
+  # Use cached dimensions (updated by WINCH trap and periodically)
+  width=$TEMPLATE_TUI_TERM_COLS
+  height=$TEMPLATE_TUI_TERM_LINES
 
-  items_name="$(tui_menu_items_name "$menu_name")"
+  # Full clear only when terminal resized
+  if $TEMPLATE_TUI_NEED_REPAINT; then
+    printf '\033[2J'
+    TEMPLATE_TUI_NEED_REPAINT=false
+  fi
+
+  # Menu items via nameref (no subshell)
+  local items_name
+  case "$menu_name" in
+    main) items_name="TUI_MAIN_ITEMS" ;;
+    environment) items_name="TUI_ENV_ITEMS" ;;
+    database) items_name="TUI_DB_ITEMS" ;;
+    backup) items_name="TUI_BACKUP_ITEMS" ;;
+    application) items_name="TUI_APP_ITEMS" ;;
+    *) items_name="TUI_MAIN_ITEMS" ;;
+  esac
   local -n menu_items="$items_name"
-  title="$(tui_menu_title "$menu_name")"
-  timer="$(template_tui_timer)"
+
+  # Title without subshell
+  local title
+  case "$menu_name" in
+    main) title="Menu principal" ;;
+    environment) title="Preparacao e diagnostico" ;;
+    database) title="Banco de dados MySQL" ;;
+    backup) title="Backup e restore" ;;
+    application) title="Aplicacao web" ;;
+    *) title="Menu" ;;
+  esac
+
+  # Timer without subshell
+  local elapsed now_s timer
+  printf -v now_s '%(%s)T' -1 2>/dev/null || now_s=$(date +%s)
+  elapsed=$(( now_s - TEMPLATE_TUI_STARTED_AT ))
+  printf -v timer '%02d:%02d:%02d' $((elapsed / 3600)) $(((elapsed % 3600) / 60)) $((elapsed % 60))
+
   bar_width=$(( width - 13 ))
   (( bar_width < 10 )) && bar_width=10
   filled=$(( TEMPLATE_TUI_PROGRESS * bar_width / 100 ))
   empty=$(( bar_width - filled ))
   menu_height=${#menu_items[@]}
-  output_height="$(template_tui_output_height "$menu_name")"
-  template_tui_clamp_scroll "$menu_name"
-  max_scroll="$(template_tui_max_scroll "$output_height")"
-  start_line=$((${#TEMPLATE_TUI_OUTPUT_LINES[@]} - output_height - TEMPLATE_TUI_SCROLL))
+
+  # Output height calculation inline (no subshell)
+  output_height=$(( height - menu_height - 14 ))
+  (( output_height < TEMPLATE_TUI_MIN_OUTPUT_HEIGHT )) && output_height=$TEMPLATE_TUI_MIN_OUTPUT_HEIGHT
+
+  # Clamp scroll inline
+  total_live=${#TEMPLATE_TUI_OUTPUT_LINES[@]}
+  max_scroll=$(( total_live - output_height ))
+  (( max_scroll < 0 )) && max_scroll=0
+  (( TEMPLATE_TUI_SCROLL < 0 )) && TEMPLATE_TUI_SCROLL=0
+  (( TEMPLATE_TUI_SCROLL > max_scroll )) && TEMPLATE_TUI_SCROLL=$max_scroll
+
+  start_line=$(( total_live - output_height - TEMPLATE_TUI_SCROLL ))
   (( start_line < 0 )) && start_line=0
 
+  # Selected item info
+  local selected_record selected_kind selected_target selected_label selected_desc
   selected_record="${menu_items[$selected_index]}"
   IFS='|' read -r selected_kind selected_target selected_label selected_desc <<< "$selected_record"
-  selected_mode="stream ao vivo"
-  if template_tui_action_requires_direct_terminal "$selected_target"; then
-    selected_mode="execucao direta no terminal"
-  fi
+  local selected_mode="stream ao vivo"
+  case "$selected_target" in
+    ensure_env|restore_database|show_mysql_logs|install_native_mysql) selected_mode="execucao direta no terminal" ;;
+  esac
 
+  # Periodic snapshot refresh (throttled inside)
   template_tui_refresh_snapshot
+
   content_width=$(( width - 4 ))
   desc_width=$(( width - 44 ))
   (( desc_width < 18 )) && desc_width=18
-  status_prefix="$(template_tui_status_prefix "$status_kind")"
-  status_color="$(template_tui_status_color "$status_kind")"
-  info_line_1="Tela: $title | SO: $OS_LABEL | pacote: $PACKAGE_MANAGER | app: 127.0.0.1:$PORT"
-  info_line_2="Menu: $selected_label | modo: $selected_mode | admin mysql: ${MYSQL_ADMIN_USER:-nao configurado}"
-  footer_text="[${I_ARR}${I_ARR}] Mover  [Enter] Executar  [a/z] Scroll  [PgUp/v] Pagina  [l] Live  [b] Voltar  [q] Sair"
 
-  # --- Header ---
-  buffer+=$'\033[H'
+  # Status prefix/color inline (no subshell)
+  local status_prefix status_color
+  case "$status_kind" in
+    ok) status_prefix="$I_CHECK"; status_color="$C_GREEN" ;;
+    err) status_prefix="$I_CROSS"; status_color="$C_RED" ;;
+    warn) status_prefix="$I_WARN"; status_color="$C_AMBER" ;;
+    *) status_prefix="$I_DOT"; status_color="$C_CYAN" ;;
+  esac
+
+  local info_line_1="Tela: $title | SO: $OS_LABEL | pacote: $PACKAGE_MANAGER | app: 127.0.0.1:$PORT"
+  local info_line_2="Menu: $selected_label | modo: $selected_mode | admin mysql: ${MYSQL_ADMIN_USER:-nao configurado}"
+  local footer_text="[${I_ARR}${I_ARR}] Mover  [Enter] Executar  [a/z] Scroll  [PgUp/v] Pagina  [l] Live  [b] Voltar  [q] Sair"
+
+  # --- Build buffer using inline truncation (no subshells) ---
+  buffer=$'\033[H'
   buffer+="${EL}\\n"
   buffer+="${EL}  ${C_GRAY}${I_DOT}${C_RESET} LYRA METACARE ${C_BOLD}v${SCRIPT_VERSION}${C_RESET} ${C_GRAY}— ${timer}${C_RESET}\\n"
-  buffer+="${EL}  ${C_CYAN}${C_BOLD}$(fit_text "$TEMPLATE_TUI_TASK" "$content_width")${C_RESET}\\n"
+  buffer+="${EL}  ${C_CYAN}${C_BOLD}${TEMPLATE_TUI_TASK:0:$content_width}${C_RESET}\\n"
 
-  # --- Barra de progresso premium ━/─ ---
+  # --- Progress bar inline (no repeat_char subshell) ---
   buffer+="${EL}  "
   if (( filled > 0 )); then
-    buffer+="${C_MINT}$(repeat_char '━' "$filled")"
+    buffer+="${C_MINT}"
+    printf -v _bar '%.0s━' $(seq 1 $filled)
+    buffer+="$_bar"
   fi
   if (( empty > 0 )); then
-    buffer+="${C_SEC}$(repeat_char '─' "$empty")"
+    buffer+="${C_SEC}"
+    printf -v _bar '%.0s─' $(seq 1 $empty)
+    buffer+="$_bar"
   fi
   buffer+=" ${C_CYAN}${C_BOLD}${TEMPLATE_TUI_PROGRESS}%${C_RESET}\\n"
-  buffer+="${EL}  ${C_SEC}${C_DIM}$(repeat_char '─' "$content_width")${C_RESET}\\n"
 
-  # --- Info lines ---
-  buffer+="${EL}  ${C_SEC}${C_DIM}$(fit_text "$info_line_1" "$content_width")${C_RESET}\\n"
-  buffer+="${EL}  ${C_SEC}${C_DIM}$(fit_text "$info_line_2" "$content_width")${C_RESET}\\n"
+  # Separator
+  printf -v _sep '%.0s─' $(seq 1 $content_width)
+  buffer+="${EL}  ${C_SEC}${C_DIM}${_sep}${C_RESET}\\n"
+
+  # --- Info lines (inline truncation) ---
+  buffer+="${EL}  ${C_SEC}${C_DIM}${info_line_1:0:$content_width}${C_RESET}\\n"
+  buffer+="${EL}  ${C_SEC}${C_DIM}${info_line_2:0:$content_width}${C_RESET}\\n"
   buffer+="${EL}\\n"
 
-  # --- Menu items com seta → ---
+  # --- Menu items (inline padding, no fit_text subshell) ---
   row=0
   while (( row < menu_height )); do
     local record kind target label desc
     record="${menu_items[$row]}"
     IFS='|' read -r kind target label desc <<< "$record"
     local padded_label
-    padded_label="$(printf '%-28s' "$(fit_text "$label" 28)")"
+    printf -v padded_label '%-28s' "${label:0:28}"
     if (( row == selected_index )); then
-      buffer+="${EL}  ${C_BG_HOVER}${C_CYAN}${C_BOLD}${I_ARR}  ${padded_label} ${C_RESET} ${C_SEC}$(fit_text "$desc" "$desc_width")${C_RESET}\\n"
+      buffer+="${EL}  ${C_BG_HOVER}${C_CYAN}${C_BOLD}${I_ARR}  ${padded_label} ${C_RESET} ${C_SEC}${desc:0:$desc_width}${C_RESET}\\n"
     else
-      buffer+="${EL}     ${C_SEC}${padded_label} ${C_RESET} ${C_GRAY}$(fit_text "$desc" "$desc_width")${C_RESET}\\n"
+      buffer+="${EL}     ${C_SEC}${padded_label} ${C_RESET} ${C_GRAY}${desc:0:$desc_width}${C_RESET}\\n"
     fi
     (( row += 1 ))
   done
 
-  # --- Live output com scrollbar visual ---
+  # --- Live output ---
   buffer+="${EL}\\n"
   if (( TEMPLATE_TUI_SCROLL > 0 )); then
     buffer+="${EL}  ${C_GRAY}${I_TERM} LIVE OUTPUT:${C_RESET} ${C_AMBER}[SCROLL: -${TEMPLATE_TUI_SCROLL}]${C_RESET}\\n"
@@ -2494,16 +2567,16 @@ template_tui_draw() {
     buffer+="${EL}  ${C_GRAY}${I_TERM} LIVE OUTPUT:${C_RESET}\\n"
   fi
 
-  local total_live=${#TEMPLATE_TUI_OUTPUT_LINES[@]}
-  local sb_indicator_pos=0
+  sb_indicator_pos=0
   if (( total_live > output_height )); then
-    local max_sc=$(( total_live - output_height ))
-    (( max_sc > 0 )) && sb_indicator_pos=$(( TEMPLATE_TUI_SCROLL * (output_height - 1) / max_sc ))
+    local max_sc_sb=$(( total_live - output_height ))
+    (( max_sc_sb > 0 )) && sb_indicator_pos=$(( TEMPLATE_TUI_SCROLL * (output_height - 1) / max_sc_sb ))
   fi
 
+  local live_width=$(( content_width - 6 ))
   row=0
   while (( row < output_height )); do
-    local idx=$(( start_line + row ))
+    idx=$(( start_line + row ))
     local live_line=""
     if (( idx < total_live )); then
       live_line="${TEMPLATE_TUI_OUTPUT_LINES[$idx]}"
@@ -2514,18 +2587,18 @@ template_tui_draw() {
         sb_char="${C_CYAN}█${C_RESET}"
       fi
     fi
-    buffer+="${EL}  ${sb_char} ${C_AMBER}$(fit_text "$live_line" $((content_width - 6)))${C_RESET}\\n"
+    buffer+="${EL}  ${sb_char} ${C_AMBER}${live_line:0:$live_width}${C_RESET}\\n"
     (( row += 1 ))
   done
 
   # --- Status bar ---
   buffer+="${EL}\\n"
-  buffer+="${EL}  ${C_SEC}${C_DIM}STATUS:${C_RESET} ${status_color}${status_prefix} $(fit_text "$status_message" $((content_width - 12)))${C_RESET}\\n"
-  buffer+="${EL}  ${C_GRAY}$(fit_text "$TEMPLATE_TUI_MYSQL_STATE" "$content_width")${C_RESET}\\n"
-  buffer+="${EL}  ${C_GRAY}$(fit_text "$TEMPLATE_TUI_APP_STATE" "$content_width")${C_RESET}\\n"
-  buffer+="${EL}  ${C_GRAY}$(fit_text "$TEMPLATE_TUI_BOOTSTRAP_STATE" "$content_width")${C_RESET}\\n"
+  buffer+="${EL}  ${C_SEC}${C_DIM}STATUS:${C_RESET} ${status_color}${status_prefix} ${status_message:0:$((content_width - 12))}${C_RESET}\\n"
+  buffer+="${EL}  ${C_GRAY}${TEMPLATE_TUI_MYSQL_STATE:0:$content_width}${C_RESET}\\n"
+  buffer+="${EL}  ${C_GRAY}${TEMPLATE_TUI_APP_STATE:0:$content_width}${C_RESET}\\n"
+  buffer+="${EL}  ${C_GRAY}${TEMPLATE_TUI_BOOTSTRAP_STATE:0:$content_width}${C_RESET}\\n"
   buffer+="${EL}\\n"
-  buffer+="${EL}  ${C_SEC}${C_DIM}$(fit_text "$footer_text" "$content_width")${C_RESET}"
+  buffer+="${EL}  ${C_SEC}${C_DIM}${footer_text:0:$content_width}${C_RESET}"
 
   printf '%b\033[J' "$buffer"
 }
@@ -2640,12 +2713,23 @@ template_tui_menu() {
   TEMPLATE_TUI_SCROLL=0
   TEMPLATE_TUI_LAST_SNAPSHOT_AT=0
 
+  template_tui_update_dimensions
+  trap template_tui_update_dimensions WINCH
+
   tui_enter_screen
-  trap 'tui_leave_screen' INT TERM
+  trap 'tui_leave_screen; exit 0' INT TERM EXIT
   template_tui_boot_sequence
 
   while true; do
-    items_name="$(tui_menu_items_name "$current_menu")"
+    # Resolve items_name inline (no subshell)
+    case "$current_menu" in
+      main) items_name="TUI_MAIN_ITEMS" ;;
+      environment) items_name="TUI_ENV_ITEMS" ;;
+      database) items_name="TUI_DB_ITEMS" ;;
+      backup) items_name="TUI_BACKUP_ITEMS" ;;
+      application) items_name="TUI_APP_ITEMS" ;;
+      *) items_name="TUI_MAIN_ITEMS" ;;
+    esac
     local -n current_items="$items_name"
     (( selected_index < 0 )) && selected_index=0
     (( selected_index >= ${#current_items[@]} )) && selected_index=$((${#current_items[@]} - 1))
@@ -2707,7 +2791,7 @@ template_tui_menu() {
     fi
   done
 
-  trap - INT TERM
+  trap - INT TERM EXIT WINCH
   tui_leave_screen
 }
 
