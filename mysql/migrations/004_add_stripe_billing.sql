@@ -1,7 +1,53 @@
-ALTER TABLE subscription_plans
-  ADD COLUMN IF NOT EXISTS external_product_id VARCHAR(255) NULL AFTER is_public,
-  ADD COLUMN IF NOT EXISTS external_monthly_price_id VARCHAR(255) NULL AFTER external_product_id,
-  ADD COLUMN IF NOT EXISTS external_annual_price_id VARCHAR(255) NULL AFTER external_monthly_price_id;
+SET @external_product_id_sql = (
+  SELECT IF(
+    EXISTS (
+      SELECT 1
+      FROM information_schema.columns
+      WHERE table_schema = DATABASE()
+        AND table_name = 'subscription_plans'
+        AND column_name = 'external_product_id'
+    ),
+    'SELECT 1',
+    'ALTER TABLE subscription_plans ADD COLUMN external_product_id VARCHAR(255) NULL AFTER is_public'
+  )
+);
+PREPARE external_product_id_stmt FROM @external_product_id_sql;
+EXECUTE external_product_id_stmt;
+DEALLOCATE PREPARE external_product_id_stmt;
+
+SET @external_monthly_price_id_sql = (
+  SELECT IF(
+    EXISTS (
+      SELECT 1
+      FROM information_schema.columns
+      WHERE table_schema = DATABASE()
+        AND table_name = 'subscription_plans'
+        AND column_name = 'external_monthly_price_id'
+    ),
+    'SELECT 1',
+    'ALTER TABLE subscription_plans ADD COLUMN external_monthly_price_id VARCHAR(255) NULL AFTER external_product_id'
+  )
+);
+PREPARE external_monthly_price_id_stmt FROM @external_monthly_price_id_sql;
+EXECUTE external_monthly_price_id_stmt;
+DEALLOCATE PREPARE external_monthly_price_id_stmt;
+
+SET @external_annual_price_id_sql = (
+  SELECT IF(
+    EXISTS (
+      SELECT 1
+      FROM information_schema.columns
+      WHERE table_schema = DATABASE()
+        AND table_name = 'subscription_plans'
+        AND column_name = 'external_annual_price_id'
+    ),
+    'SELECT 1',
+    'ALTER TABLE subscription_plans ADD COLUMN external_annual_price_id VARCHAR(255) NULL AFTER external_monthly_price_id'
+  )
+);
+PREPARE external_annual_price_id_stmt FROM @external_annual_price_id_sql;
+EXECUTE external_annual_price_id_stmt;
+DEALLOCATE PREPARE external_annual_price_id_stmt;
 
 CREATE TABLE IF NOT EXISTS billing_customers (
   id CHAR(36) PRIMARY KEY,

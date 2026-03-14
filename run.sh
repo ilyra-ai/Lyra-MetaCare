@@ -1169,12 +1169,12 @@ environment_menu() {
   local choice=""
   while true; do
     banner
-    printf '%sAmbiente e verificacoes%s\n' "$C_BOLD" "$C_RESET"
+    printf '%sPreparacao e diagnostico%s\n' "$C_BOLD" "$C_RESET"
     printf '  1. Validar requisitos do sistema\n'
     printf '  2. Instalar dependencias do projeto\n'
     printf '  3. Configurar ambiente local (.env.local)\n'
-    printf '  4. Status geral\n'
-    printf '  5. Saude operacional\n'
+    printf '  4. Mostrar status consolidado\n'
+    printf '  5. Rodar check de saude operacional\n'
     printf '  0. Voltar\n\n'
     read -r -p "Escolha uma opcao: " choice
     case "$choice" in
@@ -1196,25 +1196,51 @@ database_menu() {
     banner
     printf '%sBanco de dados MySQL%s\n' "$C_BOLD" "$C_RESET"
     printf '  1. Preparar MySQL local para o app\n'
-    printf '  2. Aplicar migracoes MySQL\n'
-    printf '  3. Verificar schema e tabelas do app\n'
-    printf '  4. Backup full do banco do app\n'
-    printf '  5. Restore full para schema seguro\n'
-    printf '  6. Logs do MySQL em Docker\n'
-    printf '  7. Parar MySQL gerenciado por Docker\n'
+    printf '  2. Criar schema do app se necessario\n'
+    printf '  3. Aplicar migracoes MySQL\n'
+    printf '  4. Verificar schema e tabelas do app\n'
+    printf '  5. Logs do MySQL em Docker\n'
+    printf '  6. Parar MySQL gerenciado por Docker\n'
     printf '  0. Voltar\n\n'
     read -r -p "Escolha uma opcao: " choice
     case "$choice" in
       1) mysql_up ;;
-      2) mysql_migrate ;;
-      3) install_deps; ensure_env_ready; mysql_up; verify_database_state ;;
-      4) backup_database ;;
-      5) restore_database ;;
-      6)
+      2) install_deps; ensure_env_ready; mysql_up; ensure_database_exists; log_ok "Schema do app garantido sem apagar dados existentes." ;;
+      3) mysql_migrate ;;
+      4) install_deps; ensure_env_ready; mysql_up; verify_database_state ;;
+      5)
         [[ "$(mysql_runtime)" == "docker" ]] || die "Logs integrados so estao disponiveis quando o MySQL esta sendo gerenciado via Docker."
         compose logs -f mysql
         ;;
-      7) mysql_down ;;
+      6) mysql_down ;;
+      0) break ;;
+      *) log_warn "Opcao invalida." ;;
+    esac
+    pause_menu
+  done
+}
+
+backup_menu() {
+  local choice=""
+  while true; do
+    banner
+    printf '%sBackup e restore%s\n' "$C_BOLD" "$C_RESET"
+    printf '  1. Gerar backup full do banco do app\n'
+    printf '  2. Restaurar backup full para schema seguro\n'
+    printf '  3. Verificar ultimo backup disponivel\n'
+    printf '  0. Voltar\n\n'
+    read -r -p "Escolha uma opcao: " choice
+    case "$choice" in
+      1) backup_database ;;
+      2) restore_database ;;
+      3)
+        ensure_backup_dir
+        if compgen -G "$BACKUP_DIR/*.sql*" >/dev/null; then
+          ls -1t "$BACKUP_DIR" | head -n 10
+        else
+          log_warn "Nenhum backup encontrado em $BACKUP_DIR"
+        fi
+        ;;
       0) break ;;
       *) log_warn "Opcao invalida." ;;
     esac
@@ -1254,15 +1280,17 @@ menu() {
   while true; do
     banner
     printf '%sMenu principal%s\n' "$C_BOLD" "$C_RESET"
-    printf '  1. Ambiente e verificacoes\n'
+    printf '  1. Preparacao e diagnostico\n'
     printf '  2. Banco de dados MySQL\n'
-    printf '  3. Aplicacao web\n'
+    printf '  3. Backup e restore\n'
+    printf '  4. Aplicacao web\n'
     printf '  0. Sair\n\n'
     read -r -p "Escolha uma opcao: " choice
     case "$choice" in
       1) environment_menu ;;
       2) database_menu ;;
-      3) application_menu ;;
+      3) backup_menu ;;
+      4) application_menu ;;
       0) break ;;
       *) log_warn "Opcao invalida." ;;
     esac
