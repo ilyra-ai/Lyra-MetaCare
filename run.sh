@@ -13,12 +13,14 @@ fi
 readonly ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly STATE_DIR="$ROOT_DIR/.lyra-run"
 readonly ENV_FILE="$ROOT_DIR/.env.local"
+readonly BACKUP_DIR="$ROOT_DIR/backups/mysql"
 readonly COMPOSE_FILE="$ROOT_DIR/compose.yaml"
 readonly PACKAGE_FILE="$ROOT_DIR/package.json"
 readonly MIGRATE_SCRIPT="$ROOT_DIR/scripts/mysql-migrate.mjs"
 readonly APP_PID_FILE="$STATE_DIR/app.pid"
 readonly APP_META_FILE="$STATE_DIR/app.meta"
 readonly INSTALL_HASH_FILE="$STATE_DIR/install.hash"
+readonly MYSQL_CONTAINER_NAME="lyra-metacare-mysql"
 
 readonly DEFAULT_MYSQL_HOST="127.0.0.1"
 readonly DEFAULT_MYSQL_HOST_PORT="3307"
@@ -42,7 +44,22 @@ readonly C_BLUE=$'\033[34m'
 declare -g PACKAGE_MANAGER=""
 declare -ga PACKAGE_RUN=()
 declare -ga COMPOSE_CMD=()
+declare -ga NPM_CMD=()
+declare -ga PNPM_CMD=()
+declare -ga DOCKER_CMD=()
+declare -ga TASKKILL_CMD=()
+declare -ga COREPACK_CMD=()
+declare -ga MYSQL_CLIENT_CMD=()
+declare -ga MYSQLADMIN_CMD=()
+declare -ga MYSQLD_CMD=()
+declare -ga MYSQLDUMP_CMD=()
+declare -ga SYSTEMCTL_CMD=()
+declare -ga SERVICE_CMD=()
+declare -ga GZIP_CMD=()
 declare -g APP_PORT="$DEFAULT_APP_PORT"
+declare -g OS_FAMILY=""
+declare -g OS_LABEL=""
+declare -g NODE_CMD=""
 declare -gA ENV_MAP=()
 
 mkdir -p "$STATE_DIR"
@@ -53,6 +70,92 @@ log_warn() { printf '%s[AVISO]%s %s\n' "$C_YELLOW" "$C_RESET" "$1"; }
 log_error() { printf '%s[ERRO]%s %s\n' "$C_RED" "$C_RESET" "$1" >&2; }
 die() { log_error "$1"; exit 1; }
 have() { command -v "$1" >/dev/null 2>&1; }
+
+find_cmd() {
+  local candidate
+  for candidate in "$@"; do
+    if have "$candidate"; then
+      command -v "$candidate"
+      return 0
+    fi
+  done
+  return 1
+}
+
+detect_os() {
+  [[ -n "$OS_FAMILY" ]] && return 0
+
+  local uname_s uname_r
+  uname_s="$(uname -s 2>/dev/null || printf 'unknown')"
+  uname_r="$(uname -r 2>/dev/null || printf 'unknown')"
+
+  case "$uname_s" in
+    Linux)
+      if [[ -n "${WSL_DISTRO_NAME:-}" ]] || grep -qi microsoft /proc/version 2>/dev/null || [[ "$uname_r" == *[Mm]icrosoft* ]]; then
+        OS_FAMILY="wsl"
+        OS_LABEL="WSL"
+      else
+        OS_FAMILY="linux"
+        OS_LABEL="Linux"
+      fi
+      ;;
+    MINGW*|MSYS*|CYGWIN*)
+      OS_FAMILY="windows"
+      OS_LABEL="Windows"
+      ;;
+    *)
+      if have powershell.exe; then
+        OS_FAMILY="windows"
+        OS_LABEL="Windows"
+      else
+        OS_FAMILY="unknown"
+        OS_LABEL="$uname_s"
+      fi
+      ;;
+  esac
+}
+
+resolve_commands() {
+  detect_os
+  [[ -n "$NODE_CMD" ]] && return 0
+
+  local path=""
+  case "$OS_FAMILY" in
+    windows)
+      path="$(find_cmd node.exe node || true)"; [[ -n "$path" ]] && NODE_CMD="$path"
+      path="$(find_cmd npm.cmd npm || true)"; [[ -n "$path" ]] && NPM_CMD=("$path")
+      path="$(find_cmd pnpm.cmd pnpm || true)"; [[ -n "$path" ]] && PNPM_CMD=("$path")
+      path="$(find_cmd docker.exe docker || true)"; [[ -n "$path" ]] && DOCKER_CMD=("$path")
+      path="$(find_cmd taskkill.exe taskkill || true)"; [[ -n "$path" ]] && TASKKILL_CMD=("$path")
+      path="$(find_cmd corepack.cmd corepack || true)"; [[ -n "$path" ]] && COREPACK_CMD=("$path")
+      path="$(find_cmd mysql.exe mysql || true)"; [[ -n "$path" ]] && MYSQL_CLIENT_CMD=("$path")
+      path="$(find_cmd mysqladmin.exe mysqladmin || true)"; [[ -n "$path" ]] && MYSQLADMIN_CMD=("$path")
+      path="$(find_cmd mysqld.exe mysqld || true)"; [[ -n "$path" ]] && MYSQLD_CMD=("$path")
+      path="$(find_cmd mysqldump.exe mysqldump || true)"; [[ -n "$path" ]] && MYSQLDUMP_CMD=("$path")
+      path="$(find_cmd gzip.exe gzip || true)"; [[ -n "$path" ]] && GZIP_CMD=("$path")
+      if have powershell.exe; then
+        local caption=""
+        caption="$(powershell.exe -NoProfile -Command "(Get-CimInstance Win32_OperatingSystem).Caption" 2>/dev/null | tr -d '\r')"
+        [[ -n "$caption" ]] && OS_LABEL="$caption"
+      fi
+      ;;
+    *)
+      path="$(find_cmd node || true)"; [[ -n "$path" ]] && NODE_CMD="$path"
+      path="$(find_cmd npm || true)"; [[ -n "$path" ]] && NPM_CMD=("$path")
+      path="$(find_cmd pnpm || true)"; [[ -n "$path" ]] && PNPM_CMD=("$path")
+      path="$(find_cmd docker || true)"; [[ -n "$path" ]] && DOCKER_CMD=("$path")
+      path="$(find_cmd taskkill || true)"; [[ -n "$path" ]] && TASKKILL_CMD=("$path")
+      path="$(find_cmd corepack || true)"; [[ -n "$path" ]] && COREPACK_CMD=("$path")
+      path="$(find_cmd mysql || true)"; [[ -n "$path" ]] && MYSQL_CLIENT_CMD=("$path")
+      path="$(find_cmd mysqladmin || true)"; [[ -n "$path" ]] && MYSQLADMIN_CMD=("$path")
+      path="$(find_cmd mysqld || true)"; [[ -n "$path" ]] && MYSQLD_CMD=("$path")
+      path="$(find_cmd mysqldump || true)"; [[ -n "$path" ]] && MYSQLDUMP_CMD=("$path")
+      path="$(find_cmd systemctl || true)"; [[ -n "$path" ]] && SYSTEMCTL_CMD=("$path")
+      path="$(find_cmd service || true)"; [[ -n "$path" ]] && SERVICE_CMD=("$path")
+      path="$(find_cmd gzip || true)"; [[ -n "$path" ]] && GZIP_CMD=("$path")
+      ;;
+  esac
+}
 
 banner() {
   printf '\n%sLyra MetaCare Local Orchestrator%s\n' "$C_BOLD" "$C_RESET"
@@ -146,15 +249,17 @@ upsert_env() {
 }
 
 generate_hex() {
+  resolve_commands
   if have openssl; then
     openssl rand -hex 32
   else
-    node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+    "$NODE_CMD" -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
   fi
 }
 
 generate_password() {
-  node -e "console.log(require('node:crypto').randomBytes(18).toString('base64url'))"
+  resolve_commands
+  "$NODE_CMD" -e "console.log(require('node:crypto').randomBytes(18).toString('base64url'))"
 }
 
 export_runtime_env() {
@@ -171,8 +276,47 @@ export_runtime_env() {
   export ADMIN_BOOTSTRAP_PASSWORD="$(env_value ADMIN_BOOTSTRAP_PASSWORD "")"
   export ADMIN_BOOTSTRAP_FIRST_NAME="$(env_value ADMIN_BOOTSTRAP_FIRST_NAME "$DEFAULT_ADMIN_FIRST_NAME")"
   export ADMIN_BOOTSTRAP_LAST_NAME="$(env_value ADMIN_BOOTSTRAP_LAST_NAME "$DEFAULT_ADMIN_LAST_NAME")"
+  export MYSQL_LOCAL_RUNTIME="$(env_value MYSQL_LOCAL_RUNTIME "")"
   export PORT="$(env_value PORT "$DEFAULT_APP_PORT")"
   APP_PORT="$PORT"
+}
+
+native_mysql_installed() {
+  resolve_commands
+  if [[ "$OS_FAMILY" == "windows" ]] && have powershell.exe; then
+    (( ${#MYSQLD_CMD[@]} > 0 )) && return 0
+    powershell.exe -NoProfile -Command "if (Get-Service -ErrorAction SilentlyContinue | Where-Object { \$_.Name -match 'mysql|mariadb' }) { exit 0 } else { exit 1 }" >/dev/null 2>&1
+    return $?
+  fi
+
+  if (( ${#MYSQLD_CMD[@]} > 0 )); then
+    return 0
+  fi
+
+  if (( ${#SYSTEMCTL_CMD[@]} > 0 )); then
+    "${SYSTEMCTL_CMD[@]}" list-unit-files mysql.service >/dev/null 2>&1 && return 0
+    "${SYSTEMCTL_CMD[@]}" list-unit-files mariadb.service >/dev/null 2>&1 && return 0
+  fi
+
+  if (( ${#SERVICE_CMD[@]} > 0 )); then
+    "${SERVICE_CMD[@]}" --status-all 2>&1 | grep -Eiq 'mysql|mariadb' && return 0
+  fi
+
+  return 1
+}
+
+mysql_runtime() {
+  export_runtime_env
+  if [[ -n "${MYSQL_LOCAL_RUNTIME:-}" ]]; then
+    printf '%s' "$MYSQL_LOCAL_RUNTIME"
+    return 0
+  fi
+
+  if native_mysql_installed; then
+    printf 'native'
+  else
+    printf 'docker'
+  fi
 }
 
 require_file() {
@@ -180,23 +324,26 @@ require_file() {
 }
 
 select_package_manager() {
+  resolve_commands
   [[ -n "$PACKAGE_MANAGER" ]] && return 0
   if [[ -f "$ROOT_DIR/pnpm-lock.yaml" ]]; then
     PACKAGE_MANAGER="pnpm"
-    PACKAGE_RUN=(pnpm)
+    PACKAGE_RUN=("${PNPM_CMD[@]}")
   else
     PACKAGE_MANAGER="npm"
-    PACKAGE_RUN=(npm)
+    PACKAGE_RUN=("${NPM_CMD[@]}")
   fi
 }
 
 ensure_package_manager() {
   select_package_manager
-  if [[ "$PACKAGE_MANAGER" == "pnpm" ]] && ! have pnpm; then
-    if have corepack; then
+  if [[ "$PACKAGE_MANAGER" == "pnpm" ]] && (( ${#PNPM_CMD[@]} == 0 )); then
+    if (( ${#COREPACK_CMD[@]} > 0 )); then
       log_info "pnpm nao encontrado. Ativando via corepack."
-      corepack enable >/dev/null 2>&1 || true
-      corepack prepare pnpm@latest --activate >/dev/null
+      "${COREPACK_CMD[@]}" enable >/dev/null 2>&1 || true
+      "${COREPACK_CMD[@]}" prepare pnpm@latest --activate >/dev/null
+      resolve_commands
+      PACKAGE_RUN=("${PNPM_CMD[@]}")
     else
       die "pnpm nao encontrado e corepack indisponivel."
     fi
@@ -207,10 +354,11 @@ ensure_compose() {
   if (( ${#COMPOSE_CMD[@]} > 0 )); then
     return 0
   fi
-  if have docker && docker compose version >/dev/null 2>&1; then
-    COMPOSE_CMD=(docker compose)
-  elif have docker-compose; then
-    COMPOSE_CMD=(docker-compose)
+  resolve_commands
+  if (( ${#DOCKER_CMD[@]} > 0 )) && "${DOCKER_CMD[@]}" compose version >/dev/null 2>&1; then
+    COMPOSE_CMD=("${DOCKER_CMD[@]}" compose)
+  elif path="$(find_cmd docker-compose docker-compose.exe || true)" && [[ -n "$path" ]]; then
+    COMPOSE_CMD=("$path")
   else
     die "Docker Compose nao encontrado."
   fi
@@ -231,18 +379,21 @@ validate_layout() {
 doctor() {
   section "Requisitos do sistema"
   validate_layout
+  resolve_commands
   select_package_manager
 
+  log_ok "Sistema operacional detectado: $OS_LABEL"
+  log_ok "Runtime MySQL preferencial: $(mysql_runtime)"
   have git && log_ok "Git disponivel." || die "Git nao encontrado."
-  have node && log_ok "Node.js disponivel: $(node --version)" || die "Node.js nao encontrado."
-  have npm && log_ok "npm disponivel: $(npm --version)" || die "npm nao encontrado."
-  have docker && log_ok "Docker CLI disponivel." || die "Docker nao encontrado."
-  docker info >/dev/null 2>&1 && log_ok "Docker daemon acessivel." || die "Docker daemon indisponivel."
+  [[ -n "$NODE_CMD" ]] && log_ok "Node.js disponivel: $("$NODE_CMD" --version)" || die "Node.js nao encontrado."
+  (( ${#NPM_CMD[@]} > 0 )) && log_ok "npm disponivel: $("${NPM_CMD[@]}" --version)" || die "npm nao encontrado."
+  (( ${#DOCKER_CMD[@]} > 0 )) && log_ok "Docker CLI disponivel." || die "Docker nao encontrado."
+  "${DOCKER_CMD[@]}" info >/dev/null 2>&1 && log_ok "Docker daemon acessivel." || die "Docker daemon indisponivel."
 
   if [[ "$PACKAGE_MANAGER" == "pnpm" ]]; then
-    if have pnpm; then
-      log_ok "pnpm disponivel: $(pnpm --version)"
-    elif have corepack; then
+    if (( ${#PNPM_CMD[@]} > 0 )); then
+      log_ok "pnpm disponivel: $("${PNPM_CMD[@]}" --version)"
+    elif (( ${#COREPACK_CMD[@]} > 0 )); then
       log_warn "pnpm ausente, mas sera ativado automaticamente quando necessario."
     else
       die "pnpm ausente e corepack indisponivel."
@@ -259,7 +410,8 @@ hash_files() {
   elif have shasum; then
     shasum -a 256 "$@" | awk '{print $1}' | tr -d '\n'
   else
-    node - "$@" <<'NODE'
+    resolve_commands
+    "$NODE_CMD" - "$@" <<'NODE'
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const hash = crypto.createHash('sha256');
@@ -332,7 +484,9 @@ ensure_env() {
 
   local mysql_host
   local mysql_host_port
+  local mysql_host_port_default
   local mysql_port
+  local mysql_runtime_value
   local mysql_database
   local mysql_user
   local mysql_password
@@ -344,8 +498,17 @@ ensure_env() {
   local admin_last_name
   local port_value
 
+  mysql_runtime_value="$(ask_value "Runtime MySQL local (native/docker)" "$(env_value MYSQL_LOCAL_RUNTIME "$(mysql_runtime)")")"
+  case "$mysql_runtime_value" in
+    native|docker) ;;
+    *) die "MYSQL_LOCAL_RUNTIME invalido. Use native ou docker." ;;
+  esac
   mysql_host="$(ask_value "Host do MySQL local" "$(env_value MYSQL_HOST "$DEFAULT_MYSQL_HOST")")"
-  mysql_host_port="$(ask_value "Porta publicada do MySQL" "$(env_value MYSQL_HOST_PORT "$DEFAULT_MYSQL_HOST_PORT")")"
+  mysql_host_port_default="$DEFAULT_MYSQL_HOST_PORT"
+  if [[ "$mysql_runtime_value" == "native" ]]; then
+    mysql_host_port_default="3306"
+  fi
+  mysql_host_port="$(ask_value "Porta publicada do MySQL" "$(env_value MYSQL_HOST_PORT "$mysql_host_port_default")")"
   mysql_port="$(ask_value "Porta do MySQL para a aplicacao" "$(env_value MYSQL_PORT "$mysql_host_port")")"
   mysql_database="$(ask_value "Banco MySQL" "$(env_value MYSQL_DATABASE "$DEFAULT_MYSQL_DATABASE")")"
   mysql_user="$(ask_value "Usuario MySQL da aplicacao" "$(env_value MYSQL_USER "$DEFAULT_MYSQL_USER")")"
@@ -362,6 +525,7 @@ ensure_env() {
   [[ -z "$admin_password" ]] && admin_password="$(generate_password)"
 
   upsert_env "MYSQL_HOST" "$mysql_host"
+  upsert_env "MYSQL_LOCAL_RUNTIME" "$mysql_runtime_value"
   upsert_env "MYSQL_HOST_PORT" "$mysql_host_port"
   upsert_env "MYSQL_PORT" "$mysql_port"
   upsert_env "MYSQL_DATABASE" "$mysql_database"
@@ -383,6 +547,7 @@ ensure_env() {
 validate_env() {
   export_runtime_env
   local missing=()
+  [[ -n "$MYSQL_LOCAL_RUNTIME" && "$MYSQL_LOCAL_RUNTIME" != "native" && "$MYSQL_LOCAL_RUNTIME" != "docker" ]] && die "MYSQL_LOCAL_RUNTIME invalido. Use native ou docker."
   [[ -z "$MYSQL_HOST" ]] && missing+=("MYSQL_HOST")
   [[ -z "$MYSQL_HOST_PORT" ]] && missing+=("MYSQL_HOST_PORT")
   [[ -z "$MYSQL_PORT" ]] && missing+=("MYSQL_PORT")
@@ -418,24 +583,302 @@ ensure_env_ready() {
   log_ok ".env.local ja esta completo."
 }
 
-mysql_running() {
-  local id
-  id="$(compose ps -q mysql 2>/dev/null || true)"
-  [[ -n "$id" ]] || return 1
-  docker inspect --format '{{.State.Running}}' "$id" 2>/dev/null | grep -qi '^true$'
+native_mysql_responding() {
+  resolve_commands
+  export_runtime_env
+  if (( ${#MYSQLADMIN_CMD[@]} > 0 )); then
+    if "${MYSQLADMIN_CMD[@]}" ping -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_USER" "-p$MYSQL_PASSWORD" --silent >/dev/null 2>&1; then
+      return 0
+    fi
+    "${MYSQLADMIN_CMD[@]}" ping -h"$MYSQL_HOST" -P"$MYSQL_PORT" -uroot "-p$MYSQL_ROOT_PASSWORD" --silent >/dev/null 2>&1
+    return $?
+  fi
+
+  if [[ -n "$NODE_CMD" && -d "$ROOT_DIR/node_modules" ]]; then
+    "$NODE_CMD" - <<'NODE' >/dev/null 2>&1
+const mysql = require('mysql2/promise');
+(async () => {
+  const attempts = [
+    { user: process.env.MYSQL_USER, password: process.env.MYSQL_PASSWORD },
+    { user: 'root', password: process.env.MYSQL_ROOT_PASSWORD },
+  ];
+
+  for (const attempt of attempts) {
+    try {
+      const connection = await mysql.createConnection({
+        host: process.env.MYSQL_HOST,
+        port: Number(process.env.MYSQL_PORT),
+        user: attempt.user,
+        password: attempt.password,
+      });
+      await connection.query('SELECT 1');
+      await connection.end();
+      process.exit(0);
+    } catch {}
+  }
+
+  process.exit(1);
+})().then(() => process.exit(0)).catch(() => process.exit(1));
+NODE
+    return $?
+  fi
+
+  return 1
 }
 
-mysql_health() {
+start_native_mysql() {
+  resolve_commands
+  export_runtime_env
+  native_mysql_responding && return 0
+
+  section "MySQL nativo detectado"
+
+  if [[ "$OS_FAMILY" == "windows" ]] && have powershell.exe; then
+    powershell.exe -NoProfile -Command "\$service = Get-Service -ErrorAction SilentlyContinue | Where-Object { \$_.Name -match 'mysql|mariadb' } | Select-Object -First 1; if (-not \$service) { exit 1 }; if (\$service.Status -ne 'Running') { Start-Service -Name \$service.Name }; exit 0" >/dev/null 2>&1 || die "MySQL nativo detectado, mas nao foi possivel iniciar o servico no Windows."
+  elif (( ${#SYSTEMCTL_CMD[@]} > 0 )); then
+    "${SYSTEMCTL_CMD[@]}" is-active --quiet mysql >/dev/null 2>&1 || "${SYSTEMCTL_CMD[@]}" start mysql >/dev/null 2>&1 || "${SYSTEMCTL_CMD[@]}" start mariadb >/dev/null 2>&1 || true
+  elif (( ${#SERVICE_CMD[@]} > 0 )); then
+    "${SERVICE_CMD[@]}" mysql status >/dev/null 2>&1 || "${SERVICE_CMD[@]}" mysql start >/dev/null 2>&1 || "${SERVICE_CMD[@]}" mariadb start >/dev/null 2>&1 || true
+  fi
+
+  native_mysql_responding || die "MySQL nativo foi detectado, mas nao esta acessivel com as credenciais configuradas."
+}
+
+ensure_database_exists() {
+  export_runtime_env
+  [[ -d "$ROOT_DIR/node_modules" ]] || die "Dependencias ausentes. Execute ./run.sh install antes de preparar o banco."
+  "$NODE_CMD" - <<'NODE'
+const mysql = require('mysql2/promise');
+const database = process.env.MYSQL_DATABASE;
+
+(async () => {
+  const appConfig = {
+    host: process.env.MYSQL_HOST,
+    port: Number(process.env.MYSQL_PORT),
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    multipleStatements: true,
+  };
+
+  try {
+    const appConnection = await mysql.createConnection(appConfig);
+    await appConnection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+    await appConnection.end();
+    process.exit(0);
+  } catch {}
+
+  const rootConnection = await mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    port: Number(process.env.MYSQL_PORT),
+    user: 'root',
+    password: process.env.MYSQL_ROOT_PASSWORD,
+    multipleStatements: true,
+  });
+
+  const escapedUser = rootConnection.escape(process.env.MYSQL_USER);
+  const escapedPassword = rootConnection.escape(process.env.MYSQL_PASSWORD);
+  await rootConnection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+  await rootConnection.query(`CREATE USER IF NOT EXISTS ${escapedUser}@'%' IDENTIFIED BY ${escapedPassword}`);
+  await rootConnection.query(`CREATE USER IF NOT EXISTS ${escapedUser}@'localhost' IDENTIFIED BY ${escapedPassword}`);
+  await rootConnection.query(`GRANT ALL PRIVILEGES ON \`${database}\`.* TO ${escapedUser}@'%'`);
+  await rootConnection.query(`GRANT ALL PRIVILEGES ON \`${database}\`.* TO ${escapedUser}@'localhost'`);
+  await rootConnection.query('FLUSH PRIVILEGES');
+  await rootConnection.end();
+})().then(() => process.exit(0)).catch((error) => {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exit(1);
+});
+NODE
+}
+
+verify_database_state() {
+  export_runtime_env
+  [[ -d "$ROOT_DIR/node_modules" ]] || die "Dependencias ausentes. Execute ./run.sh install antes de verificar o banco."
+  "$NODE_CMD" - <<'NODE'
+const mysql = require('mysql2/promise');
+
+(async () => {
+  const connection = await mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    port: Number(process.env.MYSQL_PORT),
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+  });
+
+  const [tables] = await connection.query(
+    `SELECT COUNT(*) AS total
+     FROM information_schema.tables
+     WHERE table_schema = ?`,
+    [process.env.MYSQL_DATABASE]
+  );
+
+  const [migrationTable] = await connection.query(
+    `SELECT COUNT(*) AS total
+     FROM information_schema.tables
+     WHERE table_schema = ?
+       AND table_name = '_lyra_schema_migrations'`,
+    [process.env.MYSQL_DATABASE]
+  );
+
+  await connection.end();
+  const total = tables[0]?.total ?? 0;
+  const hasMigrationTable = (migrationTable[0]?.total ?? 0) > 0;
+  console.log(`Tabelas no schema: ${total}`);
+  console.log(`Tabela de migracao presente: ${hasMigrationTable ? 'sim' : 'nao'}`);
+})().then(() => process.exit(0)).catch((error) => {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exit(1);
+});
+NODE
+}
+
+ensure_backup_dir() {
+  mkdir -p "$BACKUP_DIR"
+}
+
+prompt_text() {
+  local label="$1"
+  local default_value="$2"
+  local answer=""
+  if [[ ! -t 0 ]]; then
+    printf '%s' "$default_value"
+    return 0
+  fi
+  read -r -p "$label [$default_value]: " answer
+  printf '%s' "${answer:-$default_value}"
+}
+
+safe_restore_target() {
+  export_runtime_env
+  local suggested="${MYSQL_DATABASE}_restore_$(date +%Y%m%d_%H%M%S)"
+  local target
+  target="$(prompt_text "Schema alvo para restore full sem sobrescrever o banco ativo" "$suggested")"
+  [[ "$target" != "$MYSQL_DATABASE" ]] || die "O restore nao pode sobrescrever o schema ativo do app."
+  printf '%s' "$target"
+}
+
+ensure_restore_target_safe() {
+  local target_database="$1"
+  export_runtime_env
+  [[ -d "$ROOT_DIR/node_modules" ]] || die "Dependencias ausentes. Execute ./run.sh install antes de restaurar."
+  TARGET_DATABASE="$target_database" "$NODE_CMD" - <<'NODE'
+const mysql = require('mysql2/promise');
+
+(async () => {
+  const target = process.env.TARGET_DATABASE;
+  const connection = await mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    port: Number(process.env.MYSQL_PORT),
+    user: 'root',
+    password: process.env.MYSQL_ROOT_PASSWORD,
+  });
+
+  await connection.query(`CREATE DATABASE IF NOT EXISTS \`${target}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+  const [rows] = await connection.query(
+    `SELECT COUNT(*) AS total
+     FROM information_schema.tables
+     WHERE table_schema = ?`,
+    [target]
+  );
+
+  await connection.end();
+  if ((rows[0]?.total ?? 0) > 0) {
+    throw new Error(`O schema alvo ${target} ja possui tabelas. O restore full exige um schema vazio para nao sobrescrever dados existentes.`);
+  }
+})().then(() => process.exit(0)).catch((error) => {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exit(1);
+});
+NODE
+}
+
+backup_database() {
+  install_deps
+  mysql_up
+  export_runtime_env
+  ensure_backup_dir
+
+  local timestamp
+  local backup_file
+  timestamp="$(date +%Y%m%d_%H%M%S)"
+  backup_file="$BACKUP_DIR/${MYSQL_DATABASE}_${timestamp}.sql"
+
+  section "Backup full do banco"
+  if [[ "$(mysql_runtime)" == "docker" ]]; then
+    "${DOCKER_CMD[@]}" exec "$MYSQL_CONTAINER_NAME" sh -lc "exec mysqldump -uroot -p\"$MYSQL_ROOT_PASSWORD\" --single-transaction --routines --triggers --events --hex-blob --set-gtid-purged=OFF --no-tablespaces \"$MYSQL_DATABASE\"" > "$backup_file"
+  else
+    (( ${#MYSQLDUMP_CMD[@]} > 0 )) || die "mysqldump nao encontrado no ambiente nativo."
+    "${MYSQLDUMP_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -uroot "-p$MYSQL_ROOT_PASSWORD" --single-transaction --routines --triggers --events --hex-blob --set-gtid-purged=OFF --no-tablespaces "$MYSQL_DATABASE" > "$backup_file"
+  fi
+
+  if (( ${#GZIP_CMD[@]} > 0 )); then
+    "${GZIP_CMD[@]}" -f "$backup_file"
+    backup_file="${backup_file}.gz"
+  fi
+
+  log_ok "Backup full gerado em: $backup_file"
+}
+
+restore_database() {
+  install_deps
+  mysql_up
+  export_runtime_env
+
+  local default_backup=""
+  if compgen -G "$BACKUP_DIR/${MYSQL_DATABASE}_*.sql.gz" >/dev/null; then
+    default_backup="$(ls -1t "$BACKUP_DIR/${MYSQL_DATABASE}_"*.sql.gz | head -n 1)"
+  elif compgen -G "$BACKUP_DIR/${MYSQL_DATABASE}_*.sql" >/dev/null; then
+    default_backup="$(ls -1t "$BACKUP_DIR/${MYSQL_DATABASE}_"*.sql | head -n 1)"
+  fi
+  [[ -n "$default_backup" ]] || die "Nenhum backup full foi encontrado em $BACKUP_DIR"
+
+  local backup_path
+  local target_database
+  backup_path="$(prompt_text "Arquivo de backup para restore" "$default_backup")"
+  [[ -f "$backup_path" ]] || die "Arquivo de backup nao encontrado: $backup_path"
+  target_database="$(safe_restore_target)"
+  ensure_restore_target_safe "$target_database"
+
+  section "Restore full do banco"
+  if [[ "$backup_path" == *.gz ]]; then
+    (( ${#GZIP_CMD[@]} > 0 )) || die "gzip nao encontrado para restaurar arquivo compactado."
+    if [[ "$(mysql_runtime)" == "docker" ]]; then
+      "${GZIP_CMD[@]}" -dc "$backup_path" | "${DOCKER_CMD[@]}" exec -i "$MYSQL_CONTAINER_NAME" mysql -uroot "-p$MYSQL_ROOT_PASSWORD" "$target_database"
+    else
+      (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) || die "Cliente mysql nao encontrado no ambiente nativo."
+      "${GZIP_CMD[@]}" -dc "$backup_path" | "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -uroot "-p$MYSQL_ROOT_PASSWORD" "$target_database"
+    fi
+  else
+    if [[ "$(mysql_runtime)" == "docker" ]]; then
+      "${DOCKER_CMD[@]}" exec -i "$MYSQL_CONTAINER_NAME" mysql -uroot "-p$MYSQL_ROOT_PASSWORD" "$target_database" < "$backup_path"
+    else
+      (( ${#MYSQL_CLIENT_CMD[@]} > 0 )) || die "Cliente mysql nao encontrado no ambiente nativo."
+      "${MYSQL_CLIENT_CMD[@]}" -h"$MYSQL_HOST" -P"$MYSQL_PORT" -uroot "-p$MYSQL_ROOT_PASSWORD" "$target_database" < "$backup_path"
+    fi
+  fi
+
+  log_ok "Restore full concluido no schema seguro: $target_database"
+}
+
+docker_mysql_running() {
   local id
   id="$(compose ps -q mysql 2>/dev/null || true)"
   [[ -n "$id" ]] || return 1
-  docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}unknown{{end}}' "$id" 2>/dev/null
+  "${DOCKER_CMD[@]}" inspect --format '{{.State.Running}}' "$id" 2>/dev/null | grep -qi '^true$'
+}
+
+docker_mysql_health() {
+  local id
+  id="$(compose ps -q mysql 2>/dev/null || true)"
+  [[ -n "$id" ]] || return 1
+  "${DOCKER_CMD[@]}" inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}unknown{{end}}' "$id" 2>/dev/null
 }
 
 wait_mysql() {
   local attempt=1
   while (( attempt <= 60 )); do
-    if [[ "$(mysql_health || true)" == "healthy" ]]; then
+    if [[ "$(docker_mysql_health || true)" == "healthy" ]]; then
       log_ok "MySQL local esta saudavel."
       return 0
     fi
@@ -447,11 +890,24 @@ wait_mysql() {
 }
 
 mysql_up() {
+  install_deps
   ensure_env_ready
   doctor
-  section "Subindo MySQL local"
+  local runtime
+  runtime="$(mysql_runtime)"
+
+  if [[ "$runtime" == "native" ]]; then
+    start_native_mysql
+    ensure_database_exists
+    log_ok "MySQL nativo pronto para uso pelo app."
+    return 0
+  fi
+
+  section "Subindo MySQL local via Docker"
   compose up -d mysql
   wait_mysql
+  ensure_database_exists
+  log_ok "MySQL local via Docker pronto para uso pelo app."
 }
 
 mysql_migrate() {
@@ -462,8 +918,9 @@ mysql_migrate() {
   (
     cd "$ROOT_DIR"
     export_runtime_env
-    node "$MIGRATE_SCRIPT"
+    "$NODE_CMD" "$MIGRATE_SCRIPT"
   )
+  verify_database_state
   log_ok "Migracoes MySQL concluidas."
 }
 
@@ -494,6 +951,9 @@ stop_app_internal() {
     pid_running "$pid" || { rm -f "$APP_PID_FILE" "$APP_META_FILE"; return 0; }
     sleep 1
   done
+  if [[ "$OS_FAMILY" == "windows" && ${#TASKKILL_CMD[@]} -gt 0 ]]; then
+    "${TASKKILL_CMD[@]}" /PID "$pid" /T /F >/dev/null 2>&1 || true
+  fi
   kill -9 "$pid" 2>/dev/null || true
   rm -f "$APP_PID_FILE" "$APP_META_FILE"
 }
@@ -508,7 +968,7 @@ wait_http() {
         return 0
       fi
     else
-      if node - "$url" <<'NODE' >/dev/null 2>&1
+      if "$NODE_CMD" - "$url" <<'NODE' >/dev/null 2>&1
 const http = require('node:http');
 const https = require('node:https');
 const url = new URL(process.argv[2]);
@@ -608,20 +1068,15 @@ stop_app() {
 }
 
 mysql_down() {
+  local runtime
+  runtime="$(mysql_runtime)"
+  if [[ "$runtime" == "native" ]]; then
+    log_warn "MySQL nativo detectado. O run.sh nao encerra servicos nativos automaticamente."
+    return 0
+  fi
   section "Parando MySQL local"
   compose stop mysql
   log_ok "MySQL local parado."
-}
-
-mysql_reset() {
-  if [[ -t 0 ]]; then
-    local confirmation=""
-    read -r -p "Isso remove o volume local do MySQL. Digite RESETAR para continuar: " confirmation
-    [[ "$confirmation" == "RESETAR" ]] || die "Reset do MySQL cancelado."
-  fi
-  section "Reset completo do MySQL local"
-  compose down -v
-  log_ok "Container e volume do MySQL removidos."
 }
 
 status_report() {
@@ -638,10 +1093,22 @@ status_report() {
     log_warn "Dependencias do projeto ausentes."
   fi
 
-  if mysql_running; then
-    log_ok "MySQL em execucao. Health: $(mysql_health || printf 'desconhecido')"
+  local runtime
+  runtime="$(mysql_runtime)"
+  log_ok "Runtime MySQL selecionado: $runtime"
+
+  if [[ "$runtime" == "native" ]]; then
+    if native_mysql_responding; then
+      log_ok "MySQL nativo acessivel."
+    else
+      log_warn "MySQL nativo detectado, mas nao acessivel com as credenciais atuais."
+    fi
   else
-    log_warn "MySQL local parado."
+    if docker_mysql_running; then
+      log_ok "MySQL em execucao via Docker. Health: $(docker_mysql_health || printf 'desconhecido')"
+    else
+      log_warn "MySQL local via Docker parado."
+    fi
   fi
 
   local pid
@@ -662,10 +1129,21 @@ health_report() {
   else
     log_warn ".env.local ainda nao existe."
   fi
-  if mysql_running; then
-    log_ok "MySQL local em execucao."
+
+  local runtime
+  runtime="$(mysql_runtime)"
+  if [[ "$runtime" == "native" ]]; then
+    if native_mysql_responding; then
+      log_ok "MySQL nativo em execucao e acessivel."
+    else
+      log_warn "MySQL nativo detectado, mas ainda nao esta acessivel."
+    fi
   else
-    log_warn "MySQL local nao esta ativo."
+    if docker_mysql_running; then
+      log_ok "MySQL via Docker em execucao."
+    else
+      log_warn "MySQL via Docker nao esta ativo."
+    fi
   fi
   local pid
   pid="$(app_pid || true)"
@@ -681,52 +1159,113 @@ stop_all() {
   mysql_down
 }
 
-menu() {
+pause_menu() {
+  printf '\nPressione Enter para continuar...'
+  read -r _
+  clear
+}
+
+environment_menu() {
   local choice=""
   while true; do
     banner
-    printf '%s1.%s Validar requisitos do sistema\n' "$C_BOLD" "$C_RESET"
-    printf '%s2.%s Instalar dependencias do projeto\n' "$C_BOLD" "$C_RESET"
-    printf '%s3.%s Configurar ambiente local\n' "$C_BOLD" "$C_RESET"
-    printf '%s4.%s Subir MySQL local\n' "$C_BOLD" "$C_RESET"
-    printf '%s5.%s Aplicar migracoes MySQL\n' "$C_BOLD" "$C_RESET"
-    printf '%s6.%s Subir stack completa em desenvolvimento\n' "$C_BOLD" "$C_RESET"
-    printf '%s7.%s Subir stack completa em producao\n' "$C_BOLD" "$C_RESET"
-    printf '%s8.%s Modo desenvolvimento rapido\n' "$C_BOLD" "$C_RESET"
-    printf '%s9.%s Modo producao rapido\n' "$C_BOLD" "$C_RESET"
-    printf '%s10.%s Status geral\n' "$C_BOLD" "$C_RESET"
-    printf '%s11.%s Saude operacional\n' "$C_BOLD" "$C_RESET"
-    printf '%s12.%s Logs do MySQL\n' "$C_BOLD" "$C_RESET"
-    printf '%s13.%s Encerrar aplicacao\n' "$C_BOLD" "$C_RESET"
-    printf '%s14.%s Parar MySQL local\n' "$C_BOLD" "$C_RESET"
-    printf '%s15.%s Reset completo do MySQL local\n' "$C_BOLD" "$C_RESET"
-    printf '%s16.%s Encerrar tudo\n' "$C_BOLD" "$C_RESET"
-    printf '%s0.%s Sair\n\n' "$C_BOLD" "$C_RESET"
+    printf '%sAmbiente e verificacoes%s\n' "$C_BOLD" "$C_RESET"
+    printf '  1. Validar requisitos do sistema\n'
+    printf '  2. Instalar dependencias do projeto\n'
+    printf '  3. Configurar ambiente local (.env.local)\n'
+    printf '  4. Status geral\n'
+    printf '  5. Saude operacional\n'
+    printf '  0. Voltar\n\n'
     read -r -p "Escolha uma opcao: " choice
-
     case "$choice" in
       1) doctor ;;
       2) install_deps ;;
       3) ensure_env ;;
-      4) mysql_up ;;
-      5) mysql_migrate ;;
-      6) dev_mode ;;
-      7) prod_mode ;;
-      8) fast_dev_mode ;;
-      9) fast_prod_mode ;;
-      10) status_report ;;
-      11) health_report ;;
-      12) compose logs -f mysql ;;
-      13) stop_app ;;
-      14) mysql_down ;;
-      15) mysql_reset ;;
-      16) stop_all ;;
+      4) status_report ;;
+      5) health_report ;;
       0) break ;;
       *) log_warn "Opcao invalida." ;;
     esac
+    pause_menu
+  done
+}
 
-    printf '\nPressione Enter para continuar...'
-    read -r _
+database_menu() {
+  local choice=""
+  while true; do
+    banner
+    printf '%sBanco de dados MySQL%s\n' "$C_BOLD" "$C_RESET"
+    printf '  1. Preparar MySQL local para o app\n'
+    printf '  2. Aplicar migracoes MySQL\n'
+    printf '  3. Verificar schema e tabelas do app\n'
+    printf '  4. Backup full do banco do app\n'
+    printf '  5. Restore full para schema seguro\n'
+    printf '  6. Logs do MySQL em Docker\n'
+    printf '  7. Parar MySQL gerenciado por Docker\n'
+    printf '  0. Voltar\n\n'
+    read -r -p "Escolha uma opcao: " choice
+    case "$choice" in
+      1) mysql_up ;;
+      2) mysql_migrate ;;
+      3) install_deps; ensure_env_ready; mysql_up; verify_database_state ;;
+      4) backup_database ;;
+      5) restore_database ;;
+      6)
+        [[ "$(mysql_runtime)" == "docker" ]] || die "Logs integrados so estao disponiveis quando o MySQL esta sendo gerenciado via Docker."
+        compose logs -f mysql
+        ;;
+      7) mysql_down ;;
+      0) break ;;
+      *) log_warn "Opcao invalida." ;;
+    esac
+    pause_menu
+  done
+}
+
+application_menu() {
+  local choice=""
+  while true; do
+    banner
+    printf '%sAplicacao web%s\n' "$C_BOLD" "$C_RESET"
+    printf '  1. Subir stack completa em desenvolvimento\n'
+    printf '  2. Subir stack completa em producao\n'
+    printf '  3. Modo desenvolvimento rapido\n'
+    printf '  4. Modo producao rapido\n'
+    printf '  5. Encerrar aplicacao\n'
+    printf '  6. Encerrar tudo\n'
+    printf '  0. Voltar\n\n'
+    read -r -p "Escolha uma opcao: " choice
+    case "$choice" in
+      1) dev_mode ;;
+      2) prod_mode ;;
+      3) fast_dev_mode ;;
+      4) fast_prod_mode ;;
+      5) stop_app ;;
+      6) stop_all ;;
+      0) break ;;
+      *) log_warn "Opcao invalida." ;;
+    esac
+    pause_menu
+  done
+}
+
+menu() {
+  local choice=""
+  while true; do
+    banner
+    printf '%sMenu principal%s\n' "$C_BOLD" "$C_RESET"
+    printf '  1. Ambiente e verificacoes\n'
+    printf '  2. Banco de dados MySQL\n'
+    printf '  3. Aplicacao web\n'
+    printf '  0. Sair\n\n'
+    read -r -p "Escolha uma opcao: " choice
+    case "$choice" in
+      1) environment_menu ;;
+      2) database_menu ;;
+      3) application_menu ;;
+      0) break ;;
+      *) log_warn "Opcao invalida." ;;
+    esac
     clear
   done
 }
@@ -740,16 +1279,18 @@ Uso:
   ./run.sh config         cria ou atualiza .env.local
   ./run.sh mysql-up       sobe o MySQL local
   ./run.sh migrate        sobe MySQL e aplica migracoes
+  ./run.sh verify-db      verifica se o schema e as tabelas do app estao consistentes
+  ./run.sh backup         gera backup full do banco do app
+  ./run.sh restore        restaura backup full para um schema alvo seguro
   ./run.sh dev            instala, configura, sobe MySQL, migra e inicia o app em desenvolvimento
   ./run.sh fast-dev       sobe MySQL e inicia o app sem reinstalar
   ./run.sh prod           instala, configura, sobe MySQL, migra, builda e inicia o app em producao
   ./run.sh fast-prod      sobe MySQL e inicia o app com build existente
   ./run.sh status         mostra status do ambiente local
   ./run.sh health         mostra checks operacionais
-  ./run.sh logs mysql     acompanha logs do MySQL
+  ./run.sh logs mysql     acompanha logs do MySQL quando o runtime estiver em Docker
   ./run.sh stop-app       encerra a aplicacao gerenciada por este script
-  ./run.sh mysql-down     para o MySQL local
-  ./run.sh mysql-reset    remove container e volume local do MySQL
+  ./run.sh mysql-down     para apenas o MySQL gerenciado por Docker
   ./run.sh stop-all       encerra app e MySQL local
   ./run.sh help           mostra esta ajuda
 HELP
@@ -765,6 +1306,9 @@ main() {
     config|configure) ensure_env ;;
     mysql-up) mysql_up ;;
     migrate) mysql_migrate ;;
+    verify-db) install_deps; ensure_env_ready; mysql_up; verify_database_state ;;
+    backup) backup_database ;;
+    restore) restore_database ;;
     dev) dev_mode ;;
     fast-dev) fast_dev_mode ;;
     prod) prod_mode ;;
@@ -773,11 +1317,11 @@ main() {
     health) health_report ;;
     logs)
       [[ "${2:-mysql}" == "mysql" ]] || die "Apenas logs do MySQL estao disponiveis sem persistencia em arquivo."
+      [[ "$(mysql_runtime)" == "docker" ]] || die "Logs integrados so estao disponiveis quando o MySQL esta sendo gerenciado via Docker."
       compose logs -f mysql
       ;;
     stop-app) stop_app ;;
     mysql-down) mysql_down ;;
-    mysql-reset) mysql_reset ;;
     stop-all) stop_all ;;
     help|-h|--help) help_text ;;
     *) die "Comando desconhecido: $1" ;;

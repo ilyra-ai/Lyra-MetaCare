@@ -42,6 +42,7 @@ yarn-error.log*
 .pnpm-debug.log*
 pnpm-debug.log*
 .lyra-run/
+/backups/mysql/
 
 # env files (can opt-in for committing if needed)
 .env*
