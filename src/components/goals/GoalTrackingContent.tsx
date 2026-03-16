@@ -22,6 +22,7 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { UpdateGoalProgressModal } from './UpdateGoalProgressModal';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CreateGoalModal } from './CreateGoalModal';
 
 interface Goal {
   id: string;
@@ -90,10 +91,11 @@ export function GoalTrackingContent() {
           Suas metas de longevidade aparecerão aqui após serem definidas pelo
           Plano de IA.
         </CardDescription>
-        {/* Placeholder for adding a goal manually, if needed later */}
-        <Button variant="outline" className="mt-4" disabled>
-          <Plus className="h-4 w-4 mr-2" /> Adicionar Meta Manualmente
-        </Button>
+        <CreateGoalModal onCreated={fetchGoals}>
+          <Button variant="outline" className="mt-4">
+            <Plus className="h-4 w-4 mr-2" /> Adicionar Meta Manualmente
+          </Button>
+        </CreateGoalModal>
       </Card>
     );
   }
@@ -101,14 +103,22 @@ export function GoalTrackingContent() {
   return (
     <div className="space-y-8">
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <TargetIcon className="h-6 w-6 mr-3 text-green-700" />
-            Acompanhamento de Metas
-          </CardTitle>
-          <CardDescription>
-            Visualize e atualize seu progresso nas metas de longevidade.
-          </CardDescription>
+        <CardHeader className="gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-2">
+            <CardTitle className="flex items-center">
+              <TargetIcon className="h-6 w-6 mr-3 text-green-700" />
+              Acompanhamento de Metas
+            </CardTitle>
+            <CardDescription>
+              Visualize, atualize e cadastre metas de longevidade com
+              persistencia real.
+            </CardDescription>
+          </div>
+          <CreateGoalModal onCreated={fetchGoals}>
+            <Button variant="outline">
+              <Plus className="h-4 w-4 mr-2" /> Nova Meta
+            </Button>
+          </CreateGoalModal>
         </CardHeader>
       </Card>
 
