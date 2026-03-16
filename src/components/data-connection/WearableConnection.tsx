@@ -16,6 +16,8 @@ import { db } from '@/integrations/mysql/client';
 
 type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'error';
 type BluetoothNavigator = Navigator & { bluetooth?: Bluetooth };
+const BLUETOOTH_UNSUPPORTED_MESSAGE =
+  'O Web Bluetooth só funciona em navegadores compatíveis baseados em Chromium e em contexto seguro (localhost ou HTTPS).';
 
 function calculateRmssd(rrIntervalsMs: number[]) {
   if (rrIntervalsMs.length < 2) {
@@ -37,10 +39,17 @@ function calculateRmssd(rrIntervalsMs: number[]) {
 export function WearableConnection() {
   const [status, setStatus] = useState<ConnectionStatus>('idle');
   const [deviceName, setDeviceName] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [bluetoothSupported, setBluetoothSupported] = useState<boolean | null>(
+    null
+  );
   const deviceRef = useRef<BluetoothDevice | null>(null);
   const rrHistoryRef = useRef<number[]>([]);
 
   useEffect(() => {
+    const bluetoothNavigator = navigator as BluetoothNavigator;
+    setBluetoothSupported(Boolean(bluetoothNavigator.bluetooth));
+
     return () => {
       // Cleanup on unmount
       if (deviceRef.current?.gatt?.connected) {
@@ -92,13 +101,20 @@ export function WearableConnection() {
   const handleConnect = async () => {
     setStatus('connecting');
     setDeviceName(null);
+    setErrorMessage(null);
+
+    const bluetoothNavigator = navigator as BluetoothNavigator;
+    if (!bluetoothNavigator.bluetooth) {
+      setBluetoothSupported(false);
+      setStatus('idle');
+      setErrorMessage(BLUETOOTH_UNSUPPORTED_MESSAGE);
+      toast.error('Bluetooth indisponível neste navegador', {
+        description: BLUETOOTH_UNSUPPORTED_MESSAGE,
+      });
+      return;
+    }
 
     try {
-      const bluetoothNavigator = navigator as BluetoothNavigator;
-      if (!bluetoothNavigator.bluetooth) {
-        throw new Error('Web Bluetooth API não é suportada neste navegador.');
-      }
-
       const device = await bluetoothNavigator.bluetooth.requestDevice({
         filters: [{ services: ['heart_rate'] }],
         optionalServices: ['battery_service'],
@@ -133,17 +149,30 @@ export function WearableConnection() {
       device.addEventListener('gattserverdisconnected', handleDisconnect);
 
       setStatus('connected');
+      setErrorMessage(null);
       toast.success('Conexão estabelecida!', {
         description: `Conectado ao ${device.name || 'dispositivo'} via Web Bluetooth.`,
       });
     } catch (error) {
+      if (error instanceof DOMException && error.name === 'NotFoundError') {
+        setStatus('idle');
+        toast.info('Seleção cancelada', {
+          description:
+            'Nenhum dispositivo Bluetooth foi selecionado para conexão.',
+        });
+        return;
+      }
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível conectar ao dispositivo.';
+
       console.error(error);
       setStatus('error');
+      setErrorMessage(message);
       toast.error('Falha na Conexão', {
-        description:
-          error instanceof Error
-            ? error.message
-            : 'Não foi possível conectar ao dispositivo.',
+        description: message,
       });
     }
   };
@@ -154,6 +183,7 @@ export function WearableConnection() {
     }
     setStatus('idle');
     setDeviceName(null);
+    setErrorMessage(null);
     deviceRef.current = null;
     toast.info('Desconectado', {
       description: 'A conexão com o dispositivo foi encerrada.',
@@ -170,8 +200,23 @@ export function WearableConnection() {
               Conecte sua cinta cardíaca ou relógio via Bluetooth para métricas
               reais.
             </p>
-            <Button onClick={handleConnect} className="w-full">
-              Conectar Dispositivo Bluetooth
+            {bluetoothSupported === false ? (
+              <Alert className="border-amber-500/50 bg-amber-50 text-left">
+                <XCircle className="h-4 w-4 text-amber-600" />
+                <AlertTitle>Bluetooth indisponível neste navegador</AlertTitle>
+                <AlertDescription>
+                  {errorMessage || BLUETOOTH_UNSUPPORTED_MESSAGE}
+                </AlertDescription>
+              </Alert>
+            ) : null}
+            <Button
+              onClick={handleConnect}
+              className="w-full"
+              disabled={bluetoothSupported === false}
+            >
+              {bluetoothSupported === false
+                ? 'Abra em um navegador compatível'
+                : 'Conectar Dispositivo Bluetooth'}
             </Button>
           </div>
         );
@@ -223,8 +268,8 @@ export function WearableConnection() {
               Erro de Conexão
             </p>
             <p className="text-muted-foreground">
-              Não foi possível estabelecer a conexão Bluetooth. Verifique se o
-              dispositivo está ligado e pareado.
+              {errorMessage ||
+                'Não foi possível estabelecer a conexão Bluetooth. Verifique se o dispositivo está ligado e pareado.'}
             </p>
             <Button onClick={handleConnect} className="w-full">
               Tentar Novamente
