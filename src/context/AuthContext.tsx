@@ -91,6 +91,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
 
+      // Usa a role já assinada na sessão para evitar estados transitórios
+      // em que páginas administrativas renderizam "Acesso Negado" antes de
+      // a leitura do perfil terminar.
+      setUserRole(currentSession.user.role || null);
+
       // 1. Garantir que o perfil exista e buscar o status real de onboarding
       const profile = await ensureProfileExists(currentSession);
       setUserRole(profile?.role || null);
@@ -117,6 +122,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         data: { session },
       } = await db.auth.getSession();
       setSession(session);
+      setUserRole(session?.user.role || null);
       setLoading(false);
 
       if (session) {

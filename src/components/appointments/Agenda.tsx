@@ -1,6 +1,12 @@
 'use client';
 
-import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
+import type { ComponentType } from 'react';
+import {
+  Calendar,
+  dateFnsLocalizer,
+  Views,
+  type CalendarProps,
+} from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -57,9 +63,13 @@ export function Agenda<TResource extends object>({
   onSelectSlot,
   onSelectEvent,
 }: AgendaProps<TResource>) {
+  const TypedCalendar = Calendar as unknown as ComponentType<
+    CalendarProps<AgendaEvent<TResource>, object>
+  >;
+
   return (
     <div className="h-[300px]">
-      <Calendar<AgendaEvent<TResource>, object>
+      <TypedCalendar
         localizer={localizer}
         events={events}
         startAccessor="start"

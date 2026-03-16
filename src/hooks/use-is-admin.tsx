@@ -8,7 +8,7 @@ import { useAuth } from '@/context/AuthContext';
  * a necessidade de e-mails hardcoded no código fonte.
  */
 export function useIsAdmin() {
-  const { userRole } = useAuth();
+  const { userRole, session } = useAuth();
 
-  return userRole === 'admin';
+  return (userRole ?? session?.user.role ?? null) === 'admin';
 }
