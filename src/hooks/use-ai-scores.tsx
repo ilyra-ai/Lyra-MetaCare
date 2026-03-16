@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/context/AuthContext';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 
 interface AIScores {
@@ -19,11 +19,14 @@ export function useAIScores(enabled = true): UseAIScoresResult {
   const { session, db } = useAuth();
   const [scores, setScores] = useState<AIScores | null>(null);
   const [loading, setLoading] = useState(true);
+  const isDisposedRef = useRef(false);
 
   const fetchScores = useCallback(async () => {
     if (!enabled || !session?.access_token) {
-      setScores(null);
-      setLoading(false);
+      if (!isDisposedRef.current) {
+        setScores(null);
+        setLoading(false);
+      }
       return;
     }
 
@@ -38,20 +41,31 @@ export function useAIScores(enabled = true): UseAIScoresResult {
         throw new Error(response.error?.message || 'Falha no cálculo local.');
       }
 
-      setScores(response.data);
+      if (!isDisposedRef.current) {
+        setScores(response.data);
+      }
     } catch (error) {
-      console.error('Error fetching AI scores:', error);
-      toast.error('Erro ao calcular scores de IA.', {
-        description: (error as Error).message,
-      });
-      setScores(null);
+      if (!isDisposedRef.current) {
+        console.error('Error fetching AI scores:', error);
+        toast.error('Erro ao calcular scores de IA.', {
+          description: (error as Error).message,
+        });
+        setScores(null);
+      }
     } finally {
-      setLoading(false);
+      if (!isDisposedRef.current) {
+        setLoading(false);
+      }
     }
-  }, [enabled, session, db]);
+  }, [db, enabled, session?.access_token]);
 
   useEffect(() => {
+    isDisposedRef.current = false;
     fetchScores();
+
+    return () => {
+      isDisposedRef.current = true;
+    };
   }, [fetchScores]);
 
   return { scores, loading, refresh: fetchScores };

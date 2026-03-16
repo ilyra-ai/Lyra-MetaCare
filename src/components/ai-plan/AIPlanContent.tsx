@@ -132,9 +132,9 @@ export function AIPlanContent() {
       .from('ai_plans')
       .select('plan_data')
       .eq('user_id', session.user.id)
-      .single();
+      .maybeSingle();
 
-    if (error && error.message !== 'Registro não encontrado.') {
+    if (error) {
       toast.error('Erro ao carregar seu plano do banco de dados principal.', {
         description: error.message,
       });

@@ -39,6 +39,8 @@ export function AITipsCard({
       return;
     }
 
+    let ignoreResult = false;
+
     const fetchTip = async () => {
       setLoading(true);
 
@@ -65,16 +67,26 @@ export function AITipsCard({
           throw new Error('Error fetching random tip');
         }
 
-        setTip(data);
+        if (!ignoreResult) {
+          setTip(data);
+        }
       } catch (err) {
-        console.error('Error in fetchTip:', err);
-        setTip(null);
+        if (!ignoreResult) {
+          console.error('Error in fetchTip:', err);
+          setTip(null);
+        }
       } finally {
-        setLoading(false);
+        if (!ignoreResult) {
+          setLoading(false);
+        }
       }
     };
 
     fetchTip();
+
+    return () => {
+      ignoreResult = true;
+    };
   }, [db, featureEnabled]);
 
   if (!featureEnabled) {

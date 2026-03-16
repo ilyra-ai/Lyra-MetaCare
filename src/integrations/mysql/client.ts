@@ -410,7 +410,8 @@ export const db = {
     },
   },
   rpc<T = unknown>(name: string) {
-    return fetch(`/api/rpc/${name}`, {
+    const routeName = name.replaceAll('_', '-');
+    return fetch(`/api/rpc/${routeName}`, {
       method: 'GET',
       credentials: 'include',
     }).then(async (response) => response.json() as Promise<QueryEnvelope<T>>);
