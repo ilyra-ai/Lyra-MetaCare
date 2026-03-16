@@ -79,6 +79,22 @@ export const profileSchema = z.object({
 
 export type ProfileValues = z.infer<typeof profileSchema>;
 
+export function buildProfileUpdatePayload(data: ProfileValues) {
+  const formattedBirthDate = data.birth_date
+    ? format(data.birth_date, 'yyyy-MM-dd')
+    : null;
+  const formattedBirthTime = data.birth_time === '' ? null : data.birth_time;
+  const formattedBirthLocation =
+    data.birth_location === '' ? null : data.birth_location;
+
+  return {
+    ...data,
+    birth_date: formattedBirthDate,
+    birth_time: formattedBirthTime,
+    birth_location: formattedBirthLocation,
+  };
+}
+
 // --- Progress Chart Component ---
 const chartConfig = {
   weight: {
@@ -268,17 +284,10 @@ export function ProfileForm() {
   const onSubmit = async (data: ProfileValues) => {
     if (!session?.user) return;
 
-    const formattedBirthDate = data.birth_date
-      ? format(data.birth_date, 'yyyy-MM-dd')
-      : null;
-    const formattedBirthTime = data.birth_time === '' ? null : data.birth_time;
-
     const { error } = await db
       .from('profiles')
       .update({
-        ...data,
-        birth_date: formattedBirthDate,
-        birth_time: formattedBirthTime,
+        ...buildProfileUpdatePayload(data),
         updated_at: new Date().toISOString(),
       })
       .eq('id', session.user.id);

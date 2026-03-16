@@ -1,13 +1,17 @@
 import { describe, it, expect } from 'vitest';
-import { profileSchema } from './ProfileForm';
+import {
+  buildProfileUpdatePayload,
+  profileSchema,
+  type ProfileValues,
+} from './ProfileForm';
 
 describe('profileSchema', () => {
-  const validData = {
+  const validData: ProfileValues = {
     first_name: 'John',
     last_name: 'Doe',
     age: 30,
     gender: 'male',
-    birth_date: new Date('1994-01-01'),
+    birth_date: new Date(1994, 0, 1),
     birth_time: '14:30',
     birth_location: 'New York, USA',
   };
@@ -143,6 +147,29 @@ describe('profileSchema', () => {
         });
         expect(result.success).toBe(true);
       });
+    });
+  });
+
+  describe('buildProfileUpdatePayload', () => {
+    it('should convert empty optional profile fields to null', () => {
+      const payload = buildProfileUpdatePayload({
+        ...validData,
+        birth_date: null,
+        birth_time: '',
+        birth_location: '',
+      });
+
+      expect(payload.birth_date).toBeNull();
+      expect(payload.birth_time).toBeNull();
+      expect(payload.birth_location).toBeNull();
+    });
+
+    it('should keep filled optional profile fields intact', () => {
+      const payload = buildProfileUpdatePayload(validData);
+
+      expect(payload.birth_date).toBe('1994-01-01');
+      expect(payload.birth_time).toBe('14:30');
+      expect(payload.birth_location).toBe('New York, USA');
     });
   });
 });
