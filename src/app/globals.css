@@ -4,97 +4,144 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   LYRA METACARE — "Cosmic Wellness Light" Design System
+   ============================================================
+   Filosofia: Elegância cósmica luminosa que funde precisão
+   clínica com a mística transcendente da astrologia védica.
+   ============================================================ */
+
 @layer base {
   :root {
-    --background: 182 29% 98%;
-    --foreground: 187 42% 14%;
+    /* ---- Core Surfaces ---- */
+    --background: 240 20% 98%;
+    --foreground: 240 24% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 187 42% 14%;
+    --card-foreground: 240 24% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 187 42% 14%;
+    --popover-foreground: 240 24% 10%;
 
-    --primary: 188 61% 21%;
-    --primary-foreground: 182 29% 98%;
+    /* ---- Brand Colors ---- */
+    --primary: 174 62% 40%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 180 24% 94%;
-    --secondary-foreground: 187 42% 14%;
+    --secondary: 240 15% 95%;
+    --secondary-foreground: 240 24% 10%;
 
-    --muted: 182 22% 94%;
-    --muted-foreground: 186 15% 38%;
+    --muted: 240 12% 92%;
+    --muted-foreground: 240 10% 46%;
 
-    --accent: 17 95% 66%;
-    --accent-foreground: 187 42% 14%;
+    --accent: 16 85% 61%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 182 29% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 184 19% 86%;
-    --input: 184 19% 86%;
-    --ring: 17 95% 66%;
+    /* ---- Borders & Focus ---- */
+    --border: 240 15% 90%;
+    --input: 240 15% 90%;
+    --ring: 174 62% 40%;
 
-    --chart-1: 188 61% 21%;
-    --chart-2: 17 95% 66%;
-    --chart-3: 164 54% 37%;
-    --chart-4: 201 69% 52%;
-    --chart-5: 30 84% 59%;
+    /* ---- Semantic Colors ---- */
+    --success: 160 84% 39%;
+    --success-light: 152 81% 91%;
+    --warning: 38 92% 50%;
+    --warning-light: 48 96% 89%;
+    --info: 239 84% 67%;
+    --info-light: 226 100% 94%;
+    --cosmic: 258 90% 66%;
+    --cosmic-light: 263 100% 96%;
+    --golden: 43 78% 46%;
+    --golden-light: 48 96% 95%;
 
-    --radius: 1rem;
+    /* ---- Chart Palette ---- */
+    --chart-1: 174 62% 40%;
+    --chart-2: 16 85% 61%;
+    --chart-3: 258 90% 66%;
+    --chart-4: 239 84% 67%;
+    --chart-5: 38 92% 50%;
 
-    --sidebar-background: 182 29% 98%;
-    --sidebar-foreground: 187 42% 14%;
-    --sidebar-primary: 188 61% 21%;
+    /* ---- Border Radius ---- */
+    --radius: 0.75rem;
+    --radius-sm: 0.5rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.25rem;
+    --radius-xl: 1.5rem;
+    --radius-2xl: 2rem;
+
+    /* ---- Sidebar ---- */
+    --sidebar-background: 240 20% 98%;
+    --sidebar-foreground: 240 24% 10%;
+    --sidebar-primary: 174 62% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 17 95% 66%;
-    --sidebar-accent-foreground: 187 42% 14%;
-    --sidebar-border: 184 19% 86%;
-    --sidebar-ring: 17 95% 66%;
+    --sidebar-accent: 240 15% 95%;
+    --sidebar-accent-foreground: 240 24% 10%;
+    --sidebar-border: 240 15% 90%;
+    --sidebar-ring: 174 62% 40%;
   }
 
   .dark {
-    --background: 196 45% 9%;
-    --foreground: 182 29% 98%;
+    /* ---- Core Surfaces (Dark) ---- */
+    --background: 240 24% 8%;
+    --foreground: 240 15% 95%;
 
-    --card: 196 39% 11%;
-    --card-foreground: 182 29% 98%;
+    --card: 240 22% 11%;
+    --card-foreground: 240 15% 95%;
 
-    --popover: 196 39% 11%;
-    --popover-foreground: 182 29% 98%;
+    --popover: 240 22% 11%;
+    --popover-foreground: 240 15% 95%;
 
-    --primary: 183 50% 53%;
-    --primary-foreground: 196 45% 9%;
+    /* ---- Brand Colors (Dark) ---- */
+    --primary: 174 55% 50%;
+    --primary-foreground: 240 24% 8%;
 
-    --secondary: 194 28% 17%;
-    --secondary-foreground: 182 29% 98%;
+    --secondary: 240 15% 16%;
+    --secondary-foreground: 240 15% 95%;
 
-    --muted: 194 28% 17%;
-    --muted-foreground: 186 18% 72%;
+    --muted: 240 12% 18%;
+    --muted-foreground: 240 10% 60%;
 
-    --accent: 17 88% 64%;
-    --accent-foreground: 196 45% 9%;
+    --accent: 16 80% 58%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 182 29% 98%;
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 194 28% 21%;
-    --input: 194 28% 21%;
-    --ring: 17 88% 64%;
+    /* ---- Borders & Focus (Dark) ---- */
+    --border: 240 15% 20%;
+    --input: 240 15% 20%;
+    --ring: 174 55% 50%;
 
-    --chart-1: 183 50% 53%;
-    --chart-2: 17 88% 64%;
-    --chart-3: 164 54% 44%;
-    --chart-4: 201 69% 60%;
-    --chart-5: 30 84% 66%;
+    /* ---- Semantic Colors (Dark) ---- */
+    --success: 160 70% 44%;
+    --success-light: 160 40% 15%;
+    --warning: 38 80% 50%;
+    --warning-light: 38 40% 15%;
+    --info: 239 70% 62%;
+    --info-light: 239 40% 15%;
+    --cosmic: 258 80% 62%;
+    --cosmic-light: 258 40% 15%;
+    --golden: 43 70% 50%;
+    --golden-light: 43 40% 15%;
 
-    --sidebar-background: 196 45% 9%;
-    --sidebar-foreground: 182 29% 98%;
-    --sidebar-primary: 183 50% 53%;
-    --sidebar-primary-foreground: 196 45% 9%;
-    --sidebar-accent: 194 28% 17%;
-    --sidebar-accent-foreground: 182 29% 98%;
-    --sidebar-border: 194 28% 21%;
-    --sidebar-ring: 17 88% 64%;
+    /* ---- Chart Palette (Dark) ---- */
+    --chart-1: 174 55% 50%;
+    --chart-2: 16 80% 58%;
+    --chart-3: 258 80% 62%;
+    --chart-4: 239 70% 62%;
+    --chart-5: 38 80% 50%;
+
+    /* ---- Sidebar (Dark) ---- */
+    --sidebar-background: 240 24% 8%;
+    --sidebar-foreground: 240 15% 95%;
+    --sidebar-primary: 174 55% 50%;
+    --sidebar-primary-foreground: 240 24% 8%;
+    --sidebar-accent: 240 15% 16%;
+    --sidebar-accent-foreground: 240 15% 95%;
+    --sidebar-border: 240 15% 20%;
+    --sidebar-ring: 174 55% 50%;
   }
 }
 
@@ -102,29 +149,220 @@
   * {
     @apply border-border;
   }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
-    @apply bg-background text-foreground;
-    background-image:
-      radial-gradient(
-        circle at top left,
-        rgba(255, 127, 80, 0.14),
-        transparent 32%
-      ),
-      radial-gradient(
-        circle at top right,
-        rgba(20, 77, 86, 0.16),
-        transparent 36%
-      ),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0));
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+  }
+
+  /* Accessible focus styles */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+
+  /* Respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Tabular numbers for data */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }
 
 @layer utilities {
-  .bg-coral-600 {
-    background-color: #f27a52;
+  /* ---- Gradient Text ---- */
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(174, 62%, 40%), hsl(174, 62%, 50%));
   }
 
-  .hover\:bg-coral-700:hover {
-    background-color: #d66743;
+  .text-gradient-accent {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(16, 85%, 61%), hsl(16, 85%, 71%));
   }
+
+  .text-gradient-cosmic {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(258, 90%, 66%), hsl(258, 90%, 76%));
+  }
+
+  .text-gradient-hero {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(174, 62%, 40%), hsl(16, 85%, 61%));
+  }
+
+  /* ---- Background Gradients ---- */
+  .bg-gradient-teal {
+    background-image: linear-gradient(135deg, #26a69a, #4db6ac);
+  }
+
+  .bg-gradient-coral {
+    background-image: linear-gradient(135deg, #f06543, #ff8a65);
+  }
+
+  .bg-gradient-cosmic {
+    background-image: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  }
+
+  .bg-gradient-aurora {
+    background-image: linear-gradient(135deg, #e0e7ff, #ede9fe, #fce7f3);
+  }
+
+  .bg-gradient-golden {
+    background-image: linear-gradient(135deg, #d4a017, #f0c850);
+  }
+
+  /* ---- Custom Shadows ---- */
+  .shadow-teal {
+    box-shadow: 0 4px 20px rgba(38, 166, 154, 0.15);
+  }
+
+  .shadow-coral {
+    box-shadow: 0 4px 20px rgba(240, 101, 67, 0.15);
+  }
+
+  .shadow-cosmic {
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.15);
+  }
+
+  .shadow-aurora {
+    box-shadow:
+      0 8px 32px rgba(99, 102, 241, 0.08),
+      0 4px 16px rgba(139, 92, 246, 0.06);
+  }
+
+  .shadow-golden {
+    box-shadow: 0 4px 20px rgba(212, 160, 23, 0.15);
+  }
+
+  /* ---- Glass Effect (Light) ---- */
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  /* ---- Cosmic Orb (decorative floating element) ---- */
+  .cosmic-orb {
+    @apply absolute rounded-full blur-3xl opacity-30 pointer-events-none;
+  }
+
+  /* ---- Card Highlight Border ---- */
+  .card-highlight-teal {
+    border-left: 4px solid hsl(174, 62%, 40%);
+  }
+
+  .card-highlight-coral {
+    border-left: 4px solid hsl(16, 85%, 61%);
+  }
+
+  .card-highlight-cosmic {
+    border-left: 4px solid hsl(258, 90%, 66%);
+  }
+
+  .card-highlight-golden {
+    border-left: 4px solid hsl(43, 78%, 46%);
+  }
+
+  /* ---- Skip Navigation (Accessibility) ---- */
+  .skip-nav {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-primary focus:text-primary-foreground focus:shadow-lg;
+  }
+}
+
+/* ============================================================
+   Custom Scrollbar
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(240, 15%, 85%);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(240, 15%, 75%);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: hsl(240, 15%, 25%);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: hsl(240, 15%, 35%);
+}
+
+/* ============================================================
+   React Big Calendar Theme Override
+   ============================================================ */
+.rbc-calendar {
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.rbc-header {
+  @apply py-2.5 text-sm font-semibold text-muted-foreground uppercase tracking-wider;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.rbc-today {
+  background-color: hsl(174, 62%, 40%, 0.06);
+}
+
+.rbc-event {
+  @apply rounded-lg text-xs font-medium;
+  background-color: hsl(var(--primary));
+  border: none;
+}
+
+.rbc-event:focus {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.rbc-off-range-bg {
+  background-color: hsl(var(--muted));
+}
+
+.rbc-toolbar button {
+  @apply rounded-xl border border-border px-3 py-1.5 text-sm font-medium transition-colors;
+}
+
+.rbc-toolbar button:hover {
+  background-color: hsl(var(--secondary));
+}
+
+.rbc-toolbar button.rbc-active {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
 }

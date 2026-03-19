@@ -63,6 +63,7 @@ import {
   Droplet,
   Footprints,
   TrendingUp,
+  Sparkles,
 } from 'lucide-react';
 import { OnboardingNavigationDots } from './OnboardingNavigationDots';
 import { cn } from '@/lib/utils';
@@ -70,7 +71,6 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { differenceInYears } from 'date-fns';
 import { TimeInput } from '@/components/ui/time-input';
 
-// Mapeamento de objetivos para ícones únicos e relevantes
 const goalsList = [
   { id: 'lose_weight', label: 'Perder Peso', icon: Weight },
   { id: 'gain_muscle', label: 'Ganhar Músculo', icon: Dumbbell },
@@ -101,27 +101,24 @@ const goalsList = [
   { id: 'increase_vo2max', label: 'Aumentar VO₂max', icon: TrendingUp },
   {
     id: 'meet_activity_guidelines',
-    label: 'Cumprir Diretrizes de Atividade Moderada/Vigorosa',
+    label: 'Cumprir Diretrizes de Atividade',
     icon: Activity,
   },
   {
     id: 'optimize_protein',
-    label: 'Otimizar a Ingestão Diária de Proteínas',
+    label: 'Otimizar Ingestão de Proteínas',
     icon: Utensils,
   },
   {
     id: 'manage_blood_glucose',
-    label: 'Gerenciar Picos de Glicose Pós-Prandial',
+    label: 'Gerenciar Picos de Glicose',
     icon: Droplet,
   },
 ];
 
-// --- Zod Schema ---
 const onboardingSchema = z.object({
   first_name: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres.'),
   last_name: z.string().min(2, 'O sobrenome deve ter pelo menos 2 caracteres.'),
-
-  // Campos de nascimento (Obrigatórios, exceto birth_time que é opcional)
   birth_date: z.date({ required_error: 'Data de nascimento é obrigatória.' }),
   birth_time: z
     .string()
@@ -132,8 +129,6 @@ const onboardingSchema = z.object({
       return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
     }, 'Formato de hora inválido (HH:MM).'),
   birth_location: z.string().min(3, 'Local de nascimento é obrigatório.'),
-
-  // A idade é calculada, mas mantemos a validação
   age: z.coerce
     .number()
     .min(13, 'Você deve ter pelo menos 13 anos.')
@@ -141,11 +136,8 @@ const onboardingSchema = z.object({
   gender: z.enum(['male', 'female', 'other', 'prefer_not-to-say'], {
     required_error: 'Por favor, selecione um gênero.',
   }),
-
-  // Campos Opcionais (Passos 3 e 4)
   activity_level: z.number().min(1).max(5).optional(),
-  goals: z.array(z.string()).optional(), // Tornando goals opcional, permitindo array vazio
-
+  goals: z.array(z.string()).optional(),
   consent: z.boolean().refine((val) => val === true, {
     message: 'Você deve aceitar os termos.',
   }),
@@ -153,16 +145,16 @@ const onboardingSchema = z.object({
 
 type OnboardingValues = z.infer<typeof onboardingSchema>;
 
-// O número total de passos diminuiu de 6 para 5
 const TOTAL_STEPS = 5;
 
-// Helper component for Carousel Item structure
 const OnboardingStep: React.FC<{
   children: React.ReactNode;
   className?: string;
 }> = ({ children, className }) => (
-  <CarouselItem className={cn('animate-in fade-in duration-500', className)}>
-    <Card className="min-h-[550px] flex flex-col">{children}</Card>
+  <CarouselItem className={cn('animate-fade-in', className)}>
+    <Card className="min-h-[550px] flex flex-col rounded-2xl border-border shadow-md">
+      {children}
+    </Card>
   </CarouselItem>
 );
 
@@ -182,15 +174,14 @@ export function OnboardingForm() {
       activity_level: 3,
       goals: [],
       consent: false,
-      birth_time: '12:00', // Default time
+      birth_time: '12:00',
       birth_location: '',
-      birth_date: undefined, // Usar undefined para DatePicker vazio
+      birth_date: undefined,
     },
   });
 
   const birthDate = form.watch('birth_date');
 
-  // Efeito para calcular a idade automaticamente
   React.useEffect(() => {
     if (birthDate) {
       const calculatedAge = differenceInYears(new Date(), birthDate);
@@ -198,14 +189,12 @@ export function OnboardingForm() {
     }
   }, [birthDate, form]);
 
-  // Efeito para preencher nome/sobrenome se vierem do OAuth
   React.useEffect(() => {
     if (session?.user) {
       const metadata = session.user.user_metadata;
       const currentFirstName = form.getValues('first_name');
       const currentLastName = form.getValues('last_name');
 
-      // Tenta preencher o nome se o campo estiver vazio e houver dados no metadata
       if (!currentFirstName && metadata?.first_name) {
         form.setValue('first_name', metadata.first_name, {
           shouldValidate: true,
@@ -216,7 +205,6 @@ export function OnboardingForm() {
           shouldValidate: true,
         });
       }
-      // Fallback para 'full_name' se 'first_name' e 'last_name' não existirem
       if ((!currentFirstName || !currentLastName) && metadata?.full_name) {
         const parts = metadata.full_name.split(' ');
         if (!currentFirstName && parts.length > 0) {
@@ -231,21 +219,12 @@ export function OnboardingForm() {
     }
   }, [session, form]);
 
-  // Efeito para rolar a tela para o topo após a transição do carrossel
   React.useEffect(() => {
-    if (!api) {
-      return;
-    }
-
+    if (!api) return;
     const handleScrollToTop = () => {
-      // Rola a janela do navegador para o topo da página
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-
-    // Adiciona o listener para o evento 'select' (quando o slide muda)
     api.on('select', handleScrollToTop);
-
-    // Limpeza do listener
     return () => {
       api.off('select', handleScrollToTop);
     };
@@ -272,22 +251,14 @@ export function OnboardingForm() {
     }
     setIsSubmitting(true);
 
-    // 1. Preparar dados
     const profileData = data;
-
-    // Converter birth_date para o formato DATE persistido no MySQL
     const formattedBirthDate = profileData.birth_date
       ? profileData.birth_date.toISOString().split('T')[0]
       : null;
-
-    // Garantir que a idade seja um número inteiro (smallint)
     const ageInt = Math.floor(profileData.age);
-
-    // Tratar birth_time: se for string vazia, enviar null para o DB
     const formattedBirthTime =
       profileData.birth_time === '' ? null : profileData.birth_time;
 
-    // 2. Montar o objeto de atualização
     const updatePayload = {
       first_name: profileData.first_name,
       last_name: profileData.last_name,
@@ -297,15 +268,14 @@ export function OnboardingForm() {
       goals:
         profileData.goals && profileData.goals.length > 0
           ? profileData.goals
-          : null, // Envia null se o array estiver vazio
+          : null,
       birth_date: formattedBirthDate,
-      birth_time: formattedBirthTime, // Usando o valor tratado
+      birth_time: formattedBirthTime,
       birth_location: profileData.birth_location,
       onboarding_completed: true,
       updated_at: new Date().toISOString(),
     };
 
-    // 3. Atualizar perfil no banco principal
     const { error } = await db
       .from('profiles')
       .update(updatePayload)
@@ -330,16 +300,13 @@ export function OnboardingForm() {
         <Carousel
           setApi={setApi}
           className="w-full max-w-2xl"
-          opts={{
-            // Desabilita o arrastar/swipe com o mouse/touch e, consequentemente, o teclado
-            watchDrag: false,
-          }}
+          opts={{ watchDrag: false }}
         >
           <CarouselContent>
             {/* Step 1: Welcome */}
             <OnboardingStep>
-              <CardHeader>
-                <CardTitle className="text-2xl">
+              <CardHeader className="space-y-2">
+                <CardTitle className="text-2xl font-display">
                   Bem-vindo(a) à sua Jornada
                 </CardTitle>
                 <CardDescription>
@@ -349,49 +316,53 @@ export function OnboardingForm() {
               </CardHeader>
               <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 overflow-y-auto">
                 <div className="md:col-span-2 space-y-4">
-                  <p className="text-lg text-gray-700">
+                  <p className="text-base text-foreground leading-relaxed">
                     O Lyra MetaCare usa inteligência artificial para criar um
                     plano de longevidade exclusivo para você.
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Clique em "Começar" para iniciar a configuração do seu
+                    Clique em &ldquo;Começar&rdquo; para iniciar a configuração do seu
                     perfil.
                   </p>
                 </div>
-                {/* Ícone: Coração (Verde 600) */}
                 <div className="flex justify-center items-center md:col-span-1">
-                  <Heart className="w-16 h-16 md:w-24 md:h-24 text-green-600 animate-pulse" />
+                  <div className="p-5 bg-gradient-teal rounded-2xl shadow-teal">
+                    <Sparkles className="w-12 h-12 md:w-16 md:h-16 text-white" />
+                  </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between items-center border-t pt-4">
+              <CardFooter className="flex justify-between items-center border-t border-border pt-4">
                 <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                <Button type="button" onClick={() => api?.scrollNext()}>
+                <Button
+                  type="button"
+                  onClick={() => api?.scrollNext()}
+                  className="rounded-xl bg-gradient-teal text-white shadow-teal"
+                >
                   Começar <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </CardFooter>
             </OnboardingStep>
 
-            {/* Step 2: Personal Data - Sem imagem grande, com ícones nos campos */}
+            {/* Step 2: Personal Data */}
             <OnboardingStep>
-              <CardHeader>
-                <CardTitle>Seus Dados Pessoais</CardTitle>
+              <CardHeader className="space-y-2">
+                <CardTitle className="font-display">Seus Dados Pessoais</CardTitle>
                 <CardDescription>
                   Nome, data de nascimento e gênero para personalização.
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
-                {/* Nome e Sobrenome */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <FormField
                     control={form.control}
                     name="first_name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center">
-                          <User className="h-4 w-4 mr-1 text-green-600" /> Nome
+                        <FormLabel className="flex items-center text-sm font-medium">
+                          <User className="h-4 w-4 mr-1.5 text-primary" /> Nome
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder="Seu nome" {...field} />
+                          <Input placeholder="Seu nome" className="rounded-xl" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -402,12 +373,11 @@ export function OnboardingForm() {
                     name="last_name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center">
-                          <User className="h-4 w-4 mr-1 text-green-600" />{' '}
-                          Sobrenome
+                        <FormLabel className="flex items-center text-sm font-medium">
+                          <User className="h-4 w-4 mr-1.5 text-primary" /> Sobrenome
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder="Seu sobrenome" {...field} />
+                          <Input placeholder="Seu sobrenome" className="rounded-xl" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -415,16 +385,14 @@ export function OnboardingForm() {
                   />
                 </div>
 
-                {/* Data de Nascimento, Idade e Gênero */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                   <FormField
                     control={form.control}
                     name="birth_date"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel className="mb-2 flex items-center">
-                          <Calendar className="h-4 w-4 mr-1 text-green-600" />{' '}
-                          Data de Nascimento
+                        <FormLabel className="mb-2 flex items-center text-sm font-medium">
+                          <Calendar className="h-4 w-4 mr-1.5 text-primary" /> Data de Nascimento
                         </FormLabel>
                         <FormControl>
                           <DatePicker
@@ -444,22 +412,22 @@ export function OnboardingForm() {
                     name="age"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center">
-                          <Scale className="h-4 w-4 mr-1 text-green-600" />{' '}
-                          Idade
+                        <FormLabel className="flex items-center text-sm font-medium">
+                          <Scale className="h-4 w-4 mr-1.5 text-primary" /> Idade
                         </FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             placeholder="Idade"
+                            className={cn(
+                              'rounded-xl',
+                              !!birthDate && 'bg-muted cursor-not-allowed'
+                            )}
                             {...field}
                             disabled={!!birthDate}
-                            className={cn(
-                              !!birthDate && 'bg-gray-100 cursor-not-allowed'
-                            )}
                           />
                         </FormControl>
-                        <FormDescription>
+                        <FormDescription className="text-xs">
                           Calculada automaticamente.
                         </FormDescription>
                         <FormMessage />
@@ -472,16 +440,15 @@ export function OnboardingForm() {
                     name="gender"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center">
-                          <Globe className="h-4 w-4 mr-1 text-green-600" />{' '}
-                          Gênero
+                        <FormLabel className="flex items-center text-sm font-medium">
+                          <Globe className="h-4 w-4 mr-1.5 text-primary" /> Gênero
                         </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="rounded-xl">
                               <SelectValue placeholder="Selecione..." />
                             </SelectTrigger>
                           </FormControl>
@@ -500,21 +467,19 @@ export function OnboardingForm() {
                   />
                 </div>
 
-                {/* Hora e Local de Nascimento */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <FormField
                     control={form.control}
                     name="birth_time"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1 text-green-600" /> Hora
-                          Exata (HH:MM)
+                        <FormLabel className="flex items-center text-sm font-medium">
+                          <Clock className="h-4 w-4 mr-1.5 text-cosmic" /> Hora Exata (HH:MM)
                         </FormLabel>
                         <FormControl>
                           <TimeInput placeholder="12:00" {...field} />
                         </FormControl>
-                        <FormDescription>
+                        <FormDescription className="text-xs">
                           Usado para cronobiologia. (Opcional)
                         </FormDescription>
                         <FormMessage />
@@ -526,18 +491,18 @@ export function OnboardingForm() {
                     name="birth_location"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center">
-                          <MapPin className="h-4 w-4 mr-1 text-green-600" />{' '}
-                          Local de Nascimento
+                        <FormLabel className="flex items-center text-sm font-medium">
+                          <MapPin className="h-4 w-4 mr-1.5 text-cosmic" /> Local de Nascimento
                         </FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Ex: São Paulo, SP, Brasil"
+                            className="rounded-xl"
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>
-                          Digite Cidade, Estado e País.
+                        <FormDescription className="text-xs">
+                          Cidade, Estado e País.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -545,18 +510,20 @@ export function OnboardingForm() {
                   />
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between items-center border-t pt-4">
+              <CardFooter className="flex justify-between items-center border-t border-border pt-4">
                 <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                <div className="space-x-2 flex items-center">
+                <div className="flex items-center gap-2">
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => handleNext('first_name')} // Volta para o primeiro campo obrigatório
+                    className="rounded-xl"
+                    onClick={() => api?.scrollPrev()}
                   >
                     <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                   </Button>
                   <Button
                     type="button"
+                    className="rounded-xl bg-gradient-teal text-white shadow-teal"
                     onClick={() =>
                       handleNext([
                         'first_name',
@@ -575,17 +542,18 @@ export function OnboardingForm() {
               </CardFooter>
             </OnboardingStep>
 
-            {/* Step 3: Activity Level - Centralizado e Mobile-First */}
+            {/* Step 3: Activity Level */}
             <OnboardingStep>
-              <CardHeader>
-                <CardTitle>Nível de Atividade</CardTitle>
+              <CardHeader className="space-y-2">
+                <CardTitle className="font-display">Nível de Atividade</CardTitle>
                 <CardDescription>
                   Quão ativo(a) você é no seu dia a dia?
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col items-center justify-center p-6 space-y-8 overflow-y-auto">
-                {/* Ícone: Haltere (Verde 600) - Centralizado */}
-                <Dumbbell className="w-16 h-16 md:w-24 md:h-24 text-green-600/70" />
+                <div className="p-5 bg-gradient-coral rounded-2xl shadow-coral">
+                  <Dumbbell className="w-12 h-12 md:w-16 md:h-16 text-white" />
+                </div>
 
                 <div className="w-full max-w-md">
                   <FormField
@@ -593,19 +561,20 @@ export function OnboardingForm() {
                     name="activity_level"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-lg font-semibold block text-center mb-4">
-                          Nível Atual: {field.value}
+                        <FormLabel className="text-lg font-display font-semibold block text-center mb-4">
+                          Nível Atual:{' '}
+                          <span className="text-primary">{field.value}</span>
                         </FormLabel>
                         <FormControl>
                           <Slider
                             min={1}
                             max={5}
                             step={1}
-                            value={[field.value || 3]} // Usando 3 como fallback visual
+                            value={[field.value || 3]}
                             onValueChange={(vals) => field.onChange(vals[0])}
                           />
                         </FormControl>
-                        <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                        <div className="flex justify-between text-xs text-muted-foreground mt-3">
                           <span>Sedentário (1)</span>
                           <span>Muito Ativo (5)</span>
                         </div>
@@ -615,19 +584,20 @@ export function OnboardingForm() {
                   />
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between items-center border-t pt-4">
+              <CardFooter className="flex justify-between items-center border-t border-border pt-4">
                 <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                <div className="space-x-2 flex items-center">
+                <div className="flex items-center gap-2">
                   <Button
                     type="button"
                     variant="outline"
+                    className="rounded-xl"
                     onClick={() => api?.scrollPrev()}
                   >
                     <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                   </Button>
                   <Button
                     type="button"
-                    // Não precisamos validar activity_level aqui, pois ele é opcional
+                    className="rounded-xl bg-gradient-teal text-white shadow-teal"
                     onClick={() => api?.scrollNext()}
                   >
                     Próximo <ArrowRight className="ml-2 h-4 w-4" />
@@ -636,10 +606,10 @@ export function OnboardingForm() {
               </CardFooter>
             </OnboardingStep>
 
-            {/* Step 4: Goals - Ícones únicos e layout organizado */}
+            {/* Step 4: Goals */}
             <OnboardingStep>
-              <CardHeader>
-                <CardTitle>Seus Objetivos</CardTitle>
+              <CardHeader className="space-y-2">
+                <CardTitle className="font-display">Seus Objetivos</CardTitle>
                 <CardDescription>
                   O que você espera alcançar? (Opcional)
                 </CardDescription>
@@ -659,7 +629,7 @@ export function OnboardingForm() {
                               control={form.control}
                               name="goals"
                               render={({ field }) => (
-                                <FormItem className="flex flex-row items-center space-x-3 space-y-0 border p-3 rounded-lg hover:bg-green-50 transition-colors cursor-pointer">
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0 border border-border rounded-xl p-3 hover:bg-secondary transition-colors cursor-pointer">
                                   <FormControl>
                                     <Checkbox
                                       checked={field.value?.includes(item.id)}
@@ -677,8 +647,8 @@ export function OnboardingForm() {
                                       }}
                                     />
                                   </FormControl>
-                                  <div className="flex items-center space-x-3">
-                                    <GoalIcon className="h-5 w-5 text-green-600 flex-shrink-0" />
+                                  <div className="flex items-center space-x-2.5">
+                                    <GoalIcon className="h-4 w-4 text-primary flex-shrink-0" />
                                     <FormLabel className="font-medium cursor-pointer text-sm">
                                       {item.label}
                                     </FormLabel>
@@ -694,19 +664,20 @@ export function OnboardingForm() {
                   />
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between items-center border-t pt-4">
+              <CardFooter className="flex justify-between items-center border-t border-border pt-4">
                 <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                <div className="space-x-2 flex items-center">
+                <div className="flex items-center gap-2">
                   <Button
                     type="button"
                     variant="outline"
+                    className="rounded-xl"
                     onClick={() => api?.scrollPrev()}
                   >
                     <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                   </Button>
                   <Button
                     type="button"
-                    // Não precisamos validar goals aqui, pois ele é opcional
+                    className="rounded-xl bg-gradient-teal text-white shadow-teal"
                     onClick={() => api?.scrollNext()}
                   >
                     Próximo <ArrowRight className="ml-2 h-4 w-4" />
@@ -717,20 +688,21 @@ export function OnboardingForm() {
 
             {/* Step 5: Consent & Submit */}
             <OnboardingStep>
-              <CardHeader>
-                <CardTitle>Quase lá!</CardTitle>
+              <CardHeader className="space-y-2">
+                <CardTitle className="font-display">Quase lá!</CardTitle>
                 <CardDescription>
                   Revise e confirme para finalizar.
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col items-center justify-center p-6 space-y-6 overflow-y-auto">
-                {/* Ícone: ShieldCheck (Verde 600) */}
-                <ShieldCheck className="w-16 h-16 md:w-24 md:h-24 text-green-600/70" />
+                <div className="p-5 bg-gradient-cosmic rounded-2xl shadow-cosmic">
+                  <ShieldCheck className="w-12 h-12 md:w-16 md:h-16 text-white" />
+                </div>
                 <FormField
                   control={form.control}
                   name="consent"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 w-full max-w-md">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-border p-4 w-full max-w-md">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
@@ -742,7 +714,7 @@ export function OnboardingForm() {
                           Eu concordo com o processamento dos meus dados para
                           personalizar minha experiência.
                         </FormLabel>
-                        <FormDescription>
+                        <FormDescription className="text-xs">
                           Você pode gerenciar seus dados nas configurações a
                           qualquer momento.
                         </FormDescription>
@@ -752,17 +724,22 @@ export function OnboardingForm() {
                   )}
                 />
               </CardContent>
-              <CardFooter className="flex justify-between items-center border-t pt-4">
+              <CardFooter className="flex justify-between items-center border-t border-border pt-4">
                 <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                <div className="space-x-2 flex items-center">
+                <div className="flex items-center gap-2">
                   <Button
                     type="button"
                     variant="outline"
+                    className="rounded-xl"
                     onClick={() => api?.scrollPrev()}
                   >
                     <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
                   </Button>
-                  <Button type="submit" disabled={isSubmitting}>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="rounded-xl bg-gradient-coral text-white shadow-coral"
+                  >
                     {isSubmitting ? 'Salvando...' : 'Finalizar'}
                   </Button>
                 </div>

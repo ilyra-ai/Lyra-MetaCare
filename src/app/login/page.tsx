@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Lock, Mail, Sparkles, User } from 'lucide-react';
 
 export default function LoginPage() {
   const { session, db } = useAuth();
@@ -68,107 +69,191 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(20,77,86,0.22),_transparent_40%),linear-gradient(160deg,#f4fbfb_0%,#fff6f1_48%,#f3fbf9_100%)] p-4">
-      <div className="max-w-md w-full p-8 space-y-8 bg-white/90 backdrop-blur-xl rounded-[1.75rem] shadow-[0_24px_80px_rgba(20,77,86,0.16)] border border-white/70 transition-all duration-500">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
-          Acesse sua Jornada
-        </h2>
-        <div className="flex justify-center mb-6">
-          <svg
-            className="h-10 w-10 text-teal-700"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-            />
-          </svg>
+    <div className="relative min-h-screen flex items-center justify-center bg-background p-4 overflow-hidden">
+      {/* Decorative orbs */}
+      <div className="cosmic-orb w-80 h-80 bg-primary/15 -top-20 -left-20" />
+      <div className="cosmic-orb w-64 h-64 bg-accent/15 -bottom-16 right-0" />
+      <div className="cosmic-orb w-48 h-48 bg-cosmic/15 top-1/3 right-1/4" />
+
+      <div className="relative z-10 max-w-md w-full">
+        {/* Card */}
+        <div className="rounded-2xl border border-border bg-card p-8 shadow-lg animate-scale-in">
+          {/* Logo */}
+          <div className="flex flex-col items-center gap-3 mb-8">
+            <div className="p-3 bg-gradient-teal rounded-xl shadow-teal">
+              <Sparkles className="h-7 w-7 text-white" />
+            </div>
+            <h1 className="text-2xl font-display font-bold text-gradient-hero">
+              lyra
+            </h1>
+            <p className="text-sm text-muted-foreground text-center">
+              Acesse sua jornada de bem-estar
+            </p>
+          </div>
+
+          <Tabs defaultValue="login" className="space-y-6">
+            <TabsList className="grid grid-cols-2 bg-secondary rounded-xl">
+              <TabsTrigger value="login" className="rounded-lg">
+                Entrar
+              </TabsTrigger>
+              <TabsTrigger value="register" className="rounded-lg">
+                Criar Conta
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Login Tab */}
+            <TabsContent value="login" className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="login-email" className="text-sm font-medium">
+                  Email
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="login-email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    className="pl-10 rounded-xl"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="login-password" className="text-sm font-medium">
+                  Senha
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="login-password"
+                    type="password"
+                    placeholder="Sua senha"
+                    className="pl-10 rounded-xl"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                  />
+                </div>
+              </div>
+              <Button
+                className="w-full rounded-xl h-11 bg-gradient-teal text-white shadow-teal hover:shadow-md"
+                disabled={submitting}
+                onClick={handleLogin}
+              >
+                {submitting ? 'Entrando...' : 'Entrar'}
+              </Button>
+              <p className="text-center text-xs text-muted-foreground">
+                Esqueceu sua senha?{' '}
+                <button
+                  type="button"
+                  className="text-primary hover:underline font-medium"
+                >
+                  Recuperar
+                </button>
+              </p>
+            </TabsContent>
+
+            {/* Register Tab */}
+            <TabsContent value="register" className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="register-first-name"
+                    className="text-sm font-medium"
+                  >
+                    Nome
+                  </Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="register-first-name"
+                      placeholder="Nome"
+                      className="pl-10 rounded-xl"
+                      value={registerFirstName}
+                      onChange={(e) => setRegisterFirstName(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="register-last-name"
+                    className="text-sm font-medium"
+                  >
+                    Sobrenome
+                  </Label>
+                  <Input
+                    id="register-last-name"
+                    placeholder="Sobrenome"
+                    className="rounded-xl"
+                    value={registerLastName}
+                    onChange={(e) => setRegisterLastName(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="register-email"
+                  className="text-sm font-medium"
+                >
+                  Email
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="register-email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    className="pl-10 rounded-xl"
+                    value={registerEmail}
+                    onChange={(e) => setRegisterEmail(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="register-password"
+                  className="text-sm font-medium"
+                >
+                  Senha
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="register-password"
+                    type="password"
+                    placeholder="Crie uma senha"
+                    className="pl-10 rounded-xl"
+                    value={registerPassword}
+                    onChange={(e) => setRegisterPassword(e.target.value)}
+                  />
+                </div>
+              </div>
+              <Button
+                className="w-full rounded-xl h-11 bg-gradient-coral text-white shadow-coral hover:shadow-md"
+                disabled={submitting}
+                onClick={handleRegister}
+              >
+                {submitting ? 'Criando...' : 'Criar Conta'}
+              </Button>
+            </TabsContent>
+          </Tabs>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">
+                Lyra MetaCare
+              </span>
+            </div>
+          </div>
+
+          <p className="text-center text-xs text-muted-foreground">
+            Seu Bem-Estar Orquestrado
+          </p>
         </div>
-
-        <Tabs defaultValue="login" className="space-y-6">
-          <TabsList className="grid grid-cols-2 bg-teal-50">
-            <TabsTrigger value="login">Entrar</TabsTrigger>
-            <TabsTrigger value="register">Criar conta</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="login" className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="login-email">Email</Label>
-              <Input
-                id="login-email"
-                type="email"
-                value={loginEmail}
-                onChange={(event) => setLoginEmail(event.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="login-password">Senha</Label>
-              <Input
-                id="login-password"
-                type="password"
-                value={loginPassword}
-                onChange={(event) => setLoginPassword(event.target.value)}
-              />
-            </div>
-            <Button
-              className="w-full bg-teal-700 hover:bg-teal-800"
-              disabled={submitting}
-              onClick={handleLogin}
-            >
-              Entrar
-            </Button>
-          </TabsContent>
-
-          <TabsContent value="register" className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="register-first-name">Nome</Label>
-                <Input
-                  id="register-first-name"
-                  value={registerFirstName}
-                  onChange={(event) => setRegisterFirstName(event.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="register-last-name">Sobrenome</Label>
-                <Input
-                  id="register-last-name"
-                  value={registerLastName}
-                  onChange={(event) => setRegisterLastName(event.target.value)}
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="register-email">Email</Label>
-              <Input
-                id="register-email"
-                type="email"
-                value={registerEmail}
-                onChange={(event) => setRegisterEmail(event.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="register-password">Senha</Label>
-              <Input
-                id="register-password"
-                type="password"
-                value={registerPassword}
-                onChange={(event) => setRegisterPassword(event.target.value)}
-              />
-            </div>
-            <Button
-              className="w-full bg-coral-600 hover:bg-coral-700"
-              disabled={submitting}
-              onClick={handleRegister}
-            >
-              Criar conta
-            </Button>
-          </TabsContent>
-        </Tabs>
       </div>
     </div>
   );
