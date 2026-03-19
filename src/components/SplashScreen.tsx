@@ -1,35 +1,47 @@
 'use client';
 
-import React from 'react';
-import { Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
-// Applying Brand Guide: Lyra Teal (Primary) and Warm Coral (Secondary)
+import { Sparkles } from 'lucide-react';
 
 export function SplashScreen() {
   return (
-    <div
-      className={cn(
-        'flex flex-col items-center justify-center min-h-screen overflow-hidden', // Added overflow-hidden to prevent scrollbars
-        // Soft gradient reflecting the brand identity (Teal to transparent)
-        'bg-gradient-to-b from-teal-50 to-rose-50 dark:from-gray-900 dark:to-gray-800',
-        'animate-in fade-in duration-1000' // Animation: fadeIn 1s ease-in
-      )}
-    >
-      {/* Logo Animado com deslocamento para a esquerda */}
-      <div className="p-6 rounded-3xl shadow-xl bg-white/80 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl transform -translate-x-4 md:-translate-x-8">
-        <Loader2 className="h-16 w-16 text-teal-600 dark:text-teal-400 animate-spin" />
+    <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+      {/* Decorative orbs */}
+      <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+      <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+      <div className="cosmic-orb w-32 h-32 bg-cosmic/20 top-1/3 right-1/4" />
+
+      {/* Logo */}
+      <div className="relative animate-fade-in">
+        <div className="p-5 rounded-2xl bg-gradient-teal shadow-teal animate-glow-pulse">
+          <Sparkles className="h-12 w-12 text-white" />
+        </div>
       </div>
 
-      {/* Slogan */}
-      <h1 className="mt-8 text-4xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight text-center">
-        Sua Jornada para Longevidade
+      {/* Brand name */}
+      <h1 className="mt-6 text-3xl font-display font-bold text-gradient-hero animate-fade-in-up">
+        lyra
       </h1>
 
-      {/* Barra de progresso circular (Loader2 serves this purpose visually) */}
-      <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-        Carregando dados...
+      {/* Tagline */}
+      <p className="mt-3 text-sm text-muted-foreground animate-fade-in-up">
+        Seu Bem-Estar Orquestrado
       </p>
+
+      {/* Loading indicator */}
+      <div className="mt-8 flex gap-1.5 animate-fade-in">
+        <span
+          className="h-2 w-2 rounded-full bg-primary animate-pulse-slow"
+          style={{ animationDelay: '0ms' }}
+        />
+        <span
+          className="h-2 w-2 rounded-full bg-primary animate-pulse-slow"
+          style={{ animationDelay: '300ms' }}
+        />
+        <span
+          className="h-2 w-2 rounded-full bg-primary animate-pulse-slow"
+          style={{ animationDelay: '600ms' }}
+        />
+      </div>
     </div>
   );
 }
