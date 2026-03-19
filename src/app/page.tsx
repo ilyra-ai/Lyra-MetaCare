@@ -10,11 +10,16 @@ import { Dashboard } from '@/components/dashboard/dashboard';
 import { QuickScanFAB } from '@/components/dashboard/QuickScanFAB';
 import { LandingPage } from '@/components/landing/LandingPage';
 
-// Define a type for the user profile for better type safety
 type UserProfile = {
   first_name: string | null;
-  // Add other profile fields as needed
 };
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Bom dia';
+  if (hour < 18) return 'Boa tarde';
+  return 'Boa noite';
+}
 
 export default function Home() {
   const { session, db } = useAuth();
@@ -49,7 +54,6 @@ export default function Home() {
     }
   }, [db, session]);
 
-  // Para visitantes sem sessão, a landing deve ser a primeira experiência.
   if (!session) {
     return <LandingPage />;
   }
@@ -62,16 +66,23 @@ export default function Home() {
   }
 
   const firstName = profile?.first_name || 'Usuário';
+  const greeting = getGreeting();
 
   return (
-    <div className="flex min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-50 via-white to-orange-50 dark:from-slate-950 dark:via-slate-900 dark:to-teal-950 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex min-h-screen bg-background">
       <Sidebar />
       <div className="flex flex-col flex-1 z-10">
         <Header />
-        <main className="flex-1 p-4 sm:p-6 md:p-8">
-          <h1 className="text-4xl font-extrabold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent animate-pulse-slow">
-            Olá, {firstName}!
-          </h1>
+        <main id="main-content" className="flex-1 p-4 sm:p-6 md:p-8">
+          <div className="mb-8">
+            <h1 className="text-2xl sm:text-3xl font-display font-bold text-foreground">
+              {greeting},{' '}
+              <span className="text-gradient-hero">{firstName}</span>!
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Aqui está o resumo do seu bem-estar hoje.
+            </p>
+          </div>
           <Dashboard />
         </main>
         <MadeWithIlyra />
