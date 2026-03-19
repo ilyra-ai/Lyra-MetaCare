@@ -31,11 +31,17 @@ export function OnboardingNavigationDots({
     <div
       key={index}
       className={cn(
-        'h-2 w-2 rounded-full transition-all duration-300',
-        index === current - 1 ? 'bg-green-600 w-6' : 'bg-gray-300'
+        'h-2 rounded-full transition-all duration-300',
+        index === current - 1
+          ? 'bg-primary w-6'
+          : 'bg-muted w-2 hover:bg-muted-foreground/30'
       )}
     />
   ));
 
-  return <div className="flex space-x-2">{dots}</div>;
+  return (
+    <div className="flex items-center space-x-1.5" role="tablist" aria-label="Progresso do onboarding">
+      {dots}
+    </div>
+  );
 }
