@@ -152,6 +152,14 @@ export const navigationItems: NavigationItem[] = [
     section: 'AdministraÃ§Ã£o',
     adminOnly: true,
   },
+  {
+    href: '/admin/page-builder',
+    label: 'Construtor UI',
+    description: 'GestÃ£o de design visual e blocos da landing page e login.',
+    icon: LayoutDashboard,
+    section: 'AdministraÃ§Ã£o',
+    adminOnly: true,
+  },
 ];
 
 export const pageMetaByPath = Object.fromEntries(
