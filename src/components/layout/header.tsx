@@ -5,7 +5,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   Bell,
   ChevronRight,
-  Command,
   LogOut,
   MessageCircleHeart,
   Search,
@@ -157,7 +156,7 @@ export function Header() {
                   className="h-[18px] w-[18px] text-muted-foreground"
                   strokeWidth={1.8}
                 />
-                <span>Buscar páginas, fluxos e ações</span>
+                <span>Buscar pÃ¡ginas, fluxos e aÃ§Ãµes</span>
               </span>
               <span className="rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm">
                 Ctrl K
@@ -171,7 +170,7 @@ export function Header() {
               variant="ghost"
               size="icon"
               className="relative h-11 w-11 rounded-full"
-              aria-label="Notificações"
+              aria-label="NotificaÃ§Ãµes"
             >
               <Bell
                 className="h-[18px] w-[18px] text-foreground"
@@ -198,7 +197,7 @@ export function Header() {
                   type="button"
                   variant="ghost"
                   className="h-12 rounded-full px-2 md:px-3"
-                  aria-label="Abrir menu do usuário"
+                  aria-label="Abrir menu do usuÃ¡rio"
                 >
                   <Avatar className="h-10 w-10 border border-white shadow-sm">
                     <AvatarImage
@@ -263,7 +262,7 @@ export function Header() {
                   onClick={() => router.push('/profile')}
                 >
                   <Settings2 className="mr-2 h-[18px] w-[18px]" />
-                  Preferências
+                  PreferÃªncias
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -280,7 +279,7 @@ export function Header() {
       </header>
 
       <CommandDialog open={commandOpen} onOpenChange={setCommandOpen}>
-        <CommandInput placeholder="Buscar por página, fluxo ou atalho..." />
+        <CommandInput placeholder="Buscar por pÃ¡gina, fluxo ou atalho..." />
         <CommandList>
           <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
           {Object.entries(navigation).map(([section, items]) => (

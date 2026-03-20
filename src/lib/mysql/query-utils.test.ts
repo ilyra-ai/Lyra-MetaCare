@@ -9,7 +9,6 @@ import {
   parseJsonQueryParam,
 } from './query-utils';
 import { AppSession } from '@/types/app-session';
-import { TableName } from './table-config';
 
 describe('query-utils', () => {
   const adminSession: AppSession = {
@@ -40,7 +39,7 @@ describe('query-utils', () => {
     });
 
     it('should return undefined for an unknown table', () => {
-      const config = getTableConfig('unknown_table' as any);
+      const config = getTableConfig('unknown_table');
       expect(config).toBeUndefined();
     });
   });
@@ -51,8 +50,8 @@ describe('query-utils', () => {
     });
 
     it('should throw for an unknown table', () => {
-      expect(() => assertKnownTable('unknown_table' as any)).toThrow(
-        'Tabela não suportada pela camada MySQL: unknown_table'
+      expect(() => assertKnownTable('unknown_table')).toThrow(
+        'Tabela nÃ£o suportada pela camada MySQL: unknown_table'
       );
     });
   });
@@ -64,7 +63,7 @@ describe('query-utils', () => {
 
     it('should throw for an invalid column', () => {
       expect(() => assertColumn('profiles', 'invalid_col')).toThrow(
-        'Coluna não permitida em profiles: invalid_col'
+        'Coluna nÃ£o permitida em profiles: invalid_col'
       );
     });
   });
@@ -94,7 +93,7 @@ describe('query-utils', () => {
 
     it('should throw when reading private tables without a session', () => {
       expect(() => ensureCanReadTable('profiles', null)).toThrow(
-        'Sessão autenticada obrigatória para esta consulta.'
+        'SessÃ£o autenticada obrigatÃ³ria para esta consulta.'
       );
     });
   });
@@ -102,7 +101,7 @@ describe('query-utils', () => {
   describe('ensureCanWriteTable', () => {
     it('should throw if session is null', () => {
       expect(() => ensureCanWriteTable('profiles', null)).toThrow(
-        'Sessão autenticada obrigatória para esta operação.'
+        'SessÃ£o autenticada obrigatÃ³ria para esta operaÃ§Ã£o.'
       );
     });
 
