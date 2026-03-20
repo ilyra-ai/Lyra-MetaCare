@@ -6,6 +6,11 @@ import { Eye, LayoutTemplate, Save, Sparkles, UserCircle, Code2, PenTool, Layout
 import { Button } from '@/components/ui/button';
 import {
   Card,
+import { Eye, LayoutTemplate, Save, Sparkles, UserCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -73,6 +78,17 @@ export function PageBuilderContent() {
             : e instanceof Error
               ? e.message
               : 'Ocorreu um erro crítico durante a persistência do layout.',
+      toast.success('Páginas atualizadas com sucesso!', {
+        description: 'As alterações na landing page e login já estão ao vivo.',
+      });
+    } catch (e) {
+      toast.error('Não foi possível salvar', {
+        description:
+          e instanceof SyntaxError
+            ? 'O JSON inserido é inválido'
+            : e instanceof Error
+              ? e.message
+              : 'Erro desconhecido',
       });
     } finally {
       setSaving(false);
@@ -94,6 +110,10 @@ export function PageBuilderContent() {
           <Sparkles className="h-8 w-8 animate-pulse text-primary" />
         </div>
         <p className="text-sm font-medium text-muted-foreground animate-pulse">Carregando motores de renderização adaptativa...</p>
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center rounded-[36px] border border-dashed border-border/80 bg-white/50">
+        <Sparkles className="h-8 w-8 animate-pulse text-primary/50" />
       </div>
     );
   }
@@ -116,6 +136,23 @@ export function PageBuilderContent() {
             >
               <UserCircle className="mr-2 h-4 w-4" />
               Hub de Autenticação
+    <Card className="overflow-hidden border-white/80 bg-white/70 shadow-[0_26px_80px_-42px_rgba(22,21,48,0.1)] rounded-[32px]">
+      <Tabs defaultValue="landing">
+        <div className="border-b border-border/60 bg-white/40 px-6 py-4">
+          <TabsList className="grid w-full max-w-md grid-cols-2 rounded-2xl p-1 shadow-sm">
+            <TabsTrigger
+              value="landing"
+              className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            >
+              <LayoutTemplate className="mr-2 h-4 w-4" />
+              Landing Page
+            </TabsTrigger>
+            <TabsTrigger
+              value="login"
+              className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            >
+              <UserCircle className="mr-2 h-4 w-4" />
+              Tela de Login
             </TabsTrigger>
           </TabsList>
         </div>
@@ -153,6 +190,25 @@ export function PageBuilderContent() {
                 smoothScrolling: true,
                 padding: { top: 16, bottom: 16 },
               }}
+          className="m-0 p-6 space-y-4 animate-fade-in"
+        >
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">
+                Editor de Layout em JSON (Landing)
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                O JSON Data Builder permite ao administrador controle estrito e
+                total da página modificando propriedades e features do painel em
+                tempo real.
+              </p>
+            </div>
+
+            <textarea
+              className="w-full h-[500px] rounded-xl border border-input bg-background px-3 py-2 text-sm font-mono shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              value={landingJson}
+              onChange={(e) => setLandingJson(e.target.value)}
+              spellCheck={false}
             />
           </div>
         </TabsContent>
@@ -190,10 +246,27 @@ export function PageBuilderContent() {
                 smoothScrolling: true,
                 padding: { top: 16, bottom: 16 },
               }}
+          className="m-0 p-6 space-y-4 animate-fade-in"
+        >
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">
+                Editor de Layout em JSON (Login)
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Modifique o design da página de autenticação na íntegra editando
+                a configuração JSON raiz.
+              </p>
+            </div>
+
+            <textarea
+              className="w-full h-[500px] rounded-xl border border-input bg-background px-3 py-2 text-sm font-mono shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              value={loginJson}
+              onChange={(e) => setLoginJson(e.target.value)}
+              spellCheck={false}
             />
           </div>
         </TabsContent>
-
         <CardFooter className="flex items-center justify-between border-t border-border/60 bg-white/40 p-6 backdrop-blur-md">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 text-sm font-medium text-foreground">
@@ -201,6 +274,12 @@ export function PageBuilderContent() {
               <span>As alterações refletirão globalmente e em tempo real.</span>
             </div>
             <span className="text-xs text-muted-foreground pl-6">O motor de IA otimizará a entrega dos componentes via CDN Edge.</span>
+        <CardFooter className="flex items-center justify-between border-t border-border/60 bg-white/50 p-6">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Eye className="h-4 w-4" />
+            <span>
+              O conteúdo refletirá instantaneamente nas rotas públicas.
+            </span>
           </div>
           <Button
             onClick={handleSave}
@@ -219,9 +298,15 @@ export function PageBuilderContent() {
                 Publicar Arquitetura
               </>
             )}
+            className="rounded-full shadow-teal"
+          >
+            <Save className="mr-2 h-4 w-4" />
+            {saving ? 'Aplicando mágica...' : 'Salvar Arquitetura Visual'}
           </Button>
         </CardFooter>
       </Tabs>
     </Card>
   );
 }
+}
+

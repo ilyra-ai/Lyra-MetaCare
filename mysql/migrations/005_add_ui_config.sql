@@ -6,6 +6,9 @@ CREATE TABLE IF NOT EXISTS `ui_config` (
   `updated_by` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
   CONSTRAINT `fk_ui_config_updated_by` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `updated_by` CHAR(36) NULL,
+  CONSTRAINT `fk_ui_config_updated_by` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT IGNORE INTO `ui_config` (`id`, `landing_data`, `login_data`)
 VALUES (
