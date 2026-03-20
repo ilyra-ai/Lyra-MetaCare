@@ -47,8 +47,8 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] Layout raiz principal refeito.
 - [x] Shell do app principal refeito.
 - [~] Componentes UI base amplamente reestilizados, ainda com alguns acabamentos e revisoes pendentes.
-- [~] Landing page reescrita estruturalmente e em ajuste fino de atmosfera, aguardando validacao tecnica final.
-- [~] Login reescrito estruturalmente e em ajuste fino de atmosfera, aguardando validacao tecnica final.
+- [x] Landing page reescrita estruturalmente e em ajuste fino de atmosfera, aguardando validacao tecnica final.
+- [x] Login reescrito estruturalmente e em ajuste fino de atmosfera, aguardando validacao tecnica final.
 - [ ] Dashboard principal revisado contra a nova direcao astrologica moderna + IA.
 - [ ] Demais modulos do paciente finalizados no novo padrao.
 - [ ] Modulos de billing finalizados no novo padrao.
@@ -119,13 +119,13 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 
 ### Bloco imediato 2 - direcao visual central corrigida pelo usuario
 
-- [~] Reescrever `src/components/landing/LandingPage.tsx` do zero.
-- [~] Reescrever `src/app/login/page.tsx` do zero.
-- [ ] Garantir que a narrativa visual nao pareca clinica.
-- [ ] Garantir linguagem de astrologia moderna, toque esoterico sofisticado e fusao com modelos de IA.
-- [ ] Garantir que a landing pareca premium, luminosa, linda, delicada e inovadora.
-- [ ] Garantir que o login acompanhe exatamente a mesma identidade.
-- [ ] Validar types, lint e format.
+- [x] Reescrever `src/components/landing/LandingPage.tsx` do zero.
+- [x] Reescrever `src/app/login/page.tsx` do zero.
+- [x] Garantir que a narrativa visual nao pareca clinica.
+- [x] Garantir linguagem de astrologia moderna, toque esoterico sofisticado e fusao com modelos de IA.
+- [x] Garantir que a landing pareca premium, luminosa, linda, delicada e inovadora.
+- [x] Garantir que o login acompanhe exatamente a mesma identidade.
+- [x] Validar types, lint e format.
 - [ ] Entregar bloco landing + auth validado para commit manual do usuario.
 
 ## Checklist integral de execucao por fases
@@ -234,8 +234,8 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 
 ### Fase 7 - Landing e Auth
 
-- [~] `src/components/landing/LandingPage.tsx`
-- [~] `src/app/login/page.tsx`
+- [x] `src/components/landing/LandingPage.tsx`
+- [x] `src/app/login/page.tsx`
 
 ### Fase 8 - Finalizacao
 
@@ -265,6 +265,7 @@ npm run check:types
 - 2026-03-20 3: navigation, header, query-utils.test e PlanBadge receberam correcoes tecnicas e de linguagem.
 - 2026-03-20 4: `src/components/landing/LandingPage.tsx` foi reescrita com direcao clara, astral, luminosa e sem promessas falsas; nesta etapa entrou em ajuste fino para ficar mais fofa, amigavel e acolhedora.
 - 2026-03-20 5: `src/app/login/page.tsx` foi reescrita em layout split, mantendo auth real e adicionando linguagem visual mais suave e acolhedora; falta validacao tecnica final antes de marcar como concluida.
+- 2026-03-20 6: `src/components/landing/LandingPage.tsx` e `src/app/login/page.tsx` validadas para types, lint e format com sucesso.
 
 ## Politica obrigatoria de commit e push
 
