@@ -62,3 +62,11 @@ Import trace for requested module:
 ./src/app/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
 [  582760ms] [ERROR] ./src/components/landing/LandingPage.tsx
 Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx' @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  617229ms] [ERROR] ./src/components/landing/LandingPage.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx' @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  685399ms] [ERROR] ./src/components/landing/LandingPage.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx'
+
+Import trace for requested module:
+./src/components/landing/LandingPage.tsx
+./src/app/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49

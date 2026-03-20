@@ -1,24 +1,32 @@
 'use client';
 
-import { useAuth } from '@/context/AuthContext';
+import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
 import {
   ArrowRight,
   Bot,
   Eye,
   EyeOff,
-  Heart,
   Lock,
   Mail,
   MoonStar,
   Sparkles,
   User,
+  Zap,
 } from 'lucide-react';
 
+import { useAuth } from '@/context/AuthContext';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -49,7 +57,7 @@ export default function LoginPage() {
     return null;
   }
 
-  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
+  async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitMode('login');
 
@@ -67,11 +75,11 @@ export default function LoginPage() {
       return;
     }
 
-    toast.success('Boas-vindas de volta. Sua jornada foi aberta com sucesso.');
+    toast.success('Que bom te receber de novo.');
     router.push('/');
-  };
+  }
 
-  const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
+  async function handleRegister(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitMode('register');
 
@@ -91,12 +99,12 @@ export default function LoginPage() {
       return;
     }
 
-    toast.success('Conta criada com sucesso. Vamos preparar a sua jornada.');
+    toast.success('Conta criada com sucesso. Vamos abrir sua jornada.');
     router.push('/');
-  };
+  }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,hsl(var(--background)),#ffffff_45%,#fcfbff_100%)] text-foreground">
+    <main className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,hsl(var(--background)),#ffffff_48%,#fcfbff_100%)] text-foreground">
       <div className="pointer-events-none absolute inset-0">
         <div className="cosmic-orb left-[-8rem] top-[-4rem] h-80 w-80 bg-primary/16" />
         <div className="cosmic-orb right-[-5rem] top-20 h-72 w-72 bg-cosmic/16" />
@@ -105,190 +113,117 @@ export default function LoginPage() {
 
       <div className="relative z-10 mx-auto grid min-h-screen max-w-7xl items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1.02fr_0.98fr] lg:px-8 lg:py-10">
         <section className="order-2 lg:order-1">
-          <div className="mx-auto max-w-2xl rounded-[36px] border border-white/70 bg-white/70 p-6 shadow-[0_26px_80px_-42px_rgba(22,21,48,0.3)] backdrop-blur-2xl sm:p-8 lg:p-10">
-            <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary shadow-sm">
-              <Sparkles className="mr-2 h-3.5 w-3.5" />
-              um espaco clarinho, cosmico e acolhedor
-            </Badge>
+          <Card className="overflow-hidden rounded-[36px] border-white/80 bg-white/74 shadow-[0_26px_80px_-42px_rgba(22,21,48,0.3)]">
+            <CardHeader className="pb-5">
+              <Badge className="w-fit rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary shadow-sm">
+                <Sparkles className="mr-2 h-3.5 w-3.5" />
+                uma entrada mais doce, clara e acolhedora
+              </Badge>
+              <CardTitle className="max-w-2xl text-4xl leading-tight sm:text-5xl">
+                Que bom te ver por aqui.
+                <span className="mt-2 block text-gradient-aurora">
+                  Sua orbita Lyra esta pronta para receber voce.
+                </span>
+              </CardTitle>
+              <CardDescription className="max-w-2xl text-base leading-8 sm:text-lg">
+                Esta tela foi redesenhada para parecer mais harmoniosa,
+                organizada e carinhosa: menos dureza visual, mais respiro, mais
+                vontade de entrar e continuar a jornada.
+              </CardDescription>
+            </CardHeader>
 
-            <h1 className="mt-6 font-display text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
-              Que bom te ver por aqui.
-              <span className="mt-2 block text-gradient-aurora">
-                A sua orbita Lyra espera por voce.
-              </span>
-            </h1>
-
-            <p className="mt-5 max-w-xl text-base leading-8 text-muted-foreground sm:text-lg">
-              Entre no seu cantinho cosmico para acompanhar sinais, ciclos,
-              planos guiados por IA e uma rotina visualmente mais leve, bonita e
-              gostosa de usar.
-            </p>
-
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <article className="rounded-[28px] border border-primary/12 bg-[linear-gradient(145deg,rgba(49,155,142,0.12),rgba(255,255,255,0.95))] p-5 shadow-sm">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/80 text-primary shadow-sm">
-                  <MoonStar className="h-5 w-5" />
-                </div>
-                <h2 className="mt-4 font-display text-xl font-semibold text-foreground">
-                  Seu ritual digital
-                </h2>
-                <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                  Um visual luminoso para acompanhar sua energia, seus ciclos e
-                  os pequenos ajustes que fazem diferenca ao longo da semana.
-                </p>
-              </article>
-
-              <article className="rounded-[28px] border border-cosmic/12 bg-[linear-gradient(145deg,rgba(139,92,246,0.12),rgba(255,255,255,0.95))] p-5 shadow-sm">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/80 text-cosmic shadow-sm">
-                  <Bot className="h-5 w-5" />
-                </div>
-                <h2 className="mt-4 font-display text-xl font-semibold text-foreground">
-                  IA com presenca gentil
-                </h2>
-                <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                  A tecnologia entra para organizar, orientar e apoiar, sem
-                  roubar a delicadeza da experiencia.
-                </p>
-              </article>
-            </div>
-
-            <div className="mt-6 rounded-[28px] border border-accent/12 bg-[linear-gradient(145deg,rgba(240,101,67,0.11),rgba(255,255,255,0.96))] p-5 shadow-sm">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/85 text-accent shadow-sm">
-                  <Heart className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-                    mensagem da casa
-                  </p>
-                  <p className="mt-2 font-display text-2xl font-semibold text-foreground">
-                    Beleza, clareza e acolhimento tambem sao parte do cuidado.
+            <CardContent className="grid gap-4 sm:grid-cols-3">
+              {[
+                {
+                  icon: MoonStar,
+                  title: 'Atmosfera clara',
+                  description:
+                    'A experiencia visual foi puxada para um tema luminoso e sereno.',
+                },
+                {
+                  icon: Bot,
+                  title: 'IA com delicadeza',
+                  description:
+                    'Tecnologia presente para orientar sem pesar o ambiente.',
+                },
+                {
+                  icon: Zap,
+                  title: 'Fluxo organizado',
+                  description:
+                    'Entrar, criar conta e seguir para a jornada com menos atrito.',
+                },
+              ].map((item) => (
+                <div
+                  key={item.title}
+                  className="rounded-[28px] border border-border/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,255,255,0.78))] p-5 shadow-sm"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-muted text-foreground">
+                    <item.icon className="h-5 w-5" />
+                  </div>
+                  <p className="mt-4 font-display text-xl font-semibold text-foreground">
+                    {item.title}
                   </p>
                   <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                    A Lyra foi pensada para unir profundidade simbolica,
-                    inteligencia aplicada e uma atmosfera suave o suficiente
-                    para voce querer voltar todos os dias.
+                    {item.description}
                   </p>
                 </div>
-              </div>
-            </div>
-          </div>
+              ))}
+            </CardContent>
+
+            <CardFooter className="flex-col items-start gap-3 border-t border-border/70 pt-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+                Lyra MetaCare
+              </p>
+              <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+                Um espaco para unir simbolismo, tecnologia e bem-estar em uma
+                experiencia mais bonita e facil de habitar.
+              </p>
+            </CardFooter>
+          </Card>
         </section>
 
         <section className="order-1 lg:order-2">
-          <div className="mx-auto w-full max-w-xl rounded-[36px] border border-white/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.9),rgba(255,255,255,0.72))] p-6 shadow-[0_30px_90px_-46px_rgba(22,21,48,0.34)] backdrop-blur-2xl sm:p-8">
-            <div className="mb-8 flex flex-col items-center text-center">
+          <Card className="mx-auto w-full max-w-xl rounded-[36px] border-white/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.92),rgba(255,255,255,0.76))] shadow-[0_30px_90px_-46px_rgba(22,21,48,0.34)]">
+            <CardHeader className="items-center text-center">
               <div className="flex h-16 w-16 items-center justify-center rounded-[24px] bg-gradient-teal text-white shadow-teal">
                 <Sparkles className="h-7 w-7" />
               </div>
               <p className="mt-4 font-display text-3xl font-bold lowercase text-gradient-hero">
                 lyra
               </p>
-              <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
-                Entre para continuar sua jornada ou crie sua conta para abrir um
-                novo mapa de contexto com a gente.
-              </p>
-            </div>
+              <CardTitle className="text-3xl">
+                Entre ou crie sua conta com calma.
+              </CardTitle>
+              <CardDescription className="max-w-sm text-sm leading-7">
+                Tudo aqui foi reorganizado para ficar mais fluido, mais fofo e
+                mais convidativo, sem perder o rigor do fluxo real de auth.
+              </CardDescription>
+            </CardHeader>
 
-            <Tabs defaultValue="login" className="space-y-6">
-              <TabsList className="grid h-auto grid-cols-2 rounded-[20px] border border-border/70 bg-white/85 p-1 shadow-sm">
-                <TabsTrigger value="login" className="rounded-[16px]">
-                  Entrar
-                </TabsTrigger>
-                <TabsTrigger value="register" className="rounded-[16px]">
-                  Criar conta
-                </TabsTrigger>
-              </TabsList>
+            <CardContent>
+              <Tabs defaultValue="login" className="space-y-6">
+                <TabsList className="grid h-auto grid-cols-2 rounded-[20px] border border-border/70 bg-white/88 p-1 shadow-sm">
+                  <TabsTrigger value="login" className="rounded-[16px]">
+                    Entrar
+                  </TabsTrigger>
+                  <TabsTrigger value="register" className="rounded-[16px]">
+                    Criar conta
+                  </TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="login" className="space-y-5">
-                <form className="space-y-5" onSubmit={handleLogin}>
-                  <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
-                    <div className="relative">
-                      <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        id="login-email"
-                        type="email"
-                        autoComplete="email"
-                        value={loginEmail}
-                        onChange={(event) => setLoginEmail(event.target.value)}
-                        className="pl-11"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-3">
-                      <Label htmlFor="login-password">Senha</Label>
-                      <button
-                        type="button"
-                        className="text-xs font-medium text-primary transition-colors hover:text-primary/80"
-                      >
-                        Esqueceu a senha?
-                      </button>
-                    </div>
-                    <div className="relative">
-                      <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        id="login-password"
-                        type={showLoginPassword ? 'text' : 'password'}
-                        autoComplete="current-password"
-                        value={loginPassword}
-                        onChange={(event) =>
-                          setLoginPassword(event.target.value)
-                        }
-                        className="pl-11 pr-12"
-                      />
-                      <button
-                        type="button"
-                        aria-label={
-                          showLoginPassword
-                            ? 'Ocultar senha de login'
-                            : 'Mostrar senha de login'
-                        }
-                        onClick={() =>
-                          setShowLoginPassword((current) => !current)
-                        }
-                        className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                      >
-                        {showLoginPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="w-full"
-                    disabled={
-                      submitMode === 'login' ||
-                      loginEmail.trim().length === 0 ||
-                      loginPassword.trim().length === 0
-                    }
-                  >
-                    {submitMode === 'login' ? 'Entrando...' : 'Entrar na Lyra'}
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </form>
-              </TabsContent>
-
-              <TabsContent value="register" className="space-y-5">
-                <form className="space-y-5" onSubmit={handleRegister}>
-                  <div className="grid gap-5 sm:grid-cols-2">
+                <TabsContent value="login" className="space-y-5">
+                  <form className="space-y-5" onSubmit={handleLogin}>
                     <div className="space-y-2">
-                      <Label htmlFor="register-first-name">Nome</Label>
+                      <Label htmlFor="login-email">Email</Label>
                       <div className="relative">
-                        <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                          id="register-first-name"
-                          autoComplete="given-name"
-                          value={registerFirstName}
+                          id="login-email"
+                          type="email"
+                          autoComplete="email"
+                          value={loginEmail}
                           onChange={(event) =>
-                            setRegisterFirstName(event.target.value)
+                            setLoginEmail(event.target.value)
                           }
                           className="pl-11"
                         />
@@ -296,102 +231,176 @@ export default function LoginPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="register-last-name">Sobrenome</Label>
-                      <Input
-                        id="register-last-name"
-                        autoComplete="family-name"
-                        value={registerLastName}
-                        onChange={(event) =>
-                          setRegisterLastName(event.target.value)
-                        }
-                      />
+                      <Label htmlFor="login-password">Senha</Label>
+                      <div className="relative">
+                        <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          id="login-password"
+                          type={showLoginPassword ? 'text' : 'password'}
+                          autoComplete="current-password"
+                          value={loginPassword}
+                          onChange={(event) =>
+                            setLoginPassword(event.target.value)
+                          }
+                          className="pl-11 pr-12"
+                        />
+                        <button
+                          type="button"
+                          aria-label={
+                            showLoginPassword
+                              ? 'Ocultar senha de login'
+                              : 'Mostrar senha de login'
+                          }
+                          onClick={() =>
+                            setShowLoginPassword((current) => !current)
+                          }
+                          className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        >
+                          {showLoginPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="register-email">Email</Label>
-                    <div className="relative">
-                      <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        id="register-email"
-                        type="email"
-                        autoComplete="email"
-                        value={registerEmail}
-                        onChange={(event) =>
-                          setRegisterEmail(event.target.value)
-                        }
-                        className="pl-11"
-                      />
+                    <Button
+                      type="submit"
+                      size="lg"
+                      className="w-full"
+                      disabled={
+                        submitMode === 'login' ||
+                        loginEmail.trim().length === 0 ||
+                        loginPassword.trim().length === 0
+                      }
+                    >
+                      {submitMode === 'login'
+                        ? 'Entrando...'
+                        : 'Entrar na Lyra'}
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </form>
+                </TabsContent>
+
+                <TabsContent value="register" className="space-y-5">
+                  <form className="space-y-5" onSubmit={handleRegister}>
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="register-first-name">Nome</Label>
+                        <div className="relative">
+                          <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                          <Input
+                            id="register-first-name"
+                            autoComplete="given-name"
+                            value={registerFirstName}
+                            onChange={(event) =>
+                              setRegisterFirstName(event.target.value)
+                            }
+                            className="pl-11"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="register-last-name">Sobrenome</Label>
+                        <Input
+                          id="register-last-name"
+                          autoComplete="family-name"
+                          value={registerLastName}
+                          onChange={(event) =>
+                            setRegisterLastName(event.target.value)
+                          }
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="register-password">Senha</Label>
-                    <div className="relative">
-                      <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        id="register-password"
-                        type={showRegisterPassword ? 'text' : 'password'}
-                        autoComplete="new-password"
-                        value={registerPassword}
-                        onChange={(event) =>
-                          setRegisterPassword(event.target.value)
-                        }
-                        className="pl-11 pr-12"
-                      />
-                      <button
-                        type="button"
-                        aria-label={
-                          showRegisterPassword
-                            ? 'Ocultar senha de cadastro'
-                            : 'Mostrar senha de cadastro'
-                        }
-                        onClick={() =>
-                          setShowRegisterPassword((current) => !current)
-                        }
-                        className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                      >
-                        {showRegisterPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
+                    <div className="space-y-2">
+                      <Label htmlFor="register-email">Email</Label>
+                      <div className="relative">
+                        <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          id="register-email"
+                          type="email"
+                          autoComplete="email"
+                          value={registerEmail}
+                          onChange={(event) =>
+                            setRegisterEmail(event.target.value)
+                          }
+                          className="pl-11"
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  <Button
-                    type="submit"
-                    size="lg"
-                    variant="accent"
-                    className="w-full"
-                    disabled={
-                      submitMode === 'register' ||
-                      registerFirstName.trim().length === 0 ||
-                      registerLastName.trim().length === 0 ||
-                      registerEmail.trim().length === 0 ||
-                      registerPassword.trim().length === 0
-                    }
-                  >
-                    {submitMode === 'register'
-                      ? 'Criando sua conta...'
-                      : 'Criar minha conta'}
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
+                    <div className="space-y-2">
+                      <Label htmlFor="register-password">Senha</Label>
+                      <div className="relative">
+                        <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          id="register-password"
+                          type={showRegisterPassword ? 'text' : 'password'}
+                          autoComplete="new-password"
+                          value={registerPassword}
+                          onChange={(event) =>
+                            setRegisterPassword(event.target.value)
+                          }
+                          className="pl-11 pr-12"
+                        />
+                        <button
+                          type="button"
+                          aria-label={
+                            showRegisterPassword
+                              ? 'Ocultar senha de cadastro'
+                              : 'Mostrar senha de cadastro'
+                          }
+                          onClick={() =>
+                            setShowRegisterPassword((current) => !current)
+                          }
+                          className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        >
+                          {showRegisterPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
 
-            <div className="mt-8 rounded-[24px] border border-border/70 bg-white/80 px-5 py-4 text-center shadow-sm">
+                    <Button
+                      type="submit"
+                      size="lg"
+                      variant="accent"
+                      className="w-full"
+                      disabled={
+                        submitMode === 'register' ||
+                        registerFirstName.trim().length === 0 ||
+                        registerLastName.trim().length === 0 ||
+                        registerEmail.trim().length === 0 ||
+                        registerPassword.trim().length === 0
+                      }
+                    >
+                      {submitMode === 'register'
+                        ? 'Criando sua conta...'
+                        : 'Criar minha conta'}
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+
+            <CardFooter className="flex-col items-start gap-3 border-t border-border/70 pt-6">
               <p className="text-xs font-semibold uppercase tracking-[0.26em] text-muted-foreground">
-                Lyra MetaCare
+                entrada organizada
               </p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Seu bem-estar orquestrado com astrologia moderna, IA e um tema
-                claro feito para acolher.
+              <p className="text-sm leading-7 text-muted-foreground">
+                Sem atalhos vazios, sem botao sem funcao e sem ruido visual
+                desnecessario. Apenas o fluxo real, com mais beleza e
+                acolhimento.
               </p>
-            </div>
-          </div>
+            </CardFooter>
+          </Card>
         </section>
       </div>
     </main>
