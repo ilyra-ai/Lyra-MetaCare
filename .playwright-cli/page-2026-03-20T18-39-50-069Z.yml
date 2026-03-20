@@ -1,0 +1,288 @@
+- generic [active] [ref=e1]:
+  - link "Pular para o conteúdo principal" [ref=e2] [cursor=pointer]:
+    - /url: "#conteudo-principal"
+  - alert [ref=e3]
+  - button "Open Next.js Dev Tools" [ref=e9] [cursor=pointer]:
+    - img [ref=e10]
+  - generic [ref=e14]:
+    - banner [ref=e15]:
+      - generic [ref=e16]:
+        - button "Voltar ao topo da landing" [ref=e17] [cursor=pointer]:
+          - img [ref=e19]
+          - generic [ref=e21]:
+            - generic [ref=e22]: lyra
+            - generic [ref=e23]: astrologia + IA
+        - navigation [ref=e24]:
+          - link "Recursos" [ref=e25] [cursor=pointer]:
+            - /url: "#recursos"
+          - link "Fluxo" [ref=e26] [cursor=pointer]:
+            - /url: "#ritual"
+          - link "Planos" [ref=e27] [cursor=pointer]:
+            - /url: "#planos"
+          - link "FAQ" [ref=e28] [cursor=pointer]:
+            - /url: "#faq"
+        - generic [ref=e29]:
+          - button "Entrar" [ref=e30] [cursor=pointer]
+          - button "Comecar agora" [ref=e31] [cursor=pointer]
+    - main [ref=e32]:
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - img [ref=e37]
+            - text: astrologia moderna, IA e um tema clarinho para respirar
+          - heading "Um cantinho cosmico para o seu bem-estar ficar mais leve, lindo e inteligente." [level=1] [ref=e39]:
+            - text: Um cantinho cosmico para o seu
+            - generic [ref=e40]: bem-estar ficar mais leve,
+            - text: lindo e inteligente.
+          - paragraph [ref=e41]: "A Lyra MetaCare transforma sinais, ciclos e contexto em uma experiencia clara e acolhedora: astrologia vedica contemporanea, IA aplicada com criterio e um visual etereo pensado para acompanhar voce com suavidade no dia a dia."
+          - generic [ref=e42]:
+            - button "Abrir minha jornada" [ref=e43] [cursor=pointer]:
+              - text: Abrir minha jornada
+              - img
+            - link "Explorar a experiencia" [ref=e44] [cursor=pointer]:
+              - /url: "#recursos"
+              - text: Explorar a experiencia
+              - img
+          - generic [ref=e45]:
+            - paragraph [ref=e47]: tema claro como linguagem principal
+            - paragraph [ref=e49]: IA e contexto astral na mesma camada
+            - paragraph [ref=e51]: uma experiencia mais gentil para voltar sempre
+        - generic [ref=e54]:
+          - generic [ref=e55]:
+            - generic [ref=e56]:
+              - paragraph [ref=e57]: painel luminoso
+              - paragraph [ref=e58]: Mapa vivo do seu momento
+            - generic [ref=e59]: IA + simbolismo
+          - generic [ref=e60]:
+            - generic [ref=e61]:
+              - paragraph [ref=e62]: leitura atual
+              - paragraph [ref=e63]: Energia em alinhamento
+              - paragraph [ref=e64]: Corpo, foco e ritmo em conversa com sua agenda e com o contexto do dia, sem sobrecarregar sua leitura.
+            - generic [ref=e65]:
+              - paragraph [ref=e66]: camada astral
+              - paragraph [ref=e67]: Janela simbolica ativa
+              - paragraph [ref=e68]: A interface transforma ciclos e transitos em contexto legivel, delicado e facil de sentir.
+            - generic [ref=e69]:
+              - generic [ref=e70]:
+                - generic [ref=e71]: plano guiado
+                - generic [ref=e72]: sem atmosfera escura
+              - paragraph [ref=e73]: Uma estetica clara, fofa e sofisticada para um produto profundo.
+              - paragraph [ref=e74]: A experiencia foi redesenhada para parecer premium, delicada, intuitiva, acolhedora e tecnologica ao mesmo tempo.
+      - generic [ref=e76]:
+        - generic [ref=e77]:
+          - generic [ref=e78]: Arquitetura da experiencia
+          - heading "Astrologia moderna, camadas claras e uma presenca mais afetuosa." [level=2] [ref=e79]
+          - paragraph [ref=e80]: "O desenho da Lyra agora comunica exatamente o que o produto e: um ecossistema de bem-estar, leitura simbolica e suporte inteligente, com uma atmosfera mais calorosa e convidativa."
+        - generic [ref=e81]:
+          - article [ref=e82]:
+            - img [ref=e84]
+            - heading "IA gentil, presente e contextual" [level=3] [ref=e94]
+            - paragraph [ref=e95]: A Lyra cruza sinais do seu perfil, da sua rotina e dos seus fluxos de energia para sugerir proximos passos com delicadeza, sem ficar invasiva.
+          - article [ref=e96]:
+            - img [ref=e98]
+            - heading "Astrologia vedica com sensibilidade contemporanea" [level=3] [ref=e101]
+            - paragraph [ref=e102]: Transitos, ciclos e leitura simbolica entram como contexto vivo da experiencia, com leveza visual e linguagem clara.
+          - article [ref=e103]:
+            - img [ref=e105]
+            - heading "Sinais do corpo em uma leitura carinhosa" [level=3] [ref=e107]
+            - paragraph [ref=e108]: Sono, energia, ritmo, historico e metas passam a conversar na mesma interface, com menos friccao mental e mais conforto visual.
+          - article [ref=e109]:
+            - img [ref=e111]
+            - heading "Agenda guiada para uma rotina mais leve" [level=3] [ref=e113]
+            - paragraph [ref=e114]: Agendamentos, rituais, checkpoints e acompanhamento ficam em uma trilha suave, clara e gostosa de acompanhar no dia a dia.
+          - article [ref=e115]:
+            - img [ref=e117]
+            - heading "Planos personalizados com profundidade real" [level=3] [ref=e121]
+            - paragraph [ref=e122]: Cada assinatura libera profundidade real de IA, monitoramento, metas e automacoes, sem prometer mais do que o produto entrega.
+          - article [ref=e123]:
+            - img [ref=e125]
+            - heading "Privacidade, estrutura e confianca" [level=3] [ref=e127]
+            - paragraph [ref=e128]: A plataforma foi desenhada com auth local, matriz de capacidades, billing real e base preparada para crescer sem perder consistencia.
+      - generic [ref=e131]:
+        - article [ref=e132]:
+          - img [ref=e134]
+          - heading "Catalogo comercial real" [level=3] [ref=e136]
+          - paragraph [ref=e137]: "A landing espelha os planos publicados pela propria base do projeto: Free, Meta e Care."
+        - article [ref=e138]:
+          - img [ref=e140]
+          - heading "Camada de IA ja integrada no produto" [level=3] [ref=e150]
+          - paragraph [ref=e151]: O app possui rotas reais para plano gerado por IA, chat assistido e leituras contextuais orientadas por perfil.
+        - article [ref=e152]:
+          - img [ref=e154]
+          - heading "Arquitetura preparada para operacao" [level=3] [ref=e156]
+          - paragraph [ref=e157]: Auth local, billing Stripe, MySQL, matriz de entitlements e App Router ja fazem parte da estrutura funcional do produto.
+        - article [ref=e158]:
+          - img [ref=e160]
+          - heading "Estetica clara, doce e simbolica" [level=3] [ref=e162]
+          - paragraph [ref=e163]: A identidade visual foi direcionada para astrologia moderna luminosa, com mais acolhimento visual e sem pesar o ambiente.
+      - generic [ref=e165]:
+        - generic [ref=e166]:
+          - generic [ref=e167]: Fluxo de entrada
+          - heading "Uma jornada guiada para sincronizar sinais, simbolos e cuidado." [level=2] [ref=e168]
+        - generic [ref=e169]:
+          - article [ref=e170]:
+            - generic [ref=e171]:
+              - generic [ref=e172]: "01"
+              - img [ref=e174]
+            - heading "Abra o seu mapa de contexto" [level=3] [ref=e176]
+            - paragraph [ref=e177]: Cadastre seu perfil, seus dados base e seus marcadores de rotina para a Lyra montar uma leitura inicial acolhedora e util.
+          - article [ref=e178]:
+            - generic [ref=e179]:
+              - generic [ref=e180]: "02"
+              - img [ref=e182]
+            - heading "Conecte sinais e preferencias" [level=3] [ref=e185]
+            - paragraph [ref=e186]: Wearables, metas e historico entram como camadas reais da sua experiencia e alimentam a orquestracao com mais precisao.
+          - article [ref=e187]:
+            - generic [ref=e188]:
+              - generic [ref=e189]: "03"
+              - img [ref=e191]
+            - heading "Receba orientacao com IA" [level=3] [ref=e193]
+            - paragraph [ref=e194]: O plano, o chat e os proximos passos passam a refletir seu momento atual com linguagem clara, bonita e facil de acompanhar.
+          - article [ref=e195]:
+            - generic [ref=e196]:
+              - generic [ref=e197]: "04"
+              - img [ref=e199]
+            - heading "Volte sempre para recalibrar" [level=3] [ref=e201]
+            - paragraph [ref=e202]: "A jornada nao e estatica: ela se ajusta conforme seus sinais, seus ciclos e o nivel do plano ativo, sempre com suavidade visual."
+      - generic [ref=e204]:
+        - generic [ref=e205]:
+          - generic [ref=e206]: Catalogo publicado
+          - heading "Planos reais do produto, com uma apresentacao mais bonita e clara." [level=2] [ref=e207]
+          - paragraph [ref=e208]: Estes cards seguem a estrutura comercial semeada no proprio projeto. A camada visual foi elevada, mas o catalogo continua fiel ao que a aplicacao ja reconhece.
+        - generic [ref=e209]:
+          - article [ref=e210]:
+            - generic [ref=e212]:
+              - paragraph [ref=e213]: Sem custo para comecar
+              - heading "Free" [level=3] [ref=e214]
+              - paragraph [ref=e215]: Base confiavel para comecar com clareza.
+              - paragraph [ref=e216]: Acesso essencial ao ecossistema Lyra MetaCare, com visao inicial dos indicadores, perfil e automacoes fundamentais.
+            - generic [ref=e217]:
+              - generic [ref=e218]:
+                - generic [ref=e219]: R$ 0,00
+                - generic [ref=e220]: /mes
+              - paragraph [ref=e221]: "Anual: R$ 0,00"
+            - list [ref=e222]:
+              - listitem [ref=e223]:
+                - img [ref=e225]
+                - generic [ref=e227]: Entrada no ecossistema Lyra
+              - listitem [ref=e228]:
+                - img [ref=e230]
+                - generic [ref=e232]: Visao inicial do dashboard
+              - listitem [ref=e233]:
+                - img [ref=e235]
+                - generic [ref=e237]: Perfil e configuracao basica
+              - listitem [ref=e238]:
+                - img [ref=e240]
+                - generic [ref=e242]: Base segura para onboarding real
+            - button "Entrar para ver minha jornada" [ref=e243] [cursor=pointer]:
+              - text: Entrar para ver minha jornada
+              - img
+          - article [ref=e244]:
+            - generic [ref=e246]: plano em destaque
+            - generic [ref=e247]:
+              - paragraph [ref=e248]: Mais inteligencia e automacao
+              - heading "Meta" [level=3] [ref=e249]
+              - paragraph [ref=e250]: Mais profundidade, dados e automacao orientada por IA.
+              - paragraph [ref=e251]: Plano intermediario com capacidades expandidas de IA, conexao de dispositivos e observabilidade operacional para rotina continua.
+            - generic [ref=e252]:
+              - generic [ref=e253]:
+                - generic [ref=e254]: R$ 79,90
+                - generic [ref=e255]: /mes
+              - paragraph [ref=e256]: "Anual: R$ 790,00"
+            - list [ref=e257]:
+              - listitem [ref=e258]:
+                - img [ref=e260]
+                - generic [ref=e262]: Mais profundidade de IA na rotina
+              - listitem [ref=e263]:
+                - img [ref=e265]
+                - generic [ref=e267]: Conexao com dispositivos e sinais
+              - listitem [ref=e268]:
+                - img [ref=e270]
+                - generic [ref=e272]: Observabilidade mais rica do uso
+              - listitem [ref=e273]:
+                - img [ref=e275]
+                - generic [ref=e277]: Experiencia continua e escalavel
+            - button "Entrar para ver minha jornada" [ref=e278] [cursor=pointer]:
+              - text: Entrar para ver minha jornada
+              - img
+          - article [ref=e279]:
+            - generic [ref=e281]:
+              - paragraph [ref=e282]: Experiencia integral Lyra
+              - heading "Care" [level=3] [ref=e283]
+              - paragraph [ref=e284]: A experiencia mais completa e integral do produto.
+              - paragraph [ref=e285]: Plano premium com a matriz completa de capacidades, maxima profundidade de acompanhamento e governanca plena da experiencia.
+            - generic [ref=e286]:
+              - generic [ref=e287]:
+                - generic [ref=e288]: R$ 249,90
+                - generic [ref=e289]: /mes
+              - paragraph [ref=e290]: "Anual: R$ 2.490,00"
+            - list [ref=e291]:
+              - listitem [ref=e292]:
+                - img [ref=e294]
+                - generic [ref=e296]: Matriz completa de capacidades
+              - listitem [ref=e297]:
+                - img [ref=e299]
+                - generic [ref=e301]: Maior profundidade de acompanhamento
+              - listitem [ref=e302]:
+                - img [ref=e304]
+                - generic [ref=e306]: Camada premium de operacao e controle
+              - listitem [ref=e307]:
+                - img [ref=e309]
+                - generic [ref=e311]: Jornada mais ampla dentro do produto
+            - button "Entrar para ver minha jornada" [ref=e312] [cursor=pointer]:
+              - text: Entrar para ver minha jornada
+              - img
+      - generic [ref=e314]:
+        - generic [ref=e315]:
+          - generic [ref=e316]: FAQ
+          - heading "Perguntas importantes antes de entrar no seu novo cantinho Lyra." [level=2] [ref=e317]
+          - paragraph [ref=e318]: Esta secao foi escrita para esclarecer a proposta real do produto e alinhar expectativa, arquitetura e identidade visual.
+        - generic [ref=e319]:
+          - heading "A Lyra e um app de astrologia ou um app com IA?" [level=3] [ref=e321]:
+            - button "A Lyra e um app de astrologia ou um app com IA?" [ref=e322] [cursor=pointer]:
+              - text: A Lyra e um app de astrologia ou um app com IA?
+              - img [ref=e323]
+          - heading "O visual claro vai continuar sendo prioridade?" [level=3] [ref=e326]:
+            - button "O visual claro vai continuar sendo prioridade?" [ref=e327] [cursor=pointer]:
+              - text: O visual claro vai continuar sendo prioridade?
+              - img [ref=e328]
+          - heading "Os planos mostrados aqui sao reais?" [level=3] [ref=e331]:
+            - button "Os planos mostrados aqui sao reais?" [ref=e332] [cursor=pointer]:
+              - text: Os planos mostrados aqui sao reais?
+              - img [ref=e333]
+          - heading "A IA depende de um fluxo externo escondido?" [level=3] [ref=e336]:
+            - button "A IA depende de um fluxo externo escondido?" [ref=e337] [cursor=pointer]:
+              - text: A IA depende de um fluxo externo escondido?
+              - img [ref=e338]
+          - heading "A landing promete recursos que nao existem?" [level=3] [ref=e341]:
+            - button "A landing promete recursos que nao existem?" [ref=e342] [cursor=pointer]:
+              - text: A landing promete recursos que nao existem?
+              - img [ref=e343]
+      - generic [ref=e347]:
+        - generic [ref=e348]: Orbita final
+        - heading "Entre em uma experiencia clara, astral, acolhedora e realmente conectada ao produto." [level=2] [ref=e349]
+        - paragraph [ref=e350]: A proposta aqui e simbolismo contemporaneo, delicadeza visual, inteligencia aplicada e uma interface clara o suficiente para convidar voce a voltar todos os dias com prazer.
+        - generic [ref=e351]:
+          - button "Abrir Lyra agora" [ref=e352] [cursor=pointer]:
+            - text: Abrir Lyra agora
+            - img
+          - link "Ver catalogo comercial" [ref=e353] [cursor=pointer]:
+            - /url: "#planos"
+    - contentinfo [ref=e354]:
+      - generic [ref=e355]:
+        - generic [ref=e356]:
+          - img [ref=e358]
+          - generic [ref=e360]:
+            - paragraph [ref=e361]: lyra
+            - paragraph [ref=e362]: metacare
+        - generic [ref=e363]:
+          - link "Recursos" [ref=e364] [cursor=pointer]:
+            - /url: "#recursos"
+          - link "Fluxo" [ref=e365] [cursor=pointer]:
+            - /url: "#ritual"
+          - link "Planos" [ref=e366] [cursor=pointer]:
+            - /url: "#planos"
+          - link "FAQ" [ref=e367] [cursor=pointer]:
+            - /url: "#faq"
+        - paragraph [ref=e368]: Feito com intencao pela iLyra AI.
+  - region "Notifications alt+T"

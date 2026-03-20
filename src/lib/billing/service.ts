@@ -149,7 +149,7 @@ async function getPlanCatalogRows() {
   );
 }
 
-async function getPublicPlanCatalog() {
+export async function getPublicPlanCatalog() {
   const rows = await getPlanCatalogRows();
   return rows
     .filter((row) => row.is_public === 1)
