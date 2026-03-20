@@ -352,7 +352,8 @@ export function AdminContentManagement() {
           <AlertDialogHeader>
             <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação removerá o item "{itemToDelete?.name}" permanentemente.
+              Esta ação removerá o item &quot;{itemToDelete?.name}&quot;
+              permanentemente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

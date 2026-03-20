@@ -51,7 +51,7 @@ describe('query-utils', () => {
 
     it('should throw for an unknown table', () => {
       expect(() => assertKnownTable('unknown_table')).toThrow(
-        'Tabela nÃ£o suportada pela camada MySQL: unknown_table'
+        'Tabela não suportada pela camada MySQL: unknown_table'
       );
     });
   });
@@ -63,7 +63,7 @@ describe('query-utils', () => {
 
     it('should throw for an invalid column', () => {
       expect(() => assertColumn('profiles', 'invalid_col')).toThrow(
-        'Coluna nÃ£o permitida em profiles: invalid_col'
+        'Coluna não permitida em profiles: invalid_col'
       );
     });
   });
@@ -93,7 +93,7 @@ describe('query-utils', () => {
 
     it('should throw when reading private tables without a session', () => {
       expect(() => ensureCanReadTable('profiles', null)).toThrow(
-        'SessÃ£o autenticada obrigatÃ³ria para esta consulta.'
+        'Sessão autenticada obrigatória para esta consulta.'
       );
     });
   });
@@ -101,7 +101,7 @@ describe('query-utils', () => {
   describe('ensureCanWriteTable', () => {
     it('should throw if session is null', () => {
       expect(() => ensureCanWriteTable('profiles', null)).toThrow(
-        'SessÃ£o autenticada obrigatÃ³ria para esta operaÃ§Ã£o.'
+        'Sessão autenticada obrigatória para esta operação.'
       );
     });
 
