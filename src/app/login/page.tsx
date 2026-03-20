@@ -33,9 +33,33 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 type SubmitMode = 'login' | 'register' | null;
 
+type LoginDataConfig = {
+  hero?: {
+    title: string;
+    subtitle: string;
+  };
+};
+
 export default function LoginPage() {
   const { session, db } = useAuth();
   const router = useRouter();
+
+  const [uiConfig, setUiConfig] = useState<LoginDataConfig | null>(null);
+
+  useEffect(() => {
+    async function fetchConfig() {
+      try {
+        const res = await fetch('/api/public/ui-config');
+        const data = await res.json();
+        if (data.config && data.config.login) {
+          setUiConfig(data.config.login);
+        }
+      } catch (err) {
+        console.error('Falha ao obter config', err);
+      }
+    }
+    void fetchConfig();
+  }, []);
 
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -102,6 +126,12 @@ export default function LoginPage() {
     toast.success('Conta criada com sucesso. Vamos abrir sua jornada.');
     router.push('/');
   }
+
+  const heroTitle =
+    uiConfig?.hero?.title || 'Entre ou crie sua conta com calma.';
+  const heroSubtitle =
+    uiConfig?.hero?.subtitle ||
+    'Tudo aqui foi reorganizado para ficar mais fluido, mais fofo e mais convidativo, sem perder o rigor do fluxo real de auth.';
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,hsl(var(--background)),#ffffff_48%,#fcfbff_100%)] text-foreground">
@@ -191,12 +221,9 @@ export default function LoginPage() {
               <p className="mt-4 font-display text-3xl font-bold lowercase text-gradient-hero">
                 lyra
               </p>
-              <CardTitle className="text-3xl">
-                Entre ou crie sua conta com calma.
-              </CardTitle>
-              <CardDescription className="max-w-sm text-sm leading-7">
-                Tudo aqui foi reorganizado para ficar mais fluido, mais fofo e
-                mais convidativo, sem perder o rigor do fluxo real de auth.
+              <CardTitle className="text-3xl">{heroTitle}</CardTitle>
+              <CardDescription className="max-w-sm text-sm leading-7 whitespace-pre-line">
+                {heroSubtitle}
               </CardDescription>
             </CardHeader>
 
