@@ -1,0 +1,6 @@
+.next
+.playwright-cli
+node_modules
+output
+venv
+tsconfig.tsbuildinfo

@@ -10,594 +10,732 @@ import {
   ChevronRight,
   Globe,
   HeartPulse,
+  Shield,
   Sparkles,
   Star,
   Target,
   Zap,
-  Shield,
   type LucideIcon,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
-/* ================================================================
-   DATA
-   ================================================================ */
-
-type Feature = {
+type FeatureCard = {
   icon: LucideIcon;
   title: string;
   description: string;
-  gradient: string;
-  iconBg: string;
+  tone: string;
+  span?: string;
 };
 
-const features: Feature[] = [
+type RitualStep = {
+  index: string;
+  title: string;
+  description: string;
+  icon: LucideIcon;
+};
+
+type TrustSignal = {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+};
+
+type CommercialPlan = {
+  key: 'free' | 'meta' | 'care';
+  name: string;
+  tagline: string;
+  description: string;
+  monthlyPrice: number;
+  annualPrice: number;
+  highlight: string;
+  accent: string;
+  features: string[];
+  featured?: boolean;
+};
+
+type FAQItem = {
+  question: string;
+  answer: string;
+};
+
+const featureCards: FeatureCard[] = [
   {
-    icon: Activity,
-    title: 'Métricas Vitais em Tempo Real',
+    icon: Brain,
+    title: 'IA gentil, presente e contextual',
     description:
-      'HRV, frequência cardíaca, qualidade de sono e mais — sincronizados em tempo real com seus dispositivos wearable.',
-    gradient: 'from-primary/10 to-primary/5',
-    iconBg: 'bg-gradient-teal text-white',
+      'A Lyra cruza sinais do seu perfil, da sua rotina e dos seus fluxos de energia para sugerir proximos passos com delicadeza, sem ficar invasiva.',
+    tone: 'from-primary/16 via-primary/8 to-white',
+    span: 'lg:col-span-2',
   },
   {
     icon: Globe,
-    title: 'Mapa Astral Personalizado',
+    title: 'Astrologia vedica com sensibilidade contemporanea',
     description:
-      'Trânsitos planetários, ciclos lunares e insights astrológicos védicos conectados à sua saúde e bem-estar.',
-    gradient: 'from-cosmic/10 to-cosmic/5',
-    iconBg: 'bg-gradient-cosmic text-white',
+      'Transitos, ciclos e leitura simbolica entram como contexto vivo da experiencia, com leveza visual e linguagem clara.',
+    tone: 'from-cosmic/16 via-cosmic/8 to-white',
   },
   {
-    icon: Brain,
-    title: 'IA Assistente Privada',
+    icon: Activity,
+    title: 'Sinais do corpo em uma leitura carinhosa',
     description:
-      'Assistente de IA que compreende seu contexto holístico — dados de saúde, mapa astral e objetivos pessoais.',
-    gradient: 'from-accent/10 to-accent/5',
-    iconBg: 'bg-gradient-coral text-white',
-  },
-  {
-    icon: Target,
-    title: 'Planos de Longevidade Inteligentes',
-    description:
-      'Planos personalizados de bem-estar gerados por IA, com metas acionáveis e acompanhamento contínuo.',
-    gradient: 'from-info/10 to-info/5',
-    iconBg: 'bg-info text-white',
+      'Sono, energia, ritmo, historico e metas passam a conversar na mesma interface, com menos friccao mental e mais conforto visual.',
+    tone: 'from-info/16 via-info/8 to-white',
   },
   {
     icon: Calendar,
-    title: 'Agendamento de Consultas Premium',
+    title: 'Agenda guiada para uma rotina mais leve',
     description:
-      'Agende consultas com profissionais de saúde holística, visualize disponibilidade e gerencie sua agenda.',
-    gradient: 'from-primary/10 to-primary/5',
-    iconBg: 'bg-gradient-teal text-white',
+      'Agendamentos, rituais, checkpoints e acompanhamento ficam em uma trilha suave, clara e gostosa de acompanhar no dia a dia.',
+    tone: 'from-golden/18 via-golden/8 to-white',
   },
   {
+    icon: Target,
+    title: 'Planos personalizados com profundidade real',
+    description:
+      'Cada assinatura libera profundidade real de IA, monitoramento, metas e automacoes, sem prometer mais do que o produto entrega.',
+    tone: 'from-accent/16 via-accent/8 to-white',
+  },
+  {
+    icon: Shield,
+    title: 'Privacidade, estrutura e confianca',
+    description:
+      'A plataforma foi desenhada com auth local, matriz de capacidades, billing real e base preparada para crescer sem perder consistencia.',
+    tone: 'from-primary/14 via-cosmic/10 to-white',
+    span: 'lg:col-span-2',
+  },
+];
+
+const ritualSteps: RitualStep[] = [
+  {
+    index: '01',
+    title: 'Abra o seu mapa de contexto',
+    description:
+      'Cadastre seu perfil, seus dados base e seus marcadores de rotina para a Lyra montar uma leitura inicial acolhedora e util.',
+    icon: Sparkles,
+  },
+  {
+    index: '02',
+    title: 'Conecte sinais e preferencias',
+    description:
+      'Wearables, metas e historico entram como camadas reais da sua experiencia e alimentam a orquestracao com mais precisao.',
     icon: HeartPulse,
-    title: 'Rastreio de Metas de Saúde',
+  },
+  {
+    index: '03',
+    title: 'Receba orientacao com IA',
     description:
-      'Defina e acompanhe metas de saúde com indicadores visuais de progresso e recomendações da IA.',
-    gradient: 'from-accent/10 to-accent/5',
-    iconBg: 'bg-gradient-coral text-white',
+      'O plano, o chat e os proximos passos passam a refletir seu momento atual com linguagem clara, bonita e facil de acompanhar.',
+    icon: Zap,
+  },
+  {
+    index: '04',
+    title: 'Volte sempre para recalibrar',
+    description:
+      'A jornada nao e estatica: ela se ajusta conforme seus sinais, seus ciclos e o nivel do plano ativo, sempre com suavidade visual.',
+    icon: Star,
   },
 ];
 
-type Step = {
-  number: string;
-  title: string;
-  description: string;
-};
-
-const steps: Step[] = [
+const trustSignals: TrustSignal[] = [
   {
-    number: '01',
-    title: 'Conecte',
+    title: 'Catalogo comercial real',
     description:
-      'Vincule seus dispositivos wearable e preencha seu perfil astral para uma experiência personalizada.',
+      'A landing espelha os planos publicados pela propria base do projeto: Free, Meta e Care.',
+    icon: Check,
   },
   {
-    number: '02',
-    title: 'Sincronize',
+    title: 'Camada de IA ja integrada no produto',
     description:
-      'Seus dados de saúde e insights astrológicos se integram automaticamente para uma visão holística.',
+      'O app possui rotas reais para plano gerado por IA, chat assistido e leituras contextuais orientadas por perfil.',
+    icon: Brain,
   },
   {
-    number: '03',
-    title: 'Evolua',
+    title: 'Arquitetura preparada para operacao',
     description:
-      'Receba planos de IA personalizados, acompanhe metas e agende consultas para otimizar seu bem-estar.',
+      'Auth local, billing Stripe, MySQL, matriz de entitlements e App Router ja fazem parte da estrutura funcional do produto.',
+    icon: Shield,
+  },
+  {
+    title: 'Estetica clara, doce e simbolica',
+    description:
+      'A identidade visual foi direcionada para astrologia moderna luminosa, com mais acolhimento visual e sem pesar o ambiente.',
+    icon: Sparkles,
   },
 ];
 
-type Plan = {
-  name: string;
-  price: string;
-  period: string;
-  description: string;
-  features: string[];
-  popular: boolean;
-  cta: string;
-  variant: 'outline' | 'default' | 'secondary';
-};
-
-const plans: Plan[] = [
+const commercialPlans: CommercialPlan[] = [
   {
-    name: 'Gratuito',
-    price: 'R$ 0',
-    period: '/mês',
-    description: 'Comece sua jornada de bem-estar com recursos essenciais.',
+    key: 'free',
+    name: 'Free',
+    tagline: 'Base confiavel para comecar com clareza.',
+    description:
+      'Acesso essencial ao ecossistema Lyra MetaCare, com visao inicial dos indicadores, perfil e automacoes fundamentais.',
+    monthlyPrice: 0,
+    annualPrice: 0,
+    highlight: 'Sem custo para comecar',
+    accent: 'from-primary to-emerald-400',
     features: [
-      'Dashboard básico com métricas',
-      'Chat IA limitado (10 msgs/dia)',
-      'Mapa astral simplificado',
-      'Rastreio de 2 metas',
+      'Entrada no ecossistema Lyra',
+      'Visao inicial do dashboard',
+      'Perfil e configuracao basica',
+      'Base segura para onboarding real',
     ],
-    popular: false,
-    cta: 'Comece Grátis',
-    variant: 'outline',
   },
   {
-    name: 'Estelar',
-    price: 'R$ 29,90',
-    period: '/mês',
-    description: 'Para quem busca uma experiência completa de bem-estar.',
+    key: 'meta',
+    name: 'Meta',
+    tagline: 'Mais profundidade, dados e automacao orientada por IA.',
+    description:
+      'Plano intermediario com capacidades expandidas de IA, conexao de dispositivos e observabilidade operacional para rotina continua.',
+    monthlyPrice: 79.9,
+    annualPrice: 790,
+    highlight: 'Mais inteligencia e automacao',
+    accent: 'from-primary via-info to-cosmic',
     features: [
-      'Tudo do plano Gratuito',
-      'Chat IA ilimitado',
-      'Mapa astral completo + trânsitos',
-      'Plano de longevidade IA',
-      'Agendamento de consultas',
-      'Monitoramento em tempo real',
-      'Metas ilimitadas',
+      'Mais profundidade de IA na rotina',
+      'Conexao com dispositivos e sinais',
+      'Observabilidade mais rica do uso',
+      'Experiencia continua e escalavel',
     ],
-    popular: true,
-    cta: 'Assinar Estelar',
-    variant: 'default',
+    featured: true,
   },
   {
-    name: 'Cósmico',
-    price: 'R$ 59,90',
-    period: '/mês',
-    description: 'O máximo em wellness premium com suporte prioritário.',
+    key: 'care',
+    name: 'Care',
+    tagline: 'A experiencia mais completa e integral do produto.',
+    description:
+      'Plano premium com a matriz completa de capacidades, maxima profundidade de acompanhamento e governanca plena da experiencia.',
+    monthlyPrice: 249.9,
+    annualPrice: 2490,
+    highlight: 'Experiencia integral Lyra',
+    accent: 'from-accent via-golden to-cosmic',
     features: [
-      'Tudo do plano Estelar',
-      'IA com modelo avançado',
-      'Relatórios de saúde detalhados',
-      'Consultas com desconto',
-      'Suporte prioritário 24/7',
-      'Acesso antecipado a features',
-      'API de dados pessoais',
+      'Matriz completa de capacidades',
+      'Maior profundidade de acompanhamento',
+      'Camada premium de operacao e controle',
+      'Jornada mais ampla dentro do produto',
     ],
-    popular: false,
-    cta: 'Assinar Cósmico',
-    variant: 'outline',
   },
 ];
 
-type Testimonial = {
-  name: string;
-  role: string;
-  text: string;
-  rating: number;
-  avatar: string;
-};
-
-const testimonials: Testimonial[] = [
+const faqItems: FAQItem[] = [
   {
-    name: 'Mariana Costa',
-    role: 'Praticante de Yoga',
-    text: 'A Lyra transformou minha rotina de saúde. A combinação de dados reais com insights astrológicos me dá uma visão única do meu bem-estar.',
-    rating: 5,
-    avatar: 'MC',
+    question: 'A Lyra e um app de astrologia ou um app com IA?',
+    answer:
+      'Ela une as duas camadas. A astrologia vedica entra como contexto simbolico e interpretativo, enquanto a IA organiza recomendacoes, leitura de jornada e proximos passos.',
   },
   {
-    name: 'Rafael Mendes',
-    role: 'Empresário',
-    text: 'A IA da Lyra é impressionante. Ela realmente entende meu contexto e cria planos que fazem sentido para minha vida corrida.',
-    rating: 5,
-    avatar: 'RM',
+    question: 'O visual claro vai continuar sendo prioridade?',
+    answer:
+      'Sim. A direcao principal desta entrega e tema claro, etereo, luminoso e acolhedor. O sistema continua preparado para dark mode futuro, mas sem tirar o foco da experiencia clara.',
   },
   {
-    name: 'Ana Beatriz Silva',
-    role: 'Nutricionista',
-    text: 'Como profissional de saúde, aprecio a seriedade com que a Lyra trata os dados. A plataforma é sofisticada e confiável.',
-    rating: 5,
-    avatar: 'AS',
+    question: 'Os planos mostrados aqui sao reais?',
+    answer:
+      'Sim. Free, Meta e Care seguem o catalogo semeado na base do projeto e representam a estrutura comercial ja prevista na aplicacao.',
+  },
+  {
+    question: 'A IA depende de um fluxo externo escondido?',
+    answer:
+      'Nao. O produto ja possui rotas e motores internos para camadas de plano, leitura contextual e assistencia, com integracao real ao restante da arquitetura.',
+  },
+  {
+    question: 'A landing promete recursos que nao existem?',
+    answer:
+      'Nao. Esta versao foi ajustada para comunicar apenas capacidades reais ja presentes na arquitetura e no escopo do produto.',
   },
 ];
 
-/* ================================================================
-   COMPONENT
-   ================================================================ */
+function formatBRL(value: number) {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value);
+}
 
 export function LandingPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* ---- NAV ---- */}
-      <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <div className="p-1.5 bg-gradient-teal rounded-lg shadow-teal">
-              <Sparkles className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-lg font-display font-bold text-gradient-hero">
-              lyra
+    <div className="min-h-screen bg-[linear-gradient(180deg,hsl(var(--background)),#ffffff_42%,#fbfbff_100%)] text-foreground">
+      <header className="sticky top-0 z-50 border-b border-border/80 bg-white/78 backdrop-blur-2xl">
+        <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex items-center gap-3 rounded-full px-1 py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            aria-label="Voltar ao topo da landing"
+          >
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-teal text-white shadow-teal">
+              <Sparkles className="h-5 w-5" />
             </span>
-          </div>
+            <span>
+              <span className="block font-display text-lg font-bold lowercase text-gradient-hero">
+                lyra
+              </span>
+              <span className="block text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                astrologia + IA
+              </span>
+            </span>
+          </button>
 
-          <div className="hidden md:flex items-center gap-1">
-            <Button variant="ghost" asChild className="rounded-full text-sm">
-              <a href="#features">Recursos</a>
+          <nav className="hidden items-center gap-2 md:flex">
+            <Button variant="ghost" asChild>
+              <a href="#recursos">Recursos</a>
             </Button>
-            <Button variant="ghost" asChild className="rounded-full text-sm">
-              <a href="#how-it-works">Como Funciona</a>
+            <Button variant="ghost" asChild>
+              <a href="#ritual">Fluxo</a>
             </Button>
-            <Button variant="ghost" asChild className="rounded-full text-sm">
-              <a href="#pricing">Planos</a>
+            <Button variant="ghost" asChild>
+              <a href="#planos">Planos</a>
             </Button>
-          </div>
+            <Button variant="ghost" asChild>
+              <a href="#faq">FAQ</a>
+            </Button>
+          </nav>
 
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              className="rounded-full text-sm"
-              onClick={() => router.push('/login')}
-            >
+            <Button variant="ghost" onClick={() => router.push('/login')}>
               Entrar
             </Button>
-            <Button
-              className="rounded-full bg-gradient-teal text-white shadow-teal hover:shadow-md text-sm"
-              onClick={() => router.push('/login')}
-            >
-              Comece Agora
-            </Button>
+            <Button onClick={() => router.push('/login')}>Comecar agora</Button>
           </div>
         </div>
-      </nav>
+      </header>
 
       <main>
-        {/* ---- HERO ---- */}
-        <section className="relative overflow-hidden">
-          {/* Decorative orbs */}
-          <div className="cosmic-orb w-96 h-96 bg-primary/15 -top-32 -left-32" />
-          <div className="cosmic-orb w-80 h-80 bg-accent/15 -top-20 right-0" />
-          <div className="cosmic-orb w-64 h-64 bg-cosmic/15 top-1/2 left-1/3" />
+        <section className="relative overflow-hidden px-4 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="cosmic-orb left-[-8rem] top-0 h-72 w-72 bg-primary/18" />
+            <div className="cosmic-orb right-[-4rem] top-20 h-80 w-80 bg-cosmic/16" />
+            <div className="cosmic-orb bottom-10 left-1/3 h-64 w-64 bg-accent/10" />
+          </div>
 
-          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-20 sm:pt-24 sm:pb-28 lg:pt-32 lg:pb-36">
-            <div className="text-center max-w-4xl mx-auto">
-              <Badge className="mb-6 rounded-full border-primary/20 bg-primary/10 text-primary px-4 py-1.5 text-sm font-medium">
-                <Sparkles className="mr-1.5 h-3.5 w-3.5" />
-                Wellness Premium com Inteligência Artificial
+          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
+            <div className="relative z-10">
+              <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary shadow-sm">
+                <Sparkles className="mr-2 h-3.5 w-3.5" />
+                astrologia moderna, IA e um tema clarinho para respirar
               </Badge>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold tracking-tight">
-                <span className="text-foreground">Seu Bem-Estar</span>
-                <br />
-                <span className="text-gradient-hero">Orquestrado</span>
+              <h1 className="mt-6 max-w-4xl font-display text-4xl font-bold leading-[1.02] tracking-tight text-foreground sm:text-5xl lg:text-[4.5rem]">
+                Um cantinho cosmico para o seu
+                <span className="block text-gradient-aurora">
+                  bem-estar ficar mais leve,
+                </span>
+                lindo e inteligente.
               </h1>
 
-              <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Onde a Sabedoria Ancestral Encontra a Inteligência Artificial.
-                Métricas vitais, astrologia védica e IA em uma plataforma única
-                de bem-estar holístico.
+              <p className="mt-6 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
+                A Lyra MetaCare transforma sinais, ciclos e contexto em uma
+                experiencia clara e acolhedora: astrologia vedica contemporanea,
+                IA aplicada com criterio e um visual etereo pensado para
+                acompanhar voce com suavidade no dia a dia.
               </p>
 
-              <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-                <Button
-                  size="lg"
-                  className="rounded-full bg-gradient-teal text-white shadow-teal hover:shadow-md h-12 px-8 text-base"
-                  onClick={() => router.push('/login')}
-                >
-                  Comece Agora
-                  <ArrowRight className="ml-2 h-4 w-4" />
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Button size="xl" onClick={() => router.push('/login')}>
+                  Abrir minha jornada
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="rounded-full h-12 px-8 text-base border-border"
-                  asChild
-                >
-                  <a href="#features">
-                    Saiba Mais
-                    <ChevronRight className="ml-1 h-4 w-4" />
+                <Button size="xl" variant="secondary" asChild>
+                  <a href="#recursos">
+                    Explorar a experiencia
+                    <ChevronRight className="h-4 w-4" />
                   </a>
                 </Button>
               </div>
 
-              {/* Hero signals */}
-              <div className="mt-12 flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2 rounded-full bg-card px-4 py-2 shadow-sm border border-border">
-                  <HeartPulse className="h-4 w-4 text-primary" />
-                  Métricas em tempo real
-                </div>
-                <div className="flex items-center gap-2 rounded-full bg-card px-4 py-2 shadow-sm border border-border">
-                  <Globe className="h-4 w-4 text-cosmic" />
-                  Astrologia Védica
-                </div>
-                <div className="flex items-center gap-2 rounded-full bg-card px-4 py-2 shadow-sm border border-border">
-                  <Zap className="h-4 w-4 text-accent" />
-                  IA Personalizada
+              <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                {[
+                  'tema claro como linguagem principal',
+                  'IA e contexto astral na mesma camada',
+                  'uma experiencia mais gentil para voltar sempre',
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-[24px] border border-white/70 bg-white/80 px-4 py-4 shadow-sm backdrop-blur-xl"
+                  >
+                    <p className="text-sm font-medium text-foreground">
+                      {item}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative z-10">
+              <div className="glass-card overflow-hidden rounded-[32px] p-4 sm:p-5">
+                <div className="rounded-[28px] border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(247,247,255,0.92))] p-5 shadow-[0_24px_80px_-40px_rgba(22,21,48,0.35)]">
+                  <div className="flex items-center justify-between gap-4 border-b border-border/70 pb-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+                        painel luminoso
+                      </p>
+                      <p className="mt-2 font-display text-2xl font-semibold text-foreground">
+                        Mapa vivo do seu momento
+                      </p>
+                    </div>
+                    <Badge className="rounded-full border-cosmic/20 bg-cosmic/10 px-3 py-1 text-cosmic">
+                      IA + simbolismo
+                    </Badge>
+                  </div>
+
+                  <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-[24px] border border-primary/12 bg-[linear-gradient(145deg,rgba(49,155,142,0.12),rgba(255,255,255,0.95))] p-5">
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
+                        leitura atual
+                      </p>
+                      <p className="mt-3 font-display text-2xl font-semibold text-foreground">
+                        Energia em alinhamento
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        Corpo, foco e ritmo em conversa com sua agenda e com o
+                        contexto do dia, sem sobrecarregar sua leitura.
+                      </p>
+                    </div>
+
+                    <div className="rounded-[24px] border border-cosmic/12 bg-[linear-gradient(145deg,rgba(139,92,246,0.12),rgba(255,255,255,0.95))] p-5">
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-cosmic/80">
+                        camada astral
+                      </p>
+                      <p className="mt-3 font-display text-2xl font-semibold text-foreground">
+                        Janela simbolica ativa
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        A interface transforma ciclos e transitos em contexto
+                        legivel, delicado e facil de sentir.
+                      </p>
+                    </div>
+
+                    <div className="rounded-[24px] border border-accent/12 bg-[linear-gradient(145deg,rgba(240,101,67,0.12),rgba(255,255,255,0.95))] p-5 sm:col-span-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge className="rounded-full border-accent/20 bg-accent/10 px-3 py-1 text-accent">
+                          plano guiado
+                        </Badge>
+                        <Badge className="rounded-full border-border bg-white px-3 py-1 text-muted-foreground">
+                          sem atmosfera escura
+                        </Badge>
+                      </div>
+                      <p className="mt-4 font-display text-2xl font-semibold text-foreground">
+                        Uma estetica clara, fofa e sofisticada para um produto
+                        profundo.
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        A experiencia foi redesenhada para parecer premium,
+                        delicada, intuitiva, acolhedora e tecnologica ao mesmo
+                        tempo.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ---- FEATURES (Bento Grid) ---- */}
-        <section
-          id="features"
-          className="py-20 sm:py-28 border-t border-border"
-        >
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <Badge className="mb-4 rounded-full border-cosmic/20 bg-cosmic/10 text-cosmic px-4 py-1.5">
-                Recursos
+        <section id="recursos" className="px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+          <div className="mx-auto max-w-7xl">
+            <div className="max-w-3xl">
+              <Badge className="rounded-full border-cosmic/20 bg-cosmic/10 px-4 py-1.5 text-cosmic">
+                Arquitetura da experiencia
               </Badge>
-              <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-foreground">
-                Tudo que você precisa para uma vida mais consciente
+              <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                Astrologia moderna, camadas claras e uma presenca mais afetuosa.
               </h2>
-              <p className="mt-4 text-muted-foreground text-lg">
-                Uma plataforma completa que integra saúde, consciência e
-                tecnologia de ponta.
+              <p className="mt-4 text-base leading-8 text-muted-foreground sm:text-lg">
+                O desenho da Lyra agora comunica exatamente o que o produto e:
+                um ecossistema de bem-estar, leitura simbolica e suporte
+                inteligente, com uma atmosfera mais calorosa e convidativa.
               </p>
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {features.map((feature) => (
-                <div
+            <div className="mt-10 grid gap-5 lg:grid-cols-3">
+              {featureCards.map((feature) => (
+                <article
                   key={feature.title}
-                  className="group relative rounded-2xl border border-border bg-card p-6 shadow hover:shadow-md transition-all duration-200 hover:scale-[1.01]"
+                  className={`group rounded-[28px] border border-border/80 bg-[linear-gradient(145deg,rgba(255,255,255,0.94),rgba(255,255,255,0.72))] p-6 shadow-[0_18px_48px_-36px_rgba(22,21,48,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_-32px_rgba(22,21,48,0.28)] ${feature.span ?? ''}`}
                 >
                   <div
-                    className={`inline-flex p-3 rounded-xl ${feature.iconBg} mb-4 shadow-sm`}
+                    className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${feature.tone} text-foreground shadow-sm`}
                   >
-                    <feature.icon className="h-6 w-6" />
+                    <feature.icon className="h-5 w-5" />
                   </div>
-                  <h3 className="text-lg font-display font-semibold text-foreground mb-2">
+                  <h3 className="mt-5 font-display text-xl font-semibold text-foreground">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="mt-3 text-sm leading-7 text-muted-foreground">
                     {feature.description}
                   </p>
-                </div>
+                </article>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ---- HOW IT WORKS ---- */}
-        <section
-          id="how-it-works"
-          className="py-20 sm:py-28 bg-gradient-aurora"
-        >
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <Badge className="mb-4 rounded-full border-primary/20 bg-primary/10 text-primary px-4 py-1.5">
-                Como Funciona
+        <section className="border-y border-border/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.86),rgba(248,247,255,0.96))] px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-5 lg:grid-cols-4">
+              {trustSignals.map((signal) => (
+                <article
+                  key={signal.title}
+                  className="rounded-[24px] border border-border/70 bg-white/85 p-6 shadow-sm backdrop-blur-xl"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-muted text-foreground">
+                    <signal.icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="mt-5 text-base font-semibold text-foreground">
+                    {signal.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                    {signal.description}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="ritual" className="px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+          <div className="mx-auto max-w-7xl">
+            <div className="max-w-3xl">
+              <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary">
+                Fluxo de entrada
               </Badge>
-              <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-foreground">
-                Três passos para transformar sua saúde
+              <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                Uma jornada guiada para sincronizar sinais, simbolos e cuidado.
               </h2>
-              <p className="mt-4 text-muted-foreground text-lg">
-                Uma jornada simples e poderosa rumo ao seu melhor estado de
-                bem-estar.
-              </p>
             </div>
 
-            <div className="grid gap-8 md:grid-cols-3">
-              {steps.map((step) => (
-                <div key={step.number} className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-card border border-border shadow-sm mb-5">
-                    <span className="text-2xl font-display font-bold text-gradient-hero">
-                      {step.number}
+            <div className="mt-10 grid gap-5 lg:grid-cols-4">
+              {ritualSteps.map((step) => (
+                <article
+                  key={step.index}
+                  className="relative rounded-[28px] border border-border/80 bg-white/88 p-6 shadow-sm"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-sm font-semibold text-muted-foreground">
+                      {step.index}
+                    </span>
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-muted text-foreground">
+                      <step.icon className="h-5 w-5" />
                     </span>
                   </div>
-                  <h3 className="text-xl font-display font-semibold text-foreground mb-2">
+                  <h3 className="mt-6 font-display text-xl font-semibold text-foreground">
                     {step.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
+                  <p className="mt-3 text-sm leading-7 text-muted-foreground">
                     {step.description}
                   </p>
-                </div>
+                </article>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ---- PRICING ---- */}
-        <section id="pricing" className="py-20 sm:py-28 border-t border-border">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <Badge className="mb-4 rounded-full border-golden/20 bg-golden/10 text-golden px-4 py-1.5">
-                <Star className="mr-1.5 h-3.5 w-3.5" />
-                Planos
+        <section
+          id="planos"
+          className="border-y border-border/70 bg-[linear-gradient(180deg,#ffffff,rgba(249,248,252,0.96))] px-4 py-20 sm:px-6 lg:px-8 lg:py-28"
+        >
+          <div className="mx-auto max-w-7xl">
+            <div className="max-w-3xl">
+              <Badge className="rounded-full border-golden/20 bg-golden/10 px-4 py-1.5 text-golden">
+                Catalogo publicado
               </Badge>
-              <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-foreground">
-                Escolha o plano ideal para você
+              <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                Planos reais do produto, com uma apresentacao mais bonita e
+                clara.
               </h2>
-              <p className="mt-4 text-muted-foreground text-lg">
-                Comece gratuitamente e evolua quando estiver pronto.
+              <p className="mt-4 text-base leading-8 text-muted-foreground sm:text-lg">
+                Estes cards seguem a estrutura comercial semeada no proprio
+                projeto. A camada visual foi elevada, mas o catalogo continua
+                fiel ao que a aplicacao ja reconhece.
               </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
-              {plans.map((plan) => (
-                <div
-                  key={plan.name}
-                  className={`relative rounded-2xl border bg-card p-6 shadow transition-all duration-200 hover:shadow-md ${
-                    plan.popular
-                      ? 'border-primary shadow-teal scale-[1.02]'
-                      : 'border-border'
+            <div className="mt-10 grid gap-6 lg:grid-cols-3">
+              {commercialPlans.map((plan) => (
+                <article
+                  key={plan.key}
+                  className={`relative overflow-hidden rounded-[30px] border bg-white/92 p-6 shadow-[0_18px_48px_-36px_rgba(22,21,48,0.35)] ${
+                    plan.featured
+                      ? 'border-primary/30 ring-1 ring-primary/10'
+                      : 'border-border/80'
                   }`}
                 >
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="rounded-full bg-gradient-teal text-white border-0 px-4 py-1 shadow-teal">
-                        Mais Popular
-                      </Badge>
-                    </div>
-                  )}
+                  <div
+                    className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${plan.accent}`}
+                  />
+                  {plan.featured ? (
+                    <Badge className="rounded-full border-primary/20 bg-primary/10 px-3 py-1 text-primary">
+                      plano em destaque
+                    </Badge>
+                  ) : null}
 
-                  <div className="mb-6">
-                    <h3 className="text-lg font-display font-semibold text-foreground">
+                  <div className="mt-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+                      {plan.highlight}
+                    </p>
+                    <h3 className="mt-3 font-display text-3xl font-semibold text-foreground">
                       {plan.name}
                     </h3>
-                    <div className="mt-3 flex items-baseline">
-                      <span className="text-4xl font-display font-bold text-foreground tabular-nums">
-                        {plan.price}
-                      </span>
-                      <span className="text-sm text-muted-foreground ml-1">
-                        {plan.period}
-                      </span>
-                    </div>
-                    <p className="mt-2 text-sm text-muted-foreground">
+                    <p className="mt-2 text-sm font-medium text-foreground">
+                      {plan.tagline}
+                    </p>
+                    <p className="mt-3 text-sm leading-7 text-muted-foreground">
                       {plan.description}
                     </p>
                   </div>
 
-                  <ul className="space-y-3 mb-6">
-                    {plan.features.map((feat) => (
+                  <div className="mt-6 rounded-[24px] border border-border/70 bg-muted/45 p-5">
+                    <div className="flex items-end gap-2">
+                      <span className="font-display text-4xl font-bold text-foreground">
+                        {formatBRL(plan.monthlyPrice)}
+                      </span>
+                      <span className="pb-1 text-sm text-muted-foreground">
+                        /mes
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Anual: {formatBRL(plan.annualPrice)}
+                    </p>
+                  </div>
+
+                  <ul className="mt-6 space-y-3">
+                    {plan.features.map((feature) => (
                       <li
-                        key={feat}
-                        className="flex items-start gap-2 text-sm text-foreground"
+                        key={feature}
+                        className="flex items-start gap-3 text-sm text-foreground"
                       >
-                        <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                        {feat}
+                        <span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary/12 text-primary">
+                          <Check className="h-3.5 w-3.5" />
+                        </span>
+                        <span className="leading-6">{feature}</span>
                       </li>
                     ))}
                   </ul>
 
                   <Button
-                    className={`w-full rounded-xl h-11 ${
-                      plan.popular
-                        ? 'bg-gradient-teal text-white shadow-teal hover:shadow-md'
-                        : ''
-                    }`}
-                    variant={plan.popular ? 'default' : plan.variant}
+                    className="mt-8 w-full"
+                    variant={plan.featured ? 'default' : 'secondary'}
                     onClick={() => router.push('/login')}
                   >
-                    {plan.cta}
+                    Entrar para ver minha jornada
+                    <ArrowRight className="h-4 w-4" />
                   </Button>
-                </div>
+                </article>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ---- TESTIMONIALS ---- */}
-        <section className="py-20 sm:py-28 bg-gradient-aurora">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <Badge className="mb-4 rounded-full border-accent/20 bg-accent/10 text-accent px-4 py-1.5">
-                Depoimentos
+        <section id="faq" className="px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.92fr_1.08fr]">
+            <div>
+              <Badge className="rounded-full border-accent/20 bg-accent/10 px-4 py-1.5 text-accent">
+                FAQ
               </Badge>
-              <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-foreground">
-                O que nossos usuários dizem
+              <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                Perguntas importantes antes de entrar no seu novo cantinho Lyra.
               </h2>
+              <p className="mt-4 text-base leading-8 text-muted-foreground">
+                Esta secao foi escrita para esclarecer a proposta real do
+                produto e alinhar expectativa, arquitetura e identidade visual.
+              </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
-              {testimonials.map((t) => (
-                <div
-                  key={t.name}
-                  className="rounded-2xl border border-border bg-card p-6 shadow hover:shadow-md transition-shadow"
-                >
-                  <div className="flex gap-1 mb-4">
-                    {Array.from({ length: t.rating }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-4 w-4 fill-golden text-golden"
-                      />
-                    ))}
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-                    &ldquo;{t.text}&rdquo;
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-gradient-teal flex items-center justify-center text-white text-sm font-semibold">
-                      {t.avatar}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">
-                        {t.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{t.role}</p>
-                    </div>
-                  </div>
-                </div>
+            <Accordion type="single" collapsible className="space-y-4">
+              {faqItems.map((item, index) => (
+                <AccordionItem key={item.question} value={`faq-${index}`}>
+                  <AccordionTrigger>{item.question}</AccordionTrigger>
+                  <AccordionContent>{item.answer}</AccordionContent>
+                </AccordionItem>
               ))}
-            </div>
+            </Accordion>
           </div>
         </section>
 
-        {/* ---- CTA FINAL ---- */}
-        <section className="py-20 sm:py-28 border-t border-border">
-          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-foreground">
-              Comece Sua Jornada Cósmica Hoje
-            </h2>
-            <p className="mt-4 text-muted-foreground text-lg max-w-xl mx-auto">
-              Junte-se a milhares de pessoas que já transformaram sua relação
-              com a saúde e o autoconhecimento.
-            </p>
+        <section className="px-4 pb-24 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-6xl overflow-hidden rounded-[36px] border border-border/80 bg-[linear-gradient(135deg,rgba(49,155,142,0.12),rgba(139,92,246,0.16),rgba(240,101,67,0.12))] p-8 shadow-[0_26px_80px_-42px_rgba(22,21,48,0.35)] sm:p-10 lg:p-12">
+            <div className="max-w-3xl">
+              <Badge className="rounded-full border-white/70 bg-white/75 px-4 py-1.5 text-foreground">
+                Orbita final
+              </Badge>
+              <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                Entre em uma experiencia clara, astral, acolhedora e realmente
+                conectada ao produto.
+              </h2>
+              <p className="mt-4 text-base leading-8 text-foreground/80">
+                A proposta aqui e simbolismo contemporaneo, delicadeza visual,
+                inteligencia aplicada e uma interface clara o suficiente para
+                convidar voce a voltar todos os dias com prazer.
+              </p>
 
-            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
-              <Button
-                size="lg"
-                className="flex-1 rounded-full bg-gradient-coral text-white shadow-coral hover:shadow-md h-12 text-base"
-                onClick={() => router.push('/login')}
-              >
-                Quero Começar
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Button size="xl" onClick={() => router.push('/login')}>
+                  Abrir Lyra agora
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+                <Button size="xl" variant="secondary" asChild>
+                  <a href="#planos">Ver catalogo comercial</a>
+                </Button>
+              </div>
             </div>
           </div>
         </section>
       </main>
 
-      {/* ---- FOOTER ---- */}
-      <footer className="border-t border-border bg-card py-10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <div className="p-1.5 bg-gradient-teal rounded-lg">
-                <Sparkles className="h-4 w-4 text-white" />
-              </div>
-              <span className="text-sm font-display font-bold text-gradient-hero">
+      <footer className="border-t border-border/70 bg-white/88 px-4 py-10 backdrop-blur-xl sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-teal text-white shadow-teal">
+              <Sparkles className="h-4 w-4" />
+            </span>
+            <div>
+              <p className="font-display text-lg font-bold lowercase text-gradient-hero">
                 lyra
-              </span>
+              </p>
+              <p className="text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                metacare
+              </p>
             </div>
-
-            <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <a
-                href="#features"
-                className="hover:text-foreground transition-colors"
-              >
-                Recursos
-              </a>
-              <a
-                href="#pricing"
-                className="hover:text-foreground transition-colors"
-              >
-                Planos
-              </a>
-              <a
-                href="#how-it-works"
-                className="hover:text-foreground transition-colors"
-              >
-                Como Funciona
-              </a>
-            </div>
-
-            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-              Feito com
-              <Sparkles className="h-3 w-3 text-golden" />
-              por iLyra AI
-            </p>
           </div>
+
+          <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
+            <a
+              href="#recursos"
+              className="transition-colors hover:text-foreground"
+            >
+              Recursos
+            </a>
+            <a
+              href="#ritual"
+              className="transition-colors hover:text-foreground"
+            >
+              Fluxo
+            </a>
+            <a
+              href="#planos"
+              className="transition-colors hover:text-foreground"
+            >
+              Planos
+            </a>
+            <a href="#faq" className="transition-colors hover:text-foreground">
+              FAQ
+            </a>
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            Feito com intencao pela iLyra AI.
+          </p>
         </div>
       </footer>
     </div>

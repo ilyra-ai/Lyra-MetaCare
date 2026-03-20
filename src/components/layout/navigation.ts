@@ -40,7 +40,8 @@ export const navigationItems: NavigationItem[] = [
   {
     href: '/plan',
     label: 'Plano de IA',
-    description: 'Protocolos personalizados de foco, ritmo, nutriÃ§Ã£o e recuperaÃ§Ã£o.',
+    description:
+      'Protocolos personalizados de foco, ritmo, nutriÃ§Ã£o e recuperaÃ§Ã£o.',
     icon: Sparkles,
     section: 'Principal',
     shortcut: 'G P',
@@ -48,7 +49,8 @@ export const navigationItems: NavigationItem[] = [
   {
     href: '/goals',
     label: 'Metas',
-    description: 'EvoluÃ§Ã£o diÃ¡ria com progresso, streaks e prioridades suaves.',
+    description:
+      'EvoluÃ§Ã£o diÃ¡ria com progresso, streaks e prioridades suaves.',
     icon: Target,
     section: 'Principal',
     shortcut: 'G M',
@@ -56,7 +58,8 @@ export const navigationItems: NavigationItem[] = [
   {
     href: '/appointments',
     label: 'Agendamentos',
-    description: 'Agenda de encontros, profissionais e organizaÃ§Ã£o do seu fluxo.',
+    description:
+      'Agenda de encontros, profissionais e organizaÃ§Ã£o do seu fluxo.',
     icon: CalendarDays,
     section: 'Fluxo Guiado',
     shortcut: 'G A',
@@ -72,7 +75,8 @@ export const navigationItems: NavigationItem[] = [
   {
     href: '/chat',
     label: 'Chat IA',
-    description: 'Conversa inteligente com contexto biomÃ©trico, emocional e astral.',
+    description:
+      'Conversa inteligente com contexto biomÃ©trico, emocional e astral.',
     icon: BrainCircuit,
     section: 'Fluxo Guiado',
     shortcut: 'G C',
@@ -126,7 +130,8 @@ export const navigationItems: NavigationItem[] = [
   {
     href: '/admin/content',
     label: 'ConteÃºdo',
-    description: 'Curadoria operacional de hÃ¡bitos, mensagens e recomendaÃ§Ãµes.',
+    description:
+      'Curadoria operacional de hÃ¡bitos, mensagens e recomendaÃ§Ãµes.',
     icon: ClipboardList,
     section: 'AdministraÃ§Ã£o',
     adminOnly: true,

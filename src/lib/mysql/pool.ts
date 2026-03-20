@@ -53,17 +53,25 @@ function createLyraPool(): Pool {
 
 const globalMysqlState = globalThis as GlobalMysqlState;
 
-export const mysqlPool = globalMysqlState.__lyraMysqlPool ?? createLyraPool();
+function getMysqlPool(): Pool {
+  if (globalMysqlState.__lyraMysqlPool) {
+    return globalMysqlState.__lyraMysqlPool;
+  }
 
-if (process.env.NODE_ENV !== 'production') {
-  globalMysqlState.__lyraMysqlPool = mysqlPool;
+  const pool = createLyraPool();
+
+  if (process.env.NODE_ENV !== 'production') {
+    globalMysqlState.__lyraMysqlPool = pool;
+  }
+
+  return pool;
 }
 
 export async function queryRows<TRow extends object = QueryRecord>(
   sql: string,
   params: readonly unknown[] = []
 ): Promise<TRow[]> {
-  const [rows] = await mysqlPool.query<RowDataPacket[]>(
+  const [rows] = await getMysqlPool().query<RowDataPacket[]>(
     sql,
     params as MySqlParameter[]
   );
@@ -74,7 +82,7 @@ export async function executeStatement(
   sql: string,
   params: readonly unknown[] = []
 ): Promise<ResultSetHeader> {
-  const [result] = await mysqlPool.execute<ResultSetHeader>(
+  const [result] = await getMysqlPool().execute<ResultSetHeader>(
     sql,
     params as MySqlParameter[]
   );
@@ -84,7 +92,7 @@ export async function executeStatement(
 export async function withTransaction<T>(
   callback: (connection: mysql.PoolConnection) => Promise<T>
 ): Promise<T> {
-  const connection = await mysqlPool.getConnection();
+  const connection = await getMysqlPool().getConnection();
   try {
     await connection.beginTransaction();
     const result = await callback(connection);

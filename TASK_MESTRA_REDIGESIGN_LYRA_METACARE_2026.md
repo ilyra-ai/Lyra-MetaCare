@@ -13,7 +13,8 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - Ele deve ser atualizado ao final de cada item ou grupo de itens concluidos.
 - Se o usuario adicionar novas exigencias, elas devem ser incorporadas aqui sem apagar historico relevante.
 - Nenhum bloco deve ser considerado concluido sem validacao real correspondente.
-- Ao final de cada item ou grupo de itens relacionados, executar checks, commit e push para `main`.
+- Ao final de cada item ou grupo de itens relacionados, executar checks reais e atualizar o status deste documento.
+- Commit e push deixaram de ser obrigacao do agente nesta etapa e ficam sob responsabilidade direta do usuario.
 
 ## Direcao obrigatoria consolidada
 
@@ -46,8 +47,8 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] Layout raiz principal refeito.
 - [x] Shell do app principal refeito.
 - [~] Componentes UI base amplamente reestilizados, ainda com alguns acabamentos e revisoes pendentes.
-- [ ] Landing page reescrita do zero no nivel final pedido.
-- [ ] Login reescrito do zero no nivel final pedido.
+- [~] Landing page reescrita estruturalmente e em ajuste fino de atmosfera, aguardando validacao tecnica final.
+- [~] Login reescrito estruturalmente e em ajuste fino de atmosfera, aguardando validacao tecnica final.
 - [ ] Dashboard principal revisado contra a nova direcao astrologica moderna + IA.
 - [ ] Demais modulos do paciente finalizados no novo padrao.
 - [ ] Modulos de billing finalizados no novo padrao.
@@ -114,18 +115,18 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [ ] Corrigir warnings e erros atuais de lint.
 - [ ] Revalidar formatacao.
 - [ ] Revalidar tipagem.
-- [ ] Fazer commit e push do bloco fundacao + shell + UI base validado.
+- [ ] Entregar bloco fundacao + shell + UI base validado para commit manual do usuario.
 
 ### Bloco imediato 2 - direcao visual central corrigida pelo usuario
 
-- [ ] Reescrever `src/components/landing/LandingPage.tsx` do zero.
-- [ ] Reescrever `src/app/login/page.tsx` do zero.
+- [~] Reescrever `src/components/landing/LandingPage.tsx` do zero.
+- [~] Reescrever `src/app/login/page.tsx` do zero.
 - [ ] Garantir que a narrativa visual nao pareca clinica.
 - [ ] Garantir linguagem de astrologia moderna, toque esoterico sofisticado e fusao com modelos de IA.
 - [ ] Garantir que a landing pareca premium, luminosa, linda, delicada e inovadora.
 - [ ] Garantir que o login acompanhe exatamente a mesma identidade.
 - [ ] Validar types, lint e format.
-- [ ] Fazer commit e push do bloco landing + auth.
+- [ ] Entregar bloco landing + auth validado para commit manual do usuario.
 
 ## Checklist integral de execucao por fases
 
@@ -233,8 +234,8 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 
 ### Fase 7 - Landing e Auth
 
-- [ ] `src/components/landing/LandingPage.tsx`
-- [ ] `src/app/login/page.tsx`
+- [~] `src/components/landing/LandingPage.tsx`
+- [~] `src/app/login/page.tsx`
 
 ### Fase 8 - Finalizacao
 
@@ -243,8 +244,7 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [ ] Testar navegacao visual completa
 - [ ] Corrigir warnings e erros restantes
 - [ ] Executar checks finais completos
-- [ ] Commit final
-- [ ] Push final
+- [ ] Entregar estado final validado para commit manual do usuario
 
 ## Checks obrigatorios por bloco
 
@@ -257,6 +257,14 @@ npm run check:lint
 npm run check:format
 npm run check:types
 ```
+
+## Log de progresso
+
+- 2026-03-20 1: task mestre criada na raiz e consolidada como fonte viva da execucao.
+- 2026-03-20 2: fundacao visual, shell principal e boa parte dos componentes UI base ja haviam sido reescritos.
+- 2026-03-20 3: navigation, header, query-utils.test e PlanBadge receberam correcoes tecnicas e de linguagem.
+- 2026-03-20 4: `src/components/landing/LandingPage.tsx` foi reescrita com direcao clara, astral, luminosa e sem promessas falsas; nesta etapa entrou em ajuste fino para ficar mais fofa, amigavel e acolhedora.
+- 2026-03-20 5: `src/app/login/page.tsx` foi reescrita em layout split, mantendo auth real e adicionando linguagem visual mais suave e acolhedora; falta validacao tecnica final antes de marcar como concluida.
 
 ## Politica obrigatoria de commit e push
 
