@@ -93,9 +93,22 @@
     --gradient-aurora: linear-gradient(135deg, #319b8e, #8b5cf6, #f06543);
     --gradient-hero: linear-gradient(135deg, #161530, #319b8e);
     --gradient-surface: linear-gradient(180deg, #f9f8fc, #ffffff);
-    --gradient-page: radial-gradient(circle at top left, rgba(139, 92, 246, 0.1), transparent 28%),
-      radial-gradient(circle at top right, rgba(49, 155, 142, 0.12), transparent 24%),
-      radial-gradient(circle at bottom left, rgba(240, 101, 67, 0.08), transparent 28%),
+    --gradient-page:
+      radial-gradient(
+        circle at top left,
+        rgba(139, 92, 246, 0.1),
+        transparent 28%
+      ),
+      radial-gradient(
+        circle at top right,
+        rgba(49, 155, 142, 0.12),
+        transparent 24%
+      ),
+      radial-gradient(
+        circle at bottom left,
+        rgba(240, 101, 67, 0.08),
+        transparent 28%
+      ),
       linear-gradient(180deg, #f9f8fc 0%, #ffffff 100%);
   }
 
@@ -154,9 +167,22 @@
     --sidebar-border: 240 15% 18%;
     --sidebar-ring: 174 55% 55%;
 
-    --gradient-page: radial-gradient(circle at top left, rgba(139, 92, 246, 0.16), transparent 28%),
-      radial-gradient(circle at top right, rgba(49, 155, 142, 0.18), transparent 24%),
-      radial-gradient(circle at bottom left, rgba(240, 101, 67, 0.12), transparent 28%),
+    --gradient-page:
+      radial-gradient(
+        circle at top left,
+        rgba(139, 92, 246, 0.16),
+        transparent 28%
+      ),
+      radial-gradient(
+        circle at top right,
+        rgba(49, 155, 142, 0.18),
+        transparent 24%
+      ),
+      radial-gradient(
+        circle at bottom left,
+        rgba(240, 101, 67, 0.12),
+        transparent 28%
+      ),
       linear-gradient(180deg, #0d0d1a 0%, #111122 100%);
   }
 
@@ -243,9 +269,21 @@
     z-index: -1;
     pointer-events: none;
     background:
-      radial-gradient(circle at 12% 14%, rgba(49, 155, 142, 0.12), transparent 26%),
-      radial-gradient(circle at 82% 10%, rgba(139, 92, 246, 0.1), transparent 18%),
-      radial-gradient(circle at 24% 86%, rgba(240, 101, 67, 0.08), transparent 24%);
+      radial-gradient(
+        circle at 12% 14%,
+        rgba(49, 155, 142, 0.12),
+        transparent 26%
+      ),
+      radial-gradient(
+        circle at 82% 10%,
+        rgba(139, 92, 246, 0.1),
+        transparent 18%
+      ),
+      radial-gradient(
+        circle at 24% 86%,
+        rgba(240, 101, 67, 0.08),
+        transparent 24%
+      );
   }
 
   .section-shell {
@@ -261,7 +299,11 @@
   }
 
   .glass-card {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.58));
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.82),
+      rgba(255, 255, 255, 0.58)
+    );
     border: 1px solid rgba(255, 255, 255, 0.85);
     border-radius: var(--radius-xl);
     box-shadow: 0 10px 40px -10px rgba(21, 21, 37, 0.1);
@@ -370,7 +412,12 @@
   }
 
   .bg-gradient-aurora {
-    background-image: linear-gradient(135deg, rgba(49, 155, 142, 0.08), rgba(139, 92, 246, 0.08), rgba(240, 101, 67, 0.08));
+    background-image: linear-gradient(
+      135deg,
+      rgba(49, 155, 142, 0.08),
+      rgba(139, 92, 246, 0.08),
+      rgba(240, 101, 67, 0.08)
+    );
   }
 
   .interactive-lift {
@@ -403,7 +450,11 @@
   }
 
   .nav-pill-active {
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.14), hsl(var(--cosmic) / 0.12));
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.14),
+      hsl(var(--cosmic) / 0.12)
+    );
     color: hsl(var(--primary));
     border: 1px solid hsl(var(--primary) / 0.18);
     box-shadow: var(--shadow-teal);
@@ -418,7 +469,12 @@
   .soft-divider {
     height: 1px;
     width: 100%;
-    background: linear-gradient(90deg, transparent, hsl(var(--border)), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--border)),
+      transparent
+    );
   }
 
   .empty-state {
@@ -686,12 +742,20 @@
 ::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(49, 155, 142, 0.32), rgba(139, 92, 246, 0.22));
+  background: linear-gradient(
+    180deg,
+    rgba(49, 155, 142, 0.32),
+    rgba(139, 92, 246, 0.22)
+  );
   background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(49, 155, 142, 0.45), rgba(240, 101, 67, 0.3));
+  background: linear-gradient(
+    180deg,
+    rgba(49, 155, 142, 0.45),
+    rgba(240, 101, 67, 0.3)
+  );
   background-clip: padding-box;
 }
 

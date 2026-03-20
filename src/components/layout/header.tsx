@@ -153,7 +153,10 @@ export function Header() {
               aria-label="Abrir busca global"
             >
               <span className="flex items-center gap-3">
-                <Search className="h-[18px] w-[18px] text-muted-foreground" strokeWidth={1.8} />
+                <Search
+                  className="h-[18px] w-[18px] text-muted-foreground"
+                  strokeWidth={1.8}
+                />
                 <span>Buscar páginas, fluxos e ações</span>
               </span>
               <span className="rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm">
@@ -170,7 +173,10 @@ export function Header() {
               className="relative h-11 w-11 rounded-full"
               aria-label="Notificações"
             >
-              <Bell className="h-[18px] w-[18px] text-foreground" strokeWidth={1.8} />
+              <Bell
+                className="h-[18px] w-[18px] text-foreground"
+                strokeWidth={1.8}
+              />
               <span className="absolute right-2.5 top-2.5 h-2.5 w-2.5 rounded-full bg-accent shadow-coral animate-pulse-slow" />
             </Button>
 
@@ -179,7 +185,10 @@ export function Header() {
               className="hidden rounded-full bg-gradient-coral px-5 text-white shadow-coral hover:brightness-105 md:inline-flex"
               onClick={() => router.push('/chat')}
             >
-              <MessageCircleHeart className="mr-2 h-[18px] w-[18px]" strokeWidth={1.8} />
+              <MessageCircleHeart
+                className="mr-2 h-[18px] w-[18px]"
+                strokeWidth={1.8}
+              />
               Chat IA
             </Button>
 

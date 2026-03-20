@@ -88,7 +88,8 @@ export default function Home() {
                 Santuário digital de bem-estar
               </span>
               <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground md:text-5xl">
-                {greeting}, <span className="text-gradient-hero">{firstName}</span>
+                {greeting},{' '}
+                <span className="text-gradient-hero">{firstName}</span>
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
                 Sua leitura do dia reúne biometria, sono, energia, astrologia
@@ -115,7 +116,7 @@ export default function Home() {
         </section>
 
         <Dashboard />
-      <QuickScanFAB />
+        <QuickScanFAB />
       </div>
     </AppShell>
   );

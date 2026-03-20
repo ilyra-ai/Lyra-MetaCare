@@ -24,7 +24,10 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={cn('bg-muted/85 [&_tr]:border-b [&_tr]:border-border', className)}
+    className={cn(
+      'bg-muted/85 [&_tr]:border-b [&_tr]:border-border',
+      className
+    )}
     {...props}
   />
 ));

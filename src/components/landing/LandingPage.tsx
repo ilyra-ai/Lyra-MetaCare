@@ -540,8 +540,8 @@ export function LandingPage() {
               Comece Sua Jornada Cósmica Hoje
             </h2>
             <p className="mt-4 text-muted-foreground text-lg max-w-xl mx-auto">
-              Junte-se a milhares de pessoas que já transformaram sua relação com
-              a saúde e o autoconhecimento.
+              Junte-se a milhares de pessoas que já transformaram sua relação
+              com a saúde e o autoconhecimento.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">

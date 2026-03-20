@@ -191,10 +191,7 @@ export default function LoginPage() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label
-                  htmlFor="register-email"
-                  className="text-sm font-medium"
-                >
+                <Label htmlFor="register-email" className="text-sm font-medium">
                   Email
                 </Label>
                 <div className="relative">

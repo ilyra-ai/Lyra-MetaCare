@@ -36,7 +36,10 @@ const SelectScrollUpButton = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollUpButton
     ref={ref}
-    className={cn('flex items-center justify-center py-2 text-muted-foreground', className)}
+    className={cn(
+      'flex items-center justify-center py-2 text-muted-foreground',
+      className
+    )}
     {...props}
   >
     <ChevronUp className="h-[18px] w-[18px]" />
@@ -51,7 +54,10 @@ const SelectScrollDownButton = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollDownButton
     ref={ref}
-    className={cn('flex items-center justify-center py-2 text-muted-foreground', className)}
+    className={cn(
+      'flex items-center justify-center py-2 text-muted-foreground',
+      className
+    )}
     {...props}
   >
     <ChevronDown className="h-[18px] w-[18px]" />
@@ -81,8 +87,7 @@ const SelectContent = React.forwardRef<
       <SelectPrimitive.Viewport
         className={cn(
           'p-2',
-          position === 'popper' &&
-            'min-w-[var(--radix-select-trigger-width)]'
+          position === 'popper' && 'min-w-[var(--radix-select-trigger-width)]'
         )}
       >
         {children}

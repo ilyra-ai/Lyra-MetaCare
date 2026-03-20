@@ -202,8 +202,6 @@ export function buildBreadcrumb(pathname: string) {
   }
 
   return segments.map((segment) =>
-    segment
-      .replace(/-/g, ' ')
-      .replace(/\b\w/g, (char) => char.toUpperCase())
+    segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
   );
 }

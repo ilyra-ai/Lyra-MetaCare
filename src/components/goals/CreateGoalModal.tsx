@@ -28,7 +28,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
-  title: z.string().trim().min(3, 'Informe um titulo com pelo menos 3 caracteres.'),
+  title: z
+    .string()
+    .trim()
+    .min(3, 'Informe um titulo com pelo menos 3 caracteres.'),
   description: z.string().trim(),
   category: z.string().trim(),
   target_value: z
@@ -55,10 +58,7 @@ interface CreateGoalModalProps {
   onCreated: () => void;
 }
 
-export function CreateGoalModal({
-  children,
-  onCreated,
-}: CreateGoalModalProps) {
+export function CreateGoalModal({ children, onCreated }: CreateGoalModalProps) {
   const { db, session } = useAuth();
   const [open, setOpen] = React.useState(false);
 
@@ -157,7 +157,10 @@ export function CreateGoalModal({
                 <FormItem>
                   <FormLabel>Titulo</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: Dormir 8 horas por noite" {...field} />
+                    <Input
+                      placeholder="Ex: Dormir 8 horas por noite"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -172,10 +175,7 @@ export function CreateGoalModal({
                   <FormItem>
                     <FormLabel>Categoria</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Ex: Sono"
-                        {...field}
-                      />
+                      <Input placeholder="Ex: Sono" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -189,10 +189,7 @@ export function CreateGoalModal({
                   <FormItem>
                     <FormLabel>Unidade</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Ex: horas"
-                        {...field}
-                      />
+                      <Input placeholder="Ex: horas" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -242,11 +239,11 @@ export function CreateGoalModal({
                 <FormItem>
                   <FormLabel>Descricao</FormLabel>
                   <FormControl>
-                      <Textarea
-                        placeholder="Descreva o objetivo e o criterio de acompanhamento."
-                        {...field}
-                        rows={4}
-                      />
+                    <Textarea
+                      placeholder="Descreva o objetivo e o criterio de acompanhamento."
+                      {...field}
+                      rows={4}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

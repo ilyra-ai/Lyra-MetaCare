@@ -18,8 +18,14 @@ export function SplashScreen() {
           <div className="relative flex h-20 w-20 items-center justify-center rounded-[28px] bg-gradient-teal text-white shadow-teal animate-glow-pulse">
             <Sparkles className="h-9 w-9" strokeWidth={1.9} />
           </div>
-          <Orbit className="absolute -right-3 top-4 h-5 w-5 text-cosmic animate-float" strokeWidth={1.9} />
-          <MoonStar className="absolute -left-2 bottom-4 h-5 w-5 text-accent animate-float" strokeWidth={1.9} />
+          <Orbit
+            className="absolute -right-3 top-4 h-5 w-5 text-cosmic animate-float"
+            strokeWidth={1.9}
+          />
+          <MoonStar
+            className="absolute -left-2 bottom-4 h-5 w-5 text-accent animate-float"
+            strokeWidth={1.9}
+          />
         </div>
 
         <p className="eyebrow mx-auto w-fit">

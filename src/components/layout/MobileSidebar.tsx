@@ -4,7 +4,13 @@ import React from 'react';
 import Link from 'next/link';
 import { Menu, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { SidebarLink } from './SidebarLink';
 import { getVisibleNavigation, groupNavigation } from './navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -39,7 +45,11 @@ export function MobileSidebar() {
         <div className="glass flex h-full flex-col rounded-r-[32px] border-r border-white/80 px-4 py-4">
           <SheetHeader className="space-y-0">
             <div className="mb-4 flex items-center justify-between gap-3">
-              <Link href="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
+              <Link
+                href="/"
+                className="flex items-center gap-3"
+                onClick={() => setOpen(false)}
+              >
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-teal text-white shadow-teal">
                   <Sparkles className="h-[18px] w-[18px]" strokeWidth={1.9} />
                 </div>

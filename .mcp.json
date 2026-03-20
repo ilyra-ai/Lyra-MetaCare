@@ -3,8 +3,11 @@
     "mcp-task-orchestrator": {
       "command": "docker",
       "args": [
-        "run", "--rm", "-i",
-        "-v", "mcp-task-data:/app/data",
+        "run",
+        "--rm",
+        "-i",
+        "-v",
+        "mcp-task-data:/app/data",
         "ghcr.io/jpicklyk/task-orchestrator:latest"
       ]
     }
