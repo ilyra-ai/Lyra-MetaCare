@@ -1,6 +1,12 @@
-"use client";
+'use client';
 
-import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
+import type { ComponentType } from 'react';
+import {
+  Calendar,
+  dateFnsLocalizer,
+  Views,
+  type CalendarProps,
+} from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -32,23 +38,38 @@ const messages = {
   showMore: (total: number) => `+ Ver mais (${total})`,
 };
 
-interface Event {
+export interface AgendaEvent<TResource extends object> {
   title: string;
   start: Date;
   end: Date;
-  resource: any;
+  resource: TResource;
 }
 
-interface AgendaProps {
-  events: Event[];
-  onSelectSlot: (slotInfo: any) => void;
-  onSelectEvent: (event: Event) => void;
+interface SlotInfo {
+  start: Date;
+  end: Date;
+  slots: Date[];
+  action: 'select' | 'click' | 'doubleClick';
 }
 
-export function Agenda({ events, onSelectSlot, onSelectEvent }: AgendaProps) {
+interface AgendaProps<TResource extends object> {
+  events: AgendaEvent<TResource>[];
+  onSelectSlot: (slotInfo: SlotInfo) => void;
+  onSelectEvent: (event: AgendaEvent<TResource>) => void;
+}
+
+export function Agenda<TResource extends object>({
+  events,
+  onSelectSlot,
+  onSelectEvent,
+}: AgendaProps<TResource>) {
+  const TypedCalendar = Calendar as unknown as ComponentType<
+    CalendarProps<AgendaEvent<TResource>, object>
+  >;
+
   return (
     <div className="h-[300px]">
-      <Calendar
+      <TypedCalendar
         localizer={localizer}
         events={events}
         startAccessor="start"

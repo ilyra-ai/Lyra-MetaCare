@@ -1,22 +1,26 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { Clock3 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
-interface TimeInputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+type TimeInputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 export const TimeInput = React.forwardRef<HTMLInputElement, TimeInputProps>(
-  ({ className, type = "time", ...props }, ref) => {
-    return (
+  ({ className, type = 'time', ...props }, ref) => (
+    <div className="relative">
       <Input
-        type={type}
-        className={cn("w-full", className)}
         ref={ref}
-        // O id, name, value, onChange, onBlur props são espalhados aqui via {...props}
+        type={type}
+        className={cn('w-full pr-12', className)}
         {...props}
       />
-    );
-  }
+      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+        <Clock3 className="h-[18px] w-[18px]" />
+      </span>
+    </div>
+  )
 );
-TimeInput.displayName = "TimeInput";
+
+TimeInput.displayName = 'TimeInput';

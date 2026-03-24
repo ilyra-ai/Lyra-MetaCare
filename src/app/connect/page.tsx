@@ -1,17 +1,24 @@
-"use client";
+'use client';
 
-import { MadeWithIlyra } from "@/components/made-with-ilyra";
-import { Sidebar } from "@/components/layout/sidebar";
-import { Header } from "@/components/layout/header";
-import { useAuth } from "@/context/AuthContext";
-import { SplashScreen } from "@/components/SplashScreen";
-import { WearableConnection } from "@/components/data-connection/WearableConnection";
+import { MadeWithIlyra } from '@/components/made-with-ilyra';
+import { Sidebar } from '@/components/layout/sidebar';
+import { Header } from '@/components/layout/header';
+import { useAuth } from '@/context/AuthContext';
+import { SplashScreen } from '@/components/SplashScreen';
+import { WearableConnection } from '@/components/data-connection/WearableConnection';
+import { usePlanFeatureAccess } from '@/hooks/use-plan-feature-access';
+import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
 
 export default function DataConnectionPage() {
   const { session } = useAuth();
+  const {
+    subscription,
+    enabled: wearableEnabled,
+    loading: subscriptionLoading,
+  } = usePlanFeatureAccess('wearable_bluetooth_connection');
 
   // Use SplashScreen while session is loading
-  if (session === undefined) {
+  if (session === undefined || subscriptionLoading) {
     return <SplashScreen />;
   }
 
@@ -26,8 +33,20 @@ export default function DataConnectionPage() {
       <div className="flex flex-col flex-1">
         <Header />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
-          <h1 className="text-3xl font-bold mb-8 text-center md:text-left">Conectar Dados de Saúde</h1>
-          <WearableConnection />
+          <h1 className="text-3xl font-bold mb-8 text-center md:text-left">
+            Conectar Dados de Saúde
+          </h1>
+          {wearableEnabled ? (
+            <WearableConnection />
+          ) : (
+            <PlanUpgradeNotice
+              currentPlanKey={subscription?.plan.key ?? 'free'}
+              title="Conexão Bluetooth indisponível"
+              description="Seu plano atual não inclui a camada de conexão com wearables via Bluetooth. O entitlement é aplicado de forma real na matriz de capacidades."
+              showAction
+              preferredPlanKey="meta"
+            />
+          )}
         </main>
         <MadeWithIlyra />
       </div>
