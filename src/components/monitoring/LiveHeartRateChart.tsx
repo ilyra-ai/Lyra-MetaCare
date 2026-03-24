@@ -1,20 +1,31 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis } from 'recharts';
-import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/mysql/client';
+
+interface WearableRealtimePayload {
+  heartRate: number | null;
+  hrv: number | null;
+  respiratoryRate: number | null;
+  temperature: number | null;
+}
 
 const chartConfig = {
   heartRate: {
-    label: "BPM",
-    color: "hsl(var(--destructive))",
+    label: 'BPM',
+    color: 'hsl(var(--destructive))',
   },
 };
 
 export function LiveHeartRateChart({ initialData }: { initialData: number }) {
-  const [data, setData] = useState(() => 
+  const [data, setData] = useState(() =>
     Array.from({ length: 20 }, (_, i) => ({
       time: i,
       heartRate: initialData,
@@ -22,21 +33,22 @@ export function LiveHeartRateChart({ initialData }: { initialData: number }) {
   );
 
   useEffect(() => {
-    const channel = supabase
-      .channel('realtime-wearable-chart')
+    const channel = db
+      .channel('realtime-wearable')
       .on('broadcast', { event: 'new_data' }, (payload) => {
+        const realtimePayload = payload.payload as WearableRealtimePayload;
         const newPoint = {
           time: new Date().getTime(),
-          heartRate: payload.payload.heartRate,
+          heartRate: realtimePayload.heartRate ?? initialData,
         };
-        setData(currentData => [...currentData.slice(1), newPoint]);
+        setData((currentData) => [...currentData.slice(1), newPoint]);
       })
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      db.removeChannel(channel);
     };
-  }, []);
+  }, [initialData]);
 
   return (
     <Card className="h-full flex flex-col">
@@ -50,11 +62,7 @@ export function LiveHeartRateChart({ initialData }: { initialData: number }) {
             margin={{ top: 5, right: 20, left: -10, bottom: 0 }}
           >
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
-            <XAxis
-              dataKey="time"
-              tick={false}
-              axisLine={false}
-            />
+            <XAxis dataKey="time" tick={false} axisLine={false} />
             <YAxis domain={[40, 160]} />
             <ChartTooltip
               cursor={false}

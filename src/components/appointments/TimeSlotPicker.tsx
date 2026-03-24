@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { addHours, format, isBefore, setHours, setMinutes, startOfDay } from "date-fns";
+import { Button } from '@/components/ui/button';
+import { format, isBefore, setHours, setMinutes, startOfDay } from 'date-fns';
 
 interface TimeSlotPickerProps {
   selectedDate: Date;
@@ -24,12 +24,19 @@ const generateTimeSlots = (date: Date): Date[] => {
   return slots;
 };
 
-export function TimeSlotPicker({ selectedDate, bookedSlots, onTimeSelect, selectedTime }: TimeSlotPickerProps) {
+export function TimeSlotPicker({
+  selectedDate,
+  bookedSlots,
+  onTimeSelect,
+  selectedTime,
+}: TimeSlotPickerProps) {
   const timeSlots = generateTimeSlots(selectedDate);
   const now = new Date();
 
   const isSlotBooked = (slot: Date) => {
-    return bookedSlots.some(bookedSlot => new Date(bookedSlot).getTime() === slot.getTime());
+    return bookedSlots.some(
+      (bookedSlot) => new Date(bookedSlot).getTime() === slot.getTime()
+    );
   };
 
   return (
@@ -42,12 +49,12 @@ export function TimeSlotPicker({ selectedDate, bookedSlots, onTimeSelect, select
         return (
           <Button
             key={index}
-            variant={isSelected ? "default" : "outline"}
+            variant={isSelected ? 'default' : 'outline'}
             disabled={isPast || isBooked}
             onClick={() => onTimeSelect(slot)}
-            className={isSelected ? "bg-blue-600 hover:bg-blue-700" : ""}
+            className={isSelected ? 'bg-blue-600 hover:bg-blue-700' : ''}
           >
-            {format(slot, "HH:mm")}
+            {format(slot, 'HH:mm')}
           </Button>
         );
       })}

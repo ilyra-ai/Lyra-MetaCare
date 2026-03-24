@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "mcp-task-orchestrator": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-v",
+        "mcp-task-data:/app/data",
+        "ghcr.io/jpicklyk/task-orchestrator:latest"
+      ]
+    },
+    "shadcn": {
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"]
+    }
+  }
+}

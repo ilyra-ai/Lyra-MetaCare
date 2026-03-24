@@ -1,13 +1,17 @@
 import { describe, it, expect } from 'vitest';
-import { profileSchema } from './ProfileForm';
+import {
+  buildProfileUpdatePayload,
+  profileSchema,
+  type ProfileValues,
+} from './ProfileForm';
 
 describe('profileSchema', () => {
-  const validData = {
+  const validData: ProfileValues = {
     first_name: 'John',
     last_name: 'Doe',
     age: 30,
     gender: 'male',
-    birth_date: new Date('1994-01-01'),
+    birth_date: new Date(1994, 0, 1),
     birth_time: '14:30',
     birth_location: 'New York, USA',
   };
@@ -52,7 +56,9 @@ describe('profileSchema', () => {
       const result = profileSchema.safeParse({ ...validData, first_name: 'A' });
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('O nome deve ter pelo menos 2 caracteres.');
+        expect(result.error.issues[0].message).toBe(
+          'O nome deve ter pelo menos 2 caracteres.'
+        );
       }
     });
   });
@@ -62,7 +68,9 @@ describe('profileSchema', () => {
       const result = profileSchema.safeParse({ ...validData, last_name: 'B' });
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('O sobrenome deve ter pelo menos 2 caracteres.');
+        expect(result.error.issues[0].message).toBe(
+          'O sobrenome deve ter pelo menos 2 caracteres.'
+        );
       }
     });
   });
@@ -72,7 +80,9 @@ describe('profileSchema', () => {
       const result = profileSchema.safeParse({ ...validData, age: 12 });
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Você deve ter pelo menos 13 anos.');
+        expect(result.error.issues[0].message).toBe(
+          'Você deve ter pelo menos 13 anos.'
+        );
       }
     });
 
@@ -95,7 +105,10 @@ describe('profileSchema', () => {
 
   describe('gender', () => {
     it('should fail if gender is not in the enum', () => {
-      const result = profileSchema.safeParse({ ...validData, gender: 'invalid' });
+      const result = profileSchema.safeParse({
+        ...validData,
+        gender: 'invalid',
+      });
       expect(result.success).toBe(false);
     });
 
@@ -112,10 +125,15 @@ describe('profileSchema', () => {
     it('should fail if birth_time is in wrong format', () => {
       const invalidTimes = ['25:00', '12:60', '9:30', '12-30', 'abc'];
       invalidTimes.forEach((time) => {
-        const result = profileSchema.safeParse({ ...validData, birth_time: time });
+        const result = profileSchema.safeParse({
+          ...validData,
+          birth_time: time,
+        });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.issues[0].message).toBe('Formato de hora inválido (HH:MM).');
+          expect(result.error.issues[0].message).toBe(
+            'Formato de hora inválido (HH:MM).'
+          );
         }
       });
     });
@@ -123,9 +141,35 @@ describe('profileSchema', () => {
     it('should allow valid HH:MM times', () => {
       const validTimes = ['00:00', '23:59', '09:05', '12:30'];
       validTimes.forEach((time) => {
-        const result = profileSchema.safeParse({ ...validData, birth_time: time });
+        const result = profileSchema.safeParse({
+          ...validData,
+          birth_time: time,
+        });
         expect(result.success).toBe(true);
       });
+    });
+  });
+
+  describe('buildProfileUpdatePayload', () => {
+    it('should convert empty optional profile fields to null', () => {
+      const payload = buildProfileUpdatePayload({
+        ...validData,
+        birth_date: null,
+        birth_time: '',
+        birth_location: '',
+      });
+
+      expect(payload.birth_date).toBeNull();
+      expect(payload.birth_time).toBeNull();
+      expect(payload.birth_location).toBeNull();
+    });
+
+    it('should keep filled optional profile fields intact', () => {
+      const payload = buildProfileUpdatePayload(validData);
+
+      expect(payload.birth_date).toBe('1994-01-01');
+      expect(payload.birth_time).toBe('14:30');
+      expect(payload.birth_location).toBe('New York, USA');
     });
   });
 });

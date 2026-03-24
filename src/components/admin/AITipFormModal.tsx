@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import * as React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import {
   Dialog,
   DialogContent,
@@ -11,8 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -21,11 +21,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Loader2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 export interface AITip {
   id: string;
@@ -36,8 +36,8 @@ export interface AITip {
 }
 
 const formSchema = z.object({
-  title: z.string().min(5, "O título é muito curto."),
-  detail: z.string().min(10, "O detalhe é muito curto."),
+  title: z.string().min(5, 'O título é muito curto.'),
+  detail: z.string().min(10, 'O detalhe é muito curto.'),
   category: z.string().optional(),
   is_active: z.boolean(),
 });
@@ -61,17 +61,17 @@ export function AITipFormModal({
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { title: "", detail: "", category: "", is_active: true },
+    defaultValues: { title: '', detail: '', category: '', is_active: true },
   });
 
   React.useEffect(() => {
     if (tipToEdit) {
       form.reset({
         ...tipToEdit,
-        category: tipToEdit.category || "",
+        category: tipToEdit.category || '',
       });
     } else {
-      form.reset({ title: "", detail: "", category: "", is_active: true });
+      form.reset({ title: '', detail: '', category: '', is_active: true });
     }
   }, [tipToEdit, open, form]);
 
@@ -85,20 +85,30 @@ export function AITipFormModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{tipToEdit ? "Editar Insight" : "Adicionar Novo Insight de IA"}</DialogTitle>
+          <DialogTitle>
+            {tipToEdit ? 'Editar Insight' : 'Adicionar Novo Insight de IA'}
+          </DialogTitle>
           <DialogDescription>
             Este insight poderá ser exibido no dashboard dos usuários.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="title"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Título</FormLabel>
-                  <FormControl><Input placeholder="Ex: Otimize o Sono Profundo" {...field} /></FormControl>
+                  <FormControl>
+                    <Input
+                      placeholder="Ex: Otimize o Sono Profundo"
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -109,7 +119,12 @@ export function AITipFormModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Detalhe</FormLabel>
-                  <FormControl><Textarea placeholder="Descreva o insight em detalhes..." {...field} /></FormControl>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Descreva o insight em detalhes..."
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -120,7 +135,9 @@ export function AITipFormModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categoria (Opcional)</FormLabel>
-                  <FormControl><Input placeholder="Ex: Sono, Nutrição" {...field} /></FormControl>
+                  <FormControl>
+                    <Input placeholder="Ex: Sono, Nutrição" {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -146,11 +163,18 @@ export function AITipFormModal({
               )}
             />
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Salvar
               </Button>
             </DialogFooter>

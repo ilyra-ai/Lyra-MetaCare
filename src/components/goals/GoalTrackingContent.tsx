@@ -1,17 +1,28 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { CheckCircle, Clock, XCircle, Target as TargetIcon, Plus } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
-import { toast } from "sonner";
-import { UpdateGoalProgressModal } from "./UpdateGoalProgressModal";
-import { Skeleton } from "@/components/ui/skeleton";
-
-type GoalStatus = "completed" | "in_progress" | "missed";
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import {
+  CheckCircle,
+  Clock,
+  XCircle,
+  Target as TargetIcon,
+  Plus,
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
+import { UpdateGoalProgressModal } from './UpdateGoalProgressModal';
+import { Skeleton } from '@/components/ui/skeleton';
+import { CreateGoalModal } from './CreateGoalModal';
 
 interface Goal {
   id: string;
@@ -24,14 +35,17 @@ interface Goal {
   status: string;
 }
 
-const statusMap: Record<string, { icon: React.ElementType; color: string; label: string }> = {
-  completed: { icon: CheckCircle, color: "text-green-600", label: "Concluída" },
-  in_progress: { icon: Clock, color: "text-blue-600", label: "Em Progresso" },
-  missed: { icon: XCircle, color: "text-red-600", label: "Atrasada" },
+const statusMap: Record<
+  string,
+  { icon: React.ElementType; color: string; label: string }
+> = {
+  completed: { icon: CheckCircle, color: 'text-green-600', label: 'Concluída' },
+  in_progress: { icon: Clock, color: 'text-blue-600', label: 'Em Progresso' },
+  missed: { icon: XCircle, color: 'text-red-600', label: 'Atrasada' },
 };
 
 export function GoalTrackingContent() {
-  const { supabase, session } = useAuth();
+  const { db, session } = useAuth();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,21 +53,21 @@ export function GoalTrackingContent() {
     if (!session?.user) return;
 
     setLoading(true);
-    const { data, error } = await supabase
-      .from("goals")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .order("created_at", { ascending: false });
+    const { data, error } = await db
+      .from('goals')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false });
 
     if (error) {
-      toast.error("Erro ao carregar metas.", { description: error.message });
+      toast.error('Erro ao carregar metas.', { description: error.message });
       console.error(error);
       setGoals([]);
     } else {
       setGoals(data as Goal[]);
     }
     setLoading(false);
-  }, [session, supabase]);
+  }, [session, db]);
 
   useEffect(() => {
     fetchGoals();
@@ -74,12 +88,14 @@ export function GoalTrackingContent() {
       <Card className="text-center p-10">
         <CardTitle className="text-xl mb-2">Nenhuma Meta Encontrada</CardTitle>
         <CardDescription>
-          Suas metas de longevidade aparecerão aqui após serem definidas pelo Plano de IA.
+          Suas metas de longevidade aparecerão aqui após serem definidas pelo
+          Plano de IA.
         </CardDescription>
-        {/* Placeholder for adding a goal manually, if needed later */}
-        <Button variant="outline" className="mt-4" disabled>
+        <CreateGoalModal onCreated={fetchGoals}>
+          <Button variant="outline" className="mt-4">
             <Plus className="h-4 w-4 mr-2" /> Adicionar Meta Manualmente
-        </Button>
+          </Button>
+        </CreateGoalModal>
       </Card>
     );
   }
@@ -87,22 +103,31 @@ export function GoalTrackingContent() {
   return (
     <div className="space-y-8">
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <TargetIcon className="h-6 w-6 mr-3 text-green-700" />
-            Acompanhamento de Metas
-          </CardTitle>
-          <CardDescription>
-            Visualize e atualize seu progresso nas metas de longevidade.
-          </CardDescription>
+        <CardHeader className="gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-2">
+            <CardTitle className="flex items-center">
+              <TargetIcon className="h-6 w-6 mr-3 text-green-700" />
+              Acompanhamento de Metas
+            </CardTitle>
+            <CardDescription>
+              Visualize, atualize e cadastre metas de longevidade com
+              persistencia real.
+            </CardDescription>
+          </div>
+          <CreateGoalModal onCreated={fetchGoals}>
+            <Button variant="outline">
+              <Plus className="h-4 w-4 mr-2" /> Nova Meta
+            </Button>
+          </CreateGoalModal>
         </CardHeader>
       </Card>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {goals.map((goal) => {
-          const statusKey = goal.status in statusMap ? goal.status : 'in_progress';
+          const statusKey =
+            goal.status in statusMap ? goal.status : 'in_progress';
           const { icon: StatusIcon, color, label } = statusMap[statusKey];
-          
+
           const progressPercentage = goal.target_value
             ? Math.min(100, (goal.current_value / goal.target_value) * 100)
             : 0;
@@ -121,19 +146,22 @@ export function GoalTrackingContent() {
                   <StatusIcon className={`h-4 w-4 ${color}`} />
                   <span className={color}>{label}</span>
                 </div>
-                
+
                 <div className="space-y-1">
-                    <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>Progresso ({goal.current_value} {goal.unit || ''} / {goal.target_value} {goal.unit || ''})</span>
-                        <span>{progressPercentage.toFixed(0)}%</span>
-                    </div>
-                    <Progress value={progressPercentage} className="h-2" />
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>
+                      Progresso ({goal.current_value} {goal.unit || ''} /{' '}
+                      {goal.target_value} {goal.unit || ''})
+                    </span>
+                    <span>{progressPercentage.toFixed(0)}%</span>
+                  </div>
+                  <Progress value={progressPercentage} className="h-2" />
                 </div>
 
                 <UpdateGoalProgressModal goal={goal} onUpdate={fetchGoals}>
-                    <Button variant="outline" size="sm" className="w-full mt-2">
-                        Atualizar Progresso
-                    </Button>
+                  <Button variant="outline" size="sm" className="w-full mt-2">
+                    Atualizar Progresso
+                  </Button>
                 </UpdateGoalProgressModal>
               </CardContent>
             </Card>

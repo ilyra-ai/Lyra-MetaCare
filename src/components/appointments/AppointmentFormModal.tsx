@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { toast } from "sonner";
+import * as React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -12,8 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -21,18 +21,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { TimeInput } from "@/components/ui/time-input";
-import { Loader2 } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
-import { DatePicker } from "@/components/ui/date-picker";
+} from '@/components/ui/select';
+import { TimeInput } from '@/components/ui/time-input';
+import { Loader2 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { DatePicker } from '@/components/ui/date-picker';
 
 // Tipos para os dados
 interface Professional {
@@ -49,9 +49,14 @@ interface Appointment {
 
 // Schema de validação
 const formSchema = z.object({
-  professional_id: z.string({ required_error: "Selecione um profissional." }),
-  appointment_date: z.date({ required_error: "A data é obrigatória." }),
-  appointment_time: z.string().refine(val => /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val), "Formato de hora inválido (HH:MM)."),
+  professional_id: z.string({ required_error: 'Selecione um profissional.' }),
+  appointment_date: z.date({ required_error: 'A data é obrigatória.' }),
+  appointment_time: z
+    .string()
+    .refine(
+      (val) => /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val),
+      'Formato de hora inválido (HH:MM).'
+    ),
   notes: z.string().optional(),
 });
 
@@ -79,29 +84,32 @@ export function AppointmentFormModal({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      professional_id: "",
+      professional_id: '',
       appointment_date: initialDate,
-      appointment_time: "09:00",
-      notes: "",
+      appointment_time: '09:00',
+      notes: '',
     },
   });
 
   React.useEffect(() => {
     if (appointmentToEdit) {
       const appointmentDate = new Date(appointmentToEdit.appointment_time);
-      const time = appointmentDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const time = appointmentDate.toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
       form.reset({
         professional_id: appointmentToEdit.professional_id,
         appointment_date: appointmentDate,
         appointment_time: time,
-        notes: appointmentToEdit.notes || "",
+        notes: appointmentToEdit.notes || '',
       });
     } else {
       form.reset({
-        professional_id: "",
+        professional_id: '',
         appointment_date: initialDate,
-        appointment_time: "09:00",
-        notes: "",
+        appointment_time: '09:00',
+        notes: '',
       });
     }
   }, [appointmentToEdit, open, form, initialDate]);
@@ -110,8 +118,8 @@ export function AppointmentFormModal({
     setIsSubmitting(true);
     try {
       await onSave(data, appointmentToEdit?.id);
-    } catch (error) {
-      toast.error("Ocorreu um erro.");
+    } catch {
+      toast.error('Ocorreu um erro.');
     } finally {
       setIsSubmitting(false);
     }
@@ -121,13 +129,18 @@ export function AppointmentFormModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{appointmentToEdit ? "Editar Consulta" : "Agendar Nova Consulta"}</DialogTitle>
+          <DialogTitle>
+            {appointmentToEdit ? 'Editar Consulta' : 'Agendar Nova Consulta'}
+          </DialogTitle>
           <DialogDescription>
             Preencha os detalhes da sua consulta.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="professional_id"
@@ -141,8 +154,10 @@ export function AppointmentFormModal({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {professionals.map(p => (
-                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                      {professionals.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -189,19 +204,29 @@ export function AppointmentFormModal({
                 <FormItem>
                   <FormLabel>Notas (Opcional)</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Ex: Endereço, motivo da consulta..." {...field} />
+                    <Textarea
+                      placeholder="Ex: Endereço, motivo da consulta..."
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {appointmentToEdit ? "Salvar Alterações" : "Agendar"}
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {appointmentToEdit ? 'Salvar Alterações' : 'Agendar'}
               </Button>
             </DialogFooter>
           </form>

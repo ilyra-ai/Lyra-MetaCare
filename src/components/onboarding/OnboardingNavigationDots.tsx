@@ -1,15 +1,18 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { type CarouselApi } from "@/components/ui/carousel";
-import * as React from "react";
+import { cn } from '@/lib/utils';
+import { type CarouselApi } from '@/components/ui/carousel';
+import * as React from 'react';
 
 interface OnboardingNavigationDotsProps {
   api: CarouselApi | undefined;
   count: number;
 }
 
-export function OnboardingNavigationDots({ api, count }: OnboardingNavigationDotsProps) {
+export function OnboardingNavigationDots({
+  api,
+  count,
+}: OnboardingNavigationDotsProps) {
   const [current, setCurrent] = React.useState(0);
 
   React.useEffect(() => {
@@ -19,7 +22,7 @@ export function OnboardingNavigationDots({ api, count }: OnboardingNavigationDot
 
     setCurrent(api.selectedScrollSnap() + 1);
 
-    api.on("select", () => {
+    api.on('select', () => {
       setCurrent(api.selectedScrollSnap() + 1);
     });
   }, [api]);
@@ -28,11 +31,25 @@ export function OnboardingNavigationDots({ api, count }: OnboardingNavigationDot
     <div
       key={index}
       className={cn(
-        "h-2 w-2 rounded-full transition-all duration-300",
-        index === current - 1 ? "bg-green-600 w-6" : "bg-gray-300"
+        'h-2 rounded-full transition-all duration-300',
+        index === current - 1
+          ? 'bg-primary w-6'
+          : 'bg-muted w-2 hover:bg-muted-foreground/30'
       )}
     />
   ));
 
-  return <div className="flex space-x-2">{dots}</div>;
+  return (
+
+    <div className="flex items-center space-x-1.5" role="tablist" aria-label="Progresso do onboarding">
+
+    <div
+      className="flex items-center space-x-1.5"
+      role="tablist"
+      aria-label="Progresso do onboarding"
+    >
+
+      {dots}
+    </div>
+  );
 }
