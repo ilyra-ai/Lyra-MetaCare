@@ -11,7 +11,11 @@ type SidebarLinkProps = {
   description?: string;
   className?: string;
   onClick?: () => void;
+
+}
+
 };
+
 
 export function SidebarLink({
   href,
@@ -28,6 +32,25 @@ export function SidebarLink({
     <Link
       href={href}
       onClick={onClick}
+
+      className={cn(
+        'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
+        isActive
+          ? 'bg-primary/10 text-primary border-l-[3px] border-primary'
+          : 'text-muted-foreground hover:bg-secondary hover:text-foreground hover:scale-[1.01]',
+        className
+      )}
+    >
+      <Icon
+        className={cn(
+          'h-[18px] w-[18px] shrink-0 transition-colors duration-200',
+          isActive
+            ? 'text-primary'
+            : 'text-muted-foreground group-hover:text-foreground'
+        )}
+      />
+      <span>{children}</span>
+
       aria-current={isActive ? 'page' : undefined}
       className={cn(
         'nav-pill group relative w-full justify-start overflow-hidden border border-transparent',
@@ -68,6 +91,7 @@ export function SidebarLink({
             : 'bg-transparent group-hover:bg-primary/30'
         )}
       />
+
     </Link>
   );
 }

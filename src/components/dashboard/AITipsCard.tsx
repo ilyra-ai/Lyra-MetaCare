@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Card, Title, Text, Flex, Badge, Button } from '@tremor/react';
-import { Lightbulb, ChevronRight } from 'lucide-react';
+import { Lightbulb, ChevronRight, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -54,7 +54,6 @@ export function AITipsCard({
           throw new Error('No tips found or error fetching count');
         }
 
-        // 2. Selecionar um índice aleatório e buscar apenas essa linha
         const randomIndex = Math.floor(Math.random() * count);
         const { data, error } = await db
           .from('ai_tips')
@@ -102,20 +101,19 @@ export function AITipsCard({
   }
 
   if (loading) {
-    return <Skeleton className={cn('h-full w-full', className)} />;
+    return <Skeleton className={cn('h-full w-full rounded-2xl', className)} />;
   }
 
   if (!tip) {
     return (
       <Card
         className={cn(
-          'h-full border border-dashed border-amber-200 bg-amber-50/70 text-amber-900 dark:bg-amber-900/20 dark:text-amber-100',
+          'h-full rounded-2xl border border-dashed border-border bg-secondary/50',
           className
         )}
       >
-        <div className="flex h-full items-center justify-center p-6 text-center text-sm">
-          Nenhum insight ativo foi encontrado no banco MySQL para exibição no
-          dashboard.
+        <div className="flex h-full items-center justify-center p-6 text-center text-sm text-muted-foreground">
+          Nenhum insight ativo foi encontrado para exibição no dashboard.
         </div>
       </Card>
     );
@@ -124,36 +122,34 @@ export function AITipsCard({
   return (
     <Card
       className={cn(
-        'h-full bg-amber-50 text-amber-900 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-100',
+        'h-full rounded-2xl border border-border bg-card shadow hover:shadow-md transition-all duration-200 card-highlight-cosmic',
         className
       )}
-      decoration="top"
-      decorationColor="amber"
     >
       <Flex justifyContent="start" className="gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-200/80 dark:bg-amber-900/60">
-          <Lightbulb className="h-5 w-5" />
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-cosmic/10">
+          <Sparkles className="h-5 w-5 text-cosmic" />
         </span>
         <div>
           <Flex alignItems="center" className="gap-2">
-            <Title>Insight de IA</Title>
-            <Badge color="amber">Novo</Badge>
+            <Title className="font-display text-foreground">Insight de IA</Title>
+            <Badge color="violet">Novo</Badge>
           </Flex>
-          <Text className="text-sm text-amber-700 dark:text-amber-200">
+          <Text className="text-sm text-muted-foreground">
             Dica personalizada para o seu dia.
           </Text>
         </div>
       </Flex>
 
-      <div className="mt-6 space-y-3">
-        <Text className="font-semibold text-amber-900 dark:text-amber-100">
+      <div className="mt-5 space-y-3">
+        <Text className="font-semibold text-foreground">
           {tip.title}
         </Text>
-        <Text className="text-sm text-amber-700 dark:text-amber-200">
+        <Text className="text-sm text-muted-foreground leading-relaxed">
           {tip.detail}
         </Text>
         <Button
-          className="w-fit"
+          className="w-fit mt-2"
           size="sm"
           variant="secondary"
           icon={ChevronRight}

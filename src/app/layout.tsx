@@ -1,5 +1,10 @@
+
+import type { Metadata } from 'next';
+import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
+
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
+
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -23,7 +28,11 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
   subsets: ['latin'],
   display: 'swap',
+
+  weight: ['400'],
+
   weight: ['400', '500', '600'],
+
 });
 
 export const metadata: Metadata = {
@@ -33,14 +42,24 @@ export const metadata: Metadata = {
     template: '%s | Lyra MetaCare',
   },
   description:
+
+    'Seu Bem-Estar Orquestrado: Onde a Sabedoria Ancestral Encontra a Inteligência Artificial.',
+  keywords: [
+    'saúde',
+
     'Super-app premium de saúde preventiva personalizada com IA, monitoramento biométrico e sabedoria ancestral em uma experiência luminosa e acolhedora.',
   keywords: [
     'Lyra MetaCare',
     'saúde preventiva',
+
     'bem-estar',
     'inteligência artificial',
     'astrologia védica',
     'longevidade',
+
+    'wellness',
+  ],
+
     'monitoramento',
     'wellness premium',
   ],
@@ -75,6 +94,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   themeColor: '#f9f8fc',
   colorScheme: 'light',
+
 };
 
 export default function RootLayout({
@@ -83,6 +103,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body
+        className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans antialiased`}
+      >
+        <a href="#main-content" className="skip-nav">
+
     <html
       lang="pt-BR"
       suppressHydrationWarning
@@ -90,6 +117,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen font-sans antialiased">
         <a href="#conteudo-principal" className="skip-nav">
+
           Pular para o conteúdo principal
         </a>
         <ThemeProvider

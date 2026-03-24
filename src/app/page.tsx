@@ -13,6 +13,8 @@ type UserProfile = {
   first_name: string | null;
 };
 
+function getGreeting(): string {
+  const hour = new Date().getHours();
 function getGreeting() {
   const hour = new Date().getHours();
 
@@ -72,6 +74,27 @@ export default function Home() {
     return <SplashScreen />;
   }
 
+  const firstName = profile?.first_name || 'Usuário';
+  const greeting = getGreeting();
+
+  return (
+    <div className="flex min-h-screen bg-background">
+      <Sidebar />
+      <div className="flex flex-col flex-1 z-10">
+        <Header />
+        <main id="main-content" className="flex-1 p-4 sm:p-6 md:p-8">
+          <div className="mb-8">
+            <h1 className="text-2xl sm:text-3xl font-display font-bold text-foreground">
+              {greeting},{' '}
+              <span className="text-gradient-hero">{firstName}</span>!
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Aqui está o resumo do seu bem-estar hoje.
+            </p>
+          </div>
+          <Dashboard />
+        </main>
+        <MadeWithIlyra />
   const firstName = profile?.first_name?.trim() || 'Paciente';
 
   return (

@@ -29,6 +29,10 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Lock, Mail, Sparkles, User } from 'lucide-react';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 type SubmitMode = 'login' | 'register' | null;
@@ -39,6 +43,7 @@ type LoginDataConfig = {
     subtitle: string;
   };
 };
+
 
 export default function LoginPage() {
   const { session, db } = useAuth();
@@ -134,6 +139,193 @@ export default function LoginPage() {
     'Tudo aqui foi reorganizado para ficar mais fluido, mais fofo e mais convidativo, sem perder o rigor do fluxo real de auth.';
 
   return (
+
+    <div className="relative min-h-screen flex items-center justify-center bg-background p-4 overflow-hidden">
+      {/* Decorative orbs */}
+      <div className="cosmic-orb w-80 h-80 bg-primary/15 -top-20 -left-20" />
+      <div className="cosmic-orb w-64 h-64 bg-accent/15 -bottom-16 right-0" />
+      <div className="cosmic-orb w-48 h-48 bg-cosmic/15 top-1/3 right-1/4" />
+
+      <div className="relative z-10 max-w-md w-full">
+        {/* Card */}
+        <div className="rounded-2xl border border-border bg-card p-8 shadow-lg animate-scale-in">
+          {/* Logo */}
+          <div className="flex flex-col items-center gap-3 mb-8">
+            <div className="p-3 bg-gradient-teal rounded-xl shadow-teal">
+              <Sparkles className="h-7 w-7 text-white" />
+            </div>
+            <h1 className="text-2xl font-display font-bold text-gradient-hero">
+              lyra
+            </h1>
+            <p className="text-sm text-muted-foreground text-center">
+              Acesse sua jornada de bem-estar
+            </p>
+          </div>
+
+          <Tabs defaultValue="login" className="space-y-6">
+            <TabsList className="grid grid-cols-2 bg-secondary rounded-xl">
+              <TabsTrigger value="login" className="rounded-lg">
+                Entrar
+              </TabsTrigger>
+              <TabsTrigger value="register" className="rounded-lg">
+                Criar Conta
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Login Tab */}
+            <TabsContent value="login" className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="login-email" className="text-sm font-medium">
+                  Email
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="login-email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    className="pl-10 rounded-xl"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="login-password" className="text-sm font-medium">
+                  Senha
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="login-password"
+                    type="password"
+                    placeholder="Sua senha"
+                    className="pl-10 rounded-xl"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                  />
+                </div>
+              </div>
+              <Button
+                className="w-full rounded-xl h-11 bg-gradient-teal text-white shadow-teal hover:shadow-md"
+                disabled={submitting}
+                onClick={handleLogin}
+              >
+                {submitting ? 'Entrando...' : 'Entrar'}
+              </Button>
+              <p className="text-center text-xs text-muted-foreground">
+                Esqueceu sua senha?{' '}
+                <button
+                  type="button"
+                  className="text-primary hover:underline font-medium"
+                >
+                  Recuperar
+                </button>
+              </p>
+            </TabsContent>
+
+            {/* Register Tab */}
+            <TabsContent value="register" className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="register-first-name"
+                    className="text-sm font-medium"
+                  >
+                    Nome
+                  </Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="register-first-name"
+                      placeholder="Nome"
+                      className="pl-10 rounded-xl"
+                      value={registerFirstName}
+                      onChange={(e) => setRegisterFirstName(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="register-last-name"
+                    className="text-sm font-medium"
+                  >
+                    Sobrenome
+                  </Label>
+                  <Input
+                    id="register-last-name"
+                    placeholder="Sobrenome"
+                    className="rounded-xl"
+                    value={registerLastName}
+                    onChange={(e) => setRegisterLastName(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="register-email"
+                  className="text-sm font-medium"
+                >
+                  Email
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="register-email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    className="pl-10 rounded-xl"
+                    value={registerEmail}
+                    onChange={(e) => setRegisterEmail(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="register-password"
+                  className="text-sm font-medium"
+                >
+                  Senha
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="register-password"
+                    type="password"
+                    placeholder="Crie uma senha"
+                    className="pl-10 rounded-xl"
+                    value={registerPassword}
+                    onChange={(e) => setRegisterPassword(e.target.value)}
+                  />
+                </div>
+              </div>
+              <Button
+                className="w-full rounded-xl h-11 bg-gradient-coral text-white shadow-coral hover:shadow-md"
+                disabled={submitting}
+                onClick={handleRegister}
+              >
+                {submitting ? 'Criando...' : 'Criar Conta'}
+              </Button>
+            </TabsContent>
+          </Tabs>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">
+                Lyra MetaCare
+              </span>
+            </div>
+          </div>
+
+          <p className="text-center text-xs text-muted-foreground">
+            Seu Bem-Estar Orquestrado
+          </p>
+        </div>
+
     <main className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,hsl(var(--background)),#ffffff_48%,#fcfbff_100%)] text-foreground">
       <div className="pointer-events-none absolute inset-0">
         <div className="cosmic-orb left-[-8rem] top-[-4rem] h-80 w-80 bg-primary/16" />
@@ -429,6 +621,7 @@ export default function LoginPage() {
             </CardFooter>
           </Card>
         </section>
+
       </div>
     </main>
   );

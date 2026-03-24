@@ -58,13 +58,13 @@ export function Dashboard() {
 
   if (loading) {
     return (
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Skeleton className="h-36 w-full" />
-        <Skeleton className="h-36 w-full" />
-        <Skeleton className="h-36 w-full" />
-        <Skeleton className="h-36 w-full" />
-        <Skeleton className="h-[320px] w-full lg:col-span-2" />
-        <Skeleton className="h-[320px] w-full lg:col-span-2" />
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <Skeleton className="h-36 w-full rounded-2xl" />
+        <Skeleton className="h-36 w-full rounded-2xl" />
+        <Skeleton className="h-36 w-full rounded-2xl" />
+        <Skeleton className="h-36 w-full rounded-2xl" />
+        <Skeleton className="h-[320px] w-full lg:col-span-2 rounded-2xl" />
+        <Skeleton className="h-[320px] w-full lg:col-span-2 rounded-2xl" />
       </div>
     );
   }
@@ -135,6 +135,20 @@ export function Dashboard() {
       ].filter((segment) => segment.value > 0)
     : [];
 
+  const iconBgMap: Record<string, string> = {
+    'Índice de Longevidade': 'bg-primary/10',
+    'Prontidão diária': 'bg-cosmic/10',
+    Passos: 'bg-accent/10',
+    Sono: 'bg-info/10',
+  };
+
+  const iconColorMap: Record<string, string> = {
+    'Índice de Longevidade': 'text-primary',
+    'Prontidão diária': 'text-cosmic',
+    Passos: 'text-accent',
+    Sono: 'text-info',
+  };
+
   const highlightCards = [
     {
       title: 'Índice de Longevidade',
@@ -171,15 +185,14 @@ export function Dashboard() {
   ];
 
   return (
-    <div className="space-y-8">
-      <Grid numItemsSm={1} numItemsMd={2} numItemsLg={4} className="gap-8">
+    <div className="space-y-6">
+      {/* KPI Cards */}
+      <Grid numItemsSm={1} numItemsMd={2} numItemsLg={4} className="gap-5">
         {highlightCards.map(
           ({ title, value, description, icon: Icon, delta, deltaType }) => (
             <Card
               key={title}
-              decoration="top"
-              decorationColor="emerald"
-              className="space-y-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-glass dark:hover:shadow-neon bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-white/20"
+              className="space-y-3 rounded-2xl border border-border bg-card shadow hover:shadow-md transition-all duration-200 hover:scale-[1.01]"
             >
               <Flex
                 justifyContent="between"
@@ -187,23 +200,27 @@ export function Dashboard() {
                 className="gap-4"
               >
                 <div>
-                  <Text className="text-sm text-tremor-content-subtle">
+                  <Text className="text-sm text-muted-foreground">
                     {title}
                   </Text>
-                  <Metric className="mt-1 text-tremor-content-strong bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-400">
+                  <Metric className="mt-1 text-foreground font-display">
                     {title === 'Índice de Longevidade' && !aiScoresEnabled
                       ? 'Bloqueado'
                       : value}
                   </Metric>
                 </div>
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/40 dark:to-teal-900/20 shadow-sm">
-                  <Icon className="h-6 w-6 text-emerald-600" />
+                <span
+                  className={`flex h-11 w-11 items-center justify-center rounded-xl ${iconBgMap[title] || 'bg-secondary'}`}
+                >
+                  <Icon
+                    className={`h-5 w-5 ${iconColorMap[title] || 'text-primary'}`}
+                  />
                 </span>
               </Flex>
               <Flex justifyContent="between" alignItems="center">
-                <Text className="text-sm text-tremor-content-subtle">
+                <Text className="text-xs text-muted-foreground">
                   {title === 'Índice de Longevidade' && !aiScoresEnabled
-                    ? 'Seu plano atual não libera o cálculo de scores de IA.'
+                    ? 'Seu plano atual não libera scores de IA.'
                     : description}
                 </Text>
                 {title === 'Índice de Longevidade' &&
@@ -224,59 +241,57 @@ export function Dashboard() {
         )}
       </Grid>
 
-      <Grid numItemsSm={1} numItemsLg={3} className="gap-8">
-        <Card
-          className="space-y-4 lg:col-span-2 transition-all duration-300 hover:-translate-y-1 hover:shadow-glass dark:hover:shadow-neon bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-white/20"
-          decoration="top"
-          decorationColor="emerald"
-        >
+      {/* Charts Row 1 */}
+      <Grid numItemsSm={1} numItemsLg={3} className="gap-5">
+        <Card className="space-y-3 lg:col-span-2 rounded-2xl border border-border bg-card shadow hover:shadow-md transition-all duration-200">
           <Flex justifyContent="between" alignItems="center">
             <div>
-              <Title className="font-bold">Atividade Semanal</Title>
-              <Text className="text-sm text-tremor-content-subtle">
+              <Title className="font-display font-semibold text-foreground">
+                Atividade Semanal
+              </Title>
+              <Text className="text-sm text-muted-foreground">
                 Evolução dos seus passos nos últimos 7 dias.
               </Text>
             </div>
           </Flex>
-          <Divider className="opacity-50" />
+          <Divider className="opacity-30" />
           <AreaChart
-            className="h-72 mt-4"
+            className="h-72 mt-2"
             data={stepsTrendData}
             index="day"
             categories={['Passos']}
-            colors={['emerald']}
+            colors={['teal']}
             valueFormatter={(value) => valueFormatter(value)}
             showLegend={false}
             showYAxis={false}
             curveType="monotone"
           />
         </Card>
-        <div className="lg:col-span-1 h-full transition-all duration-300 hover:-translate-y-1">
+        <div className="lg:col-span-1 h-full">
           <AITipsCard
-            className="h-full shadow-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-white/20 hover:shadow-glass dark:hover:shadow-neon"
+            className="h-full rounded-2xl"
             featureEnabled={aiTipsEnabled}
             currentPlanKey={subscription.plan.key}
           />
         </div>
       </Grid>
 
-      <Grid numItemsSm={1} numItemsLg={3} className="gap-8">
-        <Card
-          className="space-y-4 lg:col-span-2 transition-all duration-300 hover:-translate-y-1 hover:shadow-glass dark:hover:shadow-neon bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-white/20"
-          decoration="top"
-          decorationColor="indigo"
-        >
+      {/* Charts Row 2 */}
+      <Grid numItemsSm={1} numItemsLg={3} className="gap-5">
+        <Card className="space-y-3 lg:col-span-2 rounded-2xl border border-border bg-card shadow hover:shadow-md transition-all duration-200">
           <Flex justifyContent="between" alignItems="center">
             <div>
-              <Title className="font-bold">Padrão de Sono</Title>
-              <Text className="text-sm text-tremor-content-subtle">
+              <Title className="font-display font-semibold text-foreground">
+                Padrão de Sono
+              </Title>
+              <Text className="text-sm text-muted-foreground">
                 Duração do sono em horas nos últimos 7 dias.
               </Text>
             </div>
           </Flex>
-          <Divider className="opacity-50" />
+          <Divider className="opacity-30" />
           <BarChart
-            className="h-72 mt-4"
+            className="h-72 mt-2"
             data={sleepTrendData}
             index="day"
             categories={['Sono (h)']}
@@ -286,16 +301,14 @@ export function Dashboard() {
             yAxisWidth={40}
           />
         </Card>
-        <Card
-          className="space-y-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-glass dark:hover:shadow-neon bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-white/20"
-          decoration="top"
-          decorationColor="indigo"
-        >
-          <Title className="font-bold">Estrutura da última noite</Title>
-          <Text className="text-sm text-tremor-content-subtle">
+        <Card className="space-y-3 rounded-2xl border border-border bg-card shadow hover:shadow-md transition-all duration-200">
+          <Title className="font-display font-semibold text-foreground">
+            Estrutura da última noite
+          </Title>
+          <Text className="text-sm text-muted-foreground">
             Distribuição das fases de sono.
           </Text>
-          <Divider className="opacity-50" />
+          <Divider className="opacity-30" />
           {sleepBreakdownData.length > 0 ? (
             <DonutChart
               data={sleepBreakdownData}
@@ -303,36 +316,39 @@ export function Dashboard() {
               category="value"
               valueFormatter={(value) => `${valueFormatter(value)} h`}
               colors={['violet', 'indigo', 'sky']}
-              className="mt-6"
+              className="mt-4"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-sm text-tremor-content-subtle">
+            <div className="flex h-full items-center justify-center text-sm text-muted-foreground py-12">
               Sem dados de sono para hoje.
             </div>
           )}
         </Card>
       </Grid>
 
+      {/* Advanced Health Pillars */}
       {todayMetrics ? (
-        <div className="space-y-6 pt-4">
+        <div className="space-y-5 pt-2">
           <div>
-            <Title className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent inline-block">
+            <h2 className="text-xl font-display font-bold text-gradient-hero">
               Pilares avançados de saúde
-            </Title>
-            <Text className="text-base text-tremor-content-subtle mt-1">
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
               Visualize a profundidade das suas métricas de longevidade.
-            </Text>
+            </p>
           </div>
-          <div className="transition-all duration-300 bg-white/40 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-glass">
+          <div className="rounded-2xl bg-card border border-border p-5 shadow">
             <MetricGrid metrics={todayMetrics} />
           </div>
         </div>
       ) : (
-        <Card className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-white/20 shadow-glass">
+        <Card className="rounded-2xl border border-border bg-card shadow">
           <Flex justifyContent="between" alignItems="center">
             <div>
-              <Title>Dados indisponíveis</Title>
-              <Text className="text-sm text-tremor-content-subtle">
+              <Title className="font-display text-foreground">
+                Dados indisponíveis
+              </Title>
+              <Text className="text-sm text-muted-foreground">
                 Não encontramos métricas para hoje. Conecte seus dispositivos de
                 monitoramento para ver recomendações personalizadas.
               </Text>

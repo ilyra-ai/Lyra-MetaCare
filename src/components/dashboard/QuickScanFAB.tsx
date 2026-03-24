@@ -3,7 +3,6 @@
 import { Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 
 export function QuickScanFAB() {
   const handleScan = () => {
@@ -14,18 +13,13 @@ export function QuickScanFAB() {
   };
 
   return (
-    <div
-      className={cn(
-        'fixed bottom-4 right-4 md:bottom-8 md:right-8 z-40',
-        'animate-in slide-in-from-bottom-10 duration-500'
-      )}
-    >
+    <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-40 animate-fade-in-up">
       <Button
         onClick={handleScan}
-        className="h-14 w-14 rounded-full shadow-xl bg-green-600 hover:bg-green-700 transition-all duration-300 group"
+        className="h-14 w-14 rounded-full shadow-lg bg-gradient-teal text-white hover:shadow-teal transition-all duration-200 group"
         aria-label="Quick Scan"
       >
-        <Camera className="h-6 w-6 text-white group-hover:scale-110 transition-transform" />
+        <Camera className="h-6 w-6 group-hover:scale-110 transition-transform" />
       </Button>
     </div>
   );
