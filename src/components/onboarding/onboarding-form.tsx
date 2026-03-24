@@ -321,8 +321,13 @@ export function OnboardingForm() {
                     plano de longevidade exclusivo para você.
                   </p>
                   <p className="text-sm text-muted-foreground">
+
                     Clique em &ldquo;Começar&rdquo; para iniciar a configuração do seu
                     perfil.
+
+                    Clique em &ldquo;Começar&rdquo; para iniciar a configuração
+                    do seu perfil.
+
                   </p>
                 </div>
                 <div className="flex justify-center items-center md:col-span-1">
@@ -346,7 +351,13 @@ export function OnboardingForm() {
             {/* Step 2: Personal Data */}
             <OnboardingStep>
               <CardHeader className="space-y-2">
+
                 <CardTitle className="font-display">Seus Dados Pessoais</CardTitle>
+
+                <CardTitle className="font-display">
+                  Seus Dados Pessoais
+                </CardTitle>
+
                 <CardDescription>
                   Nome, data de nascimento e gênero para personalização.
                 </CardDescription>
@@ -362,7 +373,15 @@ export function OnboardingForm() {
                           <User className="h-4 w-4 mr-1.5 text-primary" /> Nome
                         </FormLabel>
                         <FormControl>
+
                           <Input placeholder="Seu nome" className="rounded-xl" {...field} />
+
+                          <Input
+                            placeholder="Seu nome"
+                            className="rounded-xl"
+                            {...field}
+                          />
+
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -374,10 +393,22 @@ export function OnboardingForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center text-sm font-medium">
+
                           <User className="h-4 w-4 mr-1.5 text-primary" /> Sobrenome
                         </FormLabel>
                         <FormControl>
                           <Input placeholder="Seu sobrenome" className="rounded-xl" {...field} />
+
+                          <User className="h-4 w-4 mr-1.5 text-primary" />{' '}
+                          Sobrenome
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Seu sobrenome"
+                            className="rounded-xl"
+                            {...field}
+                          />
+
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -392,7 +423,12 @@ export function OnboardingForm() {
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <FormLabel className="mb-2 flex items-center text-sm font-medium">
+
                           <Calendar className="h-4 w-4 mr-1.5 text-primary" /> Data de Nascimento
+
+                          <Calendar className="h-4 w-4 mr-1.5 text-primary" />{' '}
+                          Data de Nascimento
+
                         </FormLabel>
                         <FormControl>
                           <DatePicker
@@ -413,7 +449,12 @@ export function OnboardingForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center text-sm font-medium">
+
                           <Scale className="h-4 w-4 mr-1.5 text-primary" /> Idade
+
+                          <Scale className="h-4 w-4 mr-1.5 text-primary" />{' '}
+                          Idade
+
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -441,7 +482,12 @@ export function OnboardingForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center text-sm font-medium">
+
                           <Globe className="h-4 w-4 mr-1.5 text-primary" /> Gênero
+
+                          <Globe className="h-4 w-4 mr-1.5 text-primary" />{' '}
+                          Gênero
+
                         </FormLabel>
                         <Select
                           onValueChange={field.onChange}
@@ -474,7 +520,12 @@ export function OnboardingForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center text-sm font-medium">
+
                           <Clock className="h-4 w-4 mr-1.5 text-cosmic" /> Hora Exata (HH:MM)
+
+                          <Clock className="h-4 w-4 mr-1.5 text-cosmic" /> Hora
+                          Exata (HH:MM)
+
                         </FormLabel>
                         <FormControl>
                           <TimeInput placeholder="12:00" {...field} />
@@ -492,7 +543,12 @@ export function OnboardingForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center text-sm font-medium">
+
                           <MapPin className="h-4 w-4 mr-1.5 text-cosmic" /> Local de Nascimento
+
+                          <MapPin className="h-4 w-4 mr-1.5 text-cosmic" />{' '}
+                          Local de Nascimento
+
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -545,7 +601,13 @@ export function OnboardingForm() {
             {/* Step 3: Activity Level */}
             <OnboardingStep>
               <CardHeader className="space-y-2">
+
                 <CardTitle className="font-display">Nível de Atividade</CardTitle>
+
+                <CardTitle className="font-display">
+                  Nível de Atividade
+                </CardTitle>
+
                 <CardDescription>
                   Quão ativo(a) você é no seu dia a dia?
                 </CardDescription>

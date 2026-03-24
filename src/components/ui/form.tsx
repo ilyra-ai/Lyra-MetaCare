@@ -11,7 +11,7 @@ import {
   type FieldPath,
   type FieldValues,
 } from 'react-hook-form';
-
+import { CircleAlert, CircleCheckBig } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 
@@ -33,13 +33,19 @@ const FormField = <
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   ...props
-}: ControllerProps<TFieldValues, TName>) => {
-  return (
-    <FormFieldContext.Provider value={{ name: props.name }}>
-      <Controller {...props} />
-    </FormFieldContext.Provider>
-  );
+}: ControllerProps<TFieldValues, TName>) => (
+  <FormFieldContext.Provider value={{ name: props.name }}>
+    <Controller {...props} />
+  </FormFieldContext.Provider>
+);
+
+type FormItemContextValue = {
+  id: string;
 };
+
+const FormItemContext = React.createContext<FormItemContextValue>(
+  {} as FormItemContextValue
+);
 
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext);
@@ -49,7 +55,7 @@ const useFormField = () => {
   const fieldState = getFieldState(fieldContext.name, formState);
 
   if (!fieldContext) {
-    throw new Error('useFormField should be used within <FormField>');
+    throw new Error('useFormField deve ser usado dentro de <FormField>.');
   }
 
   const { id } = itemContext;
@@ -64,14 +70,6 @@ const useFormField = () => {
   };
 };
 
-type FormItemContextValue = {
-  id: string;
-};
-
-const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue
-);
-
 const FormItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -80,10 +78,11 @@ const FormItem = React.forwardRef<
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div ref={ref} className={cn('space-y-2', className)} {...props} />
+      <div ref={ref} className={cn('space-y-2.5', className)} {...props} />
     </FormItemContext.Provider>
   );
 });
+
 FormItem.displayName = 'FormItem';
 
 const FormLabel = React.forwardRef<
@@ -95,18 +94,23 @@ const FormLabel = React.forwardRef<
   return (
     <Label
       ref={ref}
-      className={cn(error && 'text-destructive', className)}
       htmlFor={formItemId}
+      className={cn(
+        'text-sm font-medium text-foreground',
+        error && 'text-destructive',
+        className
+      )}
       {...props}
     />
   );
 });
+
 FormLabel.displayName = 'FormLabel';
 
 const FormControl = React.forwardRef<
   React.ElementRef<typeof Slot>,
   React.ComponentPropsWithoutRef<typeof Slot>
->(({ ...props }, ref) => {
+>(({ className, ...props }, ref) => {
   const { error, formItemId, formDescriptionId, formMessageId } =
     useFormField();
 
@@ -115,15 +119,15 @@ const FormControl = React.forwardRef<
       ref={ref}
       id={formItemId}
       aria-describedby={
-        !error
-          ? `${formDescriptionId}`
-          : `${formDescriptionId} ${formMessageId}`
+        error ? `${formDescriptionId} ${formMessageId}` : `${formDescriptionId}`
       }
       aria-invalid={!!error}
+      className={cn(className)}
       {...props}
     />
   );
 });
+
 FormControl.displayName = 'FormControl';
 
 const FormDescription = React.forwardRef<
@@ -136,11 +140,12 @@ const FormDescription = React.forwardRef<
     <p
       ref={ref}
       id={formDescriptionId}
-      className={cn('text-[0.8rem] text-muted-foreground', className)}
+      className={cn('text-xs leading-5 text-muted-foreground', className)}
       {...props}
     />
   );
 });
+
 FormDescription.displayName = 'FormDescription';
 
 const FormMessage = React.forwardRef<
@@ -148,7 +153,7 @@ const FormMessage = React.forwardRef<
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
   const { error, formMessageId } = useFormField();
-  const body = error ? String(error?.message ?? '') : children;
+  const body = error ? String(error.message ?? '') : children;
 
   if (!body) {
     return null;
@@ -158,14 +163,38 @@ const FormMessage = React.forwardRef<
     <p
       ref={ref}
       id={formMessageId}
-      className={cn('text-[0.8rem] font-medium text-destructive', className)}
+      className={cn(
+        'flex items-center gap-2 text-xs font-medium text-destructive animate-fade-in-up',
+        className
+      )}
       {...props}
     >
-      {body}
+      <CircleAlert className="h-3.5 w-3.5 shrink-0" />
+      <span>{body}</span>
     </p>
   );
 });
+
 FormMessage.displayName = 'FormMessage';
+
+const FormSuccess = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, children, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn(
+      'flex items-center gap-2 text-xs font-medium text-success animate-fade-in-up',
+      className
+    )}
+    {...props}
+  >
+    <CircleCheckBig className="h-3.5 w-3.5 shrink-0" />
+    <span>{children}</span>
+  </p>
+));
+
+FormSuccess.displayName = 'FormSuccess';
 
 export {
   useFormField,
@@ -175,5 +204,6 @@ export {
   FormControl,
   FormDescription,
   FormMessage,
+  FormSuccess,
   FormField,
 };

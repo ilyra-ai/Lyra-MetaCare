@@ -40,7 +40,15 @@ export function OnboardingNavigationDots({
   ));
 
   return (
+
     <div className="flex items-center space-x-1.5" role="tablist" aria-label="Progresso do onboarding">
+
+    <div
+      className="flex items-center space-x-1.5"
+      role="tablist"
+      aria-label="Progresso do onboarding"
+    >
+
       {dots}
     </div>
   );

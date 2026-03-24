@@ -21,27 +21,29 @@ Redesenhar **do zero** todo o estilo visual, layout, CSS, UI e UX de toda a apli
 
 ## 2. Stack Tecnológica (Manter/Respeitar)
 
-| Camada | Tecnologia |
-|--------|-----------|
-| Framework | Next.js 15, React 19, TypeScript 5 |
-| Estilização | Tailwind CSS 4 + CSS Variables (Design Tokens) |
-| Componentes UI | shadcn/ui + Radix UI (manter a base, customizar o visual) |
-| Ícones | Lucide React |
-| Gráficos | Recharts + Tremor |
-| Calendário | react-big-calendar |
-| Formulários | React Hook Form + Zod |
-| Notificações | sonner (toasts) |
-| Observabilidade | Sentry |
+| Camada          | Tecnologia                                                |
+| --------------- | --------------------------------------------------------- |
+| Framework       | Next.js 15, React 19, TypeScript 5                        |
+| Estilização     | Tailwind CSS 4 + CSS Variables (Design Tokens)            |
+| Componentes UI  | shadcn/ui + Radix UI (manter a base, customizar o visual) |
+| Ícones          | Lucide React                                              |
+| Gráficos        | Recharts + Tremor                                         |
+| Calendário      | react-big-calendar                                        |
+| Formulários     | React Hook Form + Zod                                     |
+| Notificações    | sonner (toasts)                                           |
+| Observabilidade | Sentry                                                    |
 
 ---
 
 ## 3. Arquivos Afetados — Mapa Completo
 
 ### CSS / Design System Global
+
 - **[REESCREVER] `src/app/globals.css`** — CSS Tokens completos do zero com novo Design System "Cosmic Light"
 - **[ATUALIZAR] `tailwind.config.ts`** — Novas cores, animações, sombras, fontes, keyframes
 
 ### Layout Base
+
 - **[REESCREVER] `src/app/layout.tsx`** — Root layout com fontes, metadata, providers
 - **[REESCREVER] `src/components/layout/sidebar.tsx`** — Sidebar redesenhada "Cosmic Light"
 - **[REESCREVER] `src/components/layout/header.tsx`** — Header redesenhado
@@ -50,23 +52,28 @@ Redesenhar **do zero** todo o estilo visual, layout, CSS, UI e UX de toda a apli
 - **[REESCREVER] `src/components/SplashScreen.tsx`** — Splash screen com nova identidade
 
 ### Landing Page
+
 - **[REESCREVER] `src/components/landing/LandingPage.tsx`** — Landing page completa do zero
 - **[REESCREVER] `src/app/page.tsx`** — Página raiz (Landing)
 
 ### Autenticação
+
 - **[REDESENHAR] `src/app/login/page.tsx`** — Login/Registro com nova UI
 
 ### Onboarding
+
 - **[REDESENHAR] `src/components/onboarding/onboarding-form.tsx`** — Fluxo de onboarding
 - **[REDESENHAR] `src/components/onboarding/OnboardingNavigationDots.tsx`** — Dots de navegação
 
 ### Dashboard
+
 - **[REDESENHAR] `src/components/dashboard/dashboard.tsx`** — Dashboard principal Bento Grid
 - **[REDESENHAR] `src/components/dashboard/MetricGrid.tsx`** — Grid de métricas vitais
 - **[REDESENHAR] `src/components/dashboard/AITipsCard.tsx`** — Card de dicas IA
 - **[REDESENHAR] `src/components/dashboard/QuickScanFAB.tsx`** — Floating Action Button
 
 ### Chat IA
+
 - **[REDESENHAR] `src/components/chat/ChatAssistantContent.tsx`** — Interface do chat
 - **[REDESENHAR] `src/components/chat/ChatBubble.tsx`** — Bolhas de mensagem
 - **[REDESENHAR] `src/components/chat/ChatInput.tsx`** — Input do chat
@@ -74,9 +81,11 @@ Redesenhar **do zero** todo o estilo visual, layout, CSS, UI e UX de toda a apli
 - **[REDESENHAR] `src/components/chat/TypingIndicator.tsx`** — Indicador de digitação
 
 ### Plano IA
+
 - **[REDESENHAR] `src/components/ai-plan/AIPlanContent.tsx`** — Conteúdo do plano IA
 
 ### Consultas/Agenda
+
 - **[REDESENHAR] `src/components/appointments/AppointmentsContent.tsx`** — Listagem de consultas
 - **[REDESENHAR] `src/components/appointments/Agenda.tsx`** — Calendário/Agenda
 - **[REDESENHAR] `src/components/appointments/AppointmentFormModal.tsx`** — Modal de agendamento
@@ -87,22 +96,26 @@ Redesenhar **do zero** todo o estilo visual, layout, CSS, UI e UX de toda a apli
 - **[REDESENHAR] `src/components/appointments/TimeSlotPicker.tsx`** — Seletor de horários
 
 ### Metas/Goals
+
 - **[REDESENHAR] `src/components/goals/GoalTrackingContent.tsx`** — Rastreio de metas
 - **[REDESENHAR] `src/components/goals/CreateGoalModal.tsx`** — Modal de criação de meta
 - **[REDESENHAR] `src/components/goals/UpdateGoalProgressModal.tsx`** — Modal de progresso
 
 ### Monitoramento
+
 - **[REDESENHAR] `src/components/monitoring/RealTimeMonitoringContent.tsx`** — Monitor em tempo real
 - **[REDESENHAR] `src/components/monitoring/RealTimeMetricCard.tsx`** — Card de métrica
 - **[REDESENHAR] `src/components/monitoring/LiveHeartRateChart.tsx`** — Gráfico de frequência cardíaca
 - **[REDESENHAR] `src/components/monitoring/MapPlaceholder.tsx`** — Placeholder de mapa
 
 ### Perfil
+
 - **[REDESENHAR] `src/components/profile/ProfileForm.tsx`** — Formulário de perfil
 - **[REDESENHAR] `src/components/profile/AvatarUploader.tsx`** — Upload de avatar
 - **[REDESENHAR] `src/components/profile/HabitList.tsx`** — Lista de hábitos
 
 ### Assinatura/Billing
+
 - **[REDESENHAR] `src/components/subscription/AccountSubscriptionCard.tsx`** — Card de assinatura
 - **[REDESENHAR] `src/components/subscription/BillingActionPanel.tsx`** — Painel de cobrança
 - **[REDESENHAR] `src/components/subscription/BillingReturnExperience.tsx`** — Retorno de billing
@@ -110,9 +123,11 @@ Redesenhar **do zero** todo o estilo visual, layout, CSS, UI e UX de toda a apli
 - **[REDESENHAR] `src/components/subscription/PlanUpgradeNotice.tsx`** — Aviso de upgrade
 
 ### Conexão de Dispositivos
+
 - **[REDESENHAR] `src/components/data-connection/WearableConnection.tsx`** — Conexão wearables
 
 ### Painel Admin
+
 - **[REDESENHAR] `src/components/admin/AdminDashboardContent.tsx`** — Dashboard admin
 - **[REDESENHAR] `src/components/admin/UserManagementContent.tsx`** — Gestão de usuários
 - **[REDESENHAR] `src/components/admin/UserDetailModal.tsx`** — Modal detalhe de usuário
@@ -125,7 +140,9 @@ Redesenhar **do zero** todo o estilo visual, layout, CSS, UI e UX de toda a apli
 - **[REDESENHAR] `src/components/admin/SuggestedHabitFormModal.tsx`** — Modal de hábito sugerido
 
 ### Componentes UI Base (shadcn/ui — customização visual)
+
 Os componentes shadcn/ui em `src/components/ui/` devem ter suas variáveis CSS atualizadas para refletir a nova paleta "Cosmic Light". Os principais a revisar/customizar:
+
 - `button.tsx` — Novos variants com gradientes
 - `card.tsx` — Sombras e bordas "Cosmic Light"
 - `dialog.tsx` — Modal com backdrop blur
@@ -139,6 +156,7 @@ Os componentes shadcn/ui em `src/components/ui/` devem ter suas variáveis CSS a
 - `chart.tsx` — Wrapper de gráficos com nova paleta
 
 ### Utilitários
+
 - **[REESCREVER] `src/components/ThemeProvider.tsx`** — Provider de tema (garantir Light como padrão)
 - **[REDESENHAR] `src/components/made-with-ilyra.tsx`** — Branding footer
 
@@ -148,69 +166,69 @@ Os componentes shadcn/ui em `src/components/ui/` devem ter suas variáveis CSS a
 
 ### Light Mode (Padrão — Obrigatório)
 
-| Token | Cor (HSL) | Hex Referência | Uso |
-|-------|-----------|----------------|-----|
-| `--background` | `240 20% 98%` | `#F8F7FC` | Background principal da app (lavanda ultra-claro) |
-| `--foreground` | `240 24% 10%` | `#151525` | Texto principal (índigo profundo) |
-| `--card` | `0 0% 100%` | `#FFFFFF` | Cards, modais, superfícies |
-| `--card-foreground` | `240 24% 10%` | `#151525` | Texto em cards |
-| `--popover` | `0 0% 100%` | `#FFFFFF` | Popovers, dropdowns |
-| `--popover-foreground` | `240 24% 10%` | `#151525` | Texto em popovers |
-| `--primary` | `174 62% 40%` | `#26A69A` | Lyra Teal Premium — Ações principais, sidebar ativo, CTAs |
-| `--primary-foreground` | `0 0% 100%` | `#FFFFFF` | Texto sobre primary |
-| `--secondary` | `240 15% 95%` | `#EEEDF5` | Background secundário, cards sutis |
-| `--secondary-foreground` | `240 24% 10%` | `#151525` | Texto sobre secondary |
-| `--muted` | `240 12% 92%` | `#E8E7EF` | Elementos desativados, fundos suaves |
-| `--muted-foreground` | `240 10% 46%` | `#6B6A80` | Texto secundário |
-| `--accent` | `16 85% 61%` | `#F06543` | Warm Coral — Destaques, notificações, urgência |
-| `--accent-foreground` | `0 0% 100%` | `#FFFFFF` | Texto sobre accent |
-| `--destructive` | `0 72% 51%` | `#D32F2F` | Erro, perigo, exclusão |
-| `--destructive-foreground` | `0 0% 100%` | `#FFFFFF` | Texto sobre destructive |
-| `--border` | `240 15% 90%` | `#E2E0ED` | Bordas suaves |
-| `--input` | `240 15% 90%` | `#E2E0ED` | Bordas de input |
-| `--ring` | `174 62% 40%` | `#26A69A` | Focus ring (Lyra Teal) |
+| Token                      | Cor (HSL)     | Hex Referência | Uso                                                       |
+| -------------------------- | ------------- | -------------- | --------------------------------------------------------- |
+| `--background`             | `240 20% 98%` | `#F8F7FC`      | Background principal da app (lavanda ultra-claro)         |
+| `--foreground`             | `240 24% 10%` | `#151525`      | Texto principal (índigo profundo)                         |
+| `--card`                   | `0 0% 100%`   | `#FFFFFF`      | Cards, modais, superfícies                                |
+| `--card-foreground`        | `240 24% 10%` | `#151525`      | Texto em cards                                            |
+| `--popover`                | `0 0% 100%`   | `#FFFFFF`      | Popovers, dropdowns                                       |
+| `--popover-foreground`     | `240 24% 10%` | `#151525`      | Texto em popovers                                         |
+| `--primary`                | `174 62% 40%` | `#26A69A`      | Lyra Teal Premium — Ações principais, sidebar ativo, CTAs |
+| `--primary-foreground`     | `0 0% 100%`   | `#FFFFFF`      | Texto sobre primary                                       |
+| `--secondary`              | `240 15% 95%` | `#EEEDF5`      | Background secundário, cards sutis                        |
+| `--secondary-foreground`   | `240 24% 10%` | `#151525`      | Texto sobre secondary                                     |
+| `--muted`                  | `240 12% 92%` | `#E8E7EF`      | Elementos desativados, fundos suaves                      |
+| `--muted-foreground`       | `240 10% 46%` | `#6B6A80`      | Texto secundário                                          |
+| `--accent`                 | `16 85% 61%`  | `#F06543`      | Warm Coral — Destaques, notificações, urgência            |
+| `--accent-foreground`      | `0 0% 100%`   | `#FFFFFF`      | Texto sobre accent                                        |
+| `--destructive`            | `0 72% 51%`   | `#D32F2F`      | Erro, perigo, exclusão                                    |
+| `--destructive-foreground` | `0 0% 100%`   | `#FFFFFF`      | Texto sobre destructive                                   |
+| `--border`                 | `240 15% 90%` | `#E2E0ED`      | Bordas suaves                                             |
+| `--input`                  | `240 15% 90%` | `#E2E0ED`      | Bordas de input                                           |
+| `--ring`                   | `174 62% 40%` | `#26A69A`      | Focus ring (Lyra Teal)                                    |
 
 ### Cores Semânticas Adicionais (CSS Variables Extras)
 
-| Token | Cor | Uso |
-|-------|-----|-----|
-| `--success` | `#10B981` (Emerald 500) | Sucesso, saúde positiva, metas atingidas |
-| `--success-light` | `#D1FAE5` | Background sucesso |
-| `--warning` | `#F59E0B` (Amber 500) | Alertas, atenção necessária |
-| `--warning-light` | `#FEF3C7` | Background warning |
-| `--info` | `#6366F1` (Indigo 500) | Informacional, dicas, insights astrais |
-| `--info-light` | `#E0E7FF` | Background info |
-| `--cosmic` | `#8B5CF6` (Violet 500) | Elementos astrológicos, cósmicos, espirituais |
-| `--cosmic-light` | `#EDE9FE` | Background cósmico |
-| `--golden` | `#D4A017` (Gold premium) | Estrelas, destaques premium, conquistas |
-| `--golden-light` | `#FEF9E7` | Background dourado |
-| `--coral-gradient` | `linear-gradient(135deg, #F06543, #FF8A65)` | Gradiente coral para CTAs |
-| `--teal-gradient` | `linear-gradient(135deg, #26A69A, #4DB6AC)` | Gradiente teal para ações |
-| `--cosmic-gradient` | `linear-gradient(135deg, #8B5CF6, #A78BFA)` | Gradiente cósmico |
+| Token               | Cor                                                  | Uso                                           |
+| ------------------- | ---------------------------------------------------- | --------------------------------------------- |
+| `--success`         | `#10B981` (Emerald 500)                              | Sucesso, saúde positiva, metas atingidas      |
+| `--success-light`   | `#D1FAE5`                                            | Background sucesso                            |
+| `--warning`         | `#F59E0B` (Amber 500)                                | Alertas, atenção necessária                   |
+| `--warning-light`   | `#FEF3C7`                                            | Background warning                            |
+| `--info`            | `#6366F1` (Indigo 500)                               | Informacional, dicas, insights astrais        |
+| `--info-light`      | `#E0E7FF`                                            | Background info                               |
+| `--cosmic`          | `#8B5CF6` (Violet 500)                               | Elementos astrológicos, cósmicos, espirituais |
+| `--cosmic-light`    | `#EDE9FE`                                            | Background cósmico                            |
+| `--golden`          | `#D4A017` (Gold premium)                             | Estrelas, destaques premium, conquistas       |
+| `--golden-light`    | `#FEF9E7`                                            | Background dourado                            |
+| `--coral-gradient`  | `linear-gradient(135deg, #F06543, #FF8A65)`          | Gradiente coral para CTAs                     |
+| `--teal-gradient`   | `linear-gradient(135deg, #26A69A, #4DB6AC)`          | Gradiente teal para ações                     |
+| `--cosmic-gradient` | `linear-gradient(135deg, #8B5CF6, #A78BFA)`          | Gradiente cósmico                             |
 | `--aurora-gradient` | `linear-gradient(135deg, #E0E7FF, #EDE9FE, #FCE7F3)` | Gradiente aurora para backgrounds decorativos |
 
 ### Cores de Gráficos (Charts)
 
-| Token | Cor | Uso |
-|-------|-----|-----|
-| `--chart-1` | `#26A69A` (Teal) | Primário em gráficos |
-| `--chart-2` | `#F06543` (Coral) | Secundário em gráficos |
+| Token       | Cor                | Uso                       |
+| ----------- | ------------------ | ------------------------- |
+| `--chart-1` | `#26A69A` (Teal)   | Primário em gráficos      |
+| `--chart-2` | `#F06543` (Coral)  | Secundário em gráficos    |
 | `--chart-3` | `#8B5CF6` (Violet) | Terciário — dados astrais |
-| `--chart-4` | `#6366F1` (Indigo) | Quaternário |
-| `--chart-5` | `#F59E0B` (Amber) | Quinário |
+| `--chart-4` | `#6366F1` (Indigo) | Quaternário               |
+| `--chart-5` | `#F59E0B` (Amber)  | Quinário                  |
 
 ### Sidebar
 
-| Token | Cor | Uso |
-|-------|-----|-----|
-| `--sidebar-background` | `240 20% 98%` | Background da sidebar |
-| `--sidebar-foreground` | `240 24% 10%` | Texto da sidebar |
-| `--sidebar-primary` | `174 62% 40%` | Item ativo |
-| `--sidebar-primary-foreground` | `0 0% 100%` | Texto item ativo |
-| `--sidebar-accent` | `240 15% 95%` | Hover items |
-| `--sidebar-accent-foreground` | `240 24% 10%` | Texto hover |
-| `--sidebar-border` | `240 15% 90%` | Borda da sidebar |
-| `--sidebar-ring` | `174 62% 40%` | Focus ring |
+| Token                          | Cor           | Uso                   |
+| ------------------------------ | ------------- | --------------------- |
+| `--sidebar-background`         | `240 20% 98%` | Background da sidebar |
+| `--sidebar-foreground`         | `240 24% 10%` | Texto da sidebar      |
+| `--sidebar-primary`            | `174 62% 40%` | Item ativo            |
+| `--sidebar-primary-foreground` | `0 0% 100%`   | Texto item ativo      |
+| `--sidebar-accent`             | `240 15% 95%` | Hover items           |
+| `--sidebar-accent-foreground`  | `240 24% 10%` | Texto hover           |
+| `--sidebar-border`             | `240 15% 90%` | Borda da sidebar      |
+| `--sidebar-ring`               | `174 62% 40%` | Focus ring            |
 
 ### Dark Mode (Opcional — Secundário)
 
@@ -220,73 +238,77 @@ Manter um dark mode elegante como alternativa, porém o **default SEMPRE será L
 
 ## 5. Tipografia
 
-| Função | Font | Peso | Tamanho Base |
-|--------|------|------|-------------|
-| Display / Headings | **Space Grotesk** (Google Fonts) | 600, 700 | 24–48px |
-| Body / UI | **Inter** (Google Fonts) | 300, 400, 500, 600 | 14–16px |
-| Monospace / Código | **JetBrains Mono** (Google Fonts) | 400 | 13px |
-| Números / Dados | **Inter** (tabular-nums) | 500, 600 | Variável |
+| Função             | Font                              | Peso               | Tamanho Base |
+| ------------------ | --------------------------------- | ------------------ | ------------ |
+| Display / Headings | **Space Grotesk** (Google Fonts)  | 600, 700           | 24–48px      |
+| Body / UI          | **Inter** (Google Fonts)          | 300, 400, 500, 600 | 14–16px      |
+| Monospace / Código | **JetBrains Mono** (Google Fonts) | 400                | 13px         |
+| Números / Dados    | **Inter** (tabular-nums)          | 500, 600           | Variável     |
 
 ### Escala Tipográfica
 
-| Token | Tamanho | Line Height | Uso |
-|-------|---------|------------|-----|
-| `text-xs` | 12px | 16px | Captions, labels mínimos |
-| `text-sm` | 14px | 20px | Body secundário, metadata |
-| `text-base` | 16px | 24px | Body principal |
-| `text-lg` | 18px | 28px | Subtítulos |
-| `text-xl` | 20px | 28px | Títulos de seção |
-| `text-2xl` | 24px | 32px | Títulos de página |
-| `text-3xl` | 30px | 36px | Hero subtítulos |
-| `text-4xl` | 36px | 40px | Display numbers |
-| `text-5xl` | 48px | 48px | Hero títulos |
+| Token       | Tamanho | Line Height | Uso                       |
+| ----------- | ------- | ----------- | ------------------------- |
+| `text-xs`   | 12px    | 16px        | Captions, labels mínimos  |
+| `text-sm`   | 14px    | 20px        | Body secundário, metadata |
+| `text-base` | 16px    | 24px        | Body principal            |
+| `text-lg`   | 18px    | 28px        | Subtítulos                |
+| `text-xl`   | 20px    | 28px        | Títulos de seção          |
+| `text-2xl`  | 24px    | 32px        | Títulos de página         |
+| `text-3xl`  | 30px    | 36px        | Hero subtítulos           |
+| `text-4xl`  | 36px    | 40px        | Display numbers           |
+| `text-5xl`  | 48px    | 48px        | Hero títulos              |
 
 ---
 
 ## 6. Design Tokens
 
 ### Border Radius
-| Token | Valor | Uso |
-|-------|-------|-----|
-| `--radius-sm` | 8px | Badges, chips pequenos |
-| `--radius` | 12px | Botões, inputs, selects |
-| `--radius-md` | 16px | Cards menores, modais pequenos |
-| `--radius-lg` | 20px | Cards padrão |
-| `--radius-xl` | 24px | Cards grandes, containers |
-| `--radius-2xl` | 32px | Sidebar, containers principais |
-| `--radius-full` | 9999px | Avatares, pill buttons |
+
+| Token           | Valor  | Uso                            |
+| --------------- | ------ | ------------------------------ |
+| `--radius-sm`   | 8px    | Badges, chips pequenos         |
+| `--radius`      | 12px   | Botões, inputs, selects        |
+| `--radius-md`   | 16px   | Cards menores, modais pequenos |
+| `--radius-lg`   | 20px   | Cards padrão                   |
+| `--radius-xl`   | 24px   | Cards grandes, containers      |
+| `--radius-2xl`  | 32px   | Sidebar, containers principais |
+| `--radius-full` | 9999px | Avatares, pill buttons         |
 
 ### Sombras (Light Theme)
-| Token | Valor | Uso |
-|-------|-------|-----|
-| `shadow-sm` | `0 1px 2px rgba(21,21,37,0.04)` | Elementos sutis |
-| `shadow` | `0 2px 8px rgba(21,21,37,0.06)` | Cards padrão |
-| `shadow-md` | `0 4px 16px rgba(21,21,37,0.08)` | Cards hover |
-| `shadow-lg` | `0 8px 32px rgba(21,21,37,0.10)` | Modais, popovers |
-| `shadow-xl` | `0 16px 48px rgba(21,21,37,0.12)` | Elementos elevados |
-| `shadow-teal` | `0 4px 20px rgba(38,166,154,0.15)` | Glow teal em hover |
-| `shadow-coral` | `0 4px 20px rgba(240,101,67,0.15)` | Glow coral em hover |
-| `shadow-cosmic` | `0 4px 20px rgba(139,92,246,0.15)` | Glow cósmico |
+
+| Token           | Valor                                                                | Uso                              |
+| --------------- | -------------------------------------------------------------------- | -------------------------------- |
+| `shadow-sm`     | `0 1px 2px rgba(21,21,37,0.04)`                                      | Elementos sutis                  |
+| `shadow`        | `0 2px 8px rgba(21,21,37,0.06)`                                      | Cards padrão                     |
+| `shadow-md`     | `0 4px 16px rgba(21,21,37,0.08)`                                     | Cards hover                      |
+| `shadow-lg`     | `0 8px 32px rgba(21,21,37,0.10)`                                     | Modais, popovers                 |
+| `shadow-xl`     | `0 16px 48px rgba(21,21,37,0.12)`                                    | Elementos elevados               |
+| `shadow-teal`   | `0 4px 20px rgba(38,166,154,0.15)`                                   | Glow teal em hover               |
+| `shadow-coral`  | `0 4px 20px rgba(240,101,67,0.15)`                                   | Glow coral em hover              |
+| `shadow-cosmic` | `0 4px 20px rgba(139,92,246,0.15)`                                   | Glow cósmico                     |
 | `shadow-aurora` | `0 8px 32px rgba(99,102,241,0.08), 0 4px 16px rgba(139,92,246,0.06)` | Aurora para containers especiais |
 
 ### Espaçamento
+
 Sistema de 4px: `4, 8, 12, 16, 20, 24, 32, 40, 48, 56, 64, 80, 96`
 
 ### Animações e Keyframes
-| Nome | Descrição | Duração |
-|------|-----------|---------|
-| `fadeIn` | Opacity 0→1 | 300ms ease-out |
-| `fadeInUp` | Opacity + translateY(10px→0) | 400ms ease-out |
-| `fadeInDown` | Opacity + translateY(-10px→0) | 400ms ease-out |
-| `scaleIn` | Opacity + scale(0.95→1) | 300ms ease-out |
-| `slideInLeft` | translateX(-100%→0) | 350ms ease-out |
-| `slideInRight` | translateX(100%→0) | 350ms ease-out |
-| `float` | translateY(0→-5px→0) | 3s ease-in-out infinite |
-| `pulse-slow` | Opacity 1→0.8→1 | 4s ease infinite |
-| `shimmer` | Background position shift (loading skeleton) | 1.5s ease-in-out infinite |
-| `spin-slow` | rotate(0→360deg) | 60s linear infinite |
-| `aurora-shift` | Background gradient position animation | 10s ease infinite |
-| `glow-pulse` | Box-shadow intensity pulse | 2s ease infinite |
+
+| Nome           | Descrição                                    | Duração                   |
+| -------------- | -------------------------------------------- | ------------------------- |
+| `fadeIn`       | Opacity 0→1                                  | 300ms ease-out            |
+| `fadeInUp`     | Opacity + translateY(10px→0)                 | 400ms ease-out            |
+| `fadeInDown`   | Opacity + translateY(-10px→0)                | 400ms ease-out            |
+| `scaleIn`      | Opacity + scale(0.95→1)                      | 300ms ease-out            |
+| `slideInLeft`  | translateX(-100%→0)                          | 350ms ease-out            |
+| `slideInRight` | translateX(100%→0)                           | 350ms ease-out            |
+| `float`        | translateY(0→-5px→0)                         | 3s ease-in-out infinite   |
+| `pulse-slow`   | Opacity 1→0.8→1                              | 4s ease infinite          |
+| `shimmer`      | Background position shift (loading skeleton) | 1.5s ease-in-out infinite |
+| `spin-slow`    | rotate(0→360deg)                             | 60s linear infinite       |
+| `aurora-shift` | Background gradient position animation       | 10s ease infinite         |
+| `glow-pulse`   | Box-shadow intensity pulse                   | 2s ease infinite          |
 
 ---
 
@@ -351,15 +373,15 @@ Sistema de 4px: `4, 8, 12, 16, 20, 24, 32, 40, 48, 56, 64, 80, 96`
 
 ### 7.4 Botões
 
-| Variante | Background | Texto | Border | Hover | Uso |
-|----------|-----------|-------|--------|-------|-----|
-| **Primary** | `var(--teal-gradient)` | Branco | Nenhuma | Saturação +10%, shadow-teal | CTAs principais |
-| **Secondary** | `var(--secondary)` | `var(--foreground)` | `var(--border)` | Background intensificado | Ações secundárias |
-| **Accent** | `var(--coral-gradient)` | Branco | Nenhuma | Saturação +10%, shadow-coral | Destaques, urgência |
-| **Cosmic** | `var(--cosmic-gradient)` | Branco | Nenhuma | Shadow-cosmic | Ações astrais/IA |
-| **Ghost** | Transparente | `var(--muted-foreground)` | Nenhuma | Background `var(--secondary)` | Ações terciárias |
-| **Destructive** | `var(--destructive)` | Branco | Nenhuma | Escurecer 10% | Exclusão, perigo |
-| **Outline** | Transparente | `var(--primary)` | `var(--primary)` | Background `var(--primary)/10` | Alternativas sutis |
+| Variante        | Background               | Texto                     | Border           | Hover                          | Uso                 |
+| --------------- | ------------------------ | ------------------------- | ---------------- | ------------------------------ | ------------------- |
+| **Primary**     | `var(--teal-gradient)`   | Branco                    | Nenhuma          | Saturação +10%, shadow-teal    | CTAs principais     |
+| **Secondary**   | `var(--secondary)`       | `var(--foreground)`       | `var(--border)`  | Background intensificado       | Ações secundárias   |
+| **Accent**      | `var(--coral-gradient)`  | Branco                    | Nenhuma          | Saturação +10%, shadow-coral   | Destaques, urgência |
+| **Cosmic**      | `var(--cosmic-gradient)` | Branco                    | Nenhuma          | Shadow-cosmic                  | Ações astrais/IA    |
+| **Ghost**       | Transparente             | `var(--muted-foreground)` | Nenhuma          | Background `var(--secondary)`  | Ações terciárias    |
+| **Destructive** | `var(--destructive)`     | Branco                    | Nenhuma          | Escurecer 10%                  | Exclusão, perigo    |
+| **Outline**     | Transparente             | `var(--primary)`          | `var(--primary)` | Background `var(--primary)/10` | Alternativas sutis  |
 
 - **Shape:** `rounded-xl` (pill shape para CTAs importantes: `rounded-full`)
 - **Padding:** `px-5 py-2.5` (default), `px-4 py-2` (sm), `px-6 py-3` (lg)
@@ -392,13 +414,13 @@ Sistema de 4px: `4, 8, 12, 16, 20, 24, 32, 40, 48, 56, 64, 80, 96`
 
 ### 7.7 Alertas/Toasts
 
-| Tipo | Cor de fundo | Cor de borda (esquerda 4px) | Ícone |
-|------|-------------|---------------------------|-------|
-| Sucesso | `var(--success-light)` | `var(--success)` | `CheckCircle` |
-| Warning | `var(--warning-light)` | `var(--warning)` | `AlertTriangle` |
-| Erro | `#FEE2E2` | `var(--destructive)` | `XCircle` |
-| Info | `var(--info-light)` | `var(--info)` | `Info` |
-| Cósmico | `var(--cosmic-light)` | `var(--cosmic)` | `Sparkles` |
+| Tipo    | Cor de fundo           | Cor de borda (esquerda 4px) | Ícone           |
+| ------- | ---------------------- | --------------------------- | --------------- |
+| Sucesso | `var(--success-light)` | `var(--success)`            | `CheckCircle`   |
+| Warning | `var(--warning-light)` | `var(--warning)`            | `AlertTriangle` |
+| Erro    | `#FEE2E2`              | `var(--destructive)`        | `XCircle`       |
+| Info    | `var(--info-light)`    | `var(--info)`               | `Info`          |
+| Cósmico | `var(--cosmic-light)`  | `var(--cosmic)`             | `Sparkles`      |
 
 - **Shape:** `rounded-xl`
 - **Animação:** `slideInRight` ao aparecer, `fadeOut` ao sair
@@ -514,12 +536,12 @@ Sistema de 4px: `4, 8, 12, 16, 20, 24, 32, 40, 48, 56, 64, 80, 96`
 
 ## 9. Responsividade
 
-| Breakpoint | Tamanho | Layout |
-|------------|---------|--------|
-| Mobile | < 640px | Single column, sidebar drawer, cards empilhados, header simplificado |
-| Tablet | 640–1024px | 2 colunas em grids, sidebar colapsável |
-| Desktop | 1024–1280px | Layout completo 3-4 colunas |
-| Wide | > 1280px | Max-width container, mais espaço respirar |
+| Breakpoint | Tamanho     | Layout                                                               |
+| ---------- | ----------- | -------------------------------------------------------------------- |
+| Mobile     | < 640px     | Single column, sidebar drawer, cards empilhados, header simplificado |
+| Tablet     | 640–1024px  | 2 colunas em grids, sidebar colapsável                               |
+| Desktop    | 1024–1280px | Layout completo 3-4 colunas                                          |
+| Wide       | > 1280px    | Max-width container, mais espaço respirar                            |
 
 - **Mobile-first approach** em todas as implementações
 - **Sidebar:** Sheet/Drawer em mobile, fixa em desktop
@@ -558,14 +580,14 @@ Sistema de 4px: `4, 8, 12, 16, 20, 24, 32, 40, 48, 56, 64, 80, 96`
 
 Criar ou atualizar o usuário administrador com acesso FULL ao sistema:
 
-| Campo | Valor |
-|-------|-------|
-| Email | `admin@coragem.pet` |
-| Senha | `admin123` |
-| Perfil | `admin` (Administrador Full) |
-| Primeiro Nome | `Admin` |
-| Último Nome | `Lyra` |
-| Status | `active` |
+| Campo         | Valor                        |
+| ------------- | ---------------------------- |
+| Email         | `admin@coragem.pet`          |
+| Senha         | `admin123`                   |
+| Perfil        | `admin` (Administrador Full) |
+| Primeiro Nome | `Admin`                      |
+| Último Nome   | `Lyra`                       |
+| Status        | `active`                     |
 
 **Permissões:** Acesso total a TODAS as páginas, configurações, funcionalidades, funções, recursos, tabelas, banco de dados, edição, criação, manutenção, gestão de acessos, perfis, usuários, planos, API, modelos de AI, e qualquer outra funcionalidade presente ou futura do sistema.
 
@@ -584,6 +606,7 @@ npm run check:types
 ```
 
 ### Validação Visual:
+
 - [ ] Navegar por TODAS as páginas verificando consistência visual
 - [ ] Testar responsividade em 3 viewports (mobile 375px, tablet 768px, desktop 1440px)
 - [ ] Verificar acessibilidade com tab navigation
@@ -593,6 +616,7 @@ npm run check:types
 - [ ] Testar dark mode (se implementado)
 
 ### Correções:
+
 - [ ] Zero erros de TypeScript
 - [ ] Zero erros de lint relevantes
 - [ ] Zero warnings de console (errors/warnings)
@@ -611,8 +635,9 @@ git push origin main
 ```
 
 ### Credenciais Git (temporárias):
+
 - **Usuário:** `ilyra-ai`
-- **Token:** *(utilizar token pessoal configurado no ambiente local — NÃO commitar segredos)*
+- **Token:** _(utilizar token pessoal configurado no ambiente local — NÃO commitar segredos)_
 
 ---
 
@@ -632,18 +657,18 @@ git push origin main
 
 ## 16. Resumo Executivo
 
-| Aspecto | De (Atual) | Para (Novo) |
-|---------|-----------|-------------|
-| **Tema** | Glassmorphism escuro (teal dark) | "Cosmic Wellness Light" (luminoso, celestial) |
-| **Background** | Gradiente escuro `#0f2027→#144d56` | Lavanda ultra-claro `#F8F7FC` |
-| **Primary** | Teal escuro `#144d56` | Teal premium `#26A69A` |
-| **Accent** | Coral vibrante `#FF7F50` | Coral sofisticado `#F06543` |
-| **Texto** | Branco sobre escuro | Índigo profundo sobre claro `#151525` |
-| **Fontes** | Inter only | Space Grotesk (display) + Inter (body) |
-| **Cards** | Glass com fundo semi-transparente escuro | Branco puro com sombras suaves coloridas |
-| **Sidebar** | Glass escuro com gradiente | Luminosa com borda sutil, ícones coloridos |
-| **Animações** | Básicas (pulse, float) | Expandidas (aurora, shimmer, glow, scale) |
-| **Vibe** | High-tech futurista escuro | Wellness premium luminoso cósmico |
+| Aspecto        | De (Atual)                               | Para (Novo)                                   |
+| -------------- | ---------------------------------------- | --------------------------------------------- |
+| **Tema**       | Glassmorphism escuro (teal dark)         | "Cosmic Wellness Light" (luminoso, celestial) |
+| **Background** | Gradiente escuro `#0f2027→#144d56`       | Lavanda ultra-claro `#F8F7FC`                 |
+| **Primary**    | Teal escuro `#144d56`                    | Teal premium `#26A69A`                        |
+| **Accent**     | Coral vibrante `#FF7F50`                 | Coral sofisticado `#F06543`                   |
+| **Texto**      | Branco sobre escuro                      | Índigo profundo sobre claro `#151525`         |
+| **Fontes**     | Inter only                               | Space Grotesk (display) + Inter (body)        |
+| **Cards**      | Glass com fundo semi-transparente escuro | Branco puro com sombras suaves coloridas      |
+| **Sidebar**    | Glass escuro com gradiente               | Luminosa com borda sutil, ícones coloridos    |
+| **Animações**  | Básicas (pulse, float)                   | Expandidas (aurora, shimmer, glow, scale)     |
+| **Vibe**       | High-tech futurista escuro               | Wellness premium luminoso cósmico             |
 
 ---
 

@@ -9,7 +9,6 @@ import {
   parseJsonQueryParam,
 } from './query-utils';
 import { AppSession } from '@/types/app-session';
-import { TableName } from './table-config';
 
 describe('query-utils', () => {
   const adminSession: AppSession = {
@@ -40,7 +39,7 @@ describe('query-utils', () => {
     });
 
     it('should return undefined for an unknown table', () => {
-      const config = getTableConfig('unknown_table' as any);
+      const config = getTableConfig('unknown_table');
       expect(config).toBeUndefined();
     });
   });
@@ -51,7 +50,7 @@ describe('query-utils', () => {
     });
 
     it('should throw for an unknown table', () => {
-      expect(() => assertKnownTable('unknown_table' as any)).toThrow(
+      expect(() => assertKnownTable('unknown_table')).toThrow(
         'Tabela não suportada pela camada MySQL: unknown_table'
       );
     });
