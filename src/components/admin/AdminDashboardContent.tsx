@@ -59,6 +59,36 @@ export function AdminDashboardContent() {
   React.useEffect(() => {
     const fetchDashboardData = async () => {
       setLoading(true);
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+      const [
+        totalUsersResponse,
+        newUsersResponse,
+        completedOnboardingResponse,
+        recentUsersResponse
+      ] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select('*', { count: 'exact', head: true }),
+        supabase
+          .from("profiles")
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', sevenDaysAgo),
+        supabase
+          .from("profiles")
+          .select('*', { count: 'exact', head: true })
+          .eq('onboarding_completed', true),
+        supabase
+          .from("profiles")
+          .select("id, first_name, last_name, email, created_at, avatar_url")
+          .order("created_at", { ascending: false })
+          .limit(5)
+      ]);
+
+      const totalUsersError = totalUsersResponse.error;
+      const newUsersError = newUsersResponse.error;
+      const completedError = completedOnboardingResponse.error;
+      const recentUsersError = recentUsersResponse.error;
 
       // Fetch total users count
       const { count: totalUsers, error: totalUsersError } = await db
@@ -101,6 +131,11 @@ export function AdminDashboardContent() {
             recentUsersError?.message,
         });
       } else {
+        const totalUsers = totalUsersResponse.count;
+        const newUsersLast7Days = newUsersResponse.count;
+        const completedOnboarding = completedOnboardingResponse.count;
+        const recentUsersData = recentUsersResponse.data;
+
         setStats({
           totalUsers: totalUsers || 0,
           newUsersLast7Days: newUsersLast7Days || 0,
