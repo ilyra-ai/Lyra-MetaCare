@@ -1,7 +1,6 @@
 'use client';
 
-import { Card, Title, Text, Flex, Grid, Divider } from '@tremor/react';
-import { DailyMetric } from '@/hooks/use-daily-metrics';
+import type { ElementType } from 'react';
 import {
   Activity,
   BedDouble,
@@ -12,11 +11,25 @@ import {
   Utensils,
 } from 'lucide-react';
 
-const formatMinutesToHours = (minutes: number) => {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${hours}h ${mins}m`;
-};
+import { DailyMetric } from '@/hooks/use-daily-metrics';
+import { Badge } from '@/components/ui/badge';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+
+type ToneKey =
+  | 'primary'
+  | 'accent'
+  | 'info'
+  | 'destructive'
+  | 'golden'
+  | 'cosmic'
+  | 'success';
 
 interface PillarMetric {
   title: string;
@@ -27,11 +40,180 @@ interface PillarMetric {
 interface PillarConfig {
   title: string;
   description: string;
-  icon: React.ElementType;
-  iconColor: string;
-  iconBackground: string;
-  highlightColor: string;
+  icon: ElementType;
+  tone: ToneKey;
   metrics: PillarMetric[];
+}
+
+const toneStyles: Record<
+  ToneKey,
+  {
+    badge:
+      | 'default'
+      | 'warning'
+      | 'destructive'
+      | 'info'
+      | 'golden'
+      | 'cosmic'
+      | 'success';
+    icon: string;
+    shell: string;
+    metricGlow: string;
+  }
+> = {
+  primary: {
+    badge: 'default',
+    icon: 'bg-primary/12 text-primary',
+    shell:
+      'border-primary/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.12)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
+    metricGlow: 'border-primary/12',
+  },
+  accent: {
+    badge: 'warning',
+    icon: 'bg-accent/12 text-accent',
+    shell:
+      'border-accent/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--accent)/0.12)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
+    metricGlow: 'border-accent/12',
+  },
+  info: {
+    badge: 'info',
+    icon: 'bg-info/12 text-info',
+    shell:
+      'border-info/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--info)/0.12)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
+    metricGlow: 'border-info/12',
+  },
+  destructive: {
+    badge: 'destructive',
+    icon: 'bg-destructive/10 text-destructive',
+    shell:
+      'border-destructive/10 bg-[radial-gradient(circle_at_top_right,hsl(var(--destructive)/0.08)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
+    metricGlow: 'border-destructive/10',
+  },
+  golden: {
+    badge: 'golden',
+    icon: 'bg-golden/12 text-golden',
+    shell:
+      'border-golden/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--golden)/0.12)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
+    metricGlow: 'border-golden/12',
+  },
+  cosmic: {
+    badge: 'cosmic',
+    icon: 'bg-cosmic/12 text-cosmic',
+    shell:
+      'border-cosmic/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--cosmic)/0.12)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
+    metricGlow: 'border-cosmic/12',
+  },
+  success: {
+    badge: 'success',
+    icon: 'bg-success/12 text-success',
+    shell:
+      'border-success/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--success)/0.12)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
+    metricGlow: 'border-success/12',
+  },
+};
+
+const hasMetricValue = (value: number | null | undefined): value is number =>
+  value !== null && value !== undefined && Number.isFinite(value);
+
+const formatMinutesToHours = (minutes: number) => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours}h ${mins}m`;
+};
+
+const formatNumber = (
+  value: number | null | undefined,
+  formatter: (input: number) => string
+) => (hasMetricValue(value) ? formatter(value) : 'N/A');
+
+const formatInteger = (value: number | null | undefined) =>
+  formatNumber(value, (input) => Math.round(input).toLocaleString('pt-BR'));
+
+const formatDecimal = (
+  value: number | null | undefined,
+  digits = 1,
+  suffix = ''
+) =>
+  formatNumber(value, (input) => {
+    const space = suffix ? ' ' : '';
+    return `${input.toFixed(digits)}${space}${suffix}`.trim();
+  });
+
+const formatPercent = (value: number | null | undefined, digits = 1) =>
+  formatNumber(value, (input) => `${input.toFixed(digits)}%`);
+
+const formatScore = (
+  value: number | null | undefined,
+  total: number,
+  digits = 0
+) => formatNumber(value, (input) => `${input.toFixed(digits)}/${total}`);
+
+function MetricTile({ metric, tone }: { metric: PillarMetric; tone: ToneKey }) {
+  return (
+    <div
+      className={cn(
+        'rounded-[22px] border bg-white/78 p-4 shadow-[0_12px_40px_-28px_rgba(22,21,48,0.45)] backdrop-blur-sm transition-transform duration-200 hover:-translate-y-0.5',
+        toneStyles[tone].metricGlow
+      )}
+    >
+      <div className="flex h-full flex-col gap-3">
+        <div className="flex flex-col gap-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            {metric.title}
+          </p>
+          <p className="font-mono text-2xl font-semibold tracking-[-0.03em] text-foreground">
+            {metric.value}
+          </p>
+        </div>
+        <p className="text-sm leading-6 text-muted-foreground">
+          {metric.description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function PillarCard({ pillar }: { pillar: PillarConfig }) {
+  const Icon = pillar.icon;
+  const tone = toneStyles[pillar.tone];
+
+  return (
+    <Card
+      className={cn(
+        'overflow-hidden rounded-[30px] border-white/70 shadow-[0_22px_60px_-32px_rgba(22,21,48,0.32)] backdrop-blur-xl',
+        tone.shell
+      )}
+    >
+      <CardHeader className="gap-4 pb-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-3">
+            <Badge variant={tone.badge}>Pilar vivo</Badge>
+            <div className="space-y-2">
+              <CardTitle className="text-xl">{pillar.title}</CardTitle>
+              <CardDescription>{pillar.description}</CardDescription>
+            </div>
+          </div>
+          <div
+            className={cn(
+              'flex size-12 shrink-0 items-center justify-center rounded-[18px] shadow-sm',
+              tone.icon
+            )}
+          >
+            <Icon className="h-5 w-5" />
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="grid gap-4 md:grid-cols-2">
+        {pillar.metrics.map((metric) => (
+          <MetricTile
+            key={`${pillar.title}-${metric.title}`}
+            metric={metric}
+            tone={pillar.tone}
+          />
+        ))}
+      </CardContent>
+    </Card>
+  );
 }
 
 interface MetricGridProps {
@@ -44,7 +226,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
       ? 'Excelente'
       : metrics.sleep_duration_minutes >= 360
         ? 'Bom'
-        : 'Abaixo da Meta';
+        : 'Abaixo da meta';
 
   const hrvStatus =
     (metrics.hrv_ms || 0) >= 50
@@ -53,7 +235,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
         ? 'Bom'
         : 'Baixo';
 
-  const readinessScore = metrics.readiness_score || metrics.recovery_score;
+  const readinessScore = metrics.readiness_score ?? metrics.recovery_score;
   const recoveryStatus =
     (readinessScore || 0) >= 80 ? 'Pronto para o dia' : 'Priorize o descanso';
 
@@ -74,7 +256,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
       : 'Aumentar atividade';
   const stepsStatus =
     metrics.steps >= 8000
-      ? 'Meta de 8k passos alcançada'
+      ? 'Meta de 8 mil passos alcançada'
       : 'Continue se movendo';
   const sedentaryStatus = (metrics.sedentary_hours || 0) < 8 ? 'Baixo' : 'Alto';
 
@@ -85,12 +267,12 @@ export function MetricGrid({ metrics }: MetricGridProps) {
   const cvStatus =
     (metrics.glycemic_variability_cv || 0) <= 36
       ? 'Estável'
-      : 'Alta Variabilidade';
+      : 'Alta variabilidade';
   const gmiStatus = (metrics.gmi_percent || 0) <= 6.5 ? 'Ótimo' : 'Monitorar';
   const peakStatus =
-    (metrics.post_prandial_peak_mgdl || 0) <= 140 ? 'Normal' : 'Pico Elevado';
+    (metrics.post_prandial_peak_mgdl || 0) <= 140 ? 'Normal' : 'Pico elevado';
   const tbrStatus =
-    (metrics.time_below_range_percent || 0) <= 4 ? 'Seguro' : 'Risco de Hipo';
+    (metrics.time_below_range_percent || 0) <= 4 ? 'Seguro' : 'Risco de hipo';
 
   const bpStatus =
     (metrics.blood_pressure_systolic || 0) < 120 &&
@@ -127,408 +309,302 @@ export function MetricGrid({ metrics }: MetricGridProps) {
 
   const pillars: PillarConfig[] = [
     {
-      title: 'Recuperação e Resiliência',
-      description: 'Capacidade de adaptação ao estresse e recuperação.',
+      title: 'Recuperação e resiliência',
+      description:
+        'Capacidade de adaptação ao estresse, recuperação e estabilidade do sistema.',
       icon: RefreshCw,
-      iconColor: 'text-primary',
-      iconBackground: 'bg-primary/10',
-      highlightColor: 'border-l-primary',
+      tone: 'primary',
       metrics: [
         {
           title: 'HRV (rMSSD)',
-          value: metrics.hrv_ms ? `${metrics.hrv_ms} ms` : 'N/A',
-          description: `Resiliência: ${hrvStatus}`,
+          value: formatDecimal(metrics.hrv_ms, 0, 'ms'),
+          description: `Resiliência atual: ${hrvStatus}.`,
         },
         {
           title: 'Prontidão',
-          value: readinessScore ? `${readinessScore}/100` : 'N/A',
+          value: formatScore(readinessScore, 100, 0),
           description: recoveryStatus,
         },
         {
-          title: 'FC Repouso',
-          value: metrics.resting_heart_rate
-            ? `${metrics.resting_heart_rate} BPM`
-            : 'N/A',
-          description: 'Média da noite.',
+          title: 'FC repouso',
+          value: formatDecimal(metrics.resting_heart_rate, 0, 'bpm'),
+          description: 'Média da noite e recuperação basal.',
         },
         {
           title: 'Recuperação FC',
-          value: metrics.hrr_1min_bpm ? `${metrics.hrr_1min_bpm} bpm` : 'N/A',
-          description: `Aptidão: ${hrrStatus}`,
+          value: formatDecimal(metrics.hrr_1min_bpm, 0, 'bpm'),
+          description: `Aptidão cardiovascular: ${hrrStatus}.`,
         },
         {
-          title: 'Temp. Noturna',
-          value: metrics.body_temperature_celsius
-            ? `${metrics.body_temperature_celsius.toFixed(1)} °C`
-            : 'N/A',
-          description: 'Desvio da linha de base.',
+          title: 'Temperatura',
+          value: formatDecimal(metrics.body_temperature_celsius, 1, '°C'),
+          description: 'Desvio da linha de base noturna.',
         },
         {
-          title: 'SpO₂ Noturna',
-          value: metrics.spo2_average
-            ? `${metrics.spo2_average.toFixed(1)}%`
-            : 'N/A',
-          description: `Oxigenação: ${spo2Status}`,
+          title: 'SpO₂ noturna',
+          value: formatPercent(metrics.spo2_average, 1),
+          description: `Oxigenação: ${spo2Status}.`,
         },
       ],
     },
     {
-      title: 'Cardio e Atividade Física',
-      description: 'Gasto energético, aptidão e carga de treino.',
+      title: 'Cardio e atividade física',
+      description:
+        'Gasto energético, aptidão e intensidade acumulada para manter ritmo com clareza.',
       icon: Activity,
-      iconColor: 'text-accent',
-      iconBackground: 'bg-accent/10',
-      highlightColor: 'border-l-accent',
+      tone: 'accent',
       metrics: [
         {
           title: 'VO₂max',
-          value: metrics.vo2_max
-            ? `${metrics.vo2_max.toFixed(1)} mL/kg/min`
-            : 'N/A',
-          description: 'Principal indicador de aptidão.',
+          value: formatDecimal(metrics.vo2_max, 1, 'mL/kg/min'),
+          description: 'Principal indicador de aptidão aeróbica.',
         },
         {
-          title: 'Min. Mod/Vigorosa',
-          value: `${metrics.active_minutes} min`,
+          title: 'Min. mod/vigorosa',
+          value: formatDecimal(metrics.active_minutes, 0, 'min'),
           description: activeMinutesStatus,
         },
         {
           title: 'Passos',
-          value: `${metrics.steps.toLocaleString()}`,
+          value: formatInteger(metrics.steps),
           description: stepsStatus,
         },
         {
           title: 'Carga (EPOC)',
-          value: metrics.training_load_epoc
-            ? `${metrics.training_load_epoc.toFixed(0)} UA`
-            : 'N/A',
-          description: 'Estresse fisiológico.',
+          value: formatDecimal(metrics.training_load_epoc, 0, 'UA'),
+          description: 'Estresse fisiológico acumulado.',
         },
         {
-          title: 'Strain Diário',
-          value: metrics.daily_strain
-            ? `${metrics.daily_strain.toFixed(1)} / 21`
-            : 'N/A',
-          description: 'Intensidade acumulada.',
+          title: 'Strain diário',
+          value: formatScore(metrics.daily_strain, 21, 1),
+          description: 'Intensidade total da jornada.',
         },
         {
           title: 'Sedentarismo',
-          value: metrics.sedentary_hours
-            ? `${metrics.sedentary_hours.toFixed(1)} h`
-            : 'N/A',
-          description: `Nível: ${sedentaryStatus}`,
+          value: formatDecimal(metrics.sedentary_hours, 1, 'h'),
+          description: `Nível de inatividade: ${sedentaryStatus}.`,
         },
       ],
     },
     {
-      title: 'Sono e Cronobiologia',
-      description: 'Qualidade e estrutura do descanso noturno.',
+      title: 'Sono e cronobiologia',
+      description:
+        'Estrutura do descanso, consistência dos horários e profundidade de recuperação.',
       icon: BedDouble,
-      iconColor: 'text-info',
-      iconBackground: 'bg-info/10',
-      highlightColor: 'border-l-info',
+      tone: 'info',
       metrics: [
         {
           title: 'Duração',
           value: formatMinutesToHours(metrics.sleep_duration_minutes),
-          description: `Qualidade: ${sleepQuality}`,
+          description: `Qualidade percebida: ${sleepQuality}.`,
         },
         {
           title: 'Eficiência',
-          value: metrics.sleep_efficiency
-            ? `${metrics.sleep_efficiency.toFixed(0)}%`
-            : 'N/A',
-          description: 'Sono vs. tempo na cama.',
+          value: formatPercent(metrics.sleep_efficiency, 0),
+          description: 'Relação entre sono efetivo e tempo na cama.',
         },
         {
           title: 'Regularidade (SRI)',
-          value: metrics.sleep_regularity_index
-            ? `${metrics.sleep_regularity_index}/100`
-            : 'N/A',
+          value: formatScore(metrics.sleep_regularity_index, 100, 0),
           description: 'Consistência dos horários.',
         },
         {
-          title: 'Social Jetlag',
-          value: metrics.social_jetlag_hours
-            ? `${metrics.social_jetlag_hours.toFixed(1)} h`
-            : 'N/A',
-          description: 'Diferença semana/fds.',
+          title: 'Social jetlag',
+          value: formatDecimal(metrics.social_jetlag_hours, 1, 'h'),
+          description: 'Diferença entre rotina da semana e do fim de semana.',
         },
         {
           title: 'Sono REM',
           value: formatMinutesToHours(metrics.rem_sleep_minutes),
-          description: 'Memória e humor.',
+          description: 'Memória, humor e integração emocional.',
         },
         {
-          title: 'Sono Profundo',
+          title: 'Sono profundo',
           value: formatMinutesToHours(metrics.deep_sleep_minutes),
-          description: 'Recuperação física.',
+          description: 'Recuperação física e restauração neural.',
         },
       ],
     },
     {
-      title: 'Metabolismo e Glicose',
-      description: 'Controle glicêmico e estabilidade metabólica.',
+      title: 'Metabolismo e glicose',
+      description:
+        'Controle glicêmico, estabilidade metabólica e resposta alimentar do corpo.',
       icon: Droplet,
-      iconColor: 'text-destructive',
-      iconBackground: 'bg-destructive/10',
-      highlightColor: 'border-l-destructive',
+      tone: 'destructive',
       metrics: [
         {
-          title: 'Tempo em Faixa',
-          value: metrics.time_in_range_percent
-            ? `${metrics.time_in_range_percent.toFixed(1)}%`
-            : 'N/A',
-          description: `Meta > 70%: ${tirStatus}`,
+          title: 'Tempo em faixa',
+          value: formatPercent(metrics.time_in_range_percent, 1),
+          description: `Meta > 70%: ${tirStatus}.`,
         },
         {
-          title: 'Variab. (CV)',
-          value: metrics.glycemic_variability_cv
-            ? `${metrics.glycemic_variability_cv.toFixed(1)}%`
-            : 'N/A',
-          description: `Meta < 36%: ${cvStatus}`,
+          title: 'Variabilidade (CV)',
+          value: formatPercent(metrics.glycemic_variability_cv, 1),
+          description: `Meta < 36%: ${cvStatus}.`,
         },
         {
           title: 'GMI (A1c)',
-          value: metrics.gmi_percent
-            ? `${metrics.gmi_percent.toFixed(1)}%`
-            : 'N/A',
-          description: `Média: ${gmiStatus}`,
+          value: formatPercent(metrics.gmi_percent, 1),
+          description: `Leitura média: ${gmiStatus}.`,
         },
         {
-          title: 'Pico Pós-Prandial',
-          value: metrics.post_prandial_peak_mgdl
-            ? `${metrics.post_prandial_peak_mgdl} mg/dL`
-            : 'N/A',
+          title: 'Pico pós-prandial',
+          value: formatDecimal(metrics.post_prandial_peak_mgdl, 0, 'mg/dL'),
           description: peakStatus,
         },
         {
-          title: 'Abaixo da Faixa',
-          value: metrics.time_below_range_percent
-            ? `${metrics.time_below_range_percent.toFixed(1)}%`
-            : 'N/A',
+          title: 'Abaixo da faixa',
+          value: formatPercent(metrics.time_below_range_percent, 1),
           description: tbrStatus,
         },
         {
-          title: 'iAUC/Refeição',
-          value: metrics.iauc_per_meal_mgdl_h
-            ? `${metrics.iauc_per_meal_mgdl_h.toFixed(1)}`
-            : 'N/A',
-          description: 'Resposta alimentar.',
+          title: 'iAUC/refeição',
+          value: formatDecimal(metrics.iauc_per_meal_mgdl_h, 1),
+          description: 'Resposta glicêmica por refeição.',
         },
       ],
     },
     {
-      title: 'Nutrição e Composição',
-      description: 'Composição corporal, macros e padrões alimentares.',
+      title: 'Nutrição e composição',
+      description:
+        'Composição corporal, distribuição de macros e padrão de alimentação diária.',
       icon: Utensils,
-      iconColor: 'text-golden',
-      iconBackground: 'bg-golden/10',
-      highlightColor: 'border-l-golden',
+      tone: 'golden',
       metrics: [
         {
           title: 'WHtR',
-          value: metrics.whtr_ratio ? metrics.whtr_ratio.toFixed(2) : 'N/A',
-          description: `Adiposidade: ${whtrStatus}`,
+          value: formatNumber(metrics.whtr_ratio, (input) => input.toFixed(2)),
+          description: `Adiposidade central: ${whtrStatus}.`,
         },
         {
           title: 'Proteína (g/kg)',
-          value: metrics.protein_g_per_kg
-            ? `${metrics.protein_g_per_kg.toFixed(2)}`
-            : 'N/A',
-          description: proteinStatus,
+          value: formatNumber(metrics.protein_g_per_kg, (input) =>
+            input.toFixed(2)
+          ),
+          description: `Consumo proteico: ${proteinStatus}.`,
         },
         {
           title: 'Fibras',
-          value: metrics.dietary_fiber_grams
-            ? `${metrics.dietary_fiber_grams} g`
-            : 'N/A',
-          description: `Meta > 25g: ${fiberStatus}`,
+          value: formatDecimal(metrics.dietary_fiber_grams, 0, 'g'),
+          description: `Meta > 25 g: ${fiberStatus}.`,
         },
         {
-          title: 'Janela Alimentar',
-          value: metrics.eating_window_hours
-            ? `${metrics.eating_window_hours.toFixed(1)} h`
-            : 'N/A',
-          description: eatingWindowStatus,
+          title: 'Janela alimentar',
+          value: formatDecimal(metrics.eating_window_hours, 1, 'h'),
+          description: `Perfil atual: ${eatingWindowStatus}.`,
         },
         {
           title: 'Na:K',
-          value: metrics.sodium_potassium_ratio
-            ? metrics.sodium_potassium_ratio.toFixed(2)
-            : 'N/A',
-          description: naKStatus,
+          value: formatNumber(metrics.sodium_potassium_ratio, (input) =>
+            input.toFixed(2)
+          ),
+          description: `Equilíbrio mineral: ${naKStatus}.`,
         },
         {
           title: 'Hidratação',
-          value: metrics.hydration_ml_per_kg
-            ? `${metrics.hydration_ml_per_kg.toFixed(0)} mL/kg`
-            : 'N/A',
-          description: hydrationStatus,
+          value: formatDecimal(metrics.hydration_ml_per_kg, 0, 'mL/kg'),
+          description: `Estado hídrico: ${hydrationStatus}.`,
         },
       ],
     },
     {
-      title: 'Saúde Mental',
-      description: 'Performance cognitiva, fadiga e equilíbrio emocional.',
+      title: 'Saúde mental e foco',
+      description:
+        'Clareza cognitiva, carga emocional, vigilância e estabilidade do sistema nervoso.',
       icon: Brain,
-      iconColor: 'text-cosmic',
-      iconBackground: 'bg-cosmic/10',
-      highlightColor: 'border-l-cosmic',
+      tone: 'cosmic',
       metrics: [
         {
           title: 'Reação (PVT)',
-          value: metrics.reaction_time_pvt_ms
-            ? `${metrics.reaction_time_pvt_ms} ms`
-            : 'N/A',
-          description: pvtStatus,
+          value: formatDecimal(metrics.reaction_time_pvt_ms, 0, 'ms'),
+          description: `Velocidade cognitiva: ${pvtStatus}.`,
         },
         {
           title: 'Lapsos PVT',
-          value: metrics.pvt_lapses_count
-            ? `${metrics.pvt_lapses_count}`
-            : 'N/A',
+          value: formatInteger(metrics.pvt_lapses_count),
           description: lapsesStatus,
         },
         {
-          title: 'Score Cognitivo',
-          value: metrics.cognitive_test_score
-            ? metrics.cognitive_test_score.toFixed(2)
-            : 'N/A',
-          description: cognitiveStatus,
+          title: 'Score cognitivo',
+          value: formatNumber(metrics.cognitive_test_score, (input) =>
+            input.toFixed(2)
+          ),
+          description: `Performance atual: ${cognitiveStatus}.`,
         },
         {
           title: 'Estresse (HRV)',
-          value: metrics.hrv_stress_index
-            ? metrics.hrv_stress_index.toFixed(1)
-            : 'N/A',
-          description: hrvStressStatus,
+          value: formatNumber(metrics.hrv_stress_index, (input) =>
+            input.toFixed(1)
+          ),
+          description: `Carga de estresse: ${hrvStressStatus}.`,
         },
         {
-          title: 'EDA Tônica',
-          value: metrics.eda_tonic_microsiemens
-            ? `${metrics.eda_tonic_microsiemens.toFixed(2)} µS`
-            : 'N/A',
-          description: edaStatus,
+          title: 'EDA tônica',
+          value: formatDecimal(metrics.eda_tonic_microsiemens, 2, 'µS'),
+          description: `Sinal autonômico: ${edaStatus}.`,
         },
         {
           title: 'FA',
-          value: metrics.afib_history_percent
-            ? `${metrics.afib_history_percent.toFixed(1)}%`
-            : 'N/A',
+          value: formatPercent(metrics.afib_history_percent, 1),
           description: afibStatus,
         },
         {
           title: 'Humor',
-          value: metrics.mood_score ? `${metrics.mood_score}/5` : 'N/A',
-          description: moodStatus,
+          value: formatScore(metrics.mood_score, 5, 0),
+          description: `Estado emocional: ${moodStatus}.`,
         },
         {
           title: 'Meditação',
-          value: `${metrics.meditation_minutes} min`,
-          description: 'Foco e redução de estresse.',
+          value: formatDecimal(metrics.meditation_minutes, 0, 'min'),
+          description: 'Espaço de regulação e presença.',
         },
       ],
     },
     {
-      title: 'Saúde Geral',
-      description: 'Indicadores globais e composição corporal.',
+      title: 'Saúde geral',
+      description:
+        'Camada ampla de monitoramento corporal com sinais de base e composição global.',
       icon: Smile,
-      iconColor: 'text-success',
-      iconBackground: 'bg-success/10',
-      highlightColor: 'border-l-success',
+      tone: 'success',
       metrics: [
         {
-          title: 'Pressão Arterial',
+          title: 'Pressão arterial',
           value:
-            metrics.blood_pressure_systolic && metrics.blood_pressure_diastolic
+            hasMetricValue(metrics.blood_pressure_systolic) &&
+            hasMetricValue(metrics.blood_pressure_diastolic)
               ? `${metrics.blood_pressure_systolic}/${metrics.blood_pressure_diastolic} mmHg`
               : 'N/A',
-          description: bpStatus,
+          description: `Leitura de pressão: ${bpStatus}.`,
         },
         {
           title: 'Peso',
-          value: metrics.weight_kg
-            ? `${metrics.weight_kg.toFixed(1)} kg`
-            : 'N/A',
-          description: 'Monitoramento.',
+          value: formatDecimal(metrics.weight_kg, 1, 'kg'),
+          description: 'Acompanhamento contínuo do corpo.',
         },
         {
           title: 'Hidratação',
-          value: `${metrics.water_liters.toFixed(1)} L`,
-          description: 'Meta: 2.5 L.',
+          value: formatDecimal(metrics.water_liters, 1, 'L'),
+          description: 'Meta-base sugerida: 2,5 L.',
         },
         {
-          title: 'Cal. Treino',
-          value: metrics.workout_calories
-            ? `${metrics.workout_calories.toFixed(0)} kcal`
-            : 'N/A',
-          description: 'Exercício.',
+          title: 'Calorias treino',
+          value: formatDecimal(metrics.workout_calories, 0, 'kcal'),
+          description: 'Gasto de exercício realizado.',
         },
         {
-          title: 'Cal. Totais',
-          value: metrics.calories_burned
-            ? `${metrics.calories_burned.toFixed(0)} kcal`
-            : 'N/A',
-          description: 'Gasto diário.',
+          title: 'Calorias totais',
+          value: formatDecimal(metrics.calories_burned, 0, 'kcal'),
+          description: 'Energia total gasta no dia.',
         },
       ],
     },
   ];
 
   return (
-    <Grid numItemsSm={1} numItemsMd={2} numItemsLg={3} className="gap-5">
+    <div className="grid gap-5 xl:grid-cols-2 2xl:grid-cols-3">
       {pillars.map((pillar) => (
-        <Card
-          key={pillar.title}
-          className={`space-y-3 rounded-2xl border border-border bg-card shadow hover:shadow-md transition-all duration-200 border-l-4 ${pillar.highlightColor}`}
-        >
-          <Flex justifyContent="between" alignItems="start" className="gap-4">
-            <div>
-              <Title className="text-sm font-display font-semibold text-foreground">
-                {pillar.title}
-              </Title>
-              <Text className="mt-1 text-xs text-muted-foreground">
-                {pillar.description}
-              </Text>
-            </div>
-            <span
-              className={`flex h-10 w-10 items-center justify-center rounded-xl ${pillar.iconBackground} shrink-0`}
-            >
-              <pillar.icon className={`h-5 w-5 ${pillar.iconColor}`} />
-            </span>
-          </Flex>
-
-          <Divider className="my-1 opacity-30" />
-
-          <div className="space-y-2">
-            {pillar.metrics.map((metric) => (
-              <div
-                key={`${pillar.title}-${metric.title}`}
-                className="rounded-xl border border-border bg-secondary/50 p-3"
-              >
-                <Flex
-                  justifyContent="between"
-                  alignItems="start"
-                  className="gap-3"
-                >
-                  <div>
-                    <Text className="text-xs font-medium text-foreground">
-                      {metric.title}
-                    </Text>
-                    <Text className="text-xs text-muted-foreground">
-                      {metric.description}
-                    </Text>
-                  </div>
-                  <Text className="font-semibold text-right text-foreground tabular-nums text-sm">
-                    {metric.value}
-                  </Text>
-                </Flex>
-              </div>
-            ))}
-          </div>
-        </Card>
+        <PillarCard key={pillar.title} pillar={pillar} />
       ))}
-    </Grid>
+    </div>
   );
 }

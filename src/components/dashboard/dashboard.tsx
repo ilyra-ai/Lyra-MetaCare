@@ -1,44 +1,210 @@
 'use client';
 
+import * as React from 'react';
+import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 import {
-  Card,
-  Metric,
-  Text,
-  Flex,
-  Grid,
-  Title,
-  AreaChart,
-  BarChart,
-  DonutChart,
-  Divider,
-  BadgeDelta,
-} from '@tremor/react';
-import { TrendingUp, Activity, BedDouble, Sparkles } from 'lucide-react';
+  Activity,
+  ArrowDownRight,
+  ArrowUpRight,
+  BedDouble,
+  Bot,
+  BrainCircuit,
+  Droplets,
+  HeartPulse,
+  MoonStar,
+  Orbit,
+  Sparkles,
+  TimerReset,
+  Waves,
+} from 'lucide-react';
+
 import { useDailyMetrics } from '@/hooks/use-daily-metrics';
 import { useAIScores } from '@/hooks/use-ai-scores';
-import { format } from 'date-fns';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useAccountSubscription } from '@/hooks/use-account-subscription';
+import { useHealthOrchestrator } from '@/context/HealthOrchestratorContext';
+import { isPlanFeatureEnabled } from '@/lib/plans/access';
+import { cn } from '@/lib/utils';
+import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
 import { AITipsCard } from './AITipsCard';
 import { MetricGrid } from './MetricGrid';
-import { useAccountSubscription } from '@/hooks/use-account-subscription';
-import { isPlanFeatureEnabled } from '@/lib/plans/access';
-import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from '@/components/ui/chart';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const valueFormatter = (number: number) =>
-  Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 }).format(number);
+const pulseChartConfig = {
+  pulso: {
+    label: 'Pulso harmônico',
+    color: 'hsl(var(--accent))',
+  },
+} satisfies ChartConfig;
 
-const deltaTypeForValue = (delta: number) => {
-  if (delta > 10) return 'increase' as const;
-  if (delta > 2) return 'moderateIncrease' as const;
-  if (delta < -10) return 'decrease' as const;
-  if (delta < -2) return 'moderateDecrease' as const;
-  if (delta === 0) return 'unchanged' as const;
-  return delta > 0 ? 'moderateIncrease' : 'moderateDecrease';
-};
+const weeklyChartConfig = {
+  prontidao: {
+    label: 'Prontidão',
+    color: 'hsl(var(--primary))',
+  },
+} satisfies ChartConfig;
+
+function formatMinutes(minutes: number) {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  return `${hours}h ${remainingMinutes}m`;
+}
+
+function formatWeekday(date: string) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    weekday: 'short',
+  })
+    .format(new Date(`${date}T12:00:00`))
+    .replace('.', '');
+}
+
+function formatDelta(delta: number) {
+  if (delta === 0 || Number.isNaN(delta)) {
+    return 'Estável';
+  }
+
+  return `${delta > 0 ? '+' : ''}${delta.toFixed(1)}%`;
+}
+
+function calculateDelta(current: number | null, previous: number | null) {
+  if (!current || !previous || previous === 0) {
+    return 0;
+  }
+
+  return ((current - previous) / previous) * 100;
+}
+
+function getDeltaVisual(delta: number) {
+  if (delta > 0) {
+    return {
+      icon: ArrowUpRight,
+      className: 'text-success',
+    };
+  }
+
+  if (delta < 0) {
+    return {
+      icon: ArrowDownRight,
+      className: 'text-destructive',
+    };
+  }
+
+  return {
+    icon: TimerReset,
+    className: 'text-muted-foreground',
+  };
+}
+
+function LoadingDashboard() {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <Skeleton className="h-[20rem] md:col-span-2" />
+        <Skeleton className="h-[20rem]" />
+        <Skeleton className="h-[20rem]" />
+        <Skeleton className="h-[18rem] md:col-span-2 xl:col-span-4" />
+      </div>
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <Skeleton className="h-40" />
+        <Skeleton className="h-40" />
+        <Skeleton className="h-40" />
+        <Skeleton className="h-40" />
+      </div>
+      <Skeleton className="h-[24rem]" />
+      <Skeleton className="h-[36rem]" />
+    </div>
+  );
+}
+
+interface MiniMetricCardProps {
+  title: string;
+  value: string;
+  description: string;
+  tone: 'primary' | 'accent' | 'cosmic' | 'info' | 'success' | 'golden';
+  icon: React.ElementType;
+  delta: number;
+}
+
+function MiniMetricCard({
+  title,
+  value,
+  description,
+  tone,
+  icon: Icon,
+  delta,
+}: MiniMetricCardProps) {
+  const toneStyles = {
+    primary: 'bg-primary/12 text-primary',
+    accent: 'bg-accent/12 text-accent',
+    cosmic: 'bg-cosmic/12 text-cosmic',
+    info: 'bg-info/12 text-info',
+    success: 'bg-success/12 text-success',
+    golden: 'bg-golden/12 text-golden',
+  };
+
+  const deltaVisual = getDeltaVisual(delta);
+  const DeltaIcon = deltaVisual.icon;
+
+  return (
+    <Card className="border-border/70 bg-card/90 backdrop-blur-xl">
+      <CardContent className="flex h-full flex-col gap-5 p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+              {title}
+            </p>
+            <p className="font-mono text-3xl font-semibold tracking-tight text-foreground">
+              {value}
+            </p>
+          </div>
+          <div
+            className={cn(
+              'flex size-11 items-center justify-center rounded-2xl shadow-sm',
+              toneStyles[tone]
+            )}
+          >
+            <Icon />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-sm leading-6 text-muted-foreground">
+            {description}
+          </p>
+          <div
+            className={cn('flex items-center gap-1.5', deltaVisual.className)}
+          >
+            <DeltaIcon />
+            <span className="text-xs font-semibold uppercase tracking-[0.16em]">
+              {formatDelta(delta)}
+            </span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export function Dashboard() {
   const { data: subscription, loading: subscriptionLoading } =
     useAccountSubscription();
+  const { astrology, isSyncing, syncError, vitals, triggerManualSync } =
+    useHealthOrchestrator();
 
   const dashboardEnabled = isPlanFeatureEnabled(
     subscription,
@@ -56,302 +222,503 @@ export function Dashboard() {
 
   const loading = subscriptionLoading || metricsLoading || scoresLoading;
 
+  const previousMetrics =
+    metrics.length > 1 ? metrics[metrics.length - 2] : null;
+
+  const readinessScore =
+    scores?.readinessScore ?? todayMetrics?.readiness_score ?? null;
+  const longevityScore = scores?.longevityScore ?? null;
+  const sleepMinutes = todayMetrics?.sleep_duration_minutes ?? 0;
+  const deepSleepMinutes = todayMetrics?.deep_sleep_minutes ?? 0;
+  const remSleepMinutes = todayMetrics?.rem_sleep_minutes ?? 0;
+  const sleepGoalMinutes = 8 * 60;
+  const sleepProgress = Math.min(
+    100,
+    Math.round((sleepMinutes / sleepGoalMinutes) * 100)
+  );
+  const stepsDelta = calculateDelta(
+    todayMetrics?.steps ?? 0,
+    previousMetrics?.steps ?? 0
+  );
+  const hydrationDelta = calculateDelta(
+    todayMetrics?.water_liters ?? 0,
+    previousMetrics?.water_liters ?? 0
+  );
+  const meditationDelta = calculateDelta(
+    todayMetrics?.meditation_minutes ?? 0,
+    previousMetrics?.meditation_minutes ?? 0
+  );
+  const glucoseDelta = calculateDelta(
+    todayMetrics?.blood_glucose_mgdl ?? 0,
+    previousMetrics?.blood_glucose_mgdl ?? 0
+  );
+
+  const pulseValue = todayMetrics?.hrv_ms ?? readinessScore ?? null;
+  const pulseUnit = todayMetrics?.hrv_ms ? 'ms' : '/100';
+  const pulseLabel = todayMetrics?.hrv_ms
+    ? 'Variabilidade cardíaca'
+    : 'Prontidão geral';
+
+  const pulseTrendData = metrics.map((metric) => ({
+    dia: formatWeekday(metric.date),
+    pulso: metric.hrv_ms ?? metric.readiness_score ?? 0,
+  }));
+
+  const weeklyFlowData = metrics.map((metric) => ({
+    dia: formatWeekday(metric.date),
+    prontidao: Math.round(metric.readiness_score ?? metric.recovery_score ?? 0),
+  }));
+
+  const miniMetrics: MiniMetricCardProps[] = [
+    {
+      title: 'Passos do dia',
+      value: (todayMetrics?.steps ?? 0).toLocaleString('pt-BR'),
+      description: 'Ritmo corporal e constância do movimento.',
+      tone: 'accent',
+      icon: Activity,
+      delta: stepsDelta,
+    },
+    {
+      title: 'Hidratação',
+      value: `${(todayMetrics?.water_liters ?? 0).toFixed(1)} L`,
+      description: 'Presença hídrica ao longo da jornada.',
+      tone: 'info',
+      icon: Droplets,
+      delta: hydrationDelta,
+    },
+    {
+      title: 'Meditação',
+      value: `${todayMetrics?.meditation_minutes ?? 0} min`,
+      description: 'Espaço de regulação e foco suave.',
+      tone: 'cosmic',
+      icon: Waves,
+      delta: meditationDelta,
+    },
+    {
+      title: 'Glicose atual',
+      value: todayMetrics?.blood_glucose_mgdl
+        ? `${todayMetrics.blood_glucose_mgdl} mg/dL`
+        : 'Sem leitura',
+      description: 'Leitura disponível do metabolismo do dia.',
+      tone: 'golden',
+      icon: Sparkles,
+      delta: glucoseDelta,
+    },
+  ];
+
+  const syncBadgeVariant = isSyncing
+    ? 'info'
+    : syncError
+      ? 'warning'
+      : 'success';
+
+  const syncBadgeLabel = isSyncing
+    ? 'Sincronizando'
+    : syncError
+      ? 'Parcial'
+      : 'Em sintonia';
+
+  const syncSummary = isSyncing
+    ? 'Reavaliando sinais disponíveis e o céu do momento.'
+    : syncError
+      ? syncError
+      : 'Última leitura consolidada com dados reais disponíveis no dispositivo e no banco.';
+
+  const astroTitle = astrology
+    ? `Lua em ${astrology.moonSign}`
+    : 'Céu do momento';
+  const astroDetail = astrology
+    ? astrology.impactOnHealth.energy
+    : 'O contexto astrológico do momento será mostrado assim que a orquestração local terminar.';
+
+  const handleSyncNow = async () => {
+    await triggerManualSync();
+  };
+
   if (loading) {
-    return (
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-        <Skeleton className="h-36 w-full rounded-2xl" />
-        <Skeleton className="h-36 w-full rounded-2xl" />
-        <Skeleton className="h-36 w-full rounded-2xl" />
-        <Skeleton className="h-36 w-full rounded-2xl" />
-        <Skeleton className="h-[320px] w-full lg:col-span-2 rounded-2xl" />
-        <Skeleton className="h-[320px] w-full lg:col-span-2 rounded-2xl" />
-      </div>
-    );
+    return <LoadingDashboard />;
   }
 
   if (!subscription || !dashboardEnabled) {
     return (
       <PlanUpgradeNotice
         currentPlanKey={subscription?.plan.key ?? 'free'}
-        title="Dashboard bloqueado pelo plano"
-        description="O acesso à visão executiva do dashboard está vinculado ao entitlement `dashboard_access`. Hoje essa capacidade não está liberada para sua assinatura."
+        title="Dashboard premium indisponível"
+        description="O entitlement `dashboard_access` ainda não está liberado para a sua assinatura. O bloqueio desta visão continua aplicado de forma real."
       />
     );
   }
 
-  const previousMetrics =
-    metrics.length > 1 ? metrics[metrics.length - 2] : null;
-
-  const longevityScore = scores?.longevityScore ?? null;
-  const readinessScore =
-    scores?.readinessScore ?? todayMetrics?.readiness_score ?? null;
-  const stepsToday = todayMetrics?.steps ?? 0;
-  const stepsYesterday = previousMetrics?.steps ?? null;
-  const sleepMinutesToday = todayMetrics?.sleep_duration_minutes ?? 0;
-  const sleepMinutesYesterday = previousMetrics?.sleep_duration_minutes ?? null;
-
-  const readinessYesterday = previousMetrics?.readiness_score ?? null;
-
-  const stepsDelta =
-    stepsYesterday && stepsYesterday > 0
-      ? ((stepsToday - stepsYesterday) / stepsYesterday) * 100
-      : 0;
-
-  const sleepDelta =
-    sleepMinutesYesterday && sleepMinutesYesterday > 0
-      ? ((sleepMinutesToday - sleepMinutesYesterday) / sleepMinutesYesterday) *
-        100
-      : 0;
-
-  const readinessDelta =
-    readinessScore && readinessYesterday
-      ? ((readinessScore - readinessYesterday) / readinessYesterday) * 100
-      : 0;
-
-  const stepsTrendData = metrics.map((metric) => ({
-    day: format(new Date(metric.date), 'EEE'),
-    Passos: metric.steps,
-  }));
-
-  const sleepTrendData = metrics.map((metric) => ({
-    day: format(new Date(metric.date), 'EEE'),
-    'Sono (h)': Number((metric.sleep_duration_minutes / 60).toFixed(2)),
-  }));
-
-  const sleepBreakdownData = todayMetrics
-    ? [
-        {
-          name: 'Sono profundo',
-          value: Number((todayMetrics.deep_sleep_minutes / 60).toFixed(2)),
-        },
-        {
-          name: 'Sono REM',
-          value: Number((todayMetrics.rem_sleep_minutes / 60).toFixed(2)),
-        },
-        {
-          name: 'Sono leve',
-          value: Number((todayMetrics.light_sleep_minutes / 60).toFixed(2)),
-        },
-      ].filter((segment) => segment.value > 0)
-    : [];
-
-  const iconBgMap: Record<string, string> = {
-    'Índice de Longevidade': 'bg-primary/10',
-    'Prontidão diária': 'bg-cosmic/10',
-    Passos: 'bg-accent/10',
-    Sono: 'bg-info/10',
-  };
-
-  const iconColorMap: Record<string, string> = {
-    'Índice de Longevidade': 'text-primary',
-    'Prontidão diária': 'text-cosmic',
-    Passos: 'text-accent',
-    Sono: 'text-info',
-  };
-
-  const highlightCards = [
-    {
-      title: 'Índice de Longevidade',
-      value: longevityScore ? longevityScore.toFixed(1) : 'N/A',
-      description: 'Score global calculado pela IA.',
-      icon: TrendingUp,
-      delta: 0,
-      deltaType: 'unchanged' as const,
-    },
-    {
-      title: 'Prontidão diária',
-      value: readinessScore ? `${Math.round(readinessScore)}/100` : 'N/A',
-      description: 'Energia disponível para hoje.',
-      icon: Sparkles,
-      delta: readinessDelta,
-      deltaType: deltaTypeForValue(readinessDelta),
-    },
-    {
-      title: 'Passos',
-      value: stepsToday.toLocaleString('pt-BR'),
-      description: 'Últimas 24 horas',
-      icon: Activity,
-      delta: stepsDelta,
-      deltaType: deltaTypeForValue(stepsDelta),
-    },
-    {
-      title: 'Sono',
-      value: `${Math.floor(sleepMinutesToday / 60)}h ${sleepMinutesToday % 60}m`,
-      description: 'Duração total da última noite.',
-      icon: BedDouble,
-      delta: sleepDelta,
-      deltaType: deltaTypeForValue(sleepDelta),
-    },
-  ];
-
   return (
-    <div className="space-y-6">
-      {/* KPI Cards */}
-      <Grid numItemsSm={1} numItemsMd={2} numItemsLg={4} className="gap-5">
-        {highlightCards.map(
-          ({ title, value, description, icon: Icon, delta, deltaType }) => (
-            <Card
-              key={title}
-              className="space-y-3 rounded-2xl border border-border bg-card shadow hover:shadow-md transition-all duration-200 hover:scale-[1.01]"
-            >
-              <Flex
-                justifyContent="between"
-                alignItems="start"
-                className="gap-4"
-              >
-                <div>
-                  <Text className="text-sm text-muted-foreground">{title}</Text>
-                  <Metric className="mt-1 text-foreground font-display">
-                    {title === 'Índice de Longevidade' && !aiScoresEnabled
-                      ? 'Bloqueado'
-                      : value}
-                  </Metric>
-                </div>
-                <span
-                  className={`flex h-11 w-11 items-center justify-center rounded-xl ${iconBgMap[title] || 'bg-secondary'}`}
-                >
-                  <Icon
-                    className={`h-5 w-5 ${iconColorMap[title] || 'text-primary'}`}
-                  />
-                </span>
-              </Flex>
-              <Flex justifyContent="between" alignItems="center">
-                <Text className="text-xs text-muted-foreground">
-                  {title === 'Índice de Longevidade' && !aiScoresEnabled
-                    ? 'Seu plano atual não libera scores de IA.'
-                    : description}
-                </Text>
-                {title === 'Índice de Longevidade' &&
-                !aiScoresEnabled ? null : (
-                  <BadgeDelta
-                    deltaType={deltaType}
-                    size="xs"
-                    className="rounded-full px-2 py-0.5"
-                  >
-                    {delta === 0
-                      ? 'Estável'
-                      : `${delta > 0 ? '+' : ''}${delta.toFixed(1)}%`}
-                  </BadgeDelta>
-                )}
-              </Flex>
-            </Card>
-          )
-        )}
-      </Grid>
+    <div className="flex flex-col gap-6">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <Card className="relative overflow-hidden border-primary/15 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.15)_0%,hsl(var(--card))_42%,hsl(var(--card))_100%)] md:col-span-2">
+          <div className="orchestrated-orb -left-14 top-0 h-32 w-32 bg-primary/70" />
+          <div className="orchestrated-orb bottom-0 right-0 h-28 w-28 bg-accent/45" />
 
-      {/* Charts Row 1 */}
-      <Grid numItemsSm={1} numItemsLg={3} className="gap-5">
-        <Card className="space-y-3 lg:col-span-2 rounded-2xl border border-border bg-card shadow hover:shadow-md transition-all duration-200">
-          <Flex justifyContent="between" alignItems="center">
-            <div>
-              <Title className="font-display font-semibold text-foreground">
-                Atividade Semanal
-              </Title>
-              <Text className="text-sm text-muted-foreground">
-                Evolução dos seus passos nos últimos 7 dias.
-              </Text>
+          <CardHeader className="relative gap-5">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="flex flex-col gap-3">
+                <Badge variant="default">Pulso do dia</Badge>
+                <div className="flex flex-col gap-1">
+                  <CardTitle className="text-2xl md:text-3xl">
+                    Sua cadência corporal está em foco.
+                  </CardTitle>
+                  <CardDescription className="max-w-2xl">
+                    Uma leitura clara do que merece sua energia agora, unindo
+                    biometria, IA e atmosfera cósmica sem ruído visual.
+                  </CardDescription>
+                </div>
+              </div>
+
+              <Button
+                variant="secondary"
+                onClick={() => void handleSyncNow()}
+                disabled={isSyncing}
+              >
+                <TimerReset />
+                Reavaliar agora
+              </Button>
             </div>
-          </Flex>
-          <Divider className="opacity-30" />
-          <AreaChart
-            className="h-72 mt-2"
-            data={stepsTrendData}
-            index="day"
-            categories={['Passos']}
-            colors={['teal']}
-            valueFormatter={(value) => valueFormatter(value)}
-            showLegend={false}
-            showYAxis={false}
-            curveType="monotone"
-          />
+          </CardHeader>
+
+          <CardContent className="relative flex flex-col gap-6">
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+              <div className="flex flex-col gap-5">
+                <div className="flex flex-wrap items-end gap-3">
+                  <span className="font-mono text-6xl font-semibold tracking-[-0.04em] text-foreground">
+                    {pulseValue ? Math.round(pulseValue) : 'N/A'}
+                  </span>
+                  <span className="pb-2 font-mono text-xl text-muted-foreground">
+                    {pulseValue ? pulseUnit : ''}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <div className="rounded-full border border-primary/15 bg-primary/8 px-4 py-2 text-sm text-primary">
+                    {pulseLabel}
+                  </div>
+                  <div className="rounded-full border border-border bg-card/80 px-4 py-2 text-sm text-foreground">
+                    FC repouso:{' '}
+                    <span className="font-semibold">
+                      {todayMetrics?.resting_heart_rate
+                        ? `${todayMetrics.resting_heart_rate} bpm`
+                        : vitals?.heartRate
+                          ? `${Math.round(vitals.heartRate)} bpm`
+                          : 'Sem leitura'}
+                    </span>
+                  </div>
+                  <div className="rounded-full border border-border bg-card/80 px-4 py-2 text-sm text-foreground">
+                    Longevidade:{' '}
+                    <span className="font-semibold">
+                      {longevityScore ? longevityScore.toFixed(1) : 'Bloqueado'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2 rounded-[24px] border border-white/75 bg-white/75 p-4 shadow-sm backdrop-blur-md">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <HeartPulse className="text-accent" />
+                      <span className="text-sm font-semibold text-foreground">
+                        Estado atual
+                      </span>
+                    </div>
+                    <Badge variant={syncBadgeVariant}>{syncBadgeLabel}</Badge>
+                  </div>
+                  <p className="text-sm leading-7 text-muted-foreground">
+                    {syncSummary}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 rounded-[28px] border border-border/70 bg-card/85 p-4 backdrop-blur-xl">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+                  Trajetória recente
+                </p>
+                <ChartContainer
+                  config={pulseChartConfig}
+                  className="min-h-[12rem] border-none bg-transparent p-0 shadow-none"
+                >
+                  <AreaChart accessibilityLayer data={pulseTrendData}>
+                    <defs>
+                      <linearGradient
+                        id="fillPulse"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="var(--color-pulso)"
+                          stopOpacity={0.35}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="var(--color-pulso)"
+                          stopOpacity={0.02}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      dataKey="dia"
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={12}
+                    />
+                    <ChartTooltip
+                      cursor={false}
+                      content={<ChartTooltipContent />}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="pulso"
+                      stroke="var(--color-pulso)"
+                      fill="url(#fillPulse)"
+                      strokeWidth={3}
+                    />
+                  </AreaChart>
+                </ChartContainer>
+              </div>
+            </div>
+          </CardContent>
         </Card>
-        <div className="lg:col-span-1 h-full">
+
+        <Card className="relative overflow-hidden border-cosmic/15 bg-[radial-gradient(circle_at_top_right,hsl(var(--cosmic)/0.14)_0%,hsl(var(--card))_45%,hsl(var(--card))_100%)]">
+          <div className="absolute right-4 top-4 text-cosmic/20">
+            <Orbit className="size-28 animate-spin-slow" />
+          </div>
+
+          <CardHeader className="relative gap-5">
+            <div className="flex items-center justify-between gap-3">
+              <Badge variant="cosmic">Céu do momento</Badge>
+              <div className="flex size-11 items-center justify-center rounded-2xl bg-cosmic-light text-cosmic shadow-cosmic">
+                <MoonStar />
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <CardTitle className="text-2xl">{astroTitle}</CardTitle>
+              <CardDescription>{astroDetail}</CardDescription>
+            </div>
+          </CardHeader>
+
+          <CardContent className="relative flex flex-col gap-4">
+            <div className="flex flex-wrap gap-2">
+              {astrology?.nakshatra ? (
+                <Badge variant="secondary">{astrology.nakshatra}</Badge>
+              ) : null}
+              {astrology?.paksha ? (
+                <Badge variant="cosmic">{astrology.paksha}</Badge>
+              ) : null}
+              {astrology?.tithi ? (
+                <Badge variant="info">{astrology.tithi}</Badge>
+              ) : null}
+            </div>
+
+            <div className="rounded-[24px] border border-white/80 bg-white/80 p-4 shadow-sm backdrop-blur-md">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                Leitura gentil
+              </p>
+              <p className="mt-3 text-sm leading-7 text-foreground">
+                {astrology?.impactOnHealth.stress ??
+                  'Assim que o cálculo astrológico terminar, esta área mostra um resumo prático do céu para seu corpo e sua rotina.'}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="overflow-hidden border-info/15 bg-[radial-gradient(circle_at_bottom_left,hsl(var(--info)/0.16)_0%,hsl(var(--card))_48%,hsl(var(--card))_100%)]">
+          <CardHeader className="gap-5">
+            <div className="flex items-center justify-between gap-3">
+              <Badge variant="info">Sono restaurador</Badge>
+              <div className="flex size-11 items-center justify-center rounded-2xl bg-info-light text-info shadow-md">
+                <BedDouble />
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <CardTitle className="text-2xl">
+                {sleepMinutes > 0 ? formatMinutes(sleepMinutes) : 'Sem dados'}
+              </CardTitle>
+              <CardDescription>
+                {sleepMinutes > 0
+                  ? 'Uma visão delicada do quanto seu descanso sustentou a energia de hoje.'
+                  : 'Conecte uma fonte real de sono para destravar esta leitura.'}
+              </CardDescription>
+            </div>
+          </CardHeader>
+
+          <CardContent className="flex flex-col gap-5">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <span className="text-muted-foreground">Meta sugerida</span>
+                <span className="font-medium text-foreground">
+                  8h por noite
+                </span>
+              </div>
+              <Progress value={sleepProgress} />
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-[20px] border border-border/70 bg-card/80 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                  Sono profundo
+                </p>
+                <p className="mt-2 font-mono text-2xl text-foreground">
+                  {formatMinutes(deepSleepMinutes)}
+                </p>
+              </div>
+              <div className="rounded-[20px] border border-border/70 bg-card/80 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                  Sono REM
+                </p>
+                <p className="mt-2 font-mono text-2xl text-foreground">
+                  {formatMinutes(remSleepMinutes)}
+                </p>
+              </div>
+            </div>
+
+            <p className="text-sm leading-7 text-muted-foreground">
+              {astrology?.impactOnHealth.sleep ??
+                'O painel de sono cruza duração, profundidade e o momento astrológico atual para sugerir um ritmo mais doce.'}
+            </p>
+          </CardContent>
+        </Card>
+
+        <div className="md:col-span-2 xl:col-span-4">
           <AITipsCard
-            className="h-full rounded-2xl"
+            className="h-full"
             featureEnabled={aiTipsEnabled}
             currentPlanKey={subscription.plan.key}
           />
         </div>
-      </Grid>
+      </div>
 
-      {/* Charts Row 2 */}
-      <Grid numItemsSm={1} numItemsLg={3} className="gap-5">
-        <Card className="space-y-3 lg:col-span-2 rounded-2xl border border-border bg-card shadow hover:shadow-md transition-all duration-200">
-          <Flex justifyContent="between" alignItems="center">
-            <div>
-              <Title className="font-display font-semibold text-foreground">
-                Padrão de Sono
-              </Title>
-              <Text className="text-sm text-muted-foreground">
-                Duração do sono em horas nos últimos 7 dias.
-              </Text>
-            </div>
-          </Flex>
-          <Divider className="opacity-30" />
-          <BarChart
-            className="h-72 mt-2"
-            data={sleepTrendData}
-            index="day"
-            categories={['Sono (h)']}
-            colors={['indigo']}
-            valueFormatter={(value) => `${valueFormatter(value)} h`}
-            showLegend={false}
-            yAxisWidth={40}
-          />
-        </Card>
-        <Card className="space-y-3 rounded-2xl border border-border bg-card shadow hover:shadow-md transition-all duration-200">
-          <Title className="font-display font-semibold text-foreground">
-            Estrutura da última noite
-          </Title>
-          <Text className="text-sm text-muted-foreground">
-            Distribuição das fases de sono.
-          </Text>
-          <Divider className="opacity-30" />
-          {sleepBreakdownData.length > 0 ? (
-            <DonutChart
-              data={sleepBreakdownData}
-              index="name"
-              category="value"
-              valueFormatter={(value) => `${valueFormatter(value)} h`}
-              colors={['violet', 'indigo', 'sky']}
-              className="mt-4"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-sm text-muted-foreground py-12">
-              Sem dados de sono para hoje.
-            </div>
-          )}
-        </Card>
-      </Grid>
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        {miniMetrics.map((metric) => (
+          <MiniMetricCard key={metric.title} {...metric} />
+        ))}
+      </div>
 
-      {/* Advanced Health Pillars */}
+      <Card className="border-primary/10 bg-card/90 backdrop-blur-xl">
+        <CardHeader className="gap-3">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-col gap-2">
+              <Badge variant="secondary">Trajetória semanal</Badge>
+              <CardTitle className="text-2xl">
+                Como sua prontidão desenhou a semana
+              </CardTitle>
+              <CardDescription>
+                Uma curva simples para enxergar ritmo, recuperação e constância
+                sem poluição visual.
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-3 rounded-full border border-border bg-card px-4 py-2 text-sm text-muted-foreground">
+              <Bot className="text-primary" />
+              IA liberada:{' '}
+              <span className="font-semibold text-foreground">
+                {aiScoresEnabled ? 'sim' : 'não'}
+              </span>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="flex flex-col gap-6">
+          <ChartContainer
+            config={weeklyChartConfig}
+            className="min-h-[22rem] border-none bg-transparent p-0 shadow-none"
+          >
+            <AreaChart accessibilityLayer data={weeklyFlowData}>
+              <defs>
+                <linearGradient id="fillReadiness" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-prontidao)"
+                    stopOpacity={0.32}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-prontidao)"
+                    stopOpacity={0.02}
+                  />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="dia"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={12}
+              />
+              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+              <Area
+                type="monotone"
+                dataKey="prontidao"
+                stroke="var(--color-prontidao)"
+                fill="url(#fillReadiness)"
+                strokeWidth={3}
+              />
+            </AreaChart>
+          </ChartContainer>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="rounded-[22px] border border-border/70 bg-card/80 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                Prontidão atual
+              </p>
+              <p className="mt-2 font-mono text-3xl text-foreground">
+                {readinessScore ? Math.round(readinessScore) : 'N/A'}
+              </p>
+            </div>
+            <div className="rounded-[22px] border border-border/70 bg-card/80 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                Score de longevidade
+              </p>
+              <p className="mt-2 font-mono text-3xl text-foreground">
+                {longevityScore ? longevityScore.toFixed(1) : 'Bloqueado'}
+              </p>
+            </div>
+            <div className="rounded-[22px] border border-border/70 bg-card/80 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                Contexto vivo
+              </p>
+              <p className="mt-2 text-sm leading-7 text-foreground">
+                {astrology?.impactOnHealth.energy ??
+                  'O céu do momento será sincronizado aqui assim que a orquestração local terminar.'}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {todayMetrics ? (
-        <div className="space-y-5 pt-2">
-          <div>
-            <h2 className="text-xl font-display font-bold text-gradient-hero">
-              Pilares avançados de saúde
+        <section className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-2xl font-display font-bold tracking-tight text-gradient-hero">
+              Pilares profundos da sua saúde
             </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Visualize a profundidade das suas métricas de longevidade.
+            <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
+              Esta camada organiza métricas mais técnicas em blocos legíveis,
+              mantendo profundidade sem transformar a tela em ruído.
             </p>
           </div>
-          <div className="rounded-2xl bg-card border border-border p-5 shadow">
+          <div className="rounded-[32px] border border-border/70 bg-card/80 p-5 shadow-sm backdrop-blur-xl">
             <MetricGrid metrics={todayMetrics} />
           </div>
-        </div>
+        </section>
       ) : (
-        <Card className="rounded-2xl border border-border bg-card shadow">
-          <Flex justifyContent="between" alignItems="center">
-            <div>
-              <Title className="font-display text-foreground">
-                Dados indisponíveis
-              </Title>
-              <Text className="text-sm text-muted-foreground">
-                Não encontramos métricas para hoje. Conecte seus dispositivos de
-                monitoramento para ver recomendações personalizadas.
-              </Text>
-            </div>
-          </Flex>
+        <Card className="border-dashed border-border/80 bg-card/80">
+          <CardHeader className="gap-3">
+            <CardTitle className="text-2xl">
+              As métricas do dia ainda não chegaram
+            </CardTitle>
+            <CardDescription>
+              Assim que uma fonte real alimentar `daily_metrics`, este bloco
+              passa a exibir leituras detalhadas sem nenhum preenchimento
+              artificial.
+            </CardDescription>
+          </CardHeader>
         </Card>
       )}
     </div>

@@ -49,7 +49,7 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [~] Componentes UI base amplamente reestilizados, ainda com alguns acabamentos e revisoes pendentes.
 - [x] Landing page reescrita estruturalmente e validada com publicacao publica real.
 - [x] Login reescrito estruturalmente e validado com publicacao publica real.
-- [ ] Dashboard principal revisado contra a nova direcao astrologica moderna + IA.
+- [x] Dashboard principal revisado contra a nova direcao astrologica moderna + IA.
 - [ ] Demais modulos do paciente finalizados no novo padrao.
 - [ ] Modulos de billing finalizados no novo padrao.
 - [ ] Modulos administrativos finalizados no novo padrao.
@@ -132,7 +132,7 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] Corrigir warnings e erros atuais de lint.
 - [x] Revalidar formatacao.
 - [x] Revalidar tipagem.
-- [ ] Entregar bloco fundacao + shell + UI base validado e versionado.
+- [x] Entregar bloco fundacao + shell + UI base validado e versionado.
 
 ### Bloco imediato 2 - direcao visual central corrigida pelo usuario
 
@@ -144,7 +144,7 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] Garantir que o login acompanhe exatamente a mesma identidade.
 - [x] Validar types, lint e format.
 - [x] Validar publicacao real da landing e do login via API publica e interface real.
-- [ ] Entregar bloco landing + auth validado e versionado.
+- [x] Entregar bloco landing + auth validado e versionado.
 
 ## Checklist integral de execucao por fases
 
@@ -195,10 +195,10 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 
 ### Fase 4 - Paginas principais do paciente
 
-- [~] `src/components/dashboard/dashboard.tsx`
-- [~] `src/components/dashboard/MetricGrid.tsx`
-- [~] `src/components/dashboard/AITipsCard.tsx`
-- [~] `src/components/dashboard/QuickScanFAB.tsx`
+- [x] `src/components/dashboard/dashboard.tsx`
+- [x] `src/components/dashboard/MetricGrid.tsx`
+- [x] `src/components/dashboard/AITipsCard.tsx`
+- [x] `src/components/dashboard/QuickScanFAB.tsx`
 - [~] `src/components/ai-plan/AIPlanContent.tsx`
 - [~] `src/components/goals/GoalTrackingContent.tsx`
 - [~] `src/components/goals/CreateGoalModal.tsx`
@@ -294,6 +294,10 @@ npm run check:types
 - 2026-03-25 12: migracoes reais executadas com sucesso no MySQL local via Docker, incluindo `005_add_ui_config.sql` e `006_adjust_utf8_collation_to_unicode_ci.sql`.
 - 2026-03-25 13: `admin@admin.com` validado de ponta a ponta com login HTTP real, sessao autenticada, cookie funcional e acesso bem-sucedido a `/api/admin/users`.
 - 2026-03-25 14: `npm run fix:format`, `npm run fix:lint`, `npm run check:lint`, `npm run check:format` e `npm run check:types` executados com sucesso apos as correcoes do bloco de migracoes e bootstrap admin.
+- 2026-03-25 15: bloco de migracoes e bootstrap multi-admin versionado e publicado em `main` no commit `02c8046`.
+- 2026-03-25 16: dashboard principal refeito com hero claro premium, cards cosmicos, FAB real de acoes rapidas, `AITipsCard` conectado ao feed real `ai_tips`, `MetricGrid` migrado do estilo antigo para o design system atual e textos de navegacao/header corrigidos em pt-BR.
+- 2026-03-25 17: causa raiz do ruído no console isolada em hot reload durante a troca integral do `MetricGrid`; validacao final em sessao limpa do Playwright confirmou dashboard real carregando sem erros e sem warnings de console alem dos avisos informativos do React DevTools.
+- 2026-03-25 18: `HealthOrchestratorContext` passou a refletir sincronizacao parcial apenas no estado da UI, sem poluir o console com warning redundante, e `.playwright-cli` foi adicionado ao `.gitignore` para manter o versionamento limpo.
 
 ## Politica obrigatoria de commit e push
 

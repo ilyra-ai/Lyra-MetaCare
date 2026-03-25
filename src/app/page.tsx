@@ -8,6 +8,7 @@ import { QuickScanFAB } from '@/components/dashboard/QuickScanFAB';
 import { LandingPage } from '@/components/landing/LandingPage';
 import { AppShell } from '@/components/layout/AppShell';
 import { useAuth } from '@/context/AuthContext';
+import { HealthOrchestratorProvider } from '@/context/HealthOrchestratorContext';
 
 type UserProfile = {
   first_name: string | null;
@@ -115,8 +116,10 @@ export default function Home() {
           </div>
         </section>
 
-        <Dashboard />
-        <QuickScanFAB />
+        <HealthOrchestratorProvider>
+          <Dashboard />
+          <QuickScanFAB />
+        </HealthOrchestratorProvider>
       </div>
     </AppShell>
   );

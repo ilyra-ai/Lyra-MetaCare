@@ -69,10 +69,7 @@ export const HealthOrchestratorProvider: React.FC<{
       const currentVitals = await fetchRealTimeVitals();
       setVitals(currentVitals);
     } catch (error) {
-      console.warn(
-        '[Lyra MetaCare] Sincronização parcial de saúde:',
-        error instanceof Error ? error.message : 'Erro desconhecido'
-      );
+      setVitals(null);
       setSyncError(
         error instanceof Error
           ? error.message

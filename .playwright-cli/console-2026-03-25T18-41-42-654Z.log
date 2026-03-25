@@ -2918,3 +2918,127 @@ Consider migrating the non-React component export to a separate file and importi
 
 It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.
 Fast Refresh requires at least one parent function component in your React tree. @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:336
+[ 2990430ms] [ERROR] ./src/components/dashboard/QuickScanFAB.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\QuickScanFAB.tsx'
+
+Import trace for requested module:
+./src/components/dashboard/QuickScanFAB.tsx
+./src/app/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[ 3008497ms] [ERROR] ./src/components/dashboard/QuickScanFAB.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\QuickScanFAB.tsx'
+
+Import trace for requested module:
+./src/components/dashboard/QuickScanFAB.tsx
+./src/app/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[ 3027835ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx'
+
+Import trace for requested module:
+./src/components/dashboard/AITipsCard.tsx
+./src/components/dashboard/dashboard.tsx
+./src/app/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[ 3029810ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx'
+
+Import trace for requested module:
+./src/components/dashboard/AITipsCard.tsx
+./src/components/dashboard/dashboard.tsx
+./src/app/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[ 3030853ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx'
+
+Import trace for requested module:
+./src/components/dashboard/AITipsCard.tsx
+./src/components/dashboard/dashboard.tsx
+./src/app/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[ 3034364ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/?_rsc=1oqwi:0
+[ 3036411ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/:0
+[ 3038410ms] ModuleBuildError: Module build failed (from ./node_modules/.pnpm/@dyad-sh+nextjs-webpack-com_b0ea71cac10871d05b612916d08fa340/node_modules/@dyad-sh/nextjs-webpack-component-tagger/dist/index.js):
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx'
+    at processResult (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\compiled\webpack\bundle5.js:29:407111)
+    at <unknown> (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\compiled\webpack\bundle5.js:29:408906)
+    at <unknown> (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js:1:8645)
+    at <unknown> (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js:1:5353)
+    at <unknown> (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\compiled\webpack\bundle5.js:29:408334)
+    at eval (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\compiled\webpack\bundle5.js:14:9224)
+    at <unknown> (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\plugins\profiling-plugin.js:177:29)
+    at processTicksAndRejections (node:internal/process/task_queues:88:21)
+    at runNextTicks (node:internal/process/task_queues:68:3)
+    at process.processImmediate (node:internal/timers:472:9)
+[ 3038151ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx' @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[ 3038336ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx' @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[ 3038424ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx' @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[ 3038466ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx' @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[ 3038582ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx' @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[ 3038596ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx' @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[ 3038688ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx'
+
+Import trace for requested module:
+./src/components/dashboard/AITipsCard.tsx
+./src/components/dashboard/dashboard.tsx
+./src/app/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[ 3040397ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx'
+
+Import trace for requested module:
+./src/components/dashboard/AITipsCard.tsx
+./src/components/dashboard/dashboard.tsx
+./src/app/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[ 3040458ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx'
+
+Import trace for requested module:
+./src/components/dashboard/AITipsCard.tsx
+./src/components/dashboard/dashboard.tsx
+./src/app/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[ 3040799ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx'
+
+Import trace for requested module:
+./src/components/dashboard/AITipsCard.tsx
+./src/components/dashboard/dashboard.tsx
+./src/app/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[ 3041256ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx'
+
+Import trace for requested module:
+./src/components/dashboard/AITipsCard.tsx
+./src/components/dashboard/dashboard.tsx
+./src/app/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[ 3058982ms] [ERROR] ./src/components/dashboard/AITipsCard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\AITipsCard.tsx'
+
+Import trace for requested module:
+./src/components/dashboard/AITipsCard.tsx
+./src/components/dashboard/dashboard.tsx
+./src/app/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[ 3066043ms] [WARNING] [Fast Refresh] performing full reload
+
+Fast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.
+You might have a file which exports a React component but also exports a value that is imported by a non-React component file.
+Consider migrating the non-React component export to a separate file and importing it into both files.
+
+It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.
+Fast Refresh requires at least one parent function component in your React tree. @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:336
+[ 3086572ms] [ERROR] ./src/components/dashboard/dashboard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\dashboard.tsx'
+
+Import trace for requested module:
+./src/components/dashboard/dashboard.tsx
+./src/app/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[ 3173484ms] [ERROR] ./src/components/dashboard/dashboard.tsx
+Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\src\components\dashboard\dashboard.tsx'
+
+Import trace for requested module:
+./src/components/dashboard/dashboard.tsx
+./src/app/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[ 3468222ms] [WARNING] The resource http://localhost:3000/_next/static/css/app/layout.css?v=1774467564092 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3000/:0
+[ 3493676ms] [WARNING] The resource http://localhost:3000/_next/static/css/app/layout.css?v=1774467590879 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3000/:0
+[ 3533173ms] [WARNING] The resource http://localhost:3000/_next/static/css/app/layout.css?v=1774467626698 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3000/:0
