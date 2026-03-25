@@ -199,7 +199,7 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] `src/components/dashboard/MetricGrid.tsx`
 - [x] `src/components/dashboard/AITipsCard.tsx`
 - [x] `src/components/dashboard/QuickScanFAB.tsx`
-- [~] `src/components/ai-plan/AIPlanContent.tsx`
+- [x] `src/components/ai-plan/AIPlanContent.tsx`
 - [~] `src/components/goals/GoalTrackingContent.tsx`
 - [~] `src/components/goals/CreateGoalModal.tsx`
 - [~] `src/components/goals/UpdateGoalProgressModal.tsx`
@@ -298,6 +298,8 @@ npm run check:types
 - 2026-03-25 16: dashboard principal refeito com hero claro premium, cards cosmicos, FAB real de acoes rapidas, `AITipsCard` conectado ao feed real `ai_tips`, `MetricGrid` migrado do estilo antigo para o design system atual e textos de navegacao/header corrigidos em pt-BR.
 - 2026-03-25 17: causa raiz do ruído no console isolada em hot reload durante a troca integral do `MetricGrid`; validacao final em sessao limpa do Playwright confirmou dashboard real carregando sem erros e sem warnings de console alem dos avisos informativos do React DevTools.
 - 2026-03-25 18: `HealthOrchestratorContext` passou a refletir sincronizacao parcial apenas no estado da UI, sem poluir o console com warning redundante, e `.playwright-cli` foi adicionado ao `.gitignore` para manter o versionamento limpo.
+- 2026-03-25 19: experiencia `AIPlanContent` reescrita no novo design system claro, com hero editorial, contexto astrológico real, persistencia real em MySQL, tabs premium por pilar e cards de recomendacao sem placeholder.
+- 2026-03-25 20: geracao do plano validada na propria interface em `/plan`, com retorno real de 3 pilares e 6 recomendacoes, console limpo no navegador e confirmacao da gravacao em `ai_plans` dentro do container MySQL `lyra-metacare-mysql`.
 
 ## Politica obrigatoria de commit e push
 

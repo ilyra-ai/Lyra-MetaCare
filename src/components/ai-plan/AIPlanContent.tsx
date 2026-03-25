@@ -1,8 +1,33 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import type { ElementType } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { useHealthOrchestrator } from '../../context/HealthOrchestratorContext';
+import { useHealthOrchestrator } from '@/context/HealthOrchestratorContext';
+import {
+  Activity,
+  BrainCircuit,
+  CheckCircle2,
+  Clock3,
+  Dumbbell,
+  Heart,
+  Leaf,
+  Loader2,
+  Moon,
+  Orbit,
+  RefreshCw,
+  Scale,
+  Sparkles,
+  SunMedium,
+  Utensils,
+  Waves,
+  Zap,
+  Droplet,
+} from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,32 +35,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  CheckCircle,
-  Dumbbell,
-  Utensils,
-  Moon,
-  Zap,
-  BrainCircuit,
-  Heart,
-  Leaf,
-  Sun,
-  Clock,
-  Activity,
-  RefreshCw,
-  Droplet,
-  Scale,
-  Smile,
-  Waves,
-  Loader2,
-} from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
 
-// --- Type Definitions ---
 interface PlanItemData {
   id: string;
   title: string;
@@ -69,8 +72,7 @@ function isPlanData(value: unknown): value is PlanData {
   );
 }
 
-// --- Icon Mapping ---
-const IconMap: Record<string, React.ElementType> = {
+const IconMap: Record<string, ElementType> = {
   Utensils,
   Dumbbell,
   Moon,
@@ -82,51 +84,220 @@ const IconMap: Record<string, React.ElementType> = {
   hydration: Droplet,
   strength: Dumbbell,
   cardio: Heart,
-  sedentary: Clock,
+  sedentary: Clock3,
   breath: Waves,
   cold: Zap,
   strain: Activity,
-  regularity: Sun,
+  regularity: SunMedium,
   light: Moon,
   deep_sleep: BrainCircuit,
   glucose_control: Droplet,
   post_meal: Activity,
   tir: Scale,
-  meditation: Smile,
+  meditation: Waves,
   cognition: BrainCircuit,
   social: Heart,
-  CheckCircle,
+  CheckCircle: CheckCircle2,
 };
 
-// --- PlanItem Component ---
-const PlanItem: React.FC<{ item: PlanItemData; color: string }> = ({
-  item,
-  color,
-}) => {
-  const ItemIcon = IconMap[item.image] || CheckCircle;
+type ToneKey = 'primary' | 'accent' | 'cosmic' | 'golden';
+
+const toneStyles: Record<
+  ToneKey,
+  {
+    badge: 'default' | 'warning' | 'cosmic' | 'golden' | 'success' | 'info';
+    icon: string;
+    frame: string;
+    tile: string;
+  }
+> = {
+  primary: {
+    badge: 'default',
+    icon: 'bg-primary/12 text-primary',
+    frame:
+      'border-primary/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.14)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
+    tile: 'border-primary/12',
+  },
+  accent: {
+    badge: 'warning',
+    icon: 'bg-accent/12 text-accent',
+    frame:
+      'border-accent/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--accent)/0.14)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
+    tile: 'border-accent/12',
+  },
+  cosmic: {
+    badge: 'cosmic',
+    icon: 'bg-cosmic/12 text-cosmic',
+    frame:
+      'border-cosmic/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--cosmic)/0.14)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
+    tile: 'border-cosmic/12',
+  },
+  golden: {
+    badge: 'golden',
+    icon: 'bg-golden/12 text-golden',
+    frame:
+      'border-golden/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--golden)/0.14)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
+    tile: 'border-golden/12',
+  },
+};
+
+const hasMetricValue = (value: number | null | undefined): value is number =>
+  value !== null && value !== undefined && Number.isFinite(value);
+
+function resolveTone(pillarKey: string): ToneKey {
+  if (pillarKey.includes('nutrition')) {
+    return 'golden';
+  }
+
+  if (pillarKey.includes('exercise') || pillarKey.includes('movement')) {
+    return 'accent';
+  }
+
+  if (pillarKey.includes('sleep')) {
+    return 'cosmic';
+  }
+
+  return 'primary';
+}
+
+function LoadingPlan() {
   return (
-    <Card className="flex flex-col sm:flex-row justify-between p-4 hover:shadow-lg transition-shadow duration-300 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border-0 ring-1 ring-gray-200 dark:ring-gray-700">
-      <div className="flex-1 space-y-2 pr-4">
-        <h3 className={cn('font-bold text-lg', color)}>{item.title}</h3>
-        <p className="text-sm text-muted-foreground">{item.details}</p>
+    <div className="space-y-6">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_22rem]">
+        <Skeleton className="h-72 rounded-[32px]" />
+        <Skeleton className="h-72 rounded-[32px]" />
       </div>
-      <div className="w-full sm:w-24 h-24 flex items-center justify-center mt-4 sm:mt-0 bg-gray-100/50 dark:bg-gray-900/50 rounded-xl flex-shrink-0 shadow-inner">
-        <ItemIcon className={cn('h-10 w-10', color)} />
-      </div>
+      <Skeleton className="h-14 rounded-full" />
+      <Skeleton className="h-[32rem] rounded-[32px]" />
+    </div>
+  );
+}
+
+function PlanItemCard({
+  item,
+  itemIndex,
+  tone,
+}: {
+  item: PlanItemData;
+  itemIndex: number;
+  tone: ToneKey;
+}) {
+  const styles = toneStyles[tone];
+  const ItemIcon = IconMap[item.image] || CheckCircle2;
+
+  return (
+    <Card
+      className={cn(
+        'overflow-hidden rounded-[28px] border-white/70 bg-white/88 shadow-[0_18px_55px_-32px_rgba(22,21,48,0.35)] backdrop-blur-xl',
+        styles.tile
+      )}
+    >
+      <CardContent className="flex h-full flex-col gap-5 p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-full border border-border/70 bg-white text-xs font-semibold tracking-[0.18em] text-muted-foreground">
+              {String(itemIndex + 1).padStart(2, '0')}
+            </div>
+            <div
+              className={cn(
+                'flex size-11 items-center justify-center rounded-[18px]',
+                styles.icon
+              )}
+            >
+              <ItemIcon className="h-5 w-5" />
+            </div>
+          </div>
+          <Badge variant={styles.badge}>Ação real</Badge>
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="text-xl font-semibold tracking-tight text-foreground">
+            {item.title}
+          </h3>
+          <p className="text-sm leading-7 text-muted-foreground">
+            {item.details}
+          </p>
+        </div>
+      </CardContent>
     </Card>
   );
-};
+}
 
-// --- Main Component ---
+function PillarPanel({
+  pillarKey,
+  pillar,
+}: {
+  pillarKey: string;
+  pillar: PillarData;
+}) {
+  const tone = resolveTone(pillarKey);
+  const styles = toneStyles[tone];
+  const PillarIcon = IconMap[pillar.icon] || BrainCircuit;
+
+  return (
+    <div className="grid gap-6 xl:grid-cols-[20rem_minmax(0,1fr)]">
+      <Card
+        className={cn(
+          'rounded-[32px] border-white/75 shadow-[0_24px_70px_-36px_rgba(22,21,48,0.35)] backdrop-blur-xl',
+          styles.frame
+        )}
+      >
+        <CardHeader className="gap-5">
+          <Badge variant={styles.badge}>Pilar ativo</Badge>
+          <div
+            className={cn(
+              'flex size-14 items-center justify-center rounded-[20px] shadow-sm',
+              styles.icon
+            )}
+          >
+            <PillarIcon className="h-6 w-6" />
+          </div>
+          <div className="space-y-2">
+            <CardTitle className="text-2xl">{pillar.title}</CardTitle>
+            <CardDescription>{pillar.description}</CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="rounded-[24px] border border-white/70 bg-white/72 p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              Entregas do momento
+            </p>
+            <p className="mt-2 font-mono text-4xl font-semibold tracking-[-0.04em] text-foreground">
+              {pillar.items.length}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              Recomendações reais produzidas pelo motor local para este eixo.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-5 lg:grid-cols-2">
+        {pillar.items.map((item, itemIndex) => (
+          <PlanItemCard
+            key={item.id}
+            item={item}
+            itemIndex={itemIndex}
+            tone={tone}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function AIPlanContent() {
   const { db, session } = useAuth();
-  const { vitals, isSyncing, syncError } = useHealthOrchestrator();
+  const { vitals, astrology, isSyncing, syncError } = useHealthOrchestrator();
   const [plan, setPlan] = useState<PlanData | null>(null);
   const [loading, setLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const fetchPlan = useCallback(async () => {
-    if (!session?.user) return;
+    if (!session?.user) {
+      return;
+    }
+
     setLoading(true);
     const { data, error } = await db
       .from('ai_plans')
@@ -135,42 +306,50 @@ export function AIPlanContent() {
       .maybeSingle();
 
     if (error) {
-      toast.error('Erro ao carregar seu plano do banco de dados principal.', {
+      toast.error('Erro ao carregar o plano salvo.', {
         description: error.message,
       });
-    } else if (data && isPlanData(data.plan_data)) {
+      setLoading(false);
+      return;
+    }
+
+    if (data?.plan_data && isPlanData(data.plan_data)) {
       setPlan(data.plan_data);
-    } else if (data) {
+    } else if (data?.plan_data) {
       toast.error('Plano persistido em formato inválido.', {
         description:
-          'O registro encontrado em ai_plans não corresponde ao contrato esperado do motor local.',
+          'O registro encontrado em ai_plans não segue o contrato esperado do motor local.',
       });
+      setPlan(null);
+    } else {
+      setPlan(null);
     }
+
     setLoading(false);
-  }, [session, db]);
+  }, [db, session?.user]);
 
   useEffect(() => {
-    fetchPlan();
+    void fetchPlan();
   }, [fetchPlan]);
 
   const handleGeneratePlan = async () => {
-    if (!session?.user) return;
+    if (!session?.user) {
+      return;
+    }
+
     if (isSyncing) {
-      toast.info('Aguarde a coleta nativa dos biomarcadores terminar.');
+      toast.info('Aguarde a sincronização atual terminar.');
       return;
     }
 
     if (syncError) {
-      toast.warning('Sincronização parcial', {
-        description:
-          'Nem todos os sensores biomédicos puderam ser lidos no seu dispositivo. O motor local usará apenas dados comprovadamente disponíveis.',
+      toast.info('Plano seguirá com contexto parcial, porém real.', {
+        description: syncError,
       });
     }
 
     setIsGenerating(true);
-    toast.info(
-      'Processando plano localmente com motor determinístico e persistência MySQL.'
-    );
+    toast.info('Gerando plano com motor local e persistindo em MySQL.');
 
     try {
       const payload = {
@@ -191,22 +370,28 @@ export function AIPlanContent() {
       );
 
       if (error) {
-        console.error('Falha completa no motor local de orquestração:', error);
         throw new Error(
           error.message || 'A infraestrutura local de geração do plano falhou.'
         );
       }
 
-      toast.success(
-        'O motor local concluiu o processamento cruzado astrológico-fisiológico.'
-      );
+      if (!data || !isPlanData(data)) {
+        throw new Error(
+          'O motor respondeu, mas o payload do plano veio fora do contrato esperado.'
+        );
+      }
+
       setPlan(data);
+      toast.success('Plano atualizado com sucesso.', {
+        description:
+          'A leitura local cruzou sinais reais disponíveis com o contexto astrológico atual.',
+      });
     } catch (error) {
-      toast.error('Processamento interrompido.', {
+      toast.error('Não foi possível concluir a orquestração.', {
         description:
           error instanceof Error
             ? error.message
-            : 'Falha desconhecida ao gerar o plano local.',
+            : 'Falha desconhecida ao gerar o plano.',
         duration: 10000,
       });
     } finally {
@@ -215,140 +400,253 @@ export function AIPlanContent() {
   };
 
   if (loading) {
-    return <Skeleton className="h-[60vh] w-full rounded-2xl" />;
+    return <LoadingPlan />;
   }
 
-  if (!plan) {
-    return (
-      <Card className="text-center p-10 animate-in fade-in duration-700 bg-white/40 dark:bg-gray-900/40 backdrop-blur-md border-0 ring-1 ring-white/20 shadow-2xl">
-        <CardHeader>
-          <div className="mx-auto w-24 h-24 bg-teal-50 dark:bg-teal-900/30 rounded-full flex items-center justify-center shadow-inner mb-6">
-            <BrainCircuit className="h-12 w-12 text-teal-600 dark:text-teal-400" />
-          </div>
-          <CardTitle className="text-3xl font-light tracking-tight text-gray-900 dark:text-white mt-4">
-            Pronto para sua Orquestração?
-          </CardTitle>
-          <CardDescription className="text-lg mt-2 font-medium">
-            O motor local combinará seus sinais biológicos disponíveis com os
-            ciclos astrométricos e persistirá o plano diretamente em MySQL.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="mt-8">
-          <Button
-            onClick={handleGeneratePlan}
-            disabled={isGenerating || isSyncing}
-            size="lg"
-            className="bg-teal-600 hover:bg-teal-700 text-white shadow-xl hover:shadow-2xl transition-all duration-300 rounded-full px-8 py-6 text-lg"
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="mr-3 h-6 w-6 animate-spin" />
-                Modelando Sinergias Localmente...
-              </>
-            ) : isSyncing ? (
-              <>
-                <RefreshCw className="mr-3 h-6 w-6 animate-spin" />
-                Coletando leituras fisiológicas e contexto astrológico...
-              </>
-            ) : (
-              <>
-                <Zap className="mr-3 h-6 w-6" />
-                Orquestrar Seu Bem-Estar
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const pillars = plan.pillars;
-  const firstPillarKey = Object.keys(pillars)[0];
+  const pillarEntries = plan ? Object.entries(plan.pillars) : [];
+  const firstPillarKey = pillarEntries[0]?.[0] ?? 'nutrition';
+  const totalRecommendations = pillarEntries.reduce(
+    (sum, [, pillar]) => sum + pillar.items.length,
+    0
+  );
+  const availableSignals = [
+    vitals?.heartRate,
+    vitals?.sleepDurationMinutes,
+    vitals?.bloodGlucoseMgDl,
+    vitals?.weightKg,
+    vitals?.moodScore,
+  ].filter(hasMetricValue).length;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      <Card className="border-0 ring-1 ring-teal-500/30 shadow-2xl bg-gradient-to-br from-teal-50/50 to-rose-50/10 dark:from-teal-900/20 dark:to-gray-900 backdrop-blur-md">
-        <CardHeader>
-          <CardTitle className="text-3xl text-teal-700 dark:text-teal-400 flex items-center justify-between font-light tracking-tight">
-            <div className="flex items-center">
-              <Zap className="h-8 w-8 mr-4 text-rose-500" />
-              Seu Plano Orquestrado
-            </div>
-            <Button
-              onClick={handleGeneratePlan}
-              disabled={isGenerating || isSyncing}
-              variant="outline"
-              size="sm"
-              className="rounded-full border-teal-200 dark:border-teal-800 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
-            >
-              {isGenerating ? (
-                <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
-              ) : (
-                <RefreshCw className="h-4 w-4 text-teal-600" />
-              )}
-              <span className="ml-2 hidden sm:inline text-teal-700 dark:text-teal-300">
-                Re-orquestrar IA
-              </span>
-            </Button>
-          </CardTitle>
-          <CardDescription className="text-base text-gray-600 dark:text-gray-300">
-            {plan.summary}
-          </CardDescription>
-        </CardHeader>
-      </Card>
+    <div className="space-y-6">
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_23rem]">
+        <Card className="relative overflow-hidden border-primary/12 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.12)_0%,rgba(255,255,255,0.98)_34%,rgba(255,255,255,0.94)_100%)]">
+          <div className="orchestrated-orb -left-14 top-2 h-36 w-36 bg-primary/70" />
+          <div className="orchestrated-orb bottom-0 right-6 h-28 w-28 bg-cosmic/50" />
 
-      <Tabs defaultValue={firstPillarKey} className="w-full">
-        <TabsList className="grid w-full h-auto p-2 bg-white/40 dark:bg-gray-800/40 backdrop-blur-md grid-cols-3 rounded-2xl shadow-inner border border-gray-100 dark:border-gray-700">
-          {Object.entries(pillars).map(([key, pillar]) => {
-            const PillarIcon = IconMap[pillar.icon] || BrainCircuit;
-            return (
-              <TabsTrigger
-                key={key}
-                value={key}
-                className="flex flex-col sm:flex-row items-center space-x-0 sm:space-x-3 p-3 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:shadow-lg rounded-xl transition-all duration-300"
-              >
-                <PillarIcon
-                  className={cn('h-5 w-5 mb-1 sm:mb-0', pillar.color)}
-                />
-                <span className="font-medium text-sm sm:text-base">
-                  {pillar.title}
-                </span>
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
-
-        {Object.entries(pillars).map(([key, pillar]) => (
-          <TabsContent
-            key={key}
-            value={key}
-            className="mt-8 animate-in slide-in-from-bottom-4 duration-500"
-          >
-            <Card className="border-0 bg-transparent shadow-none">
-              <CardHeader className="px-0">
-                <CardTitle
-                  className={cn(
-                    'text-2xl font-medium tracking-tight',
-                    pillar.color
-                  )}
-                >
-                  {pillar.title}
-                </CardTitle>
-                <CardDescription className="text-base">
-                  {pillar.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4 px-0 mt-4">
-                <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                  {pillar.items.map((item) => (
-                    <PlanItem key={item.id} item={item} color={pillar.color} />
-                  ))}
+          <CardHeader className="relative gap-5">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="space-y-4">
+                <Badge variant="cosmic">
+                  Orquestração local com astrologia + IA
+                </Badge>
+                <div className="space-y-3">
+                  <CardTitle className="text-3xl md:text-4xl">
+                    {plan
+                      ? 'Seu plano do dia está pronto.'
+                      : 'Vamos desenhar seu próximo passo com elegância e contexto real.'}
+                  </CardTitle>
+                  <CardDescription className="max-w-3xl text-base leading-7">
+                    {plan
+                      ? plan.summary
+                      : 'Esta experiência cruza os sinais realmente disponíveis no dispositivo e no banco com o céu atual, gerando um protocolo utilizável e persistido na sua base principal.'}
+                  </CardDescription>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        ))}
-      </Tabs>
+              </div>
+
+              <Button
+                onClick={() => void handleGeneratePlan()}
+                disabled={isGenerating || isSyncing}
+                variant={plan ? 'secondary' : 'default'}
+                size="lg"
+                className="min-w-[13rem]"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    Orquestrando agora
+                  </>
+                ) : isSyncing ? (
+                  <>
+                    <RefreshCw className="animate-spin" />
+                    Sincronizando sinais
+                  </>
+                ) : (
+                  <>
+                    <Sparkles />
+                    {plan ? 'Regenerar plano' : 'Gerar plano real'}
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardHeader>
+
+          <CardContent className="relative grid gap-4 md:grid-cols-3">
+            <div className="rounded-[24px] border border-white/80 bg-white/78 p-4 shadow-sm backdrop-blur-md">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Pilares ativos
+              </p>
+              <p className="mt-3 font-mono text-4xl font-semibold tracking-[-0.04em] text-foreground">
+                {plan ? pillarEntries.length : 0}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Estruturas do plano disponíveis nesta leitura.
+              </p>
+            </div>
+
+            <div className="rounded-[24px] border border-white/80 bg-white/78 p-4 shadow-sm backdrop-blur-md">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Recomendações reais
+              </p>
+              <p className="mt-3 font-mono text-4xl font-semibold tracking-[-0.04em] text-foreground">
+                {plan ? totalRecommendations : 0}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Ações persistidas a partir do motor local desta conta.
+              </p>
+            </div>
+
+            <div className="rounded-[24px] border border-white/80 bg-white/78 p-4 shadow-sm backdrop-blur-md">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Sinais disponíveis
+              </p>
+              <p className="mt-3 font-mono text-4xl font-semibold tracking-[-0.04em] text-foreground">
+                {availableSignals}/5
+              </p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Leituras ativas reconhecidas na orquestração atual.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-cosmic/12 bg-[radial-gradient(circle_at_top,hsl(var(--cosmic)/0.12)_0%,rgba(255,255,255,0.98)_40%,rgba(255,255,255,0.94)_100%)]">
+          <CardHeader className="gap-4">
+            <Badge variant="info">Contexto vivo</Badge>
+            <div className="flex items-center gap-3">
+              <div className="flex size-12 items-center justify-center rounded-[18px] bg-cosmic/12 text-cosmic">
+                <Orbit className="h-6 w-6" />
+              </div>
+              <div className="space-y-1">
+                <CardTitle className="text-2xl">
+                  {astrology
+                    ? `Lua em ${astrology.moonSign}`
+                    : 'Céu do momento'}
+                </CardTitle>
+                <CardDescription>
+                  {astrology
+                    ? `${astrology.nakshatra} · ${astrology.tithi}`
+                    : 'O contexto astrológico será consolidado localmente ao sincronizar.'}
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-[24px] border border-white/75 bg-white/76 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Energia do momento
+              </p>
+              <p className="mt-2 text-sm leading-7 text-foreground">
+                {astrology
+                  ? astrology.impactOnHealth.energy
+                  : 'Sincronize o ecossistema para captar o estado do momento.'}
+              </p>
+            </div>
+            <div className="rounded-[24px] border border-white/75 bg-white/76 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Estado da sincronização
+              </p>
+              <p className="mt-2 text-sm leading-7 text-foreground">
+                {isSyncing
+                  ? 'Sincronizando leituras reais para refinar o plano.'
+                  : syncError
+                    ? syncError
+                    : 'Sinais disponíveis já consolidados para esta leitura.'}
+              </p>
+            </div>
+            <div className="rounded-[24px] border border-white/75 bg-white/76 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Persistência
+              </p>
+              <p className="mt-2 text-sm leading-7 text-foreground">
+                O plano é salvo de forma real em `ai_plans` no MySQL desta
+                instância.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      {!plan ? (
+        <Card className="border-border/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(255,255,255,0.9))]">
+          <CardContent className="grid gap-5 p-6 md:grid-cols-3">
+            <div className="rounded-[26px] border border-primary/12 bg-primary/6 p-5">
+              <div className="flex size-12 items-center justify-center rounded-[18px] bg-primary/12 text-primary">
+                <BrainCircuit className="h-6 w-6" />
+              </div>
+              <h3 className="mt-4 text-lg font-semibold text-foreground">
+                IA local e determinística
+              </h3>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                A geração usa a função local `generate-ai-plan`, sem mock visual
+                e sem plano fictício.
+              </p>
+            </div>
+
+            <div className="rounded-[26px] border border-cosmic/12 bg-cosmic/6 p-5">
+              <div className="flex size-12 items-center justify-center rounded-[18px] bg-cosmic/12 text-cosmic">
+                <Moon className="h-6 w-6" />
+              </div>
+              <h3 className="mt-4 text-lg font-semibold text-foreground">
+                Astrologia viva
+              </h3>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                O céu do momento vem do motor astrológico local e influencia a
+                síntese do protocolo.
+              </p>
+            </div>
+
+            <div className="rounded-[26px] border border-golden/12 bg-golden/6 p-5">
+              <div className="flex size-12 items-center justify-center rounded-[18px] bg-golden/12 text-golden">
+                <CheckCircle2 className="h-6 w-6" />
+              </div>
+              <h3 className="mt-4 text-lg font-semibold text-foreground">
+                Persistência real
+              </h3>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                Assim que você gerar, o resultado fica salvo e pode ser lido
+                novamente sem simulação.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Tabs defaultValue={firstPillarKey} className="w-full space-y-6">
+          <TabsList className="h-auto w-full flex-wrap justify-start gap-3 rounded-[28px] border border-border/60 bg-white/82 p-3">
+            {pillarEntries.map(([key, pillar]) => {
+              const PillarIcon = IconMap[pillar.icon] || BrainCircuit;
+              const tone = toneStyles[resolveTone(key)];
+
+              return (
+                <TabsTrigger
+                  key={key}
+                  value={key}
+                  className="rounded-full border border-transparent px-4 py-3 data-[state=active]:border-border/70 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                >
+                  <span
+                    className={cn(
+                      'mr-2 flex size-8 items-center justify-center rounded-full',
+                      tone.icon
+                    )}
+                  >
+                    <PillarIcon className="h-4 w-4" />
+                  </span>
+                  <span className="text-sm font-medium">{pillar.title}</span>
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    {pillar.items.length}
+                  </span>
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+
+          {pillarEntries.map(([key, pillar]) => (
+            <TabsContent key={key} value={key} className="m-0">
+              <PillarPanel pillarKey={key} pillar={pillar} />
+            </TabsContent>
+          ))}
+        </Tabs>
+      )}
     </div>
   );
 }
