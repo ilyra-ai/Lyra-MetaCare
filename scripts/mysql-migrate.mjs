@@ -73,6 +73,29 @@ function buildChecksum(contents) {
   return createHash('sha256').update(contents).digest('hex');
 }
 
+function normalizeMigrationContents(contents) {
+  return contents
+    .replace(/^\uFEFF/u, '')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n');
+}
+
+function buildStableChecksum(contents) {
+  return buildChecksum(normalizeMigrationContents(contents));
+}
+
+function buildChecksumCandidates(contents) {
+  const normalized = normalizeMigrationContents(contents);
+
+  return [
+    ...new Set([
+      buildChecksum(contents),
+      buildChecksum(normalized),
+      buildChecksum(normalized.replace(/\n/g, '\r\n')),
+    ]),
+  ];
+}
+
 async function ensureMigrationTable(connection) {
   await connection.execute(`
     CREATE TABLE IF NOT EXISTS ${migrationTable} (
@@ -84,28 +107,126 @@ async function ensureMigrationTable(connection) {
   `);
 }
 
-async function ensureBootstrapAdmin(pool) {
-  const email = process.env.ADMIN_BOOTSTRAP_EMAIL?.trim().toLowerCase();
-  const password = process.env.ADMIN_BOOTSTRAP_PASSWORD?.trim();
-
-  if (!email || !password) {
-    console.log('Bootstrap admin: desativado.');
-    return;
+function normalizeOptionalString(value) {
+  if (typeof value !== 'string') {
+    return '';
   }
 
-  if (password.length < 8) {
+  return value.trim();
+}
+
+function parseAdditionalBootstrapAdmins(rawValue) {
+  const normalizedValue = normalizeOptionalString(rawValue);
+  if (!normalizedValue) {
+    return [];
+  }
+
+  let parsedValue;
+  try {
+    parsedValue = JSON.parse(normalizedValue);
+  } catch {
     throw new Error(
-      'ADMIN_BOOTSTRAP_PASSWORD precisa ter pelo menos 8 caracteres.'
+      'ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS precisa ser um JSON valido.'
     );
   }
 
-  const firstName = process.env.ADMIN_BOOTSTRAP_FIRST_NAME?.trim() || 'Admin';
-  const lastName = process.env.ADMIN_BOOTSTRAP_LAST_NAME?.trim() || 'Local';
-  const passwordHash = await bcrypt.hash(password, 10);
+  if (!Array.isArray(parsedValue)) {
+    throw new Error(
+      'ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS precisa ser um array JSON.'
+    );
+  }
+
+  return parsedValue.map((item, index) => {
+    if (!item || typeof item !== 'object') {
+      throw new Error(
+        `ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS[${index}] precisa ser um objeto valido.`
+      );
+    }
+
+    return {
+      email: normalizeOptionalString(item.email).toLowerCase(),
+      password: normalizeOptionalString(item.password),
+      firstName: normalizeOptionalString(item.firstName) || 'Admin',
+      lastName: normalizeOptionalString(item.lastName) || 'Local',
+    };
+  });
+}
+
+function buildBootstrapAdmins() {
+  const primaryEmail = normalizeOptionalString(
+    process.env.ADMIN_BOOTSTRAP_EMAIL
+  ).toLowerCase();
+  const primaryPassword = normalizeOptionalString(
+    process.env.ADMIN_BOOTSTRAP_PASSWORD
+  );
+  const primaryFirstName =
+    normalizeOptionalString(process.env.ADMIN_BOOTSTRAP_FIRST_NAME) || 'Admin';
+  const primaryLastName =
+    normalizeOptionalString(process.env.ADMIN_BOOTSTRAP_LAST_NAME) || 'Local';
+
+  const admins = [];
+  const hasAnyPrimaryValue = [
+    primaryEmail,
+    primaryPassword,
+    primaryFirstName,
+    primaryLastName,
+  ].some(Boolean);
+
+  if (hasAnyPrimaryValue) {
+    if (!primaryEmail || !primaryPassword) {
+      throw new Error(
+        'Bootstrap admin principal configurado de forma incompleta: ADMIN_BOOTSTRAP_EMAIL e ADMIN_BOOTSTRAP_PASSWORD sao obrigatorios.'
+      );
+    }
+
+    admins.push({
+      email: primaryEmail,
+      password: primaryPassword,
+      firstName: primaryFirstName,
+      lastName: primaryLastName,
+    });
+  }
+
+  admins.push(
+    ...parseAdditionalBootstrapAdmins(
+      process.env.ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS
+    )
+  );
+
+  if (admins.length === 0) {
+    return [];
+  }
+
+  const seenEmails = new Set();
+  for (const admin of admins) {
+    if (!admin.email || !admin.password) {
+      throw new Error(
+        'Todo admin bootstrap precisa ter email e password preenchidos.'
+      );
+    }
+
+    if (admin.password.length < 8) {
+      throw new Error(
+        `A senha do bootstrap admin ${admin.email} precisa ter pelo menos 8 caracteres.`
+      );
+    }
+
+    if (seenEmails.has(admin.email)) {
+      throw new Error(`Email duplicado em bootstrap admin: ${admin.email}.`);
+    }
+
+    seenEmails.add(admin.email);
+  }
+
+  return admins;
+}
+
+async function ensureBootstrapAdminUser(pool, admin) {
+  const passwordHash = await bcrypt.hash(admin.password, 10);
 
   const [userRows] = await pool.query(
     'SELECT id FROM users WHERE email = ? LIMIT 1',
-    [email]
+    [admin.email]
   );
   const existingUser = userRows[0];
   const userId = existingUser?.id ?? randomUUID();
@@ -121,7 +242,7 @@ async function ensureBootstrapAdmin(pool) {
           SET email = ?, password_hash = ?
           WHERE id = ?
         `,
-        [email, passwordHash, userId]
+        [admin.email, passwordHash, userId]
       );
     } else {
       await connection.execute(
@@ -129,7 +250,7 @@ async function ensureBootstrapAdmin(pool) {
           INSERT INTO users (id, email, password_hash)
           VALUES (?, ?, ?)
         `,
-        [userId, email, passwordHash]
+        [userId, admin.email, passwordHash]
       );
     }
 
@@ -151,7 +272,7 @@ async function ensureBootstrapAdmin(pool) {
             role = 'admin'
           WHERE id = ?
         `,
-        [firstName, lastName, email, userId]
+        [admin.firstName, admin.lastName, admin.email, userId]
       );
     } else {
       await connection.execute(
@@ -166,7 +287,7 @@ async function ensureBootstrapAdmin(pool) {
           )
           VALUES (?, ?, ?, ?, TRUE, 'admin')
         `,
-        [userId, firstName, lastName, email]
+        [userId, admin.firstName, admin.lastName, admin.email]
       );
     }
 
@@ -237,12 +358,25 @@ async function ensureBootstrapAdmin(pool) {
     }
 
     await connection.commit();
-    console.log(`Bootstrap admin assegurado: ${email}`);
+    console.log(`Bootstrap admin assegurado: ${admin.email}`);
   } catch (error) {
     await connection.rollback();
     throw error;
   } finally {
     connection.release();
+  }
+}
+
+async function ensureBootstrapAdmins(pool) {
+  const admins = buildBootstrapAdmins();
+
+  if (admins.length === 0) {
+    console.log('Bootstrap admin: desativado.');
+    return;
+  }
+
+  for (const admin of admins) {
+    await ensureBootstrapAdminUser(pool, admin);
   }
 }
 
@@ -286,7 +420,8 @@ async function main() {
     for (const file of files) {
       const filePath = path.join(migrationsDir, file);
       const sql = await readFile(filePath, 'utf8');
-      const checksum = buildChecksum(sql);
+      const checksum = buildStableChecksum(sql);
+      const checksumCandidates = buildChecksumCandidates(sql);
 
       const [existingRows] = await pool.query(
         `SELECT checksum FROM ${migrationTable} WHERE name = ? LIMIT 1`,
@@ -295,11 +430,20 @@ async function main() {
       const existing = existingRows[0];
 
       if (existing) {
-        if (existing.checksum !== checksum) {
+        if (!checksumCandidates.includes(existing.checksum)) {
           throw new Error(
             `Migração já aplicada com conteúdo diferente: ${file}`
           );
         }
+
+        if (existing.checksum !== checksum) {
+          await pool.execute(
+            `UPDATE ${migrationTable} SET checksum = ? WHERE name = ?`,
+            [checksum, file]
+          );
+          console.log(`Checksum normalizado: ${file}`);
+        }
+
         console.log(`Já aplicada: ${file}`);
         continue;
       }
@@ -322,7 +466,7 @@ async function main() {
       }
     }
 
-    await ensureBootstrapAdmin(pool);
+    await ensureBootstrapAdmins(pool);
   } finally {
     await pool.end();
   }

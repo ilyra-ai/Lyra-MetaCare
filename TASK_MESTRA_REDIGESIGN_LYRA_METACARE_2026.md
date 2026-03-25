@@ -14,7 +14,7 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - Se o usuario adicionar novas exigencias, elas devem ser incorporadas aqui sem apagar historico relevante.
 - Nenhum bloco deve ser considerado concluido sem validacao real correspondente.
 - Ao final de cada item ou grupo de itens relacionados, executar checks reais e atualizar o status deste documento.
-- Commit e push deixaram de ser obrigacao do agente nesta etapa e ficam sob responsabilidade direta do usuario.
+- Commit e push voltaram a ser obrigacao do agente ao final de cada item ou bloco concluido.
 
 ## Direcao obrigatoria consolidada
 
@@ -47,13 +47,15 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] Layout raiz principal refeito.
 - [x] Shell do app principal refeito.
 - [~] Componentes UI base amplamente reestilizados, ainda com alguns acabamentos e revisoes pendentes.
-- [x] Landing page reescrita estruturalmente e em ajuste fino de atmosfera, aguardando validacao tecnica final.
-- [x] Login reescrito estruturalmente e em ajuste fino de atmosfera, aguardando validacao tecnica final.
+- [x] Landing page reescrita estruturalmente e validada com publicacao publica real.
+- [x] Login reescrito estruturalmente e validado com publicacao publica real.
 - [ ] Dashboard principal revisado contra a nova direcao astrologica moderna + IA.
 - [ ] Demais modulos do paciente finalizados no novo padrao.
 - [ ] Modulos de billing finalizados no novo padrao.
 - [ ] Modulos administrativos finalizados no novo padrao.
-- [ ] Configuracao final do admin `admin@coragem.pet` validada em banco.
+- [x] Configuracao final do admin `admin@coragem.pet` validada em banco.
+- [x] Configuracao final do admin `admin@admin.com` validada em banco.
+- [x] Bootstrap multi-admin validado com migracao real e login administrativo real.
 - [ ] Navegacao visual completa validada.
 - [ ] Checks finais, commits por bloco e pushs concluidos.
 
@@ -108,14 +110,29 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [~] `src/components/ui/chart.tsx`
 - [ ] `src/components/ui/sidebar.tsx`
 
+### Fase 6.1 - Editor administrativo da experiencia web
+
+- [x] `src/lib/site-page-config/schema.ts`
+- [x] `src/lib/site-page-config/service.ts`
+- [x] `src/lib/site-page-config/ui.ts`
+- [x] `src/app/api/admin/page-config/[pageKey]/route.ts`
+- [x] `src/app/api/public/page-config/[pageKey]/route.ts`
+- [x] `src/components/admin/SiteExperienceBuilder.tsx`
+- [x] `src/components/admin/AdminContentManagement.tsx`
+- [x] `src/app/admin/content/page.tsx`
+- [x] `src/app/admin/page-builder/page.tsx`
+- [x] `src/components/admin/page-builder/PageBuilderContent.tsx`
+- [x] Validacao real de rascunho/publicacao da landing e do login.
+- [x] Validacao real da guarda admin nas rotas e APIs administrativas.
+
 ## Pendencias imediatas em execucao
 
 ### Bloco imediato 1 - saneamento tecnico do bloco ja alterado
 
-- [ ] Corrigir warnings e erros atuais de lint.
-- [ ] Revalidar formatacao.
-- [ ] Revalidar tipagem.
-- [ ] Entregar bloco fundacao + shell + UI base validado para commit manual do usuario.
+- [x] Corrigir warnings e erros atuais de lint.
+- [x] Revalidar formatacao.
+- [x] Revalidar tipagem.
+- [ ] Entregar bloco fundacao + shell + UI base validado e versionado.
 
 ### Bloco imediato 2 - direcao visual central corrigida pelo usuario
 
@@ -126,7 +143,8 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] Garantir que a landing pareca premium, luminosa, linda, delicada e inovadora.
 - [x] Garantir que o login acompanhe exatamente a mesma identidade.
 - [x] Validar types, lint e format.
-- [ ] Entregar bloco landing + auth validado para commit manual do usuario.
+- [x] Validar publicacao real da landing e do login via API publica e interface real.
+- [ ] Entregar bloco landing + auth validado e versionado.
 
 ## Checklist integral de execucao por fases
 
@@ -240,11 +258,13 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 ### Fase 8 - Finalizacao
 
 - [~] `src/components/made-with-ilyra.tsx`
-- [ ] Configurar admin `admin@coragem.pet`
+- [x] Configurar admin `admin@coragem.pet`
+- [x] Configurar admin `admin@admin.com`
+- [x] Validar login real do admin `admin@admin.com`
 - [ ] Testar navegacao visual completa
 - [ ] Corrigir warnings e erros restantes
 - [ ] Executar checks finais completos
-- [ ] Entregar estado final validado para commit manual do usuario
+- [ ] Entregar estado final validado e versionado
 
 ## Checks obrigatorios por bloco
 
@@ -266,6 +286,14 @@ npm run check:types
 - 2026-03-20 4: `src/components/landing/LandingPage.tsx` foi reescrita com direcao clara, astral, luminosa e sem promessas falsas; nesta etapa entrou em ajuste fino para ficar mais fofa, amigavel e acolhedora.
 - 2026-03-20 5: `src/app/login/page.tsx` foi reescrita em layout split, mantendo auth real e adicionando linguagem visual mais suave e acolhedora; falta validacao tecnica final antes de marcar como concluida.
 - 2026-03-20 6: `src/components/landing/LandingPage.tsx` e `src/app/login/page.tsx` validadas para types, lint e format com sucesso.
+- 2026-03-25 7: editor administrativo da experiencia web validado com MySQL real, publicacao real da landing e do login, rota admin protegida sem sessao e guarda de API administrativa retornando 401 sem autenticacao.
+- 2026-03-25 8: bootstrap de administradores ampliado para suportar multiplos admins via `ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS`.
+- 2026-03-25 9: administrador adicional `admin@admin.com` planejado para bootstrap local com acesso total por `role = 'admin'`, cobrindo rotas admin, CRUD administrativo, configuracoes, billing administrativo e guardas de API.
+- 2026-03-25 10: causa raiz da falha de migracao identificada na `005_add_ui_config.sql`: collation `utf8mb4_general_ci` entrava em conflito com `users.id` em `utf8mb4_0900_ai_ci`, impedindo a foreign key de `updated_by`.
+- 2026-03-25 11: `scripts/mysql-migrate.mjs` passou a normalizar checksums historicos por quebra de linha, eliminando falso conflito de migracao em arquivos ja aplicados.
+- 2026-03-25 12: migracoes reais executadas com sucesso no MySQL local via Docker, incluindo `005_add_ui_config.sql` e `006_adjust_utf8_collation_to_unicode_ci.sql`.
+- 2026-03-25 13: `admin@admin.com` validado de ponta a ponta com login HTTP real, sessao autenticada, cookie funcional e acesso bem-sucedido a `/api/admin/users`.
+- 2026-03-25 14: `npm run fix:format`, `npm run fix:lint`, `npm run check:lint`, `npm run check:format` e `npm run check:types` executados com sucesso apos as correcoes do bloco de migracoes e bootstrap admin.
 
 ## Politica obrigatoria de commit e push
 

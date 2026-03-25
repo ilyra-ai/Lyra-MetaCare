@@ -518,6 +518,7 @@ Crie o seu arquivo `.env.local` na raiz e insira a magia:
 | `ADMIN_BOOTSTRAP_PASSWORD` | Senha do administrador local garantido automaticamente após as migrações. |
 | `ADMIN_BOOTSTRAP_FIRST_NAME` | Nome exibido no perfil do administrador local. |
 | `ADMIN_BOOTSTRAP_LAST_NAME` | Sobrenome exibido no perfil do administrador local. |
+| `ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS` | Array JSON opcional com administradores extras para bootstrap automático. Cada item deve informar `email`, `password`, `firstName` e `lastName`. |
 | `NEXT_PUBLIC_SENTRY_DSN` | Ativa o monitoramento constante e protetor (opcional em dev). |
 
 **Para infraestrutura e IA local:**
@@ -527,6 +528,16 @@ Crie o seu arquivo `.env.local` na raiz e insira a magia:
 | `OPENAI_API_KEY` | A centelha de genialidade para as respostas reais e humanas do assistente! |
 
 > **Observação de Ouro 🔐:** Nunca faça commit de chaves reais. Sempre utilize `.env.local` para segredos locais e mantenha as credenciais de produção fora do repositório.
+
+Exemplo real para múltiplos administradores locais:
+
+```env
+ADMIN_BOOTSTRAP_EMAIL=admin@coragem.pet
+ADMIN_BOOTSTRAP_PASSWORD=admin123
+ADMIN_BOOTSTRAP_FIRST_NAME=Admin
+ADMIN_BOOTSTRAP_LAST_NAME=Coragem
+ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS=[{"email":"admin@admin.com","password":"admin123","firstName":"Admin","lastName":"Principal"}]
+```
 
 ### 🚀 Decolando em Modo Desenvolvimento
 

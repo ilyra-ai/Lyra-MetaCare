@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `ui_config` (
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_by` CHAR(36) NULL,
   CONSTRAINT `fk_ui_config_updated_by` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT IGNORE INTO `ui_config` (`id`, `landing_data`, `login_data`)
 VALUES (
