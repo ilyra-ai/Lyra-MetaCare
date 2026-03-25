@@ -200,7 +200,7 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] `src/components/dashboard/AITipsCard.tsx`
 - [x] `src/components/dashboard/QuickScanFAB.tsx`
 - [x] `src/components/ai-plan/AIPlanContent.tsx`
-- [~] `src/components/goals/GoalTrackingContent.tsx`
+- [x] `src/components/goals/GoalTrackingContent.tsx`
 - [~] `src/components/goals/CreateGoalModal.tsx`
 - [~] `src/components/goals/UpdateGoalProgressModal.tsx`
 - [~] `src/components/appointments/AppointmentsContent.tsx`
@@ -300,6 +300,8 @@ npm run check:types
 - 2026-03-25 18: `HealthOrchestratorContext` passou a refletir sincronizacao parcial apenas no estado da UI, sem poluir o console com warning redundante, e `.playwright-cli` foi adicionado ao `.gitignore` para manter o versionamento limpo.
 - 2026-03-25 19: experiencia `AIPlanContent` reescrita no novo design system claro, com hero editorial, contexto astrológico real, persistencia real em MySQL, tabs premium por pilar e cards de recomendacao sem placeholder.
 - 2026-03-25 20: geracao do plano validada na propria interface em `/plan`, com retorno real de 3 pilares e 6 recomendacoes, console limpo no navegador e confirmacao da gravacao em `ai_plans` dentro do container MySQL `lyra-metacare-mysql`.
+- 2026-03-25 21: `GoalTrackingContent` e a pagina `/goals` foram reescritos no design system claro atual, trocando o estado vazio antigo por uma experiencia editorial mais acolhedora, com cards-resumo, leitura de progresso medio e lista real de metas sem dados simulados.
+- 2026-03-25 22: fluxo real de criacao manual de meta validado em `/goals` com Playwright, incluindo toast de sucesso na UI, exibicao imediata do card da meta criada e persistencia confirmada na tabela `goals` no MySQL local via Docker.
 
 ## Politica obrigatoria de commit e push
 

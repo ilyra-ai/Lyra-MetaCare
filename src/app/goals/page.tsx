@@ -28,12 +28,28 @@ export default function GoalTrackingPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50/50 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex min-h-screen bg-gradient-surface text-foreground">
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />
-        <main className="flex-1 p-4 sm:p-6 md:p-8">
-          <h1 className="text-3xl font-bold mb-8">Suas Metas</h1>
+        <main
+          id="conteudo-principal"
+          className="flex-1 space-y-8 px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-8"
+        >
+          <section className="flex flex-col gap-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+              Ritmo e consistência
+            </p>
+            <div className="space-y-2">
+              <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+                Suas metas
+              </h1>
+              <p className="max-w-3xl text-sm leading-7 text-muted-foreground md:text-base">
+                Evolução diária com progresso real, acompanhamento visual claro
+                e atualização individual de cada objetivo.
+              </p>
+            </div>
+          </section>
           {goalsEnabled ? (
             <GoalTrackingContent />
           ) : (
