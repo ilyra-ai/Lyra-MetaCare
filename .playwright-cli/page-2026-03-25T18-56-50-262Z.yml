@@ -1,0 +1,1044 @@
+- generic [active] [ref=e1]:
+  - link "Pular para o conteúdo principal" [ref=e2] [cursor=pointer]:
+    - /url: "#conteudo-principal"
+  - alert [ref=e3]
+  - button "Open Next.js Dev Tools" [ref=e9] [cursor=pointer]:
+    - img [ref=e10]
+  - generic [ref=e14]:
+    - complementary [ref=e15]:
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - link "lyra metacare 2026" [ref=e18] [cursor=pointer]:
+            - /url: /
+            - img [ref=e20]
+            - generic [ref=e22]:
+              - paragraph [ref=e23]: lyra
+              - paragraph [ref=e24]: metacare 2026
+          - img [ref=e26]
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e33]: A
+            - generic [ref=e34]:
+              - paragraph [ref=e36]: Admin
+              - paragraph [ref=e38]: admin@coragem.pet
+              - generic [ref=e40]:
+                - img [ref=e41]
+                - text: Care
+          - generic [ref=e43]:
+            - paragraph [ref=e44]: Estado do dia
+            - paragraph [ref=e45]: Janela de foco, leveza e recuperação alta
+        - navigation "Navegação principal" [ref=e46]:
+          - generic [ref=e47]:
+            - paragraph [ref=e48]: Principal
+            - generic [ref=e49]:
+              - link "Dashboard VisÃ£o central da energia, sono, astro e insights de IA." [ref=e50] [cursor=pointer]:
+                - /url: /
+                - img [ref=e52]
+                - generic [ref=e57]:
+                  - generic [ref=e58]: Dashboard
+                  - generic [ref=e59]: VisÃ£o central da energia, sono, astro e insights de IA.
+              - link "Plano de IA Protocolos personalizados de foco, ritmo, nutriÃ§Ã£o e recuperaÃ§Ã£o." [ref=e61] [cursor=pointer]:
+                - /url: /plan
+                - img [ref=e63]
+                - generic [ref=e65]:
+                  - generic [ref=e66]: Plano de IA
+                  - generic [ref=e67]: Protocolos personalizados de foco, ritmo, nutriÃ§Ã£o e recuperaÃ§Ã£o.
+              - link "Metas EvoluÃ§Ã£o diÃ¡ria com progresso, streaks e prioridades suaves." [ref=e69] [cursor=pointer]:
+                - /url: /goals
+                - img [ref=e71]
+                - generic [ref=e75]:
+                  - generic [ref=e76]: Metas
+                  - generic [ref=e77]: EvoluÃ§Ã£o diÃ¡ria com progresso, streaks e prioridades suaves.
+          - generic [ref=e79]:
+            - paragraph [ref=e80]: Fluxo Guiado
+            - generic [ref=e81]:
+              - link "Agendamentos Agenda de encontros, profissionais e organizaÃ§Ã£o do seu fluxo." [ref=e82] [cursor=pointer]:
+                - /url: /appointments
+                - img [ref=e84]
+                - generic [ref=e86]:
+                  - generic [ref=e87]: Agendamentos
+                  - generic [ref=e88]: Agenda de encontros, profissionais e organizaÃ§Ã£o do seu fluxo.
+              - link "Monitoramento Leituras em tempo real, tendÃªncias e estados do momento." [ref=e90] [cursor=pointer]:
+                - /url: /monitoring
+                - img [ref=e92]
+                - generic [ref=e98]:
+                  - generic [ref=e99]: Monitoramento
+                  - generic [ref=e100]: Leituras em tempo real, tendÃªncias e estados do momento.
+              - link "Chat IA Conversa inteligente com contexto biomÃ©trico, emocional e astral." [ref=e102] [cursor=pointer]:
+                - /url: /chat
+                - img [ref=e104]
+                - generic [ref=e116]:
+                  - generic [ref=e117]: Chat IA
+                  - generic [ref=e118]: Conversa inteligente com contexto biomÃ©trico, emocional e astral.
+          - generic [ref=e120]:
+            - paragraph [ref=e121]: Pessoal
+            - generic [ref=e122]:
+              - link "Dispositivos ConexÃ£o e sincronizaÃ§Ã£o com wearables e integraÃ§Ãµes." [ref=e123] [cursor=pointer]:
+                - /url: /connect
+                - img [ref=e125]
+                - generic [ref=e127]:
+                  - generic [ref=e128]: Dispositivos
+                  - generic [ref=e129]: ConexÃ£o e sincronizaÃ§Ã£o com wearables e integraÃ§Ãµes.
+              - link "Perfil Dados pessoais, hÃ¡bitos, preferÃªncias e avatar." [ref=e131] [cursor=pointer]:
+                - /url: /profile
+                - img [ref=e133]
+                - generic [ref=e136]:
+                  - generic [ref=e137]: Perfil
+                  - generic [ref=e138]: Dados pessoais, hÃ¡bitos, preferÃªncias e avatar.
+          - generic [ref=e140]:
+            - paragraph [ref=e141]: AdministraÃ§Ã£o
+            - generic [ref=e142]:
+              - link "VisÃ£o Geral Admin MÃ©tricas de negÃ³cio, saÃºde da plataforma e alertas." [ref=e143] [cursor=pointer]:
+                - /url: /admin/dashboard
+                - img [ref=e145]
+                - generic [ref=e148]:
+                  - generic [ref=e149]: VisÃ£o Geral Admin
+                  - generic [ref=e150]: MÃ©tricas de negÃ³cio, saÃºde da plataforma e alertas.
+              - link "UsuÃ¡rios GestÃ£o de contas, perfis e permissÃµes." [ref=e152] [cursor=pointer]:
+                - /url: /admin/users
+                - img [ref=e154]
+                - generic [ref=e158]:
+                  - generic [ref=e159]: UsuÃ¡rios
+                  - generic [ref=e160]: GestÃ£o de contas, perfis e permissÃµes.
+              - link "Planos Matriz comercial, capacidades e precificaÃ§Ã£o." [ref=e162] [cursor=pointer]:
+                - /url: /admin/plans
+                - img [ref=e164]
+                - generic [ref=e167]:
+                  - generic [ref=e168]: Planos
+                  - generic [ref=e169]: Matriz comercial, capacidades e precificaÃ§Ã£o.
+              - link "SaÃºde dos Dados Integridade, latÃªncia e confiabilidade dos dados." [ref=e171] [cursor=pointer]:
+                - /url: /admin/data-health
+                - img [ref=e173]
+                - generic [ref=e176]:
+                  - generic [ref=e177]: SaÃºde dos Dados
+                  - generic [ref=e178]: Integridade, latÃªncia e confiabilidade dos dados.
+              - link "ConteÃºdo Curadoria operacional de hÃ¡bitos, mensagens e recomendaÃ§Ãµes." [ref=e180] [cursor=pointer]:
+                - /url: /admin/content
+                - img [ref=e182]
+                - generic [ref=e185]:
+                  - generic [ref=e186]: ConteÃºdo
+                  - generic [ref=e187]: Curadoria operacional de hÃ¡bitos, mensagens e recomendaÃ§Ãµes.
+              - link "ConfiguraÃ§Ã£o de IA Pesos, missÃ£o, parÃ¢metros e seguranÃ§a operacional da IA." [ref=e189] [cursor=pointer]:
+                - /url: /admin/ai-config
+                - img [ref=e191]
+                - generic [ref=e194]:
+                  - generic [ref=e195]: ConfiguraÃ§Ã£o de IA
+                  - generic [ref=e196]: Pesos, missÃ£o, parÃ¢metros e seguranÃ§a operacional da IA.
+              - link "RelatÃ³rios Leituras analÃticas e exportaÃ§Ã£o executiva." [ref=e198] [cursor=pointer]:
+                - /url: /admin/reports
+                - img [ref=e200]
+                - generic [ref=e202]:
+                  - generic [ref=e203]: RelatÃ³rios
+                  - generic [ref=e204]: Leituras analÃticas e exportaÃ§Ã£o executiva.
+              - link "Construtor UI GestÃ£o de design visual e blocos da landing page e login." [ref=e206] [cursor=pointer]:
+                - /url: /admin/page-builder
+                - img [ref=e208]
+                - generic [ref=e213]:
+                  - generic [ref=e214]: Construtor UI
+                  - generic [ref=e215]: GestÃ£o de design visual e blocos da landing page e login.
+        - link "Preferências e acesso Ajuste perfil, hábitos e configurações do ambiente" [ref=e218] [cursor=pointer]:
+          - /url: /profile
+          - img [ref=e220]
+          - generic [ref=e223]:
+            - paragraph [ref=e224]: Preferências e acesso
+            - paragraph [ref=e225]: Ajuste perfil, hábitos e configurações do ambiente
+    - generic [ref=e226]:
+      - banner [ref=e227]:
+        - generic [ref=e228]:
+          - generic [ref=e230]:
+            - generic [ref=e231]:
+              - generic [ref=e232]: Admin
+              - img [ref=e233]
+              - generic [ref=e235]: Content
+            - heading "ConteÃºdo" [level=1] [ref=e236]
+            - paragraph [ref=e237]: Curadoria operacional de hÃ¡bitos, mensagens e recomendaÃ§Ãµes.
+          - button "Abrir busca global" [ref=e239] [cursor=pointer]:
+            - generic [ref=e240]:
+              - img [ref=e241]
+              - generic [ref=e244]: Buscar pÃ¡ginas, fluxos e aÃ§Ãµes
+            - generic [ref=e245]: Ctrl K
+          - generic [ref=e246]:
+            - button "NotificaÃ§Ãµes" [ref=e247] [cursor=pointer]:
+              - img
+            - button "Chat IA" [ref=e249] [cursor=pointer]:
+              - img
+              - text: Chat IA
+            - button "Abrir menu do usuÃ¡rio" [ref=e250] [cursor=pointer]:
+              - generic [ref=e252]: A
+              - generic [ref=e253]:
+                - paragraph [ref=e254]: Admin
+                - paragraph [ref=e255]: admin@coragem.pet
+      - main [ref=e256]:
+        - generic [ref=e257]:
+          - generic [ref=e258]:
+            - paragraph [ref=e259]: Gestão de Conteúdo Dinâmico
+            - paragraph [ref=e260]: Gerencie os hábitos sugeridos e os insights de IA que são exibidos aos usuários e personalize a experiência pública da landing e do login.
+          - generic [ref=e262]:
+            - tablist [ref=e263]:
+              - tab "Experiência Web" [selected] [ref=e264] [cursor=pointer]:
+                - img [ref=e265]
+                - text: Experiência Web
+              - tab "Hábitos Sugeridos" [ref=e267] [cursor=pointer]:
+                - img [ref=e268]
+                - text: Hábitos Sugeridos
+              - tab "Insights de IA" [ref=e271] [cursor=pointer]:
+                - img [ref=e272]
+                - text: Insights de IA
+            - tabpanel "Experiência Web" [ref=e274]:
+              - generic [ref=e275]:
+                - generic [ref=e277]:
+                  - generic [ref=e278]:
+                    - generic [ref=e279]:
+                      - img [ref=e280]
+                      - text: editor premium da experiencia web
+                    - generic [ref=e282]:
+                      - paragraph [ref=e283]: Landing e login totalmente editaveis
+                      - paragraph [ref=e284]: Somente administradores podem editar, salvar rascunho, publicar, restaurar e reorganizar a experiencia publica da Lyra.
+                  - generic [ref=e285]:
+                    - group [ref=e286]:
+                      - radio "Landing" [checked] [ref=e287] [cursor=pointer]
+                      - radio "Login" [ref=e288] [cursor=pointer]
+                    - button "Restaurar padrao" [ref=e289] [cursor=pointer]
+                    - button "Restaurar publicado" [ref=e290] [cursor=pointer]
+                    - button "Salvar rascunho" [ref=e291] [cursor=pointer]:
+                      - img
+                      - text: Salvar rascunho
+                    - button "Publicar agora" [ref=e292] [cursor=pointer]:
+                      - img
+                      - text: Publicar agora
+                - generic [ref=e294]:
+                  - generic [ref=e299]:
+                    - generic [ref=e300]:
+                      - generic [ref=e301]:
+                        - paragraph [ref=e302]: publicacao
+                        - generic [ref=e303]: sem divergencia com o publicado
+                      - paragraph [ref=e304]: "Ultima atualizacao: 2026-03-25 18:40:20."
+                      - paragraph [ref=e305]: "Atualizado por: 1a8a84dc-18ab-4fec-b2ba-c61bdf8a8f71."
+                    - generic [ref=e306]:
+                      - tablist [ref=e307]:
+                        - tab "Conteudo guiado" [selected] [ref=e308] [cursor=pointer]:
+                          - img [ref=e309]
+                          - text: Conteudo guiado
+                        - tab "JSON completo" [ref=e313] [cursor=pointer]:
+                          - img [ref=e314]
+                          - text: JSON completo
+                      - tabpanel "Conteudo guiado" [ref=e319]:
+                        - generic [ref=e320]:
+                          - generic [ref=e321]:
+                            - heading "Hero, entrada e preview inicial" [level=3] [ref=e322]:
+                              - button "Hero, entrada e preview inicial" [expanded] [ref=e323] [cursor=pointer]:
+                                - text: Hero, entrada e preview inicial
+                                - img [ref=e324]
+                            - region "Hero, entrada e preview inicial" [ref=e326]:
+                              - generic [ref=e327]:
+                                - generic [ref=e328]:
+                                  - generic [ref=e329]: Login simples do topo
+                                  - textbox [ref=e330]: Entrar
+                                - generic [ref=e331]:
+                                  - generic [ref=e332]: Login completo do topo
+                                  - textbox [ref=e333]: Tela completa
+                                - generic [ref=e334]:
+                                  - generic [ref=e335]: Badge do hero
+                                  - textbox [ref=e336]: astrologia moderna, IA gentil e bem-estar em sintonia
+                                - generic [ref=e337]:
+                                  - generic [ref=e338]: Titulo principal
+                                  - textbox [ref=e339]: Seu bem-estar ganha uma casa
+                                - generic [ref=e340]:
+                                  - generic [ref=e341]: Titulo em destaque
+                                  - textbox [ref=e342]: mais linda, harmoniosa e inteligente.
+                                - generic [ref=e343]:
+                                  - generic [ref=e344]: Descricao
+                                  - textbox [ref=e345]: A Lyra MetaCare une astrologia vedica, IA e sinais da sua rotina numa interface clara, doce e premium, feita para acolher sem cansar.
+                                - generic [ref=e346]:
+                                  - generic [ref=e347]:
+                                    - generic [ref=e348]: CTA principal
+                                    - textbox [ref=e349]: Entrar na experiencia completa
+                                  - generic [ref=e350]:
+                                    - generic [ref=e351]: Link do CTA principal
+                                    - textbox [ref=e352]: /login
+                                  - generic [ref=e353]:
+                                    - generic [ref=e354]: CTA secundario
+                                    - textbox [ref=e355]: Ver catalogo publicado
+                                  - generic [ref=e356]:
+                                    - generic [ref=e357]: Link do CTA secundario
+                                    - textbox [ref=e358]: "#planos"
+                                - generic [ref=e359]:
+                                  - generic [ref=e360]:
+                                    - generic [ref=e361]: Badge da entrada rapida
+                                    - textbox [ref=e362]: entrada rapida
+                                  - generic [ref=e363]:
+                                    - generic [ref=e364]: Titulo da entrada rapida
+                                    - textbox [ref=e365]: Entrar direto pela landing
+                                  - generic [ref=e366]:
+                                    - generic [ref=e367]: Botao principal da entrada rapida
+                                    - textbox [ref=e368]: Entrar agora
+                                  - generic [ref=e369]:
+                                    - generic [ref=e370]: Botao secundario da entrada rapida
+                                    - textbox [ref=e371]: Abrir tela completa
+                                - generic [ref=e372]:
+                                  - generic [ref=e373]: Descricao da entrada rapida
+                                  - textbox [ref=e374]: Uma entrada suave e organizada para quem ja quer cair direto na propria orbita.
+                                - generic [ref=e375]:
+                                  - generic [ref=e376]: Badge do preview
+                                  - textbox [ref=e377]: preview vivo
+                                - generic [ref=e378]:
+                                  - generic [ref=e379]: Titulo do preview
+                                  - textbox [ref=e380]: Blocos leves, lindos e editaveis
+                                - generic [ref=e381]:
+                                  - generic [ref=e382]: Descricao do preview
+                                  - textbox [ref=e383]: O novo painel administrativo vai permitir mexer em textos, cards, etapas, FAQ e hierarquia visual sem tocar no codigo.
+                                - generic [ref=e384]:
+                                  - generic [ref=e385]:
+                                    - paragraph [ref=e386]: Cards do preview inicial
+                                    - paragraph [ref=e387]: Adicione, reordene e personalize os cards da vitrine principal.
+                                  - button "Adicionar card" [ref=e388] [cursor=pointer]:
+                                    - img
+                                    - text: Adicionar card
+                                - generic [ref=e389]:
+                                  - generic [ref=e390]:
+                                    - generic [ref=e391]:
+                                      - paragraph [ref=e392]: Astrologia moderna
+                                      - paragraph [ref=e393]: Edite o bloco, reposicione ou remova.
+                                    - generic [ref=e394]:
+                                      - button [ref=e395] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e396] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e397] [cursor=pointer]:
+                                        - img
+                                  - generic [ref=e398]:
+                                    - generic [ref=e399]:
+                                      - generic [ref=e400]: Titulo
+                                      - textbox [ref=e401]: Astrologia moderna
+                                    - generic [ref=e402]:
+                                      - generic [ref=e403]: Descricao
+                                      - textbox [ref=e404]: Simbolismo claro, luminoso e atualizado.
+                                    - generic [ref=e405]:
+                                      - generic [ref=e406]:
+                                        - generic [ref=e407]: Icone
+                                        - combobox [ref=e408] [cursor=pointer]:
+                                          - generic: MoonStar
+                                          - img [ref=e409]
+                                      - generic [ref=e411]:
+                                        - generic [ref=e412]: Tom visual
+                                        - combobox [ref=e413] [cursor=pointer]:
+                                          - generic: Cosmic
+                                          - img [ref=e414]
+                                - generic [ref=e416]:
+                                  - generic [ref=e417]:
+                                    - generic [ref=e418]:
+                                      - paragraph [ref=e419]: IA acolhedora
+                                      - paragraph [ref=e420]: Edite o bloco, reposicione ou remova.
+                                    - generic [ref=e421]:
+                                      - button [ref=e422] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e423] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e424] [cursor=pointer]:
+                                        - img
+                                  - generic [ref=e425]:
+                                    - generic [ref=e426]:
+                                      - generic [ref=e427]: Titulo
+                                      - textbox [ref=e428]: IA acolhedora
+                                    - generic [ref=e429]:
+                                      - generic [ref=e430]: Descricao
+                                      - textbox [ref=e431]: Tecnologia com presenca e sem peso visual.
+                                    - generic [ref=e432]:
+                                      - generic [ref=e433]:
+                                        - generic [ref=e434]: Icone
+                                        - combobox [ref=e435] [cursor=pointer]:
+                                          - generic: Brain
+                                          - img [ref=e436]
+                                      - generic [ref=e438]:
+                                        - generic [ref=e439]: Tom visual
+                                        - combobox [ref=e440] [cursor=pointer]:
+                                          - generic: Primary
+                                          - img [ref=e441]
+                                - generic [ref=e443]:
+                                  - generic [ref=e444]:
+                                    - generic [ref=e445]:
+                                      - paragraph [ref=e446]: Fluxo editavel
+                                      - paragraph [ref=e447]: Edite o bloco, reposicione ou remova.
+                                    - generic [ref=e448]:
+                                      - button [ref=e449] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e450] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e451] [cursor=pointer]:
+                                        - img
+                                  - generic [ref=e452]:
+                                    - generic [ref=e453]:
+                                      - generic [ref=e454]: Titulo
+                                      - textbox [ref=e455]: Fluxo editavel
+                                    - generic [ref=e456]:
+                                      - generic [ref=e457]: Descricao
+                                      - textbox [ref=e458]: Cards, chamadas e secoes sob seu controle.
+                                    - generic [ref=e459]:
+                                      - generic [ref=e460]:
+                                        - generic [ref=e461]: Icone
+                                        - combobox [ref=e462] [cursor=pointer]:
+                                          - generic: Sparkles
+                                          - img [ref=e463]
+                                      - generic [ref=e465]:
+                                        - generic [ref=e466]: Tom visual
+                                        - combobox [ref=e467] [cursor=pointer]:
+                                          - generic: Accent
+                                          - img [ref=e468]
+                          - generic [ref=e470]:
+                            - heading "Secoes principais, CTA final e ordem" [level=3] [ref=e471]:
+                              - button "Secoes principais, CTA final e ordem" [expanded] [ref=e472] [cursor=pointer]:
+                                - text: Secoes principais, CTA final e ordem
+                                - img [ref=e473]
+                            - region "Secoes principais, CTA final e ordem" [ref=e475]:
+                              - generic [ref=e476]:
+                                - generic [ref=e477]:
+                                  - generic [ref=e478]:
+                                    - paragraph [ref=e479]: Exibir recursos
+                                    - paragraph [ref=e480]: Liga ou desliga a secao de recursos.
+                                  - switch [checked] [ref=e481] [cursor=pointer]
+                                - generic [ref=e482]:
+                                  - generic [ref=e483]:
+                                    - paragraph [ref=e484]: Exibir metricas
+                                    - paragraph [ref=e485]: Liga ou desliga a secao de metricas.
+                                  - switch [checked] [ref=e486] [cursor=pointer]
+                                - generic [ref=e487]:
+                                  - generic [ref=e488]:
+                                    - paragraph [ref=e489]: Exibir fluxo
+                                    - paragraph [ref=e490]: Liga ou desliga a secao de fluxo.
+                                  - switch [checked] [ref=e491] [cursor=pointer]
+                                - generic [ref=e492]:
+                                  - generic [ref=e493]:
+                                    - paragraph [ref=e494]: Exibir planos
+                                    - paragraph [ref=e495]: Liga ou desliga a vitrine dos planos reais.
+                                  - switch [checked] [ref=e496] [cursor=pointer]
+                                - generic [ref=e497]:
+                                  - generic [ref=e498]:
+                                    - paragraph [ref=e499]: Exibir FAQ
+                                    - paragraph [ref=e500]: Liga ou desliga a secao de perguntas.
+                                  - switch [checked] [ref=e501] [cursor=pointer]
+                                - generic [ref=e502]:
+                                  - generic [ref=e503]:
+                                    - paragraph [ref=e504]: Exibir CTA final
+                                    - paragraph [ref=e505]: Liga ou desliga o bloco final da landing.
+                                  - switch [checked] [ref=e506] [cursor=pointer]
+                                - generic [ref=e507]:
+                                  - generic [ref=e508]: Titulo da secao de recursos
+                                  - textbox [ref=e509]: Menos peso visual, mais clareza, mais ternura e mais intencao.
+                                - generic [ref=e510]:
+                                  - generic [ref=e511]: Titulo da secao de metricas
+                                  - textbox [ref=e512]: Os numeros da vitrine continuam reais e sincronizados.
+                                - generic [ref=e513]:
+                                  - generic [ref=e514]: Titulo da secao de fluxo
+                                  - textbox [ref=e515]: Tudo foi pensado para parecer natural, bonito e facil de editar.
+                                - generic [ref=e516]:
+                                  - generic [ref=e517]: Titulo da secao de planos
+                                  - textbox [ref=e518]: Planos reais do produto com uma vitrine mais linda e organizada.
+                                - generic [ref=e519]:
+                                  - generic [ref=e520]: Titulo da secao de FAQ
+                                  - textbox [ref=e521]: Perguntas importantes antes de entrar.
+                                - generic [ref=e522]:
+                                  - generic [ref=e523]: Titulo do CTA final
+                                  - textbox [ref=e524]: Uma landing mais amiga, linda, organizada e pronta para receber.
+                                - generic [ref=e525]:
+                                  - generic [ref=e526]: Descricao do CTA final
+                                  - textbox [ref=e527]: "O foco agora e beleza com sentido: mais harmonia, mais contexto e uma primeira impressao que abraca em vez de confundir."
+                                - generic [ref=e528]:
+                                  - generic [ref=e529]:
+                                    - generic [ref=e530]: Botao principal do CTA final
+                                    - textbox [ref=e531]: Abrir Lyra agora
+                                  - generic [ref=e532]:
+                                    - generic [ref=e533]: Link do botao principal
+                                    - textbox [ref=e534]: /login
+                                  - generic [ref=e535]:
+                                    - generic [ref=e536]: Botao secundario do CTA final
+                                    - textbox [ref=e537]: Explorar a experiencia
+                                  - generic [ref=e538]:
+                                    - generic [ref=e539]: Link do botao secundario
+                                    - textbox [ref=e540]: "#recursos"
+                                  - generic [ref=e541]:
+                                    - generic [ref=e542]: Marca do rodape
+                                    - textbox [ref=e543]: lyra metacare
+                                  - generic [ref=e544]:
+                                    - generic [ref=e545]: Nota do rodape
+                                    - textbox [ref=e546]: Feito com leveza, intencao e tecnologia pela iLyra AI.
+                                - generic [ref=e547]:
+                                  - generic [ref=e548]:
+                                    - paragraph [ref=e549]: Ordem das secoes da landing
+                                    - paragraph [ref=e550]: O preview e a pagina publicada respeitam esta ordem.
+                                  - generic [ref=e551]:
+                                    - generic [ref=e552]:
+                                      - generic [ref=e553]: features
+                                      - generic [ref=e554]:
+                                        - button [ref=e555] [cursor=pointer]:
+                                          - img
+                                        - button [ref=e556] [cursor=pointer]:
+                                          - img
+                                    - generic [ref=e557]:
+                                      - generic [ref=e558]: metrics
+                                      - generic [ref=e559]:
+                                        - button [ref=e560] [cursor=pointer]:
+                                          - img
+                                        - button [ref=e561] [cursor=pointer]:
+                                          - img
+                                    - generic [ref=e562]:
+                                      - generic [ref=e563]: flow
+                                      - generic [ref=e564]:
+                                        - button [ref=e565] [cursor=pointer]:
+                                          - img
+                                        - button [ref=e566] [cursor=pointer]:
+                                          - img
+                                    - generic [ref=e567]:
+                                      - generic [ref=e568]: plans
+                                      - generic [ref=e569]:
+                                        - button [ref=e570] [cursor=pointer]:
+                                          - img
+                                        - button [ref=e571] [cursor=pointer]:
+                                          - img
+                                    - generic [ref=e572]:
+                                      - generic [ref=e573]: faq
+                                      - generic [ref=e574]:
+                                        - button [ref=e575] [cursor=pointer]:
+                                          - img
+                                        - button [ref=e576] [cursor=pointer]:
+                                          - img
+                                    - generic [ref=e577]:
+                                      - generic [ref=e578]: finalCta
+                                      - generic [ref=e579]:
+                                        - button [ref=e580] [cursor=pointer]:
+                                          - img
+                                        - button [ref=e581] [cursor=pointer]:
+                                          - img
+                          - generic [ref=e582]:
+                            - heading "Cards de recursos" [level=3] [ref=e583]:
+                              - button "Cards de recursos" [expanded] [ref=e584] [cursor=pointer]:
+                                - text: Cards de recursos
+                                - img [ref=e585]
+                            - region "Cards de recursos" [ref=e587]:
+                              - generic [ref=e588]:
+                                - generic [ref=e589]:
+                                  - generic [ref=e590]:
+                                    - paragraph [ref=e591]: Lista de recursos
+                                    - paragraph [ref=e592]: Controle titulo, texto, icone e tom visual de cada card.
+                                  - button "Adicionar card" [ref=e593] [cursor=pointer]:
+                                    - img
+                                    - text: Adicionar card
+                                - generic [ref=e594]:
+                                  - generic [ref=e595]:
+                                    - generic [ref=e596]:
+                                      - paragraph [ref=e597]: IA com presenca gentil
+                                      - paragraph [ref=e598]: Edite o bloco, reposicione ou remova.
+                                    - generic [ref=e599]:
+                                      - button [ref=e600] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e601] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e602] [cursor=pointer]:
+                                        - img
+                                  - generic [ref=e603]:
+                                    - generic [ref=e604]:
+                                      - generic [ref=e605]: Titulo
+                                      - textbox [ref=e606]: IA com presenca gentil
+                                    - generic [ref=e607]:
+                                      - generic [ref=e608]: Descricao
+                                      - textbox [ref=e609]: A tecnologia organiza sua jornada com leveza, sem roubar o protagonismo da experiencia.
+                                    - generic [ref=e610]:
+                                      - generic [ref=e611]:
+                                        - generic [ref=e612]: Icone
+                                        - combobox [ref=e613] [cursor=pointer]:
+                                          - generic: Brain
+                                          - img [ref=e614]
+                                      - generic [ref=e616]:
+                                        - generic [ref=e617]: Tom visual
+                                        - combobox [ref=e618] [cursor=pointer]:
+                                          - generic: Primary
+                                          - img [ref=e619]
+                                - generic [ref=e621]:
+                                  - generic [ref=e622]:
+                                    - generic [ref=e623]:
+                                      - paragraph [ref=e624]: Astrologia moderna e luminosa
+                                      - paragraph [ref=e625]: Edite o bloco, reposicione ou remova.
+                                    - generic [ref=e626]:
+                                      - button [ref=e627] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e628] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e629] [cursor=pointer]:
+                                        - img
+                                  - generic [ref=e630]:
+                                    - generic [ref=e631]:
+                                      - generic [ref=e632]: Titulo
+                                      - textbox [ref=e633]: Astrologia moderna e luminosa
+                                    - generic [ref=e634]:
+                                      - generic [ref=e635]: Descricao
+                                      - textbox [ref=e636]: Ciclos e simbolismos aparecem com visual claro, sofisticado e atual.
+                                    - generic [ref=e637]:
+                                      - generic [ref=e638]:
+                                        - generic [ref=e639]: Icone
+                                        - combobox [ref=e640] [cursor=pointer]:
+                                          - generic: MoonStar
+                                          - img [ref=e641]
+                                      - generic [ref=e643]:
+                                        - generic [ref=e644]: Tom visual
+                                        - combobox [ref=e645] [cursor=pointer]:
+                                          - generic: Cosmic
+                                          - img [ref=e646]
+                                - generic [ref=e648]:
+                                  - generic [ref=e649]:
+                                    - generic [ref=e650]:
+                                      - paragraph [ref=e651]: Sinais do corpo com contexto
+                                      - paragraph [ref=e652]: Edite o bloco, reposicione ou remova.
+                                    - generic [ref=e653]:
+                                      - button [ref=e654] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e655] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e656] [cursor=pointer]:
+                                        - img
+                                  - generic [ref=e657]:
+                                    - generic [ref=e658]:
+                                      - generic [ref=e659]: Titulo
+                                      - textbox [ref=e660]: Sinais do corpo com contexto
+                                    - generic [ref=e661]:
+                                      - generic [ref=e662]: Descricao
+                                      - textbox [ref=e663]: Sono, energia e ritmo passam a conversar dentro de uma hierarquia mais acolhedora.
+                                    - generic [ref=e664]:
+                                      - generic [ref=e665]:
+                                        - generic [ref=e666]: Icone
+                                        - combobox [ref=e667] [cursor=pointer]:
+                                          - generic: HeartPulse
+                                          - img [ref=e668]
+                                      - generic [ref=e670]:
+                                        - generic [ref=e671]: Tom visual
+                                        - combobox [ref=e672] [cursor=pointer]:
+                                          - generic: Accent
+                                          - img [ref=e673]
+                          - generic [ref=e675]:
+                            - heading "FAQ e etapas do fluxo" [level=3] [ref=e676]:
+                              - button "FAQ e etapas do fluxo" [expanded] [ref=e677] [cursor=pointer]:
+                                - text: FAQ e etapas do fluxo
+                                - img [ref=e678]
+                            - region "FAQ e etapas do fluxo" [ref=e680]:
+                              - generic [ref=e681]:
+                                - generic [ref=e682]:
+                                  - generic [ref=e683]:
+                                    - paragraph [ref=e684]: Etapas do fluxo
+                                    - paragraph [ref=e685]: Mude numero, texto e icone de cada etapa da jornada.
+                                  - button "Adicionar etapa" [ref=e686] [cursor=pointer]:
+                                    - img
+                                    - text: Adicionar etapa
+                                - generic [ref=e687]:
+                                  - generic [ref=e688]:
+                                    - generic [ref=e689]:
+                                      - paragraph [ref=e690]: Abra sua orbita
+                                      - paragraph [ref=e691]: Edite o bloco, reposicione ou remova.
+                                    - generic [ref=e692]:
+                                      - button [ref=e693] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e694] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e695] [cursor=pointer]:
+                                        - img
+                                  - generic [ref=e696]:
+                                    - generic [ref=e697]:
+                                      - generic [ref=e698]:
+                                        - generic [ref=e699]: Numero
+                                        - textbox [ref=e700]: "01"
+                                      - generic [ref=e701]:
+                                        - generic [ref=e702]: Icone
+                                        - combobox [ref=e703] [cursor=pointer]:
+                                          - generic: Sparkles
+                                          - img [ref=e704]
+                                    - generic [ref=e706]:
+                                      - generic [ref=e707]: Titulo
+                                      - textbox [ref=e708]: Abra sua orbita
+                                    - generic [ref=e709]:
+                                      - generic [ref=e710]: Descricao
+                                      - textbox [ref=e711]: Seu cadastro cria um espaco pessoal para sinais, preferencias e contexto simbolico.
+                                - generic [ref=e712]:
+                                  - generic [ref=e713]:
+                                    - generic [ref=e714]:
+                                      - paragraph [ref=e715]: Conecte seu contexto
+                                      - paragraph [ref=e716]: Edite o bloco, reposicione ou remova.
+                                    - generic [ref=e717]:
+                                      - button [ref=e718] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e719] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e720] [cursor=pointer]:
+                                        - img
+                                  - generic [ref=e721]:
+                                    - generic [ref=e722]:
+                                      - generic [ref=e723]:
+                                        - generic [ref=e724]: Numero
+                                        - textbox [ref=e725]: "02"
+                                      - generic [ref=e726]:
+                                        - generic [ref=e727]: Icone
+                                        - combobox [ref=e728] [cursor=pointer]:
+                                          - generic: HeartPulse
+                                          - img [ref=e729]
+                                    - generic [ref=e731]:
+                                      - generic [ref=e732]: Titulo
+                                      - textbox [ref=e733]: Conecte seu contexto
+                                    - generic [ref=e734]:
+                                      - generic [ref=e735]: Descricao
+                                      - textbox [ref=e736]: Rotina, sinais e preferencias alimentam uma leitura mais delicada e coerente.
+                                - generic [ref=e737]:
+                                  - generic [ref=e738]:
+                                    - generic [ref=e739]:
+                                      - paragraph [ref=e740]: Receba orientacao com IA
+                                      - paragraph [ref=e741]: Edite o bloco, reposicione ou remova.
+                                    - generic [ref=e742]:
+                                      - button [ref=e743] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e744] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e745] [cursor=pointer]:
+                                        - img
+                                  - generic [ref=e746]:
+                                    - generic [ref=e747]:
+                                      - generic [ref=e748]:
+                                        - generic [ref=e749]: Numero
+                                        - textbox [ref=e750]: "03"
+                                      - generic [ref=e751]:
+                                        - generic [ref=e752]: Icone
+                                        - combobox [ref=e753] [cursor=pointer]:
+                                          - generic: Bot
+                                          - img [ref=e754]
+                                    - generic [ref=e756]:
+                                      - generic [ref=e757]: Titulo
+                                      - textbox [ref=e758]: Receba orientacao com IA
+                                    - generic [ref=e759]:
+                                      - generic [ref=e760]: Descricao
+                                      - textbox [ref=e761]: Chat, planos e proximos passos ganham clareza sem excesso visual.
+                                - generic [ref=e762]:
+                                  - generic [ref=e763]:
+                                    - paragraph [ref=e764]: Perguntas do FAQ
+                                    - paragraph [ref=e765]: Adicione, reordene ou remova itens do FAQ.
+                                  - button "Adicionar pergunta" [ref=e766] [cursor=pointer]:
+                                    - img
+                                    - text: Adicionar pergunta
+                                - generic [ref=e767]:
+                                  - generic [ref=e768]:
+                                    - generic [ref=e769]:
+                                      - paragraph [ref=e770]: A landing usa dados reais do produto?
+                                      - paragraph [ref=e771]: Edite o bloco, reposicione ou remova.
+                                    - generic [ref=e772]:
+                                      - button [ref=e773] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e774] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e775] [cursor=pointer]:
+                                        - img
+                                  - generic [ref=e776]:
+                                    - generic [ref=e777]:
+                                      - generic [ref=e778]: Pergunta
+                                      - textbox [ref=e779]: A landing usa dados reais do produto?
+                                    - generic [ref=e780]:
+                                      - generic [ref=e781]: Resposta
+                                      - textbox [ref=e782]: Sim. O catalogo abaixo e carregado por rota publica ligada ao MySQL desta instancia.
+                                - generic [ref=e783]:
+                                  - generic [ref=e784]:
+                                    - generic [ref=e785]:
+                                      - paragraph [ref=e786]: Existe login direto pela landing?
+                                      - paragraph [ref=e787]: Edite o bloco, reposicione ou remova.
+                                    - generic [ref=e788]:
+                                      - button [ref=e789] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e790] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e791] [cursor=pointer]:
+                                        - img
+                                  - generic [ref=e792]:
+                                    - generic [ref=e793]:
+                                      - generic [ref=e794]: Pergunta
+                                      - textbox [ref=e795]: Existe login direto pela landing?
+                                    - generic [ref=e796]:
+                                      - generic [ref=e797]: Resposta
+                                      - textbox [ref=e798]: Sim. O card inicial permite entrada real sem sair da landing.
+                                - generic [ref=e799]:
+                                  - generic [ref=e800]:
+                                    - generic [ref=e801]:
+                                      - paragraph [ref=e802]: O admin vai poder editar tudo depois?
+                                      - paragraph [ref=e803]: Edite o bloco, reposicione ou remova.
+                                    - generic [ref=e804]:
+                                      - button [ref=e805] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e806] [cursor=pointer]:
+                                        - img
+                                      - button [ref=e807] [cursor=pointer]:
+                                        - img
+                                  - generic [ref=e808]:
+                                    - generic [ref=e809]:
+                                      - generic [ref=e810]: Pergunta
+                                      - textbox [ref=e811]: O admin vai poder editar tudo depois?
+                                    - generic [ref=e812]:
+                                      - generic [ref=e813]: Resposta
+                                      - textbox [ref=e814]: Sim. O novo editor administrativo salva rascunho, publica e permite ajuste fino via formularios e JSON validado.
+                  - separator [ref=e817]:
+                    - img [ref=e819]
+                  - generic [ref=e827]:
+                    - generic [ref=e828]:
+                      - generic [ref=e829]:
+                        - paragraph [ref=e830]: preview administrativo
+                        - paragraph [ref=e831]: O painel ao lado renderiza a experiencia com o rascunho atual.
+                      - generic [ref=e832]: Landing
+                    - generic [ref=e837]:
+                      - generic [ref=e839]:
+                        - button "Voltar ao topo da landing" [ref=e840] [cursor=pointer]:
+                          - img [ref=e842]
+                          - generic [ref=e844]:
+                            - generic [ref=e845]: lyra
+                            - generic [ref=e846]: astrologia + IA
+                        - navigation [ref=e847]:
+                          - button "Recursos" [ref=e848] [cursor=pointer]
+                          - button "Fluxo" [ref=e849] [cursor=pointer]
+                          - button "Planos" [ref=e850] [cursor=pointer]
+                          - button "FAQ" [ref=e851] [cursor=pointer]
+                        - generic [ref=e852]:
+                          - button "Entrar" [ref=e853] [cursor=pointer]
+                          - button "Tela completa" [ref=e854] [cursor=pointer]
+                      - main [ref=e855]:
+                        - generic [ref=e857]:
+                          - generic [ref=e858]:
+                            - generic [ref=e859]:
+                              - img [ref=e860]
+                              - text: astrologia moderna, IA gentil e bem-estar em sintonia
+                            - heading "Seu bem-estar ganha uma casa mais linda, harmoniosa e inteligente." [level=1] [ref=e862]:
+                              - text: Seu bem-estar ganha uma casa
+                              - generic [ref=e863]: mais linda, harmoniosa e inteligente.
+                            - paragraph [ref=e864]: A Lyra MetaCare une astrologia vedica, IA e sinais da sua rotina numa interface clara, doce e premium, feita para acolher sem cansar.
+                            - generic [ref=e865]:
+                              - button "Entrar na experiencia completa" [ref=e866] [cursor=pointer]:
+                                - text: Entrar na experiencia completa
+                                - img
+                              - button "Ver catalogo publicado" [ref=e867] [cursor=pointer]
+                          - generic [ref=e868]:
+                            - generic [ref=e869]:
+                              - generic [ref=e870]:
+                                - generic [ref=e871]: entrada rapida
+                                - paragraph [ref=e872]: Entrar direto pela landing
+                                - paragraph [ref=e873]: Uma entrada suave e organizada para quem ja quer cair direto na propria orbita.
+                              - generic [ref=e875]:
+                                - generic [ref=e876]:
+                                  - text: Email
+                                  - textbox "Email" [disabled] [ref=e877]
+                                - generic [ref=e878]:
+                                  - text: Senha
+                                  - generic [ref=e879]:
+                                    - textbox "Senha" [disabled] [ref=e880]
+                                    - button "Mostrar senha" [disabled]:
+                                      - img
+                                - generic [ref=e881]:
+                                  - button "Entrar agora" [disabled]:
+                                    - text: Entrar agora
+                                    - img
+                                  - button "Abrir tela completa" [disabled]
+                            - generic [ref=e882]:
+                              - generic [ref=e883]:
+                                - generic [ref=e884]: preview vivo
+                                - paragraph [ref=e885]: Blocos leves, lindos e editaveis
+                                - paragraph [ref=e886]: O novo painel administrativo vai permitir mexer em textos, cards, etapas, FAQ e hierarquia visual sem tocar no codigo.
+                              - generic [ref=e887]:
+                                - generic [ref=e888]:
+                                  - img [ref=e890]
+                                  - paragraph [ref=e892]: Astrologia moderna
+                                  - paragraph [ref=e893]: Simbolismo claro, luminoso e atualizado.
+                                - generic [ref=e894]:
+                                  - img [ref=e896]
+                                  - paragraph [ref=e906]: IA acolhedora
+                                  - paragraph [ref=e907]: Tecnologia com presenca e sem peso visual.
+                                - generic [ref=e908]:
+                                  - img [ref=e910]
+                                  - paragraph [ref=e912]: Fluxo editavel
+                                  - paragraph [ref=e913]: Cards, chamadas e secoes sob seu controle.
+                        - generic [ref=e916]:
+                          - generic [ref=e917]:
+                            - generic [ref=e918]: Recursos em destaque
+                            - heading "Menos peso visual, mais clareza, mais ternura e mais intencao." [level=2] [ref=e919]
+                            - paragraph [ref=e920]: A landing passa a respirar melhor, com secoes mais simples e um ritmo visual mais bonito de acompanhar.
+                          - generic [ref=e921]:
+                            - generic [ref=e923]:
+                              - img [ref=e925]
+                              - paragraph [ref=e935]: IA com presenca gentil
+                              - paragraph [ref=e936]: A tecnologia organiza sua jornada com leveza, sem roubar o protagonismo da experiencia.
+                            - generic [ref=e938]:
+                              - img [ref=e940]
+                              - paragraph [ref=e942]: Astrologia moderna e luminosa
+                              - paragraph [ref=e943]: Ciclos e simbolismos aparecem com visual claro, sofisticado e atual.
+                            - generic [ref=e945]:
+                              - img [ref=e947]
+                              - paragraph [ref=e950]: Sinais do corpo com contexto
+                              - paragraph [ref=e951]: Sono, energia e ritmo passam a conversar dentro de uma hierarquia mais acolhedora.
+                        - generic [ref=e954]:
+                          - generic [ref=e955]:
+                            - generic [ref=e956]: Metricas publicas
+                            - heading "Os numeros da vitrine continuam reais e sincronizados." [level=2] [ref=e957]
+                            - paragraph [ref=e958]: Esta faixa usa os dados publicados dos planos para mostrar a saude comercial da experiencia sem inventar prova social.
+                          - generic [ref=e959]:
+                            - generic [ref=e961]:
+                              - paragraph [ref=e962]: planos publicados
+                              - paragraph [ref=e963]: "3"
+                              - paragraph [ref=e964]: Lidos do catalogo publico.
+                            - generic [ref=e966]:
+                              - paragraph [ref=e967]: capacidades ativas
+                              - paragraph [ref=e968]: "35"
+                              - paragraph [ref=e969]: Somatorio real das features habilitadas.
+                            - generic [ref=e971]:
+                              - paragraph [ref=e972]: categorias funcionais
+                              - paragraph [ref=e973]: "4"
+                              - paragraph [ref=e974]: Categorias extraidas dos planos reais.
+                            - generic [ref=e976]:
+                              - paragraph [ref=e977]: checkout conectado
+                              - paragraph [ref=e978]: "0"
+                              - paragraph [ref=e979]: Planos com integracao comercial pronta.
+                        - generic [ref=e982]:
+                          - generic [ref=e983]:
+                            - generic [ref=e984]: Como a jornada se abre
+                            - heading "Tudo foi pensado para parecer natural, bonito e facil de editar." [level=2] [ref=e985]
+                            - paragraph [ref=e986]: O fluxo abaixo tambem fica totalmente configuravel, com cards, ordens e textos sob gestao administrativa.
+                          - generic [ref=e987]:
+                            - generic [ref=e989]:
+                              - generic [ref=e990]:
+                                - generic [ref=e991]: "01"
+                                - img [ref=e993]
+                              - paragraph [ref=e995]: Abra sua orbita
+                              - paragraph [ref=e996]: Seu cadastro cria um espaco pessoal para sinais, preferencias e contexto simbolico.
+                            - generic [ref=e998]:
+                              - generic [ref=e999]:
+                                - generic [ref=e1000]: "02"
+                                - img [ref=e1002]
+                              - paragraph [ref=e1005]: Conecte seu contexto
+                              - paragraph [ref=e1006]: Rotina, sinais e preferencias alimentam uma leitura mais delicada e coerente.
+                            - generic [ref=e1008]:
+                              - generic [ref=e1009]:
+                                - generic [ref=e1010]: "03"
+                                - img [ref=e1012]
+                              - paragraph [ref=e1015]: Receba orientacao com IA
+                              - paragraph [ref=e1016]: Chat, planos e proximos passos ganham clareza sem excesso visual.
+                        - generic [ref=e1019]:
+                          - generic [ref=e1020]:
+                            - generic [ref=e1021]: Catalogo publico sincronizado
+                            - heading "Planos reais do produto com uma vitrine mais linda e organizada." [level=2] [ref=e1022]
+                            - paragraph [ref=e1023]: O bloco de planos continua conectado ao MySQL e pode ser reposicionado sem perder a fonte real.
+                          - generic [ref=e1024]:
+                            - generic [ref=e1025]:
+                              - generic [ref=e1027]:
+                                - generic [ref=e1028]: Sem custo para começar
+                                - paragraph [ref=e1029]: Free
+                                - paragraph [ref=e1030]: Base confiável para começar com clareza.
+                                - paragraph [ref=e1031]: Acesso essencial ao ecossistema Lyra MetaCare, com visão inicial dos indicadores, perfil e automações fundamentais.
+                              - generic [ref=e1032]:
+                                - generic [ref=e1033]:
+                                  - paragraph [ref=e1034]: R$ 0,00/mes
+                                  - paragraph [ref=e1035]: "anual: R$ 0,00"
+                                - list [ref=e1036]:
+                                  - listitem [ref=e1037]:
+                                    - img [ref=e1039]
+                                    - generic [ref=e1041]: Dashboard operacional
+                                  - listitem [ref=e1042]:
+                                    - img [ref=e1044]
+                                    - generic [ref=e1046]: Scores de longevidade
+                                  - listitem [ref=e1047]:
+                                    - img [ref=e1049]
+                                    - generic [ref=e1051]: Feed de dicas inteligentes
+                                  - listitem [ref=e1052]:
+                                    - img [ref=e1054]
+                                    - generic [ref=e1056]: Gestão de perfil
+                              - generic [ref=e1057]:
+                                - button "Entrar e continuar" [disabled]:
+                                  - text: Entrar e continuar
+                                  - img
+                            - generic [ref=e1058]:
+                              - generic [ref=e1060]:
+                                - generic [ref=e1061]: Mais inteligência e automação
+                                - paragraph [ref=e1062]: Meta
+                                - paragraph [ref=e1063]: Mais profundidade, dados e automação orientada por IA.
+                                - paragraph [ref=e1064]: Plano intermediário com capacidades expandidas de IA, conexão de dispositivos e observabilidade operacional para rotina contínua.
+                              - generic [ref=e1065]:
+                                - generic [ref=e1066]:
+                                  - paragraph [ref=e1067]: R$ 79,90/mes
+                                  - paragraph [ref=e1068]: "anual: R$ 790,00"
+                                - list [ref=e1069]:
+                                  - listitem [ref=e1070]:
+                                    - img [ref=e1072]
+                                    - generic [ref=e1074]: Dashboard operacional
+                                  - listitem [ref=e1075]:
+                                    - img [ref=e1077]
+                                    - generic [ref=e1079]: Scores de longevidade
+                                  - listitem [ref=e1080]:
+                                    - img [ref=e1082]
+                                    - generic [ref=e1084]: Feed de dicas inteligentes
+                                  - listitem [ref=e1085]:
+                                    - img [ref=e1087]
+                                    - generic [ref=e1089]: Gestão de perfil
+                              - generic [ref=e1090]:
+                                - button "Entrar e continuar" [disabled]:
+                                  - text: Entrar e continuar
+                                  - img
+                            - generic [ref=e1091]:
+                              - generic [ref=e1093]:
+                                - generic [ref=e1094]: Experiência integral Lyra
+                                - paragraph [ref=e1095]: Care
+                                - paragraph [ref=e1096]: A experiência mais completa, clínica e operacional do produto.
+                                - paragraph [ref=e1097]: Plano premium com a matriz completa de capacidades, máxima profundidade de acompanhamento, monitoramento avançado e governança plena da experiência.
+                              - generic [ref=e1098]:
+                                - generic [ref=e1099]:
+                                  - paragraph [ref=e1100]: R$ 249,90/mes
+                                  - paragraph [ref=e1101]: "anual: R$ 2.490,00"
+                                - list [ref=e1102]:
+                                  - listitem [ref=e1103]:
+                                    - img [ref=e1105]
+                                    - generic [ref=e1107]: Dashboard operacional
+                                  - listitem [ref=e1108]:
+                                    - img [ref=e1110]
+                                    - generic [ref=e1112]: Scores de longevidade
+                                  - listitem [ref=e1113]:
+                                    - img [ref=e1115]
+                                    - generic [ref=e1117]: Feed de dicas inteligentes
+                                  - listitem [ref=e1118]:
+                                    - img [ref=e1120]
+                                    - generic [ref=e1122]: Gestão de perfil
+                              - generic [ref=e1123]:
+                                - button "Entrar e continuar" [disabled]:
+                                  - text: Entrar e continuar
+                                  - img
+                        - generic [ref=e1126]:
+                          - generic [ref=e1127]:
+                            - generic [ref=e1128]: FAQ
+                            - heading "Perguntas importantes antes de entrar." [level=2] [ref=e1129]
+                            - paragraph [ref=e1130]: A ideia aqui e manter a landing bonita, sincera e util desde o primeiro contato.
+                          - generic [ref=e1131]:
+                            - heading "A landing usa dados reais do produto?" [level=3] [ref=e1133]:
+                              - button "A landing usa dados reais do produto?" [ref=e1134] [cursor=pointer]:
+                                - text: A landing usa dados reais do produto?
+                                - img [ref=e1135]
+                            - heading "Existe login direto pela landing?" [level=3] [ref=e1138]:
+                              - button "Existe login direto pela landing?" [ref=e1139] [cursor=pointer]:
+                                - text: Existe login direto pela landing?
+                                - img [ref=e1140]
+                            - heading "O admin vai poder editar tudo depois?" [level=3] [ref=e1143]:
+                              - button "O admin vai poder editar tudo depois?" [ref=e1144] [cursor=pointer]:
+                                - text: O admin vai poder editar tudo depois?
+                                - img [ref=e1145]
+                        - generic [ref=e1150]:
+                          - generic [ref=e1151]: Orbita final
+                          - heading "Uma landing mais amiga, linda, organizada e pronta para receber." [level=2] [ref=e1152]
+                          - paragraph [ref=e1153]: "O foco agora e beleza com sentido: mais harmonia, mais contexto e uma primeira impressao que abraca em vez de confundir."
+                          - generic [ref=e1154]:
+                            - button "Abrir Lyra agora" [ref=e1155] [cursor=pointer]:
+                              - text: Abrir Lyra agora
+                              - img
+                            - button "Explorar a experiencia" [ref=e1156] [cursor=pointer]
+                      - generic [ref=e1158]:
+                        - generic [ref=e1159]:
+                          - img [ref=e1161]
+                          - generic [ref=e1163]:
+                            - paragraph [ref=e1164]: lyra metacare
+                            - paragraph [ref=e1165]: landing editavel
+                        - paragraph [ref=e1166]: Feito com leveza, intencao e tecnologia pela iLyra AI.
+      - link "Feito com por iLyra AI" [ref=e1168] [cursor=pointer]:
+        - /url: https://ilyra.ai
+        - text: Feito com
+        - img [ref=e1169]
+        - text: por iLyra AI
+  - region "Notifications alt+T"

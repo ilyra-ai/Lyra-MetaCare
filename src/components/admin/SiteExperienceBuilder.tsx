@@ -76,6 +76,14 @@ type AdminConfigResponse = {
   error?: string;
 };
 
+function isLandingConfig(config: EditableDraft): config is LandingPageConfig {
+  return 'hero' in config && 'features' in config && 'faq' in config;
+}
+
+function isLoginConfig(config: EditableDraft): config is LoginPageConfig {
+  return 'intro' in config && 'auth' in config;
+}
+
 function cloneValue<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
@@ -414,25 +422,31 @@ export function SiteExperienceBuilder() {
     setJsonValue(JSON.stringify(draftConfig, null, 2));
   }, [draftConfig]);
 
+  const normalizedLandingDraft = useMemo(() => {
+    return isLandingConfig(draftConfig)
+      ? draftConfig
+      : getDefaultPageConfig('landing');
+  }, [draftConfig]);
+
+  const normalizedLoginDraft = useMemo(() => {
+    return isLoginConfig(draftConfig)
+      ? draftConfig
+      : getDefaultPageConfig('login');
+  }, [draftConfig]);
+
   const preview = useMemo(() => {
     return pageKey === 'landing' ? (
-      <LandingPage
-        overrideConfig={draftConfig as LandingPageConfig}
-        previewMode
-      />
+      <LandingPage overrideConfig={normalizedLandingDraft} previewMode />
     ) : (
-      <LoginExperience
-        overrideConfig={draftConfig as LoginPageConfig}
-        previewMode
-      />
+      <LoginExperience overrideConfig={normalizedLoginDraft} previewMode />
     );
-  }, [draftConfig, pageKey]);
+  }, [normalizedLandingDraft, normalizedLoginDraft, pageKey]);
 
   const hasDraftChanges =
     JSON.stringify(draftConfig) !== JSON.stringify(publishedConfig);
 
-  const landingDraft = draftConfig as LandingPageConfig;
-  const loginDraft = draftConfig as LoginPageConfig;
+  const landingDraft = normalizedLandingDraft;
+  const loginDraft = normalizedLoginDraft;
 
   function updateDraft(path: string[], nextValue: unknown) {
     setDraftConfig((current) => setByPath(current, path, nextValue));

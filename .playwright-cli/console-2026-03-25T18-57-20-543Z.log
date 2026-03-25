@@ -1,0 +1,9 @@
+Total messages: 2 (Errors: 1, Warnings: 0)
+Returning 1 messages for level "error"
+
+Error: Cannot read properties of undefined (reading 'visible')
+    at renderLoginEditor (webpack-internal:///(app-pages-browser)/./src/components/admin/SiteExperienceBuilder.tsx:2472:63)
+    at SiteExperienceBuilder (webpack-internal:///(app-pages-browser)/./src/components/admin/SiteExperienceBuilder.tsx:3595:112)
+    at AdminContentManagement (webpack-internal:///(app-pages-browser)/./src/components/admin/AdminContentManagement.tsx:277:122)
+    at AdminContentPage (webpack-internal:///(app-pages-browser)/./src/app/admin/content/page.tsx:138:110)
+    at ClientPageRoot (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/client-page.js:20:50)

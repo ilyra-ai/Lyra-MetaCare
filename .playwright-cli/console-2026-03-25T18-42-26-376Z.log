@@ -1,0 +1,2540 @@
+[  189119ms] [ERROR] ./src/app/globals.css:668:1
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */ @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  189120ms] [ERROR] ./src/app/globals.css
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+-- inner error --
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+Generated code for C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[2]!C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[3]!C:\temp\Lyra-MetaCare\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  191034ms] [ERROR] ./src/components/SplashScreen.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\SplashScreen.tsx:8:1]
+  5 | 
+  6 | export function SplashScreen() {
+  7 |   return (
+  8 |     <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+    :      ^^^
+  9 |       {/* Decorative orbs */}
+ 10 |       <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+ 10 |       <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/SplashScreen.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  191035ms] [ERROR] ./src/components/landing/LandingPage.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:5:1]
+ 2 | 
+ 3 | import { FormEvent, useEffect, useState } from 'react';
+ 4 | import { useRouter } from 'next/navigation';
+ 5 | <<<<<<< HEAD
+   : ^^^^^^^
+ 6 | import {
+ 7 |   ArrowRight,
+ 7 | 
+   `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:220:1]
+ 217 |   const router = useRouter();
+ 218 | 
+ 219 |   return (
+ 220 |     <div className="min-h-screen bg-background text-foreground">
+     :      ^^^
+ 221 |       {/* ---- NAV ---- */}
+ 222 |       <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+ 222 |         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/landing/LandingPage.tsx
+./src/components/admin/SiteExperienceBuilder.tsx
+./src/components/admin/AdminContentManagement.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  191035ms] [ERROR] ./src/components/layout/header.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:20:1]
+ 17 | 
+ 18 |   import { useAccountSubscription } from '@/hooks/use-account-subscription';
+ 19 |   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 20 |   >>>>>>> main
+    :   ^^^^^^^
+ 21 |   import { Button } from '@/components/ui/button';
+ 22 |   import {
+ 22 |     DropdownMenu,
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:46:1]
+ 43 |     CommandList,
+ 44 |     CommandShortcut,
+ 45 |   } from '@/components/ui/command';
+ 46 |   >>>>>>> main
+    :   ^^^^^^^
+ 47 |   import { PlanBadge } from '@/components/subscription/PlanBadge';
+ 48 |   import { MobileSidebar } from './MobileSidebar';
+ 48 |   import {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:87:1]
+ 84 |     const pathname = usePathname();
+ 85 |     const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+ 86 | 
+ 87 |   >>>>>>> main
+    :   ^^^^^^^
+ 88 |     const { data: subscription } = useAccountSubscription();
+ 89 |     const isAdmin = useIsAdmin();
+ 89 |     const pathname = usePathname();
+    `----
+  x await isn't allowed in non-async function
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:102:1]
+  99 |     React.useEffect(() => {
+ 100 |       if (!session?.user) return;
+ 101 |   
+ 102 |       const { data, error } = await db
+     :                               ^^^^^
+ 103 |         .from('profiles')
+ 104 |         .select('avatar_url')
+ 104 |         .eq('id', session.user.id)
+     `----
+  x Expression expected
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:134:1]
+ 131 |       };
+ 132 | 
+ 133 |       void loadProfile();
+ 134 |     }, [db, session]);
+     :      ^
+ 135 |   >>>>>>> main
+ 136 | 
+ 136 |     React.useEffect(() => {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/header.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  191036ms] [ERROR] ./src/components/layout/sidebar.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:25:1]
+ 22 | } from 'lucide-react';
+ 23 | import { useIsAdmin } from '@/hooks/use-is-admin';
+ 24 | import { useAuth } from '@/context/AuthContext';
+ 25 | =======
+    : ^^^^^^^
+ 26 | import Link from 'next/link';
+ 27 | import React from 'react';
+ 27 | import { Settings2, Sparkles, Workflow } from 'lucide-react';
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:39:1]
+ 36 | 
+ 37 | import React from 'react';
+ 38 | import Link from 'next/link';
+ 39 | =======
+    : ^^^^^^^
+ 40 | import { getVisibleNavigation, groupNavigation } from './navigation';
+ 41 | 
+ 41 | type ProfileState = {
+    `----
+  x Unexpected token `aside`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:77:1]
+ 74 |   const initial = (firstName || userEmail).charAt(0).toUpperCase();
+ 75 | 
+ 76 |   return (
+ 77 |     <aside className="hidden md:flex flex-col w-64 bg-background border-r border-border z-20">
+    :      ^^^^^
+ 78 |       {/* Logo */}
+ 79 |       <div className="p-6 border-b border-border flex items-center gap-3">
+ 79 |         <div className="p-2 bg-gradient-teal rounded-xl shadow-teal">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/sidebar.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  191036ms] [ERROR] ./src/app/layout.tsx
+Error:   x Expected ',', got ':'
+    ,-[C:\temp\Lyra-MetaCare\src\app\layout.tsx:51:1]
+ 48 |     'saúde',
+ 49 | 
+ 50 |     'Super-app premium de saúde preventiva personalizada com IA, monitoramento biométrico e sabedoria ancestral em uma experiência luminosa e acolhedora.',
+ 51 |   keywords: [
+    :           ^
+ 52 |     'Lyra MetaCare',
+ 53 |     'saúde preventiva',
+ 53 | 
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/layout.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  191037ms] [ERROR] ./src/app/login/page.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:3:1]
+ 1 | 'use client';
+ 2 | 
+ 3 | <<<<<<< HEAD
+   : ^^^^^^^
+ 4 | import { FormEvent, useEffect, useState } from 'react';
+ 5 | import { useRouter } from 'next/navigation';
+ 5 | import { toast } from 'sonner';
+   `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:40:1]
+ 37 | import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+ 38 | 
+ 39 | type SubmitMode = 'login' | 'register' | null;
+ 40 | =======
+    : ^^^^^^^
+ 41 | import { LoginExperience } from '@/components/auth/LoginExperience';
+ 42 | >>>>>>> 38146e1 (Implement admin editor for landing and login experience)
+ 42 | 
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:42:1]
+ 39 | type SubmitMode = 'login' | 'register' | null;
+ 40 | =======
+ 41 | import { LoginExperience } from '@/components/auth/LoginExperience';
+ 42 | >>>>>>> 38146e1 (Implement admin editor for landing and login experience)
+    : ^^^^^^^
+ 43 | 
+ 44 | type LoginDataConfig = {
+ 44 |   hero?: {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:53:1]
+ 50 | 
+ 51 | 
+ 52 | export default function LoginPage() {
+ 53 | <<<<<<< HEAD
+    : ^^^^^^^
+ 54 |   const { session, db } = useAuth();
+ 55 |   const router = useRouter();
+ 55 | 
+    `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:148:1]
+ 145 | 
+ 146 |   return (
+ 147 | 
+ 148 |     <div className="relative min-h-screen flex items-center justify-center bg-background p-4 overflow-hidden">
+     :      ^^^
+ 149 |       {/* Decorative orbs */}
+ 150 |       <div className="cosmic-orb w-80 h-80 bg-primary/15 -top-20 -left-20" />
+ 150 |       <div className="cosmic-orb w-64 h-64 bg-accent/15 -bottom-16 right-0" />
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/login/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  191037ms] [ERROR] ./src/app/page.tsx
+Error:   x 'import', and 'export' cannot be used outside of module code
+    ,-[C:\temp\Lyra-MetaCare\src\app\page.tsx:26:1]
+ 23 |   return 'Boa noite';
+ 24 | }
+ 25 | 
+ 26 | export default function Home() {
+    : ^^^^^^
+ 27 |   const { session, db } = useAuth();
+ 28 |   const [minimumTimeElapsed, setMinimumTimeElapsed] = useState(false);
+ 28 |   const [profile, setProfile] = useState<UserProfile | null>(null);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  191852ms] [ERROR] ./src/components/SplashScreen.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\SplashScreen.tsx:8:1]
+  5 | 
+  6 | export function SplashScreen() {
+  7 |   return (
+  8 |     <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+    :      ^^^
+  9 |       {/* Decorative orbs */}
+ 10 |       <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+ 10 |       <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/SplashScreen.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  191852ms] [ERROR] ./src/components/landing/LandingPage.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:5:1]
+ 2 | 
+ 3 | import { FormEvent, useEffect, useState } from 'react';
+ 4 | import { useRouter } from 'next/navigation';
+ 5 | <<<<<<< HEAD
+   : ^^^^^^^
+ 6 | import {
+ 7 |   ArrowRight,
+ 7 | 
+   `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:220:1]
+ 217 |   const router = useRouter();
+ 218 | 
+ 219 |   return (
+ 220 |     <div className="min-h-screen bg-background text-foreground">
+     :      ^^^
+ 221 |       {/* ---- NAV ---- */}
+ 222 |       <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+ 222 |         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/landing/LandingPage.tsx
+./src/components/admin/SiteExperienceBuilder.tsx
+./src/components/admin/AdminContentManagement.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  191853ms] [ERROR] ./src/components/layout/header.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:20:1]
+ 17 | 
+ 18 |   import { useAccountSubscription } from '@/hooks/use-account-subscription';
+ 19 |   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 20 |   >>>>>>> main
+    :   ^^^^^^^
+ 21 |   import { Button } from '@/components/ui/button';
+ 22 |   import {
+ 22 |     DropdownMenu,
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:46:1]
+ 43 |     CommandList,
+ 44 |     CommandShortcut,
+ 45 |   } from '@/components/ui/command';
+ 46 |   >>>>>>> main
+    :   ^^^^^^^
+ 47 |   import { PlanBadge } from '@/components/subscription/PlanBadge';
+ 48 |   import { MobileSidebar } from './MobileSidebar';
+ 48 |   import {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:87:1]
+ 84 |     const pathname = usePathname();
+ 85 |     const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+ 86 | 
+ 87 |   >>>>>>> main
+    :   ^^^^^^^
+ 88 |     const { data: subscription } = useAccountSubscription();
+ 89 |     const isAdmin = useIsAdmin();
+ 89 |     const pathname = usePathname();
+    `----
+  x await isn't allowed in non-async function
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:102:1]
+  99 |     React.useEffect(() => {
+ 100 |       if (!session?.user) return;
+ 101 |   
+ 102 |       const { data, error } = await db
+     :                               ^^^^^
+ 103 |         .from('profiles')
+ 104 |         .select('avatar_url')
+ 104 |         .eq('id', session.user.id)
+     `----
+  x Expression expected
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:134:1]
+ 131 |       };
+ 132 | 
+ 133 |       void loadProfile();
+ 134 |     }, [db, session]);
+     :      ^
+ 135 |   >>>>>>> main
+ 136 | 
+ 136 |     React.useEffect(() => {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/header.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  191853ms] [ERROR] ./src/components/layout/sidebar.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:25:1]
+ 22 | } from 'lucide-react';
+ 23 | import { useIsAdmin } from '@/hooks/use-is-admin';
+ 24 | import { useAuth } from '@/context/AuthContext';
+ 25 | =======
+    : ^^^^^^^
+ 26 | import Link from 'next/link';
+ 27 | import React from 'react';
+ 27 | import { Settings2, Sparkles, Workflow } from 'lucide-react';
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:39:1]
+ 36 | 
+ 37 | import React from 'react';
+ 38 | import Link from 'next/link';
+ 39 | =======
+    : ^^^^^^^
+ 40 | import { getVisibleNavigation, groupNavigation } from './navigation';
+ 41 | 
+ 41 | type ProfileState = {
+    `----
+  x Unexpected token `aside`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:77:1]
+ 74 |   const initial = (firstName || userEmail).charAt(0).toUpperCase();
+ 75 | 
+ 76 |   return (
+ 77 |     <aside className="hidden md:flex flex-col w-64 bg-background border-r border-border z-20">
+    :      ^^^^^
+ 78 |       {/* Logo */}
+ 79 |       <div className="p-6 border-b border-border flex items-center gap-3">
+ 79 |         <div className="p-2 bg-gradient-teal rounded-xl shadow-teal">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/sidebar.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  194321ms] [ERROR] ./src/components/SplashScreen.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\SplashScreen.tsx:8:1]
+  5 | 
+  6 | export function SplashScreen() {
+  7 |   return (
+  8 |     <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+    :      ^^^
+  9 |       {/* Decorative orbs */}
+ 10 |       <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+ 10 |       <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/SplashScreen.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  194322ms] [ERROR] ./src/components/landing/LandingPage.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:5:1]
+ 2 | 
+ 3 | import { FormEvent, useEffect, useState } from 'react';
+ 4 | import { useRouter } from 'next/navigation';
+ 5 | <<<<<<< HEAD
+   : ^^^^^^^
+ 6 | import {
+ 7 |   ArrowRight,
+ 7 | 
+   `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:220:1]
+ 217 |   const router = useRouter();
+ 218 | 
+ 219 |   return (
+ 220 |     <div className="min-h-screen bg-background text-foreground">
+     :      ^^^
+ 221 |       {/* ---- NAV ---- */}
+ 222 |       <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+ 222 |         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/landing/LandingPage.tsx
+./src/components/admin/SiteExperienceBuilder.tsx
+./src/components/admin/AdminContentManagement.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  194323ms] [ERROR] ./src/components/layout/header.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:20:1]
+ 17 | 
+ 18 |   import { useAccountSubscription } from '@/hooks/use-account-subscription';
+ 19 |   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 20 |   >>>>>>> main
+    :   ^^^^^^^
+ 21 |   import { Button } from '@/components/ui/button';
+ 22 |   import {
+ 22 |     DropdownMenu,
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:46:1]
+ 43 |     CommandList,
+ 44 |     CommandShortcut,
+ 45 |   } from '@/components/ui/command';
+ 46 |   >>>>>>> main
+    :   ^^^^^^^
+ 47 |   import { PlanBadge } from '@/components/subscription/PlanBadge';
+ 48 |   import { MobileSidebar } from './MobileSidebar';
+ 48 |   import {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:87:1]
+ 84 |     const pathname = usePathname();
+ 85 |     const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+ 86 | 
+ 87 |   >>>>>>> main
+    :   ^^^^^^^
+ 88 |     const { data: subscription } = useAccountSubscription();
+ 89 |     const isAdmin = useIsAdmin();
+ 89 |     const pathname = usePathname();
+    `----
+  x await isn't allowed in non-async function
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:102:1]
+  99 |     React.useEffect(() => {
+ 100 |       if (!session?.user) return;
+ 101 |   
+ 102 |       const { data, error } = await db
+     :                               ^^^^^
+ 103 |         .from('profiles')
+ 104 |         .select('avatar_url')
+ 104 |         .eq('id', session.user.id)
+     `----
+  x Expression expected
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:134:1]
+ 131 |       };
+ 132 | 
+ 133 |       void loadProfile();
+ 134 |     }, [db, session]);
+     :      ^
+ 135 |   >>>>>>> main
+ 136 | 
+ 136 |     React.useEffect(() => {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/header.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  194323ms] [ERROR] ./src/components/layout/sidebar.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:25:1]
+ 22 | } from 'lucide-react';
+ 23 | import { useIsAdmin } from '@/hooks/use-is-admin';
+ 24 | import { useAuth } from '@/context/AuthContext';
+ 25 | =======
+    : ^^^^^^^
+ 26 | import Link from 'next/link';
+ 27 | import React from 'react';
+ 27 | import { Settings2, Sparkles, Workflow } from 'lucide-react';
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:39:1]
+ 36 | 
+ 37 | import React from 'react';
+ 38 | import Link from 'next/link';
+ 39 | =======
+    : ^^^^^^^
+ 40 | import { getVisibleNavigation, groupNavigation } from './navigation';
+ 41 | 
+ 41 | type ProfileState = {
+    `----
+  x Unexpected token `aside`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:77:1]
+ 74 |   const initial = (firstName || userEmail).charAt(0).toUpperCase();
+ 75 | 
+ 76 |   return (
+ 77 |     <aside className="hidden md:flex flex-col w-64 bg-background border-r border-border z-20">
+    :      ^^^^^
+ 78 |       {/* Logo */}
+ 79 |       <div className="p-6 border-b border-border flex items-center gap-3">
+ 79 |         <div className="p-2 bg-gradient-teal rounded-xl shadow-teal">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/sidebar.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  208229ms] [ERROR] ./src/components/SplashScreen.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\SplashScreen.tsx:8:1]
+  5 | 
+  6 | export function SplashScreen() {
+  7 |   return (
+  8 |     <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+    :      ^^^
+  9 |       {/* Decorative orbs */}
+ 10 |       <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+ 10 |       <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/SplashScreen.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  208230ms] [ERROR] ./src/components/landing/LandingPage.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:5:1]
+ 2 | 
+ 3 | import { FormEvent, useEffect, useState } from 'react';
+ 4 | import { useRouter } from 'next/navigation';
+ 5 | <<<<<<< HEAD
+   : ^^^^^^^
+ 6 | import {
+ 7 |   ArrowRight,
+ 7 | 
+   `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:220:1]
+ 217 |   const router = useRouter();
+ 218 | 
+ 219 |   return (
+ 220 |     <div className="min-h-screen bg-background text-foreground">
+     :      ^^^
+ 221 |       {/* ---- NAV ---- */}
+ 222 |       <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+ 222 |         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/landing/LandingPage.tsx
+./src/components/admin/SiteExperienceBuilder.tsx
+./src/components/admin/AdminContentManagement.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  208231ms] [ERROR] ./src/components/layout/header.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:20:1]
+ 17 | 
+ 18 |   import { useAccountSubscription } from '@/hooks/use-account-subscription';
+ 19 |   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 20 |   >>>>>>> main
+    :   ^^^^^^^
+ 21 |   import { Button } from '@/components/ui/button';
+ 22 |   import {
+ 22 |     DropdownMenu,
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:46:1]
+ 43 |     CommandList,
+ 44 |     CommandShortcut,
+ 45 |   } from '@/components/ui/command';
+ 46 |   >>>>>>> main
+    :   ^^^^^^^
+ 47 |   import { PlanBadge } from '@/components/subscription/PlanBadge';
+ 48 |   import { MobileSidebar } from './MobileSidebar';
+ 48 |   import {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:87:1]
+ 84 |     const pathname = usePathname();
+ 85 |     const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+ 86 | 
+ 87 |   >>>>>>> main
+    :   ^^^^^^^
+ 88 |     const { data: subscription } = useAccountSubscription();
+ 89 |     const isAdmin = useIsAdmin();
+ 89 |     const pathname = usePathname();
+    `----
+  x await isn't allowed in non-async function
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:102:1]
+  99 |     React.useEffect(() => {
+ 100 |       if (!session?.user) return;
+ 101 |   
+ 102 |       const { data, error } = await db
+     :                               ^^^^^
+ 103 |         .from('profiles')
+ 104 |         .select('avatar_url')
+ 104 |         .eq('id', session.user.id)
+     `----
+  x Expression expected
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:134:1]
+ 131 |       };
+ 132 | 
+ 133 |       void loadProfile();
+ 134 |     }, [db, session]);
+     :      ^
+ 135 |   >>>>>>> main
+ 136 | 
+ 136 |     React.useEffect(() => {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/header.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  208231ms] [ERROR] ./src/components/layout/sidebar.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:25:1]
+ 22 | } from 'lucide-react';
+ 23 | import { useIsAdmin } from '@/hooks/use-is-admin';
+ 24 | import { useAuth } from '@/context/AuthContext';
+ 25 | =======
+    : ^^^^^^^
+ 26 | import Link from 'next/link';
+ 27 | import React from 'react';
+ 27 | import { Settings2, Sparkles, Workflow } from 'lucide-react';
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:39:1]
+ 36 | 
+ 37 | import React from 'react';
+ 38 | import Link from 'next/link';
+ 39 | =======
+    : ^^^^^^^
+ 40 | import { getVisibleNavigation, groupNavigation } from './navigation';
+ 41 | 
+ 41 | type ProfileState = {
+    `----
+  x Unexpected token `aside`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:77:1]
+ 74 |   const initial = (firstName || userEmail).charAt(0).toUpperCase();
+ 75 | 
+ 76 |   return (
+ 77 |     <aside className="hidden md:flex flex-col w-64 bg-background border-r border-border z-20">
+    :      ^^^^^
+ 78 |       {/* Logo */}
+ 79 |       <div className="p-6 border-b border-border flex items-center gap-3">
+ 79 |         <div className="p-2 bg-gradient-teal rounded-xl shadow-teal">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/sidebar.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  208232ms] [ERROR] ./src/app/layout.tsx
+Error:   x Expected ',', got ':'
+    ,-[C:\temp\Lyra-MetaCare\src\app\layout.tsx:51:1]
+ 48 |     'saúde',
+ 49 | 
+ 50 |     'Super-app premium de saúde preventiva personalizada com IA, monitoramento biométrico e sabedoria ancestral em uma experiência luminosa e acolhedora.',
+ 51 |   keywords: [
+    :           ^
+ 52 |     'Lyra MetaCare',
+ 53 |     'saúde preventiva',
+ 53 | 
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/layout.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  208233ms] [ERROR] ./src/app/login/page.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:3:1]
+ 1 | 'use client';
+ 2 | 
+ 3 | <<<<<<< HEAD
+   : ^^^^^^^
+ 4 | import { FormEvent, useEffect, useState } from 'react';
+ 5 | import { useRouter } from 'next/navigation';
+ 5 | import { toast } from 'sonner';
+   `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:40:1]
+ 37 | import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+ 38 | 
+ 39 | type SubmitMode = 'login' | 'register' | null;
+ 40 | =======
+    : ^^^^^^^
+ 41 | import { LoginExperience } from '@/components/auth/LoginExperience';
+ 42 | >>>>>>> 38146e1 (Implement admin editor for landing and login experience)
+ 42 | 
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:42:1]
+ 39 | type SubmitMode = 'login' | 'register' | null;
+ 40 | =======
+ 41 | import { LoginExperience } from '@/components/auth/LoginExperience';
+ 42 | >>>>>>> 38146e1 (Implement admin editor for landing and login experience)
+    : ^^^^^^^
+ 43 | 
+ 44 | type LoginDataConfig = {
+ 44 |   hero?: {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:53:1]
+ 50 | 
+ 51 | 
+ 52 | export default function LoginPage() {
+ 53 | <<<<<<< HEAD
+    : ^^^^^^^
+ 54 |   const { session, db } = useAuth();
+ 55 |   const router = useRouter();
+ 55 | 
+    `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:148:1]
+ 145 | 
+ 146 |   return (
+ 147 | 
+ 148 |     <div className="relative min-h-screen flex items-center justify-center bg-background p-4 overflow-hidden">
+     :      ^^^
+ 149 |       {/* Decorative orbs */}
+ 150 |       <div className="cosmic-orb w-80 h-80 bg-primary/15 -top-20 -left-20" />
+ 150 |       <div className="cosmic-orb w-64 h-64 bg-accent/15 -bottom-16 right-0" />
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/login/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  208233ms] [ERROR] ./src/app/page.tsx
+Error:   x 'import', and 'export' cannot be used outside of module code
+    ,-[C:\temp\Lyra-MetaCare\src\app\page.tsx:26:1]
+ 23 |   return 'Boa noite';
+ 24 | }
+ 25 | 
+ 26 | export default function Home() {
+    : ^^^^^^
+ 27 |   const { session, db } = useAuth();
+ 28 |   const [minimumTimeElapsed, setMinimumTimeElapsed] = useState(false);
+ 28 |   const [profile, setProfile] = useState<UserProfile | null>(null);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  218001ms] [ERROR] ./src/components/SplashScreen.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\SplashScreen.tsx:8:1]
+  5 | 
+  6 | export function SplashScreen() {
+  7 |   return (
+  8 |     <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+    :      ^^^
+  9 |       {/* Decorative orbs */}
+ 10 |       <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+ 10 |       <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/SplashScreen.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  218001ms] [ERROR] ./src/components/landing/LandingPage.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:5:1]
+ 2 | 
+ 3 | import { FormEvent, useEffect, useState } from 'react';
+ 4 | import { useRouter } from 'next/navigation';
+ 5 | <<<<<<< HEAD
+   : ^^^^^^^
+ 6 | import {
+ 7 |   ArrowRight,
+ 7 | 
+   `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:220:1]
+ 217 |   const router = useRouter();
+ 218 | 
+ 219 |   return (
+ 220 |     <div className="min-h-screen bg-background text-foreground">
+     :      ^^^
+ 221 |       {/* ---- NAV ---- */}
+ 222 |       <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+ 222 |         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/landing/LandingPage.tsx
+./src/components/admin/SiteExperienceBuilder.tsx
+./src/components/admin/AdminContentManagement.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  218002ms] [ERROR] ./src/components/layout/header.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:20:1]
+ 17 | 
+ 18 |   import { useAccountSubscription } from '@/hooks/use-account-subscription';
+ 19 |   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 20 |   >>>>>>> main
+    :   ^^^^^^^
+ 21 |   import { Button } from '@/components/ui/button';
+ 22 |   import {
+ 22 |     DropdownMenu,
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:46:1]
+ 43 |     CommandList,
+ 44 |     CommandShortcut,
+ 45 |   } from '@/components/ui/command';
+ 46 |   >>>>>>> main
+    :   ^^^^^^^
+ 47 |   import { PlanBadge } from '@/components/subscription/PlanBadge';
+ 48 |   import { MobileSidebar } from './MobileSidebar';
+ 48 |   import {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:87:1]
+ 84 |     const pathname = usePathname();
+ 85 |     const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+ 86 | 
+ 87 |   >>>>>>> main
+    :   ^^^^^^^
+ 88 |     const { data: subscription } = useAccountSubscription();
+ 89 |     const isAdmin = useIsAdmin();
+ 89 |     const pathname = usePathname();
+    `----
+  x await isn't allowed in non-async function
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:102:1]
+  99 |     React.useEffect(() => {
+ 100 |       if (!session?.user) return;
+ 101 |   
+ 102 |       const { data, error } = await db
+     :                               ^^^^^
+ 103 |         .from('profiles')
+ 104 |         .select('avatar_url')
+ 104 |         .eq('id', session.user.id)
+     `----
+  x Expression expected
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:134:1]
+ 131 |       };
+ 132 | 
+ 133 |       void loadProfile();
+ 134 |     }, [db, session]);
+     :      ^
+ 135 |   >>>>>>> main
+ 136 | 
+ 136 |     React.useEffect(() => {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/header.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  218002ms] [ERROR] ./src/components/layout/sidebar.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:25:1]
+ 22 | } from 'lucide-react';
+ 23 | import { useIsAdmin } from '@/hooks/use-is-admin';
+ 24 | import { useAuth } from '@/context/AuthContext';
+ 25 | =======
+    : ^^^^^^^
+ 26 | import Link from 'next/link';
+ 27 | import React from 'react';
+ 27 | import { Settings2, Sparkles, Workflow } from 'lucide-react';
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:39:1]
+ 36 | 
+ 37 | import React from 'react';
+ 38 | import Link from 'next/link';
+ 39 | =======
+    : ^^^^^^^
+ 40 | import { getVisibleNavigation, groupNavigation } from './navigation';
+ 41 | 
+ 41 | type ProfileState = {
+    `----
+  x Unexpected token `aside`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:77:1]
+ 74 |   const initial = (firstName || userEmail).charAt(0).toUpperCase();
+ 75 | 
+ 76 |   return (
+ 77 |     <aside className="hidden md:flex flex-col w-64 bg-background border-r border-border z-20">
+    :      ^^^^^
+ 78 |       {/* Logo */}
+ 79 |       <div className="p-6 border-b border-border flex items-center gap-3">
+ 79 |         <div className="p-2 bg-gradient-teal rounded-xl shadow-teal">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/sidebar.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  224801ms] [ERROR] ./src/components/SplashScreen.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\SplashScreen.tsx:8:1]
+  5 | 
+  6 | export function SplashScreen() {
+  7 |   return (
+  8 |     <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+    :      ^^^
+  9 |       {/* Decorative orbs */}
+ 10 |       <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+ 10 |       <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/SplashScreen.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  224802ms] [ERROR] ./src/components/landing/LandingPage.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:5:1]
+ 2 | 
+ 3 | import { FormEvent, useEffect, useState } from 'react';
+ 4 | import { useRouter } from 'next/navigation';
+ 5 | <<<<<<< HEAD
+   : ^^^^^^^
+ 6 | import {
+ 7 |   ArrowRight,
+ 7 | 
+   `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:220:1]
+ 217 |   const router = useRouter();
+ 218 | 
+ 219 |   return (
+ 220 |     <div className="min-h-screen bg-background text-foreground">
+     :      ^^^
+ 221 |       {/* ---- NAV ---- */}
+ 222 |       <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+ 222 |         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/landing/LandingPage.tsx
+./src/components/admin/SiteExperienceBuilder.tsx
+./src/components/admin/AdminContentManagement.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  224802ms] [ERROR] ./src/components/layout/header.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:20:1]
+ 17 | 
+ 18 |   import { useAccountSubscription } from '@/hooks/use-account-subscription';
+ 19 |   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 20 |   >>>>>>> main
+    :   ^^^^^^^
+ 21 |   import { Button } from '@/components/ui/button';
+ 22 |   import {
+ 22 |     DropdownMenu,
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:46:1]
+ 43 |     CommandList,
+ 44 |     CommandShortcut,
+ 45 |   } from '@/components/ui/command';
+ 46 |   >>>>>>> main
+    :   ^^^^^^^
+ 47 |   import { PlanBadge } from '@/components/subscription/PlanBadge';
+ 48 |   import { MobileSidebar } from './MobileSidebar';
+ 48 |   import {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:87:1]
+ 84 |     const pathname = usePathname();
+ 85 |     const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+ 86 | 
+ 87 |   >>>>>>> main
+    :   ^^^^^^^
+ 88 |     const { data: subscription } = useAccountSubscription();
+ 89 |     const isAdmin = useIsAdmin();
+ 89 |     const pathname = usePathname();
+    `----
+  x await isn't allowed in non-async function
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:102:1]
+  99 |     React.useEffect(() => {
+ 100 |       if (!session?.user) return;
+ 101 |   
+ 102 |       const { data, error } = await db
+     :                               ^^^^^
+ 103 |         .from('profiles')
+ 104 |         .select('avatar_url')
+ 104 |         .eq('id', session.user.id)
+     `----
+  x Expression expected
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:134:1]
+ 131 |       };
+ 132 | 
+ 133 |       void loadProfile();
+ 134 |     }, [db, session]);
+     :      ^
+ 135 |   >>>>>>> main
+ 136 | 
+ 136 |     React.useEffect(() => {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/header.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  224802ms] [ERROR] ./src/components/layout/sidebar.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:25:1]
+ 22 | } from 'lucide-react';
+ 23 | import { useIsAdmin } from '@/hooks/use-is-admin';
+ 24 | import { useAuth } from '@/context/AuthContext';
+ 25 | =======
+    : ^^^^^^^
+ 26 | import Link from 'next/link';
+ 27 | import React from 'react';
+ 27 | import { Settings2, Sparkles, Workflow } from 'lucide-react';
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:39:1]
+ 36 | 
+ 37 | import React from 'react';
+ 38 | import Link from 'next/link';
+ 39 | =======
+    : ^^^^^^^
+ 40 | import { getVisibleNavigation, groupNavigation } from './navigation';
+ 41 | 
+ 41 | type ProfileState = {
+    `----
+  x Unexpected token `aside`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:77:1]
+ 74 |   const initial = (firstName || userEmail).charAt(0).toUpperCase();
+ 75 | 
+ 76 |   return (
+ 77 |     <aside className="hidden md:flex flex-col w-64 bg-background border-r border-border z-20">
+    :      ^^^^^
+ 78 |       {/* Logo */}
+ 79 |       <div className="p-6 border-b border-border flex items-center gap-3">
+ 79 |         <div className="p-2 bg-gradient-teal rounded-xl shadow-teal">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/sidebar.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  229558ms] [ERROR] ./src/components/SplashScreen.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\SplashScreen.tsx:8:1]
+  5 | 
+  6 | export function SplashScreen() {
+  7 |   return (
+  8 |     <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+    :      ^^^
+  9 |       {/* Decorative orbs */}
+ 10 |       <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+ 10 |       <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/SplashScreen.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  229558ms] [ERROR] ./src/components/landing/LandingPage.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:5:1]
+ 2 | 
+ 3 | import { FormEvent, useEffect, useState } from 'react';
+ 4 | import { useRouter } from 'next/navigation';
+ 5 | <<<<<<< HEAD
+   : ^^^^^^^
+ 6 | import {
+ 7 |   ArrowRight,
+ 7 | 
+   `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:220:1]
+ 217 |   const router = useRouter();
+ 218 | 
+ 219 |   return (
+ 220 |     <div className="min-h-screen bg-background text-foreground">
+     :      ^^^
+ 221 |       {/* ---- NAV ---- */}
+ 222 |       <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+ 222 |         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/landing/LandingPage.tsx
+./src/components/admin/SiteExperienceBuilder.tsx
+./src/components/admin/AdminContentManagement.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  229559ms] [ERROR] ./src/components/layout/header.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:20:1]
+ 17 | 
+ 18 |   import { useAccountSubscription } from '@/hooks/use-account-subscription';
+ 19 |   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 20 |   >>>>>>> main
+    :   ^^^^^^^
+ 21 |   import { Button } from '@/components/ui/button';
+ 22 |   import {
+ 22 |     DropdownMenu,
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:46:1]
+ 43 |     CommandList,
+ 44 |     CommandShortcut,
+ 45 |   } from '@/components/ui/command';
+ 46 |   >>>>>>> main
+    :   ^^^^^^^
+ 47 |   import { PlanBadge } from '@/components/subscription/PlanBadge';
+ 48 |   import { MobileSidebar } from './MobileSidebar';
+ 48 |   import {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:87:1]
+ 84 |     const pathname = usePathname();
+ 85 |     const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+ 86 | 
+ 87 |   >>>>>>> main
+    :   ^^^^^^^
+ 88 |     const { data: subscription } = useAccountSubscription();
+ 89 |     const isAdmin = useIsAdmin();
+ 89 |     const pathname = usePathname();
+    `----
+  x await isn't allowed in non-async function
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:102:1]
+  99 |     React.useEffect(() => {
+ 100 |       if (!session?.user) return;
+ 101 |   
+ 102 |       const { data, error } = await db
+     :                               ^^^^^
+ 103 |         .from('profiles')
+ 104 |         .select('avatar_url')
+ 104 |         .eq('id', session.user.id)
+     `----
+  x Expression expected
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:134:1]
+ 131 |       };
+ 132 | 
+ 133 |       void loadProfile();
+ 134 |     }, [db, session]);
+     :      ^
+ 135 |   >>>>>>> main
+ 136 | 
+ 136 |     React.useEffect(() => {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/header.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  229559ms] [ERROR] ./src/components/layout/sidebar.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:25:1]
+ 22 | } from 'lucide-react';
+ 23 | import { useIsAdmin } from '@/hooks/use-is-admin';
+ 24 | import { useAuth } from '@/context/AuthContext';
+ 25 | =======
+    : ^^^^^^^
+ 26 | import Link from 'next/link';
+ 27 | import React from 'react';
+ 27 | import { Settings2, Sparkles, Workflow } from 'lucide-react';
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:39:1]
+ 36 | 
+ 37 | import React from 'react';
+ 38 | import Link from 'next/link';
+ 39 | =======
+    : ^^^^^^^
+ 40 | import { getVisibleNavigation, groupNavigation } from './navigation';
+ 41 | 
+ 41 | type ProfileState = {
+    `----
+  x Unexpected token `aside`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:77:1]
+ 74 |   const initial = (firstName || userEmail).charAt(0).toUpperCase();
+ 75 | 
+ 76 |   return (
+ 77 |     <aside className="hidden md:flex flex-col w-64 bg-background border-r border-border z-20">
+    :      ^^^^^
+ 78 |       {/* Logo */}
+ 79 |       <div className="p-6 border-b border-border flex items-center gap-3">
+ 79 |         <div className="p-2 bg-gradient-teal rounded-xl shadow-teal">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/sidebar.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  229559ms] [ERROR] ./src/app/layout.tsx
+Error:   x Expected ',', got ':'
+    ,-[C:\temp\Lyra-MetaCare\src\app\layout.tsx:51:1]
+ 48 |     'saúde',
+ 49 | 
+ 50 |     'Super-app premium de saúde preventiva personalizada com IA, monitoramento biométrico e sabedoria ancestral em uma experiência luminosa e acolhedora.',
+ 51 |   keywords: [
+    :           ^
+ 52 |     'Lyra MetaCare',
+ 53 |     'saúde preventiva',
+ 53 | 
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/layout.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  229559ms] [ERROR] ./src/app/login/page.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:3:1]
+ 1 | 'use client';
+ 2 | 
+ 3 | <<<<<<< HEAD
+   : ^^^^^^^
+ 4 | import { FormEvent, useEffect, useState } from 'react';
+ 5 | import { useRouter } from 'next/navigation';
+ 5 | import { toast } from 'sonner';
+   `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:40:1]
+ 37 | import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+ 38 | 
+ 39 | type SubmitMode = 'login' | 'register' | null;
+ 40 | =======
+    : ^^^^^^^
+ 41 | import { LoginExperience } from '@/components/auth/LoginExperience';
+ 42 | >>>>>>> 38146e1 (Implement admin editor for landing and login experience)
+ 42 | 
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:42:1]
+ 39 | type SubmitMode = 'login' | 'register' | null;
+ 40 | =======
+ 41 | import { LoginExperience } from '@/components/auth/LoginExperience';
+ 42 | >>>>>>> 38146e1 (Implement admin editor for landing and login experience)
+    : ^^^^^^^
+ 43 | 
+ 44 | type LoginDataConfig = {
+ 44 |   hero?: {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:53:1]
+ 50 | 
+ 51 | 
+ 52 | export default function LoginPage() {
+ 53 | <<<<<<< HEAD
+    : ^^^^^^^
+ 54 |   const { session, db } = useAuth();
+ 55 |   const router = useRouter();
+ 55 | 
+    `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:148:1]
+ 145 | 
+ 146 |   return (
+ 147 | 
+ 148 |     <div className="relative min-h-screen flex items-center justify-center bg-background p-4 overflow-hidden">
+     :      ^^^
+ 149 |       {/* Decorative orbs */}
+ 150 |       <div className="cosmic-orb w-80 h-80 bg-primary/15 -top-20 -left-20" />
+ 150 |       <div className="cosmic-orb w-64 h-64 bg-accent/15 -bottom-16 right-0" />
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/login/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  229559ms] [ERROR] ./src/app/page.tsx
+Error:   x 'import', and 'export' cannot be used outside of module code
+    ,-[C:\temp\Lyra-MetaCare\src\app\page.tsx:26:1]
+ 23 |   return 'Boa noite';
+ 24 | }
+ 25 | 
+ 26 | export default function Home() {
+    : ^^^^^^
+ 27 |   const { session, db } = useAuth();
+ 28 |   const [minimumTimeElapsed, setMinimumTimeElapsed] = useState(false);
+ 28 |   const [profile, setProfile] = useState<UserProfile | null>(null);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  230200ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/admin/content?_rsc=1g5rh:0
+[  230348ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/admin/content?_rsc=1g5rh:0
+[  230460ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/admin/content?_rsc=1g5rh:0
+[  230586ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/admin/content?_rsc=1g5rh:0
+[  230726ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/admin/content?_rsc=1g5rh:0
+[  230855ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/admin/content?_rsc=1g5rh:0
+[  231015ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/admin/content:0
+[  231541ms] ModuleBuildError: Module build failed (from ./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\SplashScreen.tsx:8:1]
+  5 | 
+  6 | export function SplashScreen() {
+  7 |   return (
+  8 |     <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+    :      ^^^
+  9 |       {/* Decorative orbs */}
+ 10 |       <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+ 10 |       <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+    `----
+
+
+Caused by:
+    Syntax Error
+    at processResult (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\compiled\webpack\bundle5.js:29:407111)
+    at <unknown> (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\compiled\webpack\bundle5.js:29:408906)
+    at <unknown> (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js:1:8645)
+    at <unknown> (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js:1:5828)
+    at r.callback (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js:1:4039)
+    at <unknown> (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js:216:9)
+[  231544ms] [ERROR] ./src/components/SplashScreen.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\SplashScreen.tsx:8:1]
+  5 | 
+  6 | export function SplashScreen() {
+  7 |   return (
+  8 |     <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+    :      ^^^
+  9 |       {/* Decorative orbs */}
+ 10 |       <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+ 10 |       <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+    `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  231544ms] [ERROR] ./src/components/landing/LandingPage.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:5:1]
+ 2 | 
+ 3 | import { FormEvent, useEffect, useState } from 'react';
+ 4 | import { useRouter } from 'next/navigation';
+ 5 | <<<<<<< HEAD
+   : ^^^^^^^
+ 6 | import {
+ 7 |   ArrowRight,
+ 7 | 
+   `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:220:1]
+ 217 |   const router = useRouter();
+ 218 | 
+ 219 |   return (
+ 220 |     <div className="min-h-screen bg-background text-foreground">
+     :      ^^^
+ 221 |       {/* ---- NAV ---- */}
+ 222 |       <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+ 222 |         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+     `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  231545ms] [ERROR] ./src/components/layout/header.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:20:1]
+ 17 | 
+ 18 |   import { useAccountSubscription } from '@/hooks/use-account-subscription';
+ 19 |   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 20 |   >>>>>>> main
+    :   ^^^^^^^
+ 21 |   import { Button } from '@/components/ui/button';
+ 22 |   import {
+ 22 |     DropdownMenu,
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:46:1]
+ 43 |     CommandList,
+ 44 |     CommandShortcut,
+ 45 |   } from '@/components/ui/command';
+ 46 |   >>>>>>> main
+    :   ^^^^^^^
+ 47 |   import { PlanBadge } from '@/components/subscription/PlanBadge';
+ 48 |   import { MobileSidebar } from './MobileSidebar';
+ 48 |   import {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:87:1]
+ 84 |     const pathname = usePathname();
+ 85 |     const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+ 86 | 
+ 87 |   >>>>>>> main
+    :   ^^^^^^^
+ 88 |     const { data: subscription } = useAccountSubscription();
+ 89 |     const isAdmin = useIsAdmin();
+ 89 |     const pathname = usePathname();
+    `----
+  x await isn't allowed in non-async function
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:102:1]
+  99 |     React.useEffect(() => {
+ 100 |       if (!session?.user) return;
+ 101 |   
+ 102 |       const { data, error } = await db
+     :                               ^^^^^
+ 103 |         .from('profiles')
+ 104 |         .select('avatar_url')
+ 104 |         .eq('id', session.user.id)
+     `----
+  x Expression expected
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:134:1]
+ 131 |       };
+ 132 | 
+ 133 |       void loadProfile();
+ 134 |     }, [db, session]);
+     :      ^
+ 135 |   >>>>>>> main
+ 136 | 
+ 136 |     React.useEffect(() => {
+     `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  231545ms] [ERROR] ./src/components/layout/sidebar.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:25:1]
+ 22 | } from 'lucide-react';
+ 23 | import { useIsAdmin } from '@/hooks/use-is-admin';
+ 24 | import { useAuth } from '@/context/AuthContext';
+ 25 | =======
+    : ^^^^^^^
+ 26 | import Link from 'next/link';
+ 27 | import React from 'react';
+ 27 | import { Settings2, Sparkles, Workflow } from 'lucide-react';
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:39:1]
+ 36 | 
+ 37 | import React from 'react';
+ 38 | import Link from 'next/link';
+ 39 | =======
+    : ^^^^^^^
+ 40 | import { getVisibleNavigation, groupNavigation } from './navigation';
+ 41 | 
+ 41 | type ProfileState = {
+    `----
+  x Unexpected token `aside`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:77:1]
+ 74 |   const initial = (firstName || userEmail).charAt(0).toUpperCase();
+ 75 | 
+ 76 |   return (
+ 77 |     <aside className="hidden md:flex flex-col w-64 bg-background border-r border-border z-20">
+    :      ^^^^^
+ 78 |       {/* Logo */}
+ 79 |       <div className="p-6 border-b border-border flex items-center gap-3">
+ 79 |         <div className="p-2 bg-gradient-teal rounded-xl shadow-teal">
+    `----
+
+Caused by:
+    Syntax Error @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  233167ms] [ERROR] ./src/components/SplashScreen.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\SplashScreen.tsx:8:1]
+  5 | 
+  6 | export function SplashScreen() {
+  7 |   return (
+  8 |     <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+    :      ^^^
+  9 |       {/* Decorative orbs */}
+ 10 |       <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+ 10 |       <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/SplashScreen.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  233167ms] [ERROR] ./src/components/landing/LandingPage.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:5:1]
+ 2 | 
+ 3 | import { FormEvent, useEffect, useState } from 'react';
+ 4 | import { useRouter } from 'next/navigation';
+ 5 | <<<<<<< HEAD
+   : ^^^^^^^
+ 6 | import {
+ 7 |   ArrowRight,
+ 7 | 
+   `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:220:1]
+ 217 |   const router = useRouter();
+ 218 | 
+ 219 |   return (
+ 220 |     <div className="min-h-screen bg-background text-foreground">
+     :      ^^^
+ 221 |       {/* ---- NAV ---- */}
+ 222 |       <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+ 222 |         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/landing/LandingPage.tsx
+./src/components/admin/SiteExperienceBuilder.tsx
+./src/components/admin/AdminContentManagement.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  233167ms] [ERROR] ./src/components/layout/header.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:20:1]
+ 17 | 
+ 18 |   import { useAccountSubscription } from '@/hooks/use-account-subscription';
+ 19 |   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 20 |   >>>>>>> main
+    :   ^^^^^^^
+ 21 |   import { Button } from '@/components/ui/button';
+ 22 |   import {
+ 22 |     DropdownMenu,
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:46:1]
+ 43 |     CommandList,
+ 44 |     CommandShortcut,
+ 45 |   } from '@/components/ui/command';
+ 46 |   >>>>>>> main
+    :   ^^^^^^^
+ 47 |   import { PlanBadge } from '@/components/subscription/PlanBadge';
+ 48 |   import { MobileSidebar } from './MobileSidebar';
+ 48 |   import {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:87:1]
+ 84 |     const pathname = usePathname();
+ 85 |     const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+ 86 | 
+ 87 |   >>>>>>> main
+    :   ^^^^^^^
+ 88 |     const { data: subscription } = useAccountSubscription();
+ 89 |     const isAdmin = useIsAdmin();
+ 89 |     const pathname = usePathname();
+    `----
+  x await isn't allowed in non-async function
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:102:1]
+  99 |     React.useEffect(() => {
+ 100 |       if (!session?.user) return;
+ 101 |   
+ 102 |       const { data, error } = await db
+     :                               ^^^^^
+ 103 |         .from('profiles')
+ 104 |         .select('avatar_url')
+ 104 |         .eq('id', session.user.id)
+     `----
+  x Expression expected
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:134:1]
+ 131 |       };
+ 132 | 
+ 133 |       void loadProfile();
+ 134 |     }, [db, session]);
+     :      ^
+ 135 |   >>>>>>> main
+ 136 | 
+ 136 |     React.useEffect(() => {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/header.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  233167ms] [ERROR] ./src/components/layout/sidebar.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:25:1]
+ 22 | } from 'lucide-react';
+ 23 | import { useIsAdmin } from '@/hooks/use-is-admin';
+ 24 | import { useAuth } from '@/context/AuthContext';
+ 25 | =======
+    : ^^^^^^^
+ 26 | import Link from 'next/link';
+ 27 | import React from 'react';
+ 27 | import { Settings2, Sparkles, Workflow } from 'lucide-react';
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:39:1]
+ 36 | 
+ 37 | import React from 'react';
+ 38 | import Link from 'next/link';
+ 39 | =======
+    : ^^^^^^^
+ 40 | import { getVisibleNavigation, groupNavigation } from './navigation';
+ 41 | 
+ 41 | type ProfileState = {
+    `----
+  x Unexpected token `aside`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:77:1]
+ 74 |   const initial = (firstName || userEmail).charAt(0).toUpperCase();
+ 75 | 
+ 76 |   return (
+ 77 |     <aside className="hidden md:flex flex-col w-64 bg-background border-r border-border z-20">
+    :      ^^^^^
+ 78 |       {/* Logo */}
+ 79 |       <div className="p-6 border-b border-border flex items-center gap-3">
+ 79 |         <div className="p-2 bg-gradient-teal rounded-xl shadow-teal">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/sidebar.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  233168ms] [ERROR] ./src/app/layout.tsx
+Error:   x Expected ',', got ':'
+    ,-[C:\temp\Lyra-MetaCare\src\app\layout.tsx:51:1]
+ 48 |     'saúde',
+ 49 | 
+ 50 |     'Super-app premium de saúde preventiva personalizada com IA, monitoramento biométrico e sabedoria ancestral em uma experiência luminosa e acolhedora.',
+ 51 |   keywords: [
+    :           ^
+ 52 |     'Lyra MetaCare',
+ 53 |     'saúde preventiva',
+ 53 | 
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/layout.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  233168ms] [ERROR] ./src/app/login/page.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:3:1]
+ 1 | 'use client';
+ 2 | 
+ 3 | <<<<<<< HEAD
+   : ^^^^^^^
+ 4 | import { FormEvent, useEffect, useState } from 'react';
+ 5 | import { useRouter } from 'next/navigation';
+ 5 | import { toast } from 'sonner';
+   `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:40:1]
+ 37 | import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+ 38 | 
+ 39 | type SubmitMode = 'login' | 'register' | null;
+ 40 | =======
+    : ^^^^^^^
+ 41 | import { LoginExperience } from '@/components/auth/LoginExperience';
+ 42 | >>>>>>> 38146e1 (Implement admin editor for landing and login experience)
+ 42 | 
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:42:1]
+ 39 | type SubmitMode = 'login' | 'register' | null;
+ 40 | =======
+ 41 | import { LoginExperience } from '@/components/auth/LoginExperience';
+ 42 | >>>>>>> 38146e1 (Implement admin editor for landing and login experience)
+    : ^^^^^^^
+ 43 | 
+ 44 | type LoginDataConfig = {
+ 44 |   hero?: {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:53:1]
+ 50 | 
+ 51 | 
+ 52 | export default function LoginPage() {
+ 53 | <<<<<<< HEAD
+    : ^^^^^^^
+ 54 |   const { session, db } = useAuth();
+ 55 |   const router = useRouter();
+ 55 | 
+    `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\app\login\page.tsx:148:1]
+ 145 | 
+ 146 |   return (
+ 147 | 
+ 148 |     <div className="relative min-h-screen flex items-center justify-center bg-background p-4 overflow-hidden">
+     :      ^^^
+ 149 |       {/* Decorative orbs */}
+ 150 |       <div className="cosmic-orb w-80 h-80 bg-primary/15 -top-20 -left-20" />
+ 150 |       <div className="cosmic-orb w-64 h-64 bg-accent/15 -bottom-16 right-0" />
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/login/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  233168ms] [ERROR] ./src/app/page.tsx
+Error:   x 'import', and 'export' cannot be used outside of module code
+    ,-[C:\temp\Lyra-MetaCare\src\app\page.tsx:26:1]
+ 23 |   return 'Boa noite';
+ 24 | }
+ 25 | 
+ 26 | export default function Home() {
+    : ^^^^^^
+ 27 |   const { session, db } = useAuth();
+ 28 |   const [minimumTimeElapsed, setMinimumTimeElapsed] = useState(false);
+ 28 |   const [profile, setProfile] = useState<UserProfile | null>(null);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  233303ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/favicon.ico:0
+[  239758ms] [ERROR] ./src/components/SplashScreen.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\SplashScreen.tsx:8:1]
+  5 | 
+  6 | export function SplashScreen() {
+  7 |   return (
+  8 |     <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+    :      ^^^
+  9 |       {/* Decorative orbs */}
+ 10 |       <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+ 10 |       <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/SplashScreen.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  239758ms] [ERROR] ./src/components/landing/LandingPage.tsx
+Error:   x Merge conflict marker encountered.
+   ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:5:1]
+ 2 | 
+ 3 | import { FormEvent, useEffect, useState } from 'react';
+ 4 | import { useRouter } from 'next/navigation';
+ 5 | <<<<<<< HEAD
+   : ^^^^^^^
+ 6 | import {
+ 7 |   ArrowRight,
+ 7 | 
+   `----
+  x Unexpected token `div`. Expected jsx identifier
+     ,-[C:\temp\Lyra-MetaCare\src\components\landing\LandingPage.tsx:220:1]
+ 217 |   const router = useRouter();
+ 218 | 
+ 219 |   return (
+ 220 |     <div className="min-h-screen bg-background text-foreground">
+     :      ^^^
+ 221 |       {/* ---- NAV ---- */}
+ 222 |       <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+ 222 |         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/landing/LandingPage.tsx
+./src/components/admin/SiteExperienceBuilder.tsx
+./src/components/admin/AdminContentManagement.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  239758ms] [ERROR] ./src/components/layout/header.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:20:1]
+ 17 | 
+ 18 |   import { useAccountSubscription } from '@/hooks/use-account-subscription';
+ 19 |   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 20 |   >>>>>>> main
+    :   ^^^^^^^
+ 21 |   import { Button } from '@/components/ui/button';
+ 22 |   import {
+ 22 |     DropdownMenu,
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:46:1]
+ 43 |     CommandList,
+ 44 |     CommandShortcut,
+ 45 |   } from '@/components/ui/command';
+ 46 |   >>>>>>> main
+    :   ^^^^^^^
+ 47 |   import { PlanBadge } from '@/components/subscription/PlanBadge';
+ 48 |   import { MobileSidebar } from './MobileSidebar';
+ 48 |   import {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:87:1]
+ 84 |     const pathname = usePathname();
+ 85 |     const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+ 86 | 
+ 87 |   >>>>>>> main
+    :   ^^^^^^^
+ 88 |     const { data: subscription } = useAccountSubscription();
+ 89 |     const isAdmin = useIsAdmin();
+ 89 |     const pathname = usePathname();
+    `----
+  x await isn't allowed in non-async function
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:102:1]
+  99 |     React.useEffect(() => {
+ 100 |       if (!session?.user) return;
+ 101 |   
+ 102 |       const { data, error } = await db
+     :                               ^^^^^
+ 103 |         .from('profiles')
+ 104 |         .select('avatar_url')
+ 104 |         .eq('id', session.user.id)
+     `----
+  x Expression expected
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:134:1]
+ 131 |       };
+ 132 | 
+ 133 |       void loadProfile();
+ 134 |     }, [db, session]);
+     :      ^
+ 135 |   >>>>>>> main
+ 136 | 
+ 136 |     React.useEffect(() => {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/header.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  239758ms] [ERROR] ./src/components/layout/sidebar.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:25:1]
+ 22 | } from 'lucide-react';
+ 23 | import { useIsAdmin } from '@/hooks/use-is-admin';
+ 24 | import { useAuth } from '@/context/AuthContext';
+ 25 | =======
+    : ^^^^^^^
+ 26 | import Link from 'next/link';
+ 27 | import React from 'react';
+ 27 | import { Settings2, Sparkles, Workflow } from 'lucide-react';
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:39:1]
+ 36 | 
+ 37 | import React from 'react';
+ 38 | import Link from 'next/link';
+ 39 | =======
+    : ^^^^^^^
+ 40 | import { getVisibleNavigation, groupNavigation } from './navigation';
+ 41 | 
+ 41 | type ProfileState = {
+    `----
+  x Unexpected token `aside`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:77:1]
+ 74 |   const initial = (firstName || userEmail).charAt(0).toUpperCase();
+ 75 | 
+ 76 |   return (
+ 77 |     <aside className="hidden md:flex flex-col w-64 bg-background border-r border-border z-20">
+    :      ^^^^^
+ 78 |       {/* Logo */}
+ 79 |       <div className="p-6 border-b border-border flex items-center gap-3">
+ 79 |         <div className="p-2 bg-gradient-teal rounded-xl shadow-teal">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/sidebar.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  242036ms] [ERROR] ./src/components/SplashScreen.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\SplashScreen.tsx:8:1]
+  5 | 
+  6 | export function SplashScreen() {
+  7 |   return (
+  8 |     <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+    :      ^^^
+  9 |       {/* Decorative orbs */}
+ 10 |       <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+ 10 |       <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/SplashScreen.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  242036ms] [ERROR] ./src/components/layout/header.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:20:1]
+ 17 | 
+ 18 |   import { useAccountSubscription } from '@/hooks/use-account-subscription';
+ 19 |   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 20 |   >>>>>>> main
+    :   ^^^^^^^
+ 21 |   import { Button } from '@/components/ui/button';
+ 22 |   import {
+ 22 |     DropdownMenu,
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:46:1]
+ 43 |     CommandList,
+ 44 |     CommandShortcut,
+ 45 |   } from '@/components/ui/command';
+ 46 |   >>>>>>> main
+    :   ^^^^^^^
+ 47 |   import { PlanBadge } from '@/components/subscription/PlanBadge';
+ 48 |   import { MobileSidebar } from './MobileSidebar';
+ 48 |   import {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:87:1]
+ 84 |     const pathname = usePathname();
+ 85 |     const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+ 86 | 
+ 87 |   >>>>>>> main
+    :   ^^^^^^^
+ 88 |     const { data: subscription } = useAccountSubscription();
+ 89 |     const isAdmin = useIsAdmin();
+ 89 |     const pathname = usePathname();
+    `----
+  x await isn't allowed in non-async function
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:102:1]
+  99 |     React.useEffect(() => {
+ 100 |       if (!session?.user) return;
+ 101 |   
+ 102 |       const { data, error } = await db
+     :                               ^^^^^
+ 103 |         .from('profiles')
+ 104 |         .select('avatar_url')
+ 104 |         .eq('id', session.user.id)
+     `----
+  x Expression expected
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:134:1]
+ 131 |       };
+ 132 | 
+ 133 |       void loadProfile();
+ 134 |     }, [db, session]);
+     :      ^
+ 135 |   >>>>>>> main
+ 136 | 
+ 136 |     React.useEffect(() => {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/header.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  242036ms] [ERROR] ./src/components/layout/sidebar.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:25:1]
+ 22 | } from 'lucide-react';
+ 23 | import { useIsAdmin } from '@/hooks/use-is-admin';
+ 24 | import { useAuth } from '@/context/AuthContext';
+ 25 | =======
+    : ^^^^^^^
+ 26 | import Link from 'next/link';
+ 27 | import React from 'react';
+ 27 | import { Settings2, Sparkles, Workflow } from 'lucide-react';
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:39:1]
+ 36 | 
+ 37 | import React from 'react';
+ 38 | import Link from 'next/link';
+ 39 | =======
+    : ^^^^^^^
+ 40 | import { getVisibleNavigation, groupNavigation } from './navigation';
+ 41 | 
+ 41 | type ProfileState = {
+    `----
+  x Unexpected token `aside`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:77:1]
+ 74 |   const initial = (firstName || userEmail).charAt(0).toUpperCase();
+ 75 | 
+ 76 |   return (
+ 77 |     <aside className="hidden md:flex flex-col w-64 bg-background border-r border-border z-20">
+    :      ^^^^^
+ 78 |       {/* Logo */}
+ 79 |       <div className="p-6 border-b border-border flex items-center gap-3">
+ 79 |         <div className="p-2 bg-gradient-teal rounded-xl shadow-teal">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/sidebar.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  242036ms] [ERROR] ./src/app/layout.tsx
+Error:   x Expected ',', got ':'
+    ,-[C:\temp\Lyra-MetaCare\src\app\layout.tsx:51:1]
+ 48 |     'saúde',
+ 49 | 
+ 50 |     'Super-app premium de saúde preventiva personalizada com IA, monitoramento biométrico e sabedoria ancestral em uma experiência luminosa e acolhedora.',
+ 51 |   keywords: [
+    :           ^
+ 52 |     'Lyra MetaCare',
+ 53 |     'saúde preventiva',
+ 53 | 
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/layout.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  242036ms] [ERROR] ./src/app/page.tsx
+Error:   x 'import', and 'export' cannot be used outside of module code
+    ,-[C:\temp\Lyra-MetaCare\src\app\page.tsx:26:1]
+ 23 |   return 'Boa noite';
+ 24 | }
+ 25 | 
+ 26 | export default function Home() {
+    : ^^^^^^
+ 27 |   const { session, db } = useAuth();
+ 28 |   const [minimumTimeElapsed, setMinimumTimeElapsed] = useState(false);
+ 28 |   const [profile, setProfile] = useState<UserProfile | null>(null);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  322461ms] [ERROR] ./src/components/SplashScreen.tsx
+Error:   x Unexpected token `div`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\SplashScreen.tsx:8:1]
+  5 | 
+  6 | export function SplashScreen() {
+  7 |   return (
+  8 |     <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden bg-background">
+    :      ^^^
+  9 |       {/* Decorative orbs */}
+ 10 |       <div className="cosmic-orb w-64 h-64 bg-primary/20 -top-20 -left-20" />
+ 10 |       <div className="cosmic-orb w-48 h-48 bg-accent/20 -bottom-16 -right-16" />
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/SplashScreen.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  322461ms] [ERROR] ./src/components/layout/header.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:20:1]
+ 17 | 
+ 18 |   import { useAccountSubscription } from '@/hooks/use-account-subscription';
+ 19 |   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 20 |   >>>>>>> main
+    :   ^^^^^^^
+ 21 |   import { Button } from '@/components/ui/button';
+ 22 |   import {
+ 22 |     DropdownMenu,
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:46:1]
+ 43 |     CommandList,
+ 44 |     CommandShortcut,
+ 45 |   } from '@/components/ui/command';
+ 46 |   >>>>>>> main
+    :   ^^^^^^^
+ 47 |   import { PlanBadge } from '@/components/subscription/PlanBadge';
+ 48 |   import { MobileSidebar } from './MobileSidebar';
+ 48 |   import {
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:87:1]
+ 84 |     const pathname = usePathname();
+ 85 |     const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+ 86 | 
+ 87 |   >>>>>>> main
+    :   ^^^^^^^
+ 88 |     const { data: subscription } = useAccountSubscription();
+ 89 |     const isAdmin = useIsAdmin();
+ 89 |     const pathname = usePathname();
+    `----
+  x await isn't allowed in non-async function
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:102:1]
+  99 |     React.useEffect(() => {
+ 100 |       if (!session?.user) return;
+ 101 |   
+ 102 |       const { data, error } = await db
+     :                               ^^^^^
+ 103 |         .from('profiles')
+ 104 |         .select('avatar_url')
+ 104 |         .eq('id', session.user.id)
+     `----
+  x Expression expected
+     ,-[C:\temp\Lyra-MetaCare\src\components\layout\header.tsx:134:1]
+ 131 |       };
+ 132 | 
+ 133 |       void loadProfile();
+ 134 |     }, [db, session]);
+     :      ^
+ 135 |   >>>>>>> main
+ 136 | 
+ 136 |     React.useEffect(() => {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/header.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  322461ms] [ERROR] ./src/components/layout/sidebar.tsx
+Error:   x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:25:1]
+ 22 | } from 'lucide-react';
+ 23 | import { useIsAdmin } from '@/hooks/use-is-admin';
+ 24 | import { useAuth } from '@/context/AuthContext';
+ 25 | =======
+    : ^^^^^^^
+ 26 | import Link from 'next/link';
+ 27 | import React from 'react';
+ 27 | import { Settings2, Sparkles, Workflow } from 'lucide-react';
+    `----
+  x Merge conflict marker encountered.
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:39:1]
+ 36 | 
+ 37 | import React from 'react';
+ 38 | import Link from 'next/link';
+ 39 | =======
+    : ^^^^^^^
+ 40 | import { getVisibleNavigation, groupNavigation } from './navigation';
+ 41 | 
+ 41 | type ProfileState = {
+    `----
+  x Unexpected token `aside`. Expected jsx identifier
+    ,-[C:\temp\Lyra-MetaCare\src\components\layout\sidebar.tsx:77:1]
+ 74 |   const initial = (firstName || userEmail).charAt(0).toUpperCase();
+ 75 | 
+ 76 |   return (
+ 77 |     <aside className="hidden md:flex flex-col w-64 bg-background border-r border-border z-20">
+    :      ^^^^^
+ 78 |       {/* Logo */}
+ 79 |       <div className="p-6 border-b border-border flex items-center gap-3">
+ 79 |         <div className="p-2 bg-gradient-teal rounded-xl shadow-teal">
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/layout/sidebar.tsx
+./src/app/admin/content/page.tsx @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  328661ms] [ERROR] ./src/app/globals.css:668:1
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */ @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  328662ms] [ERROR] ./src/app/globals.css
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+-- inner error --
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+Generated code for C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[2]!C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[3]!C:\temp\Lyra-MetaCare\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  329268ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/admin/content:0
+[  329608ms] Error: Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+
+    at getCssError (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\parseCss.js:24:16)
+    at getModuleBuildError (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\webpackModuleError.js:115:43)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\index.js:29:49)
+    at async (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\index.js:27:21)
+[  329616ms] [ERROR] ./src/app/globals.css:668:1
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */ @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  329617ms] [ERROR] ./src/app/globals.css
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+-- inner error --
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+Generated code for C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[2]!C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[3]!C:\temp\Lyra-MetaCare\src\app\globals.css @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  434527ms] [ERROR] ./src/app/globals.css:668:1
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */ @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  434527ms] [ERROR] ./src/app/globals.css
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+-- inner error --
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+Generated code for C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[2]!C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[3]!C:\temp\Lyra-MetaCare\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  437260ms] [ERROR] ./src/app/globals.css:668:1
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */ @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  437260ms] [ERROR] ./src/app/globals.css
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+-- inner error --
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+Generated code for C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[2]!C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[3]!C:\temp\Lyra-MetaCare\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  441090ms] [ERROR] ./src/app/globals.css:668:1
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */ @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  441090ms] [ERROR] ./src/app/globals.css
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+-- inner error --
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+Generated code for C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[2]!C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[3]!C:\temp\Lyra-MetaCare\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  445566ms] [ERROR] ./src/app/globals.css:668:1
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */ @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  445566ms] [ERROR] ./src/app/globals.css
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+-- inner error --
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+Generated code for C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[2]!C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[3]!C:\temp\Lyra-MetaCare\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  445711ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/admin/content:0
+[  446272ms] Error: Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+
+    at getCssError (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\parseCss.js:24:16)
+    at getModuleBuildError (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\webpackModuleError.js:115:43)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\index.js:29:49)
+    at async (file://C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\plugins\wellknown-errors-plugin\index.js:27:21)
+[  446285ms] [ERROR] ./src/app/globals.css:668:1
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */ @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  446285ms] [ERROR] ./src/app/globals.css
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+-- inner error --
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+Generated code for C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[2]!C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[3]!C:\temp\Lyra-MetaCare\src\app\globals.css @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  446344ms] [ERROR] ./src/app/globals.css:668:1
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */ @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  446344ms] [ERROR] ./src/app/globals.css
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+-- inner error --
+Syntax error: C:\temp\Lyra-MetaCare\src\app\globals.css Unclosed block (668:1)
+
+  666 | }
+  667 | 
+> 668 | @layer utilities {
+      | ^
+  669 | 
+  670 |   /* ---- Gradient Text ---- */
+Generated code for C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[2]!C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[13].oneOf[10].use[3]!C:\temp\Lyra-MetaCare\src\app\globals.css @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/client.js:81
+[  465706ms] [WARNING] [Fast Refresh] performing full reload
+
+Fast Refresh will perform a full reload when you edit a file that's imported by modules outside of the React rendering tree.
+You might have a file which exports a React component but also exports a value that is imported by a non-React component file.
+Consider migrating the non-React component export to a separate file and importing it into both files.
+
+It is also possible the parent component of the component you edited is a class component, which disables Fast Refresh.
+Fast Refresh requires at least one parent function component in your React tree. @ webpack-internal:///(pages-dir-browser)/./node_modules/.pnpm/next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087/node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:336

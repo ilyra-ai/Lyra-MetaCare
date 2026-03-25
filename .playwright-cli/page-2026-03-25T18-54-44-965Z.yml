@@ -1,0 +1,66 @@
+- generic [active] [ref=e1]:
+  - link "Pular para o conteúdo principal" [ref=e2] [cursor=pointer]:
+    - /url: "#conteudo-principal"
+  - alert [ref=e3]
+  - button "Open Next.js Dev Tools" [ref=e9] [cursor=pointer]:
+    - img [ref=e10]
+  - main [ref=e14]:
+    - generic [ref=e15]:
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - img [ref=e20]
+            - text: uma entrada mais doce, clara e acolhedora
+          - paragraph [ref=e22]:
+            - text: Que bom te ver por aqui.
+            - generic [ref=e23]: Sua orbita Lyra esta pronta para receber voce.
+          - paragraph [ref=e24]: "Esta tela foi redesenhada para parecer mais harmoniosa, organizada e carinhosa: menos dureza visual, mais respiro e mais vontade de entrar."
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - img [ref=e28]
+            - paragraph [ref=e34]: Atmosfera clara
+            - paragraph [ref=e35]: O tema se mantem luminoso, sereno e gostoso de olhar por muito tempo.
+          - generic [ref=e36]:
+            - img [ref=e38]
+            - paragraph [ref=e41]: IA com delicadeza
+            - paragraph [ref=e42]: Tecnologia presente para orientar sem transformar a tela em algo frio.
+          - generic [ref=e43]:
+            - img [ref=e45]
+            - paragraph [ref=e47]: Fluxo organizado
+            - paragraph [ref=e48]: Entrar, criar conta e seguir com menos atrito e mais clareza.
+        - generic [ref=e49]:
+          - paragraph [ref=e50]: Lyra MetaCare
+          - paragraph [ref=e51]: Um espaco para unir simbolismo, tecnologia e bem-estar em uma experiencia mais bonita e facil de habitar.
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - generic [ref=e55]: auth vivo
+          - img [ref=e57]
+          - paragraph [ref=e59]: lyra
+          - paragraph [ref=e60]: Entre ou crie sua conta com calma.
+          - paragraph [ref=e61]: Tudo aqui foi reorganizado para ficar mais fluido, mais fofo e mais convidativo, sem perder o rigor do fluxo real de autenticacao.
+        - generic [ref=e63]:
+          - tablist [ref=e64]:
+            - tab "Entrar" [selected] [ref=e65] [cursor=pointer]
+            - tab "Criar conta" [ref=e66] [cursor=pointer]
+          - tabpanel "Entrar" [ref=e67]:
+            - generic [ref=e68]:
+              - generic [ref=e69]:
+                - text: Email
+                - generic [ref=e70]:
+                  - img
+                  - textbox "Email" [ref=e71]
+              - generic [ref=e72]:
+                - text: Senha
+                - generic [ref=e73]:
+                  - img
+                  - textbox "Senha" [ref=e74]
+                  - button "Mostrar senha de login" [ref=e75] [cursor=pointer]:
+                    - img [ref=e76]
+              - button "Entrar na Lyra" [disabled]:
+                - text: Entrar na Lyra
+                - img
+        - generic [ref=e79]:
+          - paragraph [ref=e80]: entrada organizada
+          - paragraph [ref=e81]: Sem atalhos vazios, sem botao sem funcao e sem ruido visual desnecessario. Apenas o fluxo real, com mais beleza e acolhimento.
+          - button "Voltar para a landing" [ref=e82] [cursor=pointer]
+  - region "Notifications alt+T"

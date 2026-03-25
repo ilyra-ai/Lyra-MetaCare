@@ -1,0 +1,260 @@
+- generic [active] [ref=e1]:
+  - link "Pular para o conteúdo principal" [ref=e2] [cursor=pointer]:
+    - /url: "#conteudo-principal"
+  - alert [ref=e3]
+  - button "Open Next.js Dev Tools" [ref=e9] [cursor=pointer]:
+    - img [ref=e10]
+  - generic [ref=e14]:
+    - banner [ref=e15]:
+      - generic [ref=e16]:
+        - button "Voltar ao topo da landing" [ref=e17] [cursor=pointer]:
+          - img [ref=e19]
+          - generic [ref=e21]:
+            - generic [ref=e22]: lyra
+            - generic [ref=e23]: astrologia + IA
+        - navigation [ref=e24]:
+          - button "Recursos" [ref=e25] [cursor=pointer]
+          - button "Fluxo" [ref=e26] [cursor=pointer]
+          - button "Planos" [ref=e27] [cursor=pointer]
+          - button "FAQ" [ref=e28] [cursor=pointer]
+        - generic [ref=e29]:
+          - button "Entrar" [ref=e30] [cursor=pointer]
+          - button "Tela completa" [ref=e31] [cursor=pointer]
+    - main [ref=e32]:
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - img [ref=e37]
+            - text: astrologia moderna, IA gentil e bem-estar em sintonia
+          - heading "Seu bem-estar ganha uma casa mais linda, harmoniosa e inteligente." [level=1] [ref=e39]:
+            - text: Seu bem-estar ganha uma casa
+            - generic [ref=e40]: mais linda, harmoniosa e inteligente.
+          - paragraph [ref=e41]: A Lyra MetaCare une astrologia vedica, IA e sinais da sua rotina numa interface clara, doce e premium, feita para acolher sem cansar.
+          - generic [ref=e42]:
+            - button "Entrar na experiencia completa" [ref=e43] [cursor=pointer]:
+              - text: Entrar na experiencia completa
+              - img
+            - button "Ver catalogo publicado" [ref=e44] [cursor=pointer]
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - generic [ref=e47]:
+              - generic [ref=e48]: entrada rapida
+              - paragraph [ref=e49]: Entrar direto pela landing
+              - paragraph [ref=e50]: Uma entrada suave e organizada para quem ja quer cair direto na propria orbita.
+            - generic [ref=e52]:
+              - generic [ref=e53]:
+                - text: Email
+                - textbox "Email" [ref=e54]
+              - generic [ref=e55]:
+                - text: Senha
+                - generic [ref=e56]:
+                  - textbox "Senha" [ref=e57]
+                  - button "Mostrar senha" [ref=e58] [cursor=pointer]:
+                    - img [ref=e59]
+              - generic [ref=e62]:
+                - button "Entrar agora" [disabled]:
+                  - text: Entrar agora
+                  - img
+                - button "Abrir tela completa" [ref=e63] [cursor=pointer]
+          - generic [ref=e64]:
+            - generic [ref=e65]:
+              - generic [ref=e66]: preview vivo
+              - paragraph [ref=e67]: Blocos leves, lindos e editaveis
+              - paragraph [ref=e68]: O novo painel administrativo vai permitir mexer em textos, cards, etapas, FAQ e hierarquia visual sem tocar no codigo.
+            - generic [ref=e69]:
+              - generic [ref=e70]:
+                - img [ref=e72]
+                - paragraph [ref=e74]: Astrologia moderna
+                - paragraph [ref=e75]: Simbolismo claro, luminoso e atualizado.
+              - generic [ref=e76]:
+                - img [ref=e78]
+                - paragraph [ref=e88]: IA acolhedora
+                - paragraph [ref=e89]: Tecnologia com presenca e sem peso visual.
+              - generic [ref=e90]:
+                - img [ref=e92]
+                - paragraph [ref=e94]: Fluxo editavel
+                - paragraph [ref=e95]: Cards, chamadas e secoes sob seu controle.
+      - generic [ref=e98]:
+        - generic [ref=e99]:
+          - generic [ref=e100]: Recursos em destaque
+          - heading "Menos peso visual, mais clareza, mais ternura e mais intencao." [level=2] [ref=e101]
+          - paragraph [ref=e102]: A landing passa a respirar melhor, com secoes mais simples e um ritmo visual mais bonito de acompanhar.
+        - generic [ref=e103]:
+          - generic [ref=e105]:
+            - img [ref=e107]
+            - paragraph [ref=e117]: IA com presenca gentil
+            - paragraph [ref=e118]: A tecnologia organiza sua jornada com leveza, sem roubar o protagonismo da experiencia.
+          - generic [ref=e120]:
+            - img [ref=e122]
+            - paragraph [ref=e124]: Astrologia moderna e luminosa
+            - paragraph [ref=e125]: Ciclos e simbolismos aparecem com visual claro, sofisticado e atual.
+          - generic [ref=e127]:
+            - img [ref=e129]
+            - paragraph [ref=e132]: Sinais do corpo com contexto
+            - paragraph [ref=e133]: Sono, energia e ritmo passam a conversar dentro de uma hierarquia mais acolhedora.
+      - generic [ref=e136]:
+        - generic [ref=e137]:
+          - generic [ref=e138]: Metricas publicas
+          - heading "Os numeros da vitrine continuam reais e sincronizados." [level=2] [ref=e139]
+          - paragraph [ref=e140]: Esta faixa usa os dados publicados dos planos para mostrar a saude comercial da experiencia sem inventar prova social.
+        - generic [ref=e141]:
+          - generic [ref=e143]:
+            - paragraph [ref=e144]: planos publicados
+            - paragraph [ref=e145]: "3"
+            - paragraph [ref=e146]: Lidos do catalogo publico.
+          - generic [ref=e148]:
+            - paragraph [ref=e149]: capacidades ativas
+            - paragraph [ref=e150]: "35"
+            - paragraph [ref=e151]: Somatorio real das features habilitadas.
+          - generic [ref=e153]:
+            - paragraph [ref=e154]: categorias funcionais
+            - paragraph [ref=e155]: "4"
+            - paragraph [ref=e156]: Categorias extraidas dos planos reais.
+          - generic [ref=e158]:
+            - paragraph [ref=e159]: checkout conectado
+            - paragraph [ref=e160]: "0"
+            - paragraph [ref=e161]: Planos com integracao comercial pronta.
+      - generic [ref=e164]:
+        - generic [ref=e165]:
+          - generic [ref=e166]: Como a jornada se abre
+          - heading "Tudo foi pensado para parecer natural, bonito e facil de editar." [level=2] [ref=e167]
+          - paragraph [ref=e168]: O fluxo abaixo tambem fica totalmente configuravel, com cards, ordens e textos sob gestao administrativa.
+        - generic [ref=e169]:
+          - generic [ref=e171]:
+            - generic [ref=e172]:
+              - generic [ref=e173]: "01"
+              - img [ref=e175]
+            - paragraph [ref=e177]: Abra sua orbita
+            - paragraph [ref=e178]: Seu cadastro cria um espaco pessoal para sinais, preferencias e contexto simbolico.
+          - generic [ref=e180]:
+            - generic [ref=e181]:
+              - generic [ref=e182]: "02"
+              - img [ref=e184]
+            - paragraph [ref=e187]: Conecte seu contexto
+            - paragraph [ref=e188]: Rotina, sinais e preferencias alimentam uma leitura mais delicada e coerente.
+          - generic [ref=e190]:
+            - generic [ref=e191]:
+              - generic [ref=e192]: "03"
+              - img [ref=e194]
+            - paragraph [ref=e197]: Receba orientacao com IA
+            - paragraph [ref=e198]: Chat, planos e proximos passos ganham clareza sem excesso visual.
+      - generic [ref=e201]:
+        - generic [ref=e202]:
+          - generic [ref=e203]: Catalogo publico sincronizado
+          - heading "Planos reais do produto com uma vitrine mais linda e organizada." [level=2] [ref=e204]
+          - paragraph [ref=e205]: O bloco de planos continua conectado ao MySQL e pode ser reposicionado sem perder a fonte real.
+        - generic [ref=e206]:
+          - generic [ref=e207]:
+            - generic [ref=e209]:
+              - generic [ref=e210]: Sem custo para começar
+              - paragraph [ref=e211]: Free
+              - paragraph [ref=e212]: Base confiável para começar com clareza.
+              - paragraph [ref=e213]: Acesso essencial ao ecossistema Lyra MetaCare, com visão inicial dos indicadores, perfil e automações fundamentais.
+            - generic [ref=e214]:
+              - generic [ref=e215]:
+                - paragraph [ref=e216]: R$ 0,00/mes
+                - paragraph [ref=e217]: "anual: R$ 0,00"
+              - list [ref=e218]:
+                - listitem [ref=e219]:
+                  - img [ref=e221]
+                  - generic [ref=e223]: Dashboard operacional
+                - listitem [ref=e224]:
+                  - img [ref=e226]
+                  - generic [ref=e228]: Scores de longevidade
+                - listitem [ref=e229]:
+                  - img [ref=e231]
+                  - generic [ref=e233]: Feed de dicas inteligentes
+                - listitem [ref=e234]:
+                  - img [ref=e236]
+                  - generic [ref=e238]: Gestão de perfil
+            - button "Entrar e continuar" [ref=e240] [cursor=pointer]:
+              - text: Entrar e continuar
+              - img
+          - generic [ref=e241]:
+            - generic [ref=e243]:
+              - generic [ref=e244]: Mais inteligência e automação
+              - paragraph [ref=e245]: Meta
+              - paragraph [ref=e246]: Mais profundidade, dados e automação orientada por IA.
+              - paragraph [ref=e247]: Plano intermediário com capacidades expandidas de IA, conexão de dispositivos e observabilidade operacional para rotina contínua.
+            - generic [ref=e248]:
+              - generic [ref=e249]:
+                - paragraph [ref=e250]: R$ 79,90/mes
+                - paragraph [ref=e251]: "anual: R$ 790,00"
+              - list [ref=e252]:
+                - listitem [ref=e253]:
+                  - img [ref=e255]
+                  - generic [ref=e257]: Dashboard operacional
+                - listitem [ref=e258]:
+                  - img [ref=e260]
+                  - generic [ref=e262]: Scores de longevidade
+                - listitem [ref=e263]:
+                  - img [ref=e265]
+                  - generic [ref=e267]: Feed de dicas inteligentes
+                - listitem [ref=e268]:
+                  - img [ref=e270]
+                  - generic [ref=e272]: Gestão de perfil
+            - button "Entrar e continuar" [ref=e274] [cursor=pointer]:
+              - text: Entrar e continuar
+              - img
+          - generic [ref=e275]:
+            - generic [ref=e277]:
+              - generic [ref=e278]: Experiência integral Lyra
+              - paragraph [ref=e279]: Care
+              - paragraph [ref=e280]: A experiência mais completa, clínica e operacional do produto.
+              - paragraph [ref=e281]: Plano premium com a matriz completa de capacidades, máxima profundidade de acompanhamento, monitoramento avançado e governança plena da experiência.
+            - generic [ref=e282]:
+              - generic [ref=e283]:
+                - paragraph [ref=e284]: R$ 249,90/mes
+                - paragraph [ref=e285]: "anual: R$ 2.490,00"
+              - list [ref=e286]:
+                - listitem [ref=e287]:
+                  - img [ref=e289]
+                  - generic [ref=e291]: Dashboard operacional
+                - listitem [ref=e292]:
+                  - img [ref=e294]
+                  - generic [ref=e296]: Scores de longevidade
+                - listitem [ref=e297]:
+                  - img [ref=e299]
+                  - generic [ref=e301]: Feed de dicas inteligentes
+                - listitem [ref=e302]:
+                  - img [ref=e304]
+                  - generic [ref=e306]: Gestão de perfil
+            - button "Entrar e continuar" [ref=e308] [cursor=pointer]:
+              - text: Entrar e continuar
+              - img
+      - generic [ref=e311]:
+        - generic [ref=e312]:
+          - generic [ref=e313]: FAQ
+          - heading "Perguntas importantes antes de entrar." [level=2] [ref=e314]
+          - paragraph [ref=e315]: A ideia aqui e manter a landing bonita, sincera e util desde o primeiro contato.
+        - generic [ref=e316]:
+          - heading "A landing usa dados reais do produto?" [level=3] [ref=e318]:
+            - button "A landing usa dados reais do produto?" [ref=e319] [cursor=pointer]:
+              - text: A landing usa dados reais do produto?
+              - img [ref=e320]
+          - heading "Existe login direto pela landing?" [level=3] [ref=e323]:
+            - button "Existe login direto pela landing?" [ref=e324] [cursor=pointer]:
+              - text: Existe login direto pela landing?
+              - img [ref=e325]
+          - heading "O admin vai poder editar tudo depois?" [level=3] [ref=e328]:
+            - button "O admin vai poder editar tudo depois?" [ref=e329] [cursor=pointer]:
+              - text: O admin vai poder editar tudo depois?
+              - img [ref=e330]
+      - generic [ref=e335]:
+        - generic [ref=e336]: Orbita final
+        - heading "Uma landing mais amiga, linda, organizada e pronta para receber." [level=2] [ref=e337]
+        - paragraph [ref=e338]: "O foco agora e beleza com sentido: mais harmonia, mais contexto e uma primeira impressao que abraca em vez de confundir."
+        - generic [ref=e339]:
+          - button "Abrir Lyra agora" [ref=e340] [cursor=pointer]:
+            - text: Abrir Lyra agora
+            - img
+          - button "Explorar a experiencia" [ref=e341] [cursor=pointer]
+    - contentinfo [ref=e342]:
+      - generic [ref=e343]:
+        - generic [ref=e344]:
+          - img [ref=e346]
+          - generic [ref=e348]:
+            - paragraph [ref=e349]: lyra metacare
+            - paragraph [ref=e350]: landing editavel
+        - paragraph [ref=e351]: Feito com leveza, intencao e tecnologia pela iLyra AI.
+  - region "Notifications alt+T"
