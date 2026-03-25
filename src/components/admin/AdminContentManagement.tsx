@@ -28,6 +28,7 @@ import {
   MoreVertical,
   Lightbulb,
   ListChecks,
+  Sparkles,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -51,6 +52,7 @@ import {
   SuggestedHabitFormModal,
 } from './SuggestedHabitFormModal';
 import { AITip, AITipFormModal } from './AITipFormModal';
+import { SiteExperienceBuilder } from './SiteExperienceBuilder';
 
 type SuggestedHabitPayload = Pick<
   SuggestedHabit,
@@ -164,12 +166,16 @@ export function AdminContentManagement() {
           <CardTitle>Gestão de Conteúdo Dinâmico</CardTitle>
           <CardDescription>
             Gerencie os hábitos sugeridos e os insights de IA que são exibidos
-            aos usuários.
+            aos usuários e personalize a experiência pública da landing e do
+            login.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="habits">
-            <TabsList className="grid w-full grid-cols-2">
+          <Tabs defaultValue="experience">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="experience">
+                <Sparkles className="mr-2 h-4 w-4" /> Experiência Web
+              </TabsTrigger>
               <TabsTrigger value="habits">
                 <ListChecks className="mr-2 h-4 w-4" /> Hábitos Sugeridos
               </TabsTrigger>
@@ -177,6 +183,9 @@ export function AdminContentManagement() {
                 <Lightbulb className="mr-2 h-4 w-4" /> Insights de IA
               </TabsTrigger>
             </TabsList>
+            <TabsContent value="experience" className="mt-4">
+              <SiteExperienceBuilder />
+            </TabsContent>
             <TabsContent value="habits" className="mt-4">
               <div className="flex justify-end mb-4">
                 <Button
@@ -209,7 +218,11 @@ export function AdminContentManagement() {
                         <TableCell>
                           <Badge
                             variant={habit.is_active ? 'default' : 'secondary'}
-                            className={habit.is_active ? 'bg-green-600' : ''}
+                            className={
+                              habit.is_active
+                                ? 'border-success/20 bg-success/10 text-success'
+                                : 'border-border bg-muted text-muted-foreground'
+                            }
                           >
                             {habit.is_active ? 'Ativo' : 'Inativo'}
                           </Badge>
@@ -284,7 +297,11 @@ export function AdminContentManagement() {
                         <TableCell>
                           <Badge
                             variant={tip.is_active ? 'default' : 'secondary'}
-                            className={tip.is_active ? 'bg-green-600' : ''}
+                            className={
+                              tip.is_active
+                                ? 'border-success/20 bg-success/10 text-success'
+                                : 'border-border bg-muted text-muted-foreground'
+                            }
                           >
                             {tip.is_active ? 'Ativo' : 'Inativo'}
                           </Badge>

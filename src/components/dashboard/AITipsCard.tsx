@@ -132,7 +132,9 @@ export function AITipsCard({
         </span>
         <div>
           <Flex alignItems="center" className="gap-2">
-            <Title className="font-display text-foreground">Insight de IA</Title>
+            <Title className="font-display text-foreground">
+              Insight de IA
+            </Title>
             <Badge color="violet">Novo</Badge>
           </Flex>
           <Text className="text-sm text-muted-foreground">
@@ -142,9 +144,7 @@ export function AITipsCard({
       </Flex>
 
       <div className="mt-5 space-y-3">
-        <Text className="font-semibold text-foreground">
-          {tip.title}
-        </Text>
+        <Text className="font-semibold text-foreground">{tip.title}</Text>
         <Text className="text-sm text-muted-foreground leading-relaxed">
           {tip.detail}
         </Text>

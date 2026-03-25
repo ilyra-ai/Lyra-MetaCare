@@ -200,9 +200,7 @@ export function Dashboard() {
                 className="gap-4"
               >
                 <div>
-                  <Text className="text-sm text-muted-foreground">
-                    {title}
-                  </Text>
+                  <Text className="text-sm text-muted-foreground">{title}</Text>
                   <Metric className="mt-1 text-foreground font-display">
                     {title === 'Índice de Longevidade' && !aiScoresEnabled
                       ? 'Bloqueado'

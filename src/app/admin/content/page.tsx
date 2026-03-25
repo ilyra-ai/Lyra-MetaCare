@@ -20,10 +20,10 @@ export default function AdminContentPage() {
 
   if (!session || !isAdmin) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50/50 p-4">
-        <Card className="w-full max-w-md text-center border-red-500/50">
+      <div className="flex min-h-screen items-center justify-center bg-background/80 p-4">
+        <Card className="w-full max-w-md border-destructive/20 text-center">
           <CardHeader>
-            <AlertTriangle className="h-10 w-10 text-red-600 mx-auto mb-2" />
+            <AlertTriangle className="mx-auto mb-2 h-10 w-10 text-destructive" />
             <CardTitle>Acesso Negado</CardTitle>
           </CardHeader>
           <CardContent>
@@ -37,7 +37,7 @@ export default function AdminContentPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50/50">
+    <div className="flex min-h-screen bg-background/80">
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />

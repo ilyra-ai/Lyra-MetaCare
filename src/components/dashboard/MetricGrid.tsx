@@ -134,12 +134,42 @@ export function MetricGrid({ metrics }: MetricGridProps) {
       iconBackground: 'bg-primary/10',
       highlightColor: 'border-l-primary',
       metrics: [
-        { title: 'HRV (rMSSD)', value: metrics.hrv_ms ? `${metrics.hrv_ms} ms` : 'N/A', description: `Resiliência: ${hrvStatus}` },
-        { title: 'Prontidão', value: readinessScore ? `${readinessScore}/100` : 'N/A', description: recoveryStatus },
-        { title: 'FC Repouso', value: metrics.resting_heart_rate ? `${metrics.resting_heart_rate} BPM` : 'N/A', description: 'Média da noite.' },
-        { title: 'Recuperação FC', value: metrics.hrr_1min_bpm ? `${metrics.hrr_1min_bpm} bpm` : 'N/A', description: `Aptidão: ${hrrStatus}` },
-        { title: 'Temp. Noturna', value: metrics.body_temperature_celsius ? `${metrics.body_temperature_celsius.toFixed(1)} °C` : 'N/A', description: 'Desvio da linha de base.' },
-        { title: 'SpO₂ Noturna', value: metrics.spo2_average ? `${metrics.spo2_average.toFixed(1)}%` : 'N/A', description: `Oxigenação: ${spo2Status}` },
+        {
+          title: 'HRV (rMSSD)',
+          value: metrics.hrv_ms ? `${metrics.hrv_ms} ms` : 'N/A',
+          description: `Resiliência: ${hrvStatus}`,
+        },
+        {
+          title: 'Prontidão',
+          value: readinessScore ? `${readinessScore}/100` : 'N/A',
+          description: recoveryStatus,
+        },
+        {
+          title: 'FC Repouso',
+          value: metrics.resting_heart_rate
+            ? `${metrics.resting_heart_rate} BPM`
+            : 'N/A',
+          description: 'Média da noite.',
+        },
+        {
+          title: 'Recuperação FC',
+          value: metrics.hrr_1min_bpm ? `${metrics.hrr_1min_bpm} bpm` : 'N/A',
+          description: `Aptidão: ${hrrStatus}`,
+        },
+        {
+          title: 'Temp. Noturna',
+          value: metrics.body_temperature_celsius
+            ? `${metrics.body_temperature_celsius.toFixed(1)} °C`
+            : 'N/A',
+          description: 'Desvio da linha de base.',
+        },
+        {
+          title: 'SpO₂ Noturna',
+          value: metrics.spo2_average
+            ? `${metrics.spo2_average.toFixed(1)}%`
+            : 'N/A',
+          description: `Oxigenação: ${spo2Status}`,
+        },
       ],
     },
     {
@@ -150,12 +180,44 @@ export function MetricGrid({ metrics }: MetricGridProps) {
       iconBackground: 'bg-accent/10',
       highlightColor: 'border-l-accent',
       metrics: [
-        { title: 'VO₂max', value: metrics.vo2_max ? `${metrics.vo2_max.toFixed(1)} mL/kg/min` : 'N/A', description: 'Principal indicador de aptidão.' },
-        { title: 'Min. Mod/Vigorosa', value: `${metrics.active_minutes} min`, description: activeMinutesStatus },
-        { title: 'Passos', value: `${metrics.steps.toLocaleString()}`, description: stepsStatus },
-        { title: 'Carga (EPOC)', value: metrics.training_load_epoc ? `${metrics.training_load_epoc.toFixed(0)} UA` : 'N/A', description: 'Estresse fisiológico.' },
-        { title: 'Strain Diário', value: metrics.daily_strain ? `${metrics.daily_strain.toFixed(1)} / 21` : 'N/A', description: 'Intensidade acumulada.' },
-        { title: 'Sedentarismo', value: metrics.sedentary_hours ? `${metrics.sedentary_hours.toFixed(1)} h` : 'N/A', description: `Nível: ${sedentaryStatus}` },
+        {
+          title: 'VO₂max',
+          value: metrics.vo2_max
+            ? `${metrics.vo2_max.toFixed(1)} mL/kg/min`
+            : 'N/A',
+          description: 'Principal indicador de aptidão.',
+        },
+        {
+          title: 'Min. Mod/Vigorosa',
+          value: `${metrics.active_minutes} min`,
+          description: activeMinutesStatus,
+        },
+        {
+          title: 'Passos',
+          value: `${metrics.steps.toLocaleString()}`,
+          description: stepsStatus,
+        },
+        {
+          title: 'Carga (EPOC)',
+          value: metrics.training_load_epoc
+            ? `${metrics.training_load_epoc.toFixed(0)} UA`
+            : 'N/A',
+          description: 'Estresse fisiológico.',
+        },
+        {
+          title: 'Strain Diário',
+          value: metrics.daily_strain
+            ? `${metrics.daily_strain.toFixed(1)} / 21`
+            : 'N/A',
+          description: 'Intensidade acumulada.',
+        },
+        {
+          title: 'Sedentarismo',
+          value: metrics.sedentary_hours
+            ? `${metrics.sedentary_hours.toFixed(1)} h`
+            : 'N/A',
+          description: `Nível: ${sedentaryStatus}`,
+        },
       ],
     },
     {
@@ -166,12 +228,42 @@ export function MetricGrid({ metrics }: MetricGridProps) {
       iconBackground: 'bg-info/10',
       highlightColor: 'border-l-info',
       metrics: [
-        { title: 'Duração', value: formatMinutesToHours(metrics.sleep_duration_minutes), description: `Qualidade: ${sleepQuality}` },
-        { title: 'Eficiência', value: metrics.sleep_efficiency ? `${metrics.sleep_efficiency.toFixed(0)}%` : 'N/A', description: 'Sono vs. tempo na cama.' },
-        { title: 'Regularidade (SRI)', value: metrics.sleep_regularity_index ? `${metrics.sleep_regularity_index}/100` : 'N/A', description: 'Consistência dos horários.' },
-        { title: 'Social Jetlag', value: metrics.social_jetlag_hours ? `${metrics.social_jetlag_hours.toFixed(1)} h` : 'N/A', description: 'Diferença semana/fds.' },
-        { title: 'Sono REM', value: formatMinutesToHours(metrics.rem_sleep_minutes), description: 'Memória e humor.' },
-        { title: 'Sono Profundo', value: formatMinutesToHours(metrics.deep_sleep_minutes), description: 'Recuperação física.' },
+        {
+          title: 'Duração',
+          value: formatMinutesToHours(metrics.sleep_duration_minutes),
+          description: `Qualidade: ${sleepQuality}`,
+        },
+        {
+          title: 'Eficiência',
+          value: metrics.sleep_efficiency
+            ? `${metrics.sleep_efficiency.toFixed(0)}%`
+            : 'N/A',
+          description: 'Sono vs. tempo na cama.',
+        },
+        {
+          title: 'Regularidade (SRI)',
+          value: metrics.sleep_regularity_index
+            ? `${metrics.sleep_regularity_index}/100`
+            : 'N/A',
+          description: 'Consistência dos horários.',
+        },
+        {
+          title: 'Social Jetlag',
+          value: metrics.social_jetlag_hours
+            ? `${metrics.social_jetlag_hours.toFixed(1)} h`
+            : 'N/A',
+          description: 'Diferença semana/fds.',
+        },
+        {
+          title: 'Sono REM',
+          value: formatMinutesToHours(metrics.rem_sleep_minutes),
+          description: 'Memória e humor.',
+        },
+        {
+          title: 'Sono Profundo',
+          value: formatMinutesToHours(metrics.deep_sleep_minutes),
+          description: 'Recuperação física.',
+        },
       ],
     },
     {
@@ -182,12 +274,48 @@ export function MetricGrid({ metrics }: MetricGridProps) {
       iconBackground: 'bg-destructive/10',
       highlightColor: 'border-l-destructive',
       metrics: [
-        { title: 'Tempo em Faixa', value: metrics.time_in_range_percent ? `${metrics.time_in_range_percent.toFixed(1)}%` : 'N/A', description: `Meta > 70%: ${tirStatus}` },
-        { title: 'Variab. (CV)', value: metrics.glycemic_variability_cv ? `${metrics.glycemic_variability_cv.toFixed(1)}%` : 'N/A', description: `Meta < 36%: ${cvStatus}` },
-        { title: 'GMI (A1c)', value: metrics.gmi_percent ? `${metrics.gmi_percent.toFixed(1)}%` : 'N/A', description: `Média: ${gmiStatus}` },
-        { title: 'Pico Pós-Prandial', value: metrics.post_prandial_peak_mgdl ? `${metrics.post_prandial_peak_mgdl} mg/dL` : 'N/A', description: peakStatus },
-        { title: 'Abaixo da Faixa', value: metrics.time_below_range_percent ? `${metrics.time_below_range_percent.toFixed(1)}%` : 'N/A', description: tbrStatus },
-        { title: 'iAUC/Refeição', value: metrics.iauc_per_meal_mgdl_h ? `${metrics.iauc_per_meal_mgdl_h.toFixed(1)}` : 'N/A', description: 'Resposta alimentar.' },
+        {
+          title: 'Tempo em Faixa',
+          value: metrics.time_in_range_percent
+            ? `${metrics.time_in_range_percent.toFixed(1)}%`
+            : 'N/A',
+          description: `Meta > 70%: ${tirStatus}`,
+        },
+        {
+          title: 'Variab. (CV)',
+          value: metrics.glycemic_variability_cv
+            ? `${metrics.glycemic_variability_cv.toFixed(1)}%`
+            : 'N/A',
+          description: `Meta < 36%: ${cvStatus}`,
+        },
+        {
+          title: 'GMI (A1c)',
+          value: metrics.gmi_percent
+            ? `${metrics.gmi_percent.toFixed(1)}%`
+            : 'N/A',
+          description: `Média: ${gmiStatus}`,
+        },
+        {
+          title: 'Pico Pós-Prandial',
+          value: metrics.post_prandial_peak_mgdl
+            ? `${metrics.post_prandial_peak_mgdl} mg/dL`
+            : 'N/A',
+          description: peakStatus,
+        },
+        {
+          title: 'Abaixo da Faixa',
+          value: metrics.time_below_range_percent
+            ? `${metrics.time_below_range_percent.toFixed(1)}%`
+            : 'N/A',
+          description: tbrStatus,
+        },
+        {
+          title: 'iAUC/Refeição',
+          value: metrics.iauc_per_meal_mgdl_h
+            ? `${metrics.iauc_per_meal_mgdl_h.toFixed(1)}`
+            : 'N/A',
+          description: 'Resposta alimentar.',
+        },
       ],
     },
     {
@@ -198,12 +326,46 @@ export function MetricGrid({ metrics }: MetricGridProps) {
       iconBackground: 'bg-golden/10',
       highlightColor: 'border-l-golden',
       metrics: [
-        { title: 'WHtR', value: metrics.whtr_ratio ? metrics.whtr_ratio.toFixed(2) : 'N/A', description: `Adiposidade: ${whtrStatus}` },
-        { title: 'Proteína (g/kg)', value: metrics.protein_g_per_kg ? `${metrics.protein_g_per_kg.toFixed(2)}` : 'N/A', description: proteinStatus },
-        { title: 'Fibras', value: metrics.dietary_fiber_grams ? `${metrics.dietary_fiber_grams} g` : 'N/A', description: `Meta > 25g: ${fiberStatus}` },
-        { title: 'Janela Alimentar', value: metrics.eating_window_hours ? `${metrics.eating_window_hours.toFixed(1)} h` : 'N/A', description: eatingWindowStatus },
-        { title: 'Na:K', value: metrics.sodium_potassium_ratio ? metrics.sodium_potassium_ratio.toFixed(2) : 'N/A', description: naKStatus },
-        { title: 'Hidratação', value: metrics.hydration_ml_per_kg ? `${metrics.hydration_ml_per_kg.toFixed(0)} mL/kg` : 'N/A', description: hydrationStatus },
+        {
+          title: 'WHtR',
+          value: metrics.whtr_ratio ? metrics.whtr_ratio.toFixed(2) : 'N/A',
+          description: `Adiposidade: ${whtrStatus}`,
+        },
+        {
+          title: 'Proteína (g/kg)',
+          value: metrics.protein_g_per_kg
+            ? `${metrics.protein_g_per_kg.toFixed(2)}`
+            : 'N/A',
+          description: proteinStatus,
+        },
+        {
+          title: 'Fibras',
+          value: metrics.dietary_fiber_grams
+            ? `${metrics.dietary_fiber_grams} g`
+            : 'N/A',
+          description: `Meta > 25g: ${fiberStatus}`,
+        },
+        {
+          title: 'Janela Alimentar',
+          value: metrics.eating_window_hours
+            ? `${metrics.eating_window_hours.toFixed(1)} h`
+            : 'N/A',
+          description: eatingWindowStatus,
+        },
+        {
+          title: 'Na:K',
+          value: metrics.sodium_potassium_ratio
+            ? metrics.sodium_potassium_ratio.toFixed(2)
+            : 'N/A',
+          description: naKStatus,
+        },
+        {
+          title: 'Hidratação',
+          value: metrics.hydration_ml_per_kg
+            ? `${metrics.hydration_ml_per_kg.toFixed(0)} mL/kg`
+            : 'N/A',
+          description: hydrationStatus,
+        },
       ],
     },
     {
@@ -214,14 +376,58 @@ export function MetricGrid({ metrics }: MetricGridProps) {
       iconBackground: 'bg-cosmic/10',
       highlightColor: 'border-l-cosmic',
       metrics: [
-        { title: 'Reação (PVT)', value: metrics.reaction_time_pvt_ms ? `${metrics.reaction_time_pvt_ms} ms` : 'N/A', description: pvtStatus },
-        { title: 'Lapsos PVT', value: metrics.pvt_lapses_count ? `${metrics.pvt_lapses_count}` : 'N/A', description: lapsesStatus },
-        { title: 'Score Cognitivo', value: metrics.cognitive_test_score ? metrics.cognitive_test_score.toFixed(2) : 'N/A', description: cognitiveStatus },
-        { title: 'Estresse (HRV)', value: metrics.hrv_stress_index ? metrics.hrv_stress_index.toFixed(1) : 'N/A', description: hrvStressStatus },
-        { title: 'EDA Tônica', value: metrics.eda_tonic_microsiemens ? `${metrics.eda_tonic_microsiemens.toFixed(2)} µS` : 'N/A', description: edaStatus },
-        { title: 'FA', value: metrics.afib_history_percent ? `${metrics.afib_history_percent.toFixed(1)}%` : 'N/A', description: afibStatus },
-        { title: 'Humor', value: metrics.mood_score ? `${metrics.mood_score}/5` : 'N/A', description: moodStatus },
-        { title: 'Meditação', value: `${metrics.meditation_minutes} min`, description: 'Foco e redução de estresse.' },
+        {
+          title: 'Reação (PVT)',
+          value: metrics.reaction_time_pvt_ms
+            ? `${metrics.reaction_time_pvt_ms} ms`
+            : 'N/A',
+          description: pvtStatus,
+        },
+        {
+          title: 'Lapsos PVT',
+          value: metrics.pvt_lapses_count
+            ? `${metrics.pvt_lapses_count}`
+            : 'N/A',
+          description: lapsesStatus,
+        },
+        {
+          title: 'Score Cognitivo',
+          value: metrics.cognitive_test_score
+            ? metrics.cognitive_test_score.toFixed(2)
+            : 'N/A',
+          description: cognitiveStatus,
+        },
+        {
+          title: 'Estresse (HRV)',
+          value: metrics.hrv_stress_index
+            ? metrics.hrv_stress_index.toFixed(1)
+            : 'N/A',
+          description: hrvStressStatus,
+        },
+        {
+          title: 'EDA Tônica',
+          value: metrics.eda_tonic_microsiemens
+            ? `${metrics.eda_tonic_microsiemens.toFixed(2)} µS`
+            : 'N/A',
+          description: edaStatus,
+        },
+        {
+          title: 'FA',
+          value: metrics.afib_history_percent
+            ? `${metrics.afib_history_percent.toFixed(1)}%`
+            : 'N/A',
+          description: afibStatus,
+        },
+        {
+          title: 'Humor',
+          value: metrics.mood_score ? `${metrics.mood_score}/5` : 'N/A',
+          description: moodStatus,
+        },
+        {
+          title: 'Meditação',
+          value: `${metrics.meditation_minutes} min`,
+          description: 'Foco e redução de estresse.',
+        },
       ],
     },
     {
@@ -232,11 +438,40 @@ export function MetricGrid({ metrics }: MetricGridProps) {
       iconBackground: 'bg-success/10',
       highlightColor: 'border-l-success',
       metrics: [
-        { title: 'Pressão Arterial', value: metrics.blood_pressure_systolic && metrics.blood_pressure_diastolic ? `${metrics.blood_pressure_systolic}/${metrics.blood_pressure_diastolic} mmHg` : 'N/A', description: bpStatus },
-        { title: 'Peso', value: metrics.weight_kg ? `${metrics.weight_kg.toFixed(1)} kg` : 'N/A', description: 'Monitoramento.' },
-        { title: 'Hidratação', value: `${metrics.water_liters.toFixed(1)} L`, description: 'Meta: 2.5 L.' },
-        { title: 'Cal. Treino', value: metrics.workout_calories ? `${metrics.workout_calories.toFixed(0)} kcal` : 'N/A', description: 'Exercício.' },
-        { title: 'Cal. Totais', value: metrics.calories_burned ? `${metrics.calories_burned.toFixed(0)} kcal` : 'N/A', description: 'Gasto diário.' },
+        {
+          title: 'Pressão Arterial',
+          value:
+            metrics.blood_pressure_systolic && metrics.blood_pressure_diastolic
+              ? `${metrics.blood_pressure_systolic}/${metrics.blood_pressure_diastolic} mmHg`
+              : 'N/A',
+          description: bpStatus,
+        },
+        {
+          title: 'Peso',
+          value: metrics.weight_kg
+            ? `${metrics.weight_kg.toFixed(1)} kg`
+            : 'N/A',
+          description: 'Monitoramento.',
+        },
+        {
+          title: 'Hidratação',
+          value: `${metrics.water_liters.toFixed(1)} L`,
+          description: 'Meta: 2.5 L.',
+        },
+        {
+          title: 'Cal. Treino',
+          value: metrics.workout_calories
+            ? `${metrics.workout_calories.toFixed(0)} kcal`
+            : 'N/A',
+          description: 'Exercício.',
+        },
+        {
+          title: 'Cal. Totais',
+          value: metrics.calories_burned
+            ? `${metrics.calories_burned.toFixed(0)} kcal`
+            : 'N/A',
+          description: 'Gasto diário.',
+        },
       ],
     },
   ];

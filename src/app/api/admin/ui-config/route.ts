@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { executeStatement } from '@/lib/mysql/pool';
-import { getServerSessionToken, verifySessionToken, buildAppSession } from '@/lib/auth/session';
+import {
+  getServerSessionToken,
+  verifySessionToken,
+  buildAppSession,
+} from '@/lib/auth/session';
 import { isAdmin } from '@/lib/mysql/query-utils';
 
 export async function POST(request: Request) {

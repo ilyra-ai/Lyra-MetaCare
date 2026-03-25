@@ -19,20 +19,12 @@ export function AvatarUploader({
   firstName,
   onUploadSuccess,
 }: AvatarUploaderProps) {
-
-  const { supabase, session } = useAuth();
-
   const { db, session } = useAuth();
-
   const [uploading, setUploading] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (
-
-    event: React.ChangeEvent<HTMLInputElement>,
-
     event: React.ChangeEvent<HTMLInputElement>
-
   ) => {
     if (!session?.user) return;
     const file = event.target.files?.[0];
@@ -41,80 +33,51 @@ export function AvatarUploader({
 
     if (file.size > 5 * 1024 * 1024) {
       // 5MB limit
-
-      toast.error("Arquivo muito grande.", {
-        description: "O limite é de 5MB.",
-
       toast.error('Arquivo muito grande.', {
         description: 'O limite é de 5MB.',
-
       });
       return;
     }
 
     setUploading(true);
 
-    const fileExt = file.name.split(".").pop();
+    const fileExt = file.name.split('.').pop();
     // Define o caminho como user_id/nome_aleatorio.ext
     const filePath = `${session.user.id}/${crypto.randomUUID()}.${fileExt}`;
-
-
-    // 1. Upload to Supabase Storage (Bucket 'avatars' deve ser criado manualmente)
-    const { error: uploadError } = await supabase.storage
-      .from("avatars")
 
     // 1. Upload do arquivo para o storage local servido pela aplicação
     const { error: uploadError } = await db.storage
       .from('avatars')
-
       .upload(filePath, file, {
-        cacheControl: "3600",
+        cacheControl: '3600',
         upsert: true,
       });
 
     if (uploadError) {
       setUploading(false);
-
-      toast.error("Erro ao enviar imagem.", {
-
       toast.error('Erro ao enviar imagem.', {
-
         description: uploadError.message,
       });
       return;
     }
 
     // 2. Get public URL
-
-    const { data: publicUrlData } = supabase.storage
-      .from("avatars")
-
     const { data: publicUrlData } = db.storage
       .from('avatars')
-
       .getPublicUrl(filePath);
 
     const publicUrl = publicUrlData.publicUrl;
 
     // 3. Update profile table with the new URL
-
-    const { error: updateError } = await supabase
-      .from("profiles")
-
     const { error: updateError } = await db
       .from('profiles')
-
       .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
-      .eq("id", session.user.id);
+      .eq('id', session.user.id);
 
     setUploading(false);
 
     if (updateError) {
-
-      toast.error("Erro ao salvar URL do perfil.", {
-
       toast.error('Erro ao salvar URL do perfil.', {
-
         description: updateError.message,
       });
     } else {
@@ -123,7 +86,7 @@ export function AvatarUploader({
     }
   };
 
-  const initial = firstName.charAt(0).toUpperCase() || "U";
+  const initial = firstName.charAt(0).toUpperCase() || 'U';
 
   return (
     <div className="flex flex-col items-center space-y-4">
@@ -151,13 +114,8 @@ export function AvatarUploader({
         {/* Overlay de Edição */}
         <div
           className={cn(
-
-            "absolute inset-0 rounded-full bg-black/30 flex items-center justify-center opacity-0 transition-opacity duration-300",
-            !uploading && "group-hover:opacity-100",
-
             'absolute inset-0 rounded-full bg-black/30 flex items-center justify-center opacity-0 transition-opacity duration-300',
             !uploading && 'group-hover:opacity-100'
-
           )}
         >
           {uploading ? (

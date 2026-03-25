@@ -1,312 +1,83 @@
 'use client';
 
-import * as React from 'react';
-import { toast } from 'sonner';
-import { Eye, LayoutTemplate, Save, Sparkles, UserCircle, Code2, PenTool, LayoutDashboard } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-import { Eye, LayoutTemplate, Save, Sparkles, UserCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { AlertTriangle, Sparkles } from 'lucide-react';
+
+import { SiteExperienceBuilder } from '@/components/admin/SiteExperienceBuilder';
+import { Header } from '@/components/layout/header';
+import { Sidebar } from '@/components/layout/sidebar';
+import { MadeWithIlyra } from '@/components/made-with-ilyra';
+import { SplashScreen } from '@/components/SplashScreen';
+import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Editor from '@monaco-editor/react';
+import { useAuth } from '@/context/AuthContext';
+import { useIsAdmin } from '@/hooks/use-is-admin';
 
 export function PageBuilderContent() {
-  const [loading, setLoading] = React.useState(true);
-  const [saving, setSaving] = React.useState(false);
+  const { session } = useAuth();
+  const isAdmin = useIsAdmin();
 
-  const [landingJson, setLandingJson] = React.useState<string>('{}');
-  const [loginJson, setLoginJson] = React.useState<string>('{}');
+  if (session === undefined) {
+    return <SplashScreen />;
+  }
 
-  React.useEffect(() => {
-    const fetchConfig = async () => {
-      try {
-        const res = await fetch('/api/public/ui-config');
-        const data = await res.json();
-        if (data.config) {
-          setLandingJson(JSON.stringify(data.config.landing, null, 2));
-          setLoginJson(JSON.stringify(data.config.login, null, 2));
-        }
-      } catch (e) {
-        toast.error('Erro ao carregar a configuração atual.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    void fetchConfig();
-  }, []);
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const parsedLanding = JSON.parse(landingJson);
-      const parsedLogin = JSON.parse(loginJson);
-
-      const payload = {
-        landing: parsedLanding,
-        login: parsedLogin,
-      };
-
-      const res = await fetch('/api/admin/ui-config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Erro na requisição');
-      }
-
-      toast.success('Experiência Visual Atualizada!', {
-        description: 'As configurações de inteligência adaptativa e layout premium 2026 foram sincronizadas com sucesso. Os usuários finais já estão visualizando.',
-        icon: <Sparkles className="h-4 w-4 text-primary" />,
-      });
-    } catch (e) {
-      toast.error('Erro de Validação Semântica', {
-        description:
-          e instanceof SyntaxError
-            ? 'O JSON inserido possui erros de sintaxe. Verifique chaves e vírgulas (Monaco indicará a linha exata).'
-            : e instanceof Error
-              ? e.message
-              : 'Ocorreu um erro crítico durante a persistência do layout.',
-      toast.success('Páginas atualizadas com sucesso!', {
-        description: 'As alterações na landing page e login já estão ao vivo.',
-      });
-    } catch (e) {
-      toast.error('Não foi possível salvar', {
-        description:
-          e instanceof SyntaxError
-            ? 'O JSON inserido é inválido'
-            : e instanceof Error
-              ? e.message
-              : 'Erro desconhecido',
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleEditorChangeLanding = (value: string | undefined) => {
-    if (value !== undefined) setLandingJson(value);
-  };
-
-  const handleEditorChangeLogin = (value: string | undefined) => {
-    if (value !== undefined) setLoginJson(value);
-  };
-
-  if (loading) {
+  if (!session || !isAdmin) {
     return (
-      <div className="flex h-64 flex-col items-center justify-center gap-4 rounded-[2rem] border border-dashed border-border/80 bg-white/50 backdrop-blur-xl">
-        <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 shadow-glass">
-          <Sparkles className="h-8 w-8 animate-pulse text-primary" />
-        </div>
-        <p className="text-sm font-medium text-muted-foreground animate-pulse">Carregando motores de renderização adaptativa...</p>
-  if (loading) {
-    return (
-      <div className="flex h-64 items-center justify-center rounded-[36px] border border-dashed border-border/80 bg-white/50">
-        <Sparkles className="h-8 w-8 animate-pulse text-primary/50" />
+      <div className="flex min-h-screen items-center justify-center bg-background/80 p-4">
+        <Card className="w-full max-w-md border-destructive/20 text-center">
+          <CardHeader>
+            <AlertTriangle className="mx-auto mb-2 h-10 w-10 text-destructive" />
+            <CardTitle>Acesso Negado</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Somente perfis administradores podem editar a landing page e a
+              tela de login.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <Card className="overflow-hidden border-white/80 bg-white/70 shadow-glass rounded-[2rem] backdrop-blur-3xl transition-all duration-500 hover:shadow-glass-hover">
-      <Tabs defaultValue="landing" className="flex flex-col">
-        <div className="border-b border-border/60 bg-gradient-to-r from-white/40 to-white/10 px-6 py-5 backdrop-blur-md">
-          <TabsList className="grid w-full max-w-2xl grid-cols-2 rounded-2xl p-1 shadow-inner-sm bg-background/50">
-            <TabsTrigger
-              value="landing"
-              className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary transition-all duration-300"
-            >
-              <LayoutDashboard className="mr-2 h-4 w-4" />
-              Landing Page (GenUI)
-            </TabsTrigger>
-            <TabsTrigger
-              value="login"
-              className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary transition-all duration-300"
-            >
-              <UserCircle className="mr-2 h-4 w-4" />
-              Hub de Autenticação
-    <Card className="overflow-hidden border-white/80 bg-white/70 shadow-[0_26px_80px_-42px_rgba(22,21,48,0.1)] rounded-[32px]">
-      <Tabs defaultValue="landing">
-        <div className="border-b border-border/60 bg-white/40 px-6 py-4">
-          <TabsList className="grid w-full max-w-md grid-cols-2 rounded-2xl p-1 shadow-sm">
-            <TabsTrigger
-              value="landing"
-              className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm"
-            >
-              <LayoutTemplate className="mr-2 h-4 w-4" />
-              Landing Page
-            </TabsTrigger>
-            <TabsTrigger
-              value="login"
-              className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm"
-            >
-              <UserCircle className="mr-2 h-4 w-4" />
-              Tela de Login
-            </TabsTrigger>
-          </TabsList>
-        </div>
+    <div className="flex min-h-screen bg-background/80">
+      <Sidebar />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <Header />
+        <main className="flex-1 p-4 sm:p-6 md:p-8">
+          <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-6">
+            <Card className="overflow-hidden border-border/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(249,248,252,0.84),rgba(255,255,255,0.96))]">
+              <CardHeader className="gap-4">
+                <Badge className="w-fit rounded-full border-cosmic/20 bg-cosmic/10 px-4 py-1.5 text-cosmic">
+                  <Sparkles className="mr-2 h-3.5 w-3.5" />
+                  construtor premium da experiência pública
+                </Badge>
+                <div className="max-w-4xl space-y-3">
+                  <CardTitle className="text-3xl">
+                    Landing e login editáveis em tempo real
+                  </CardTitle>
+                  <CardDescription className="text-sm leading-7">
+                    Esta rota administrativa concentra o editor avançado da
+                    experiência web da Lyra. Aqui o administrador consegue
+                    ajustar conteúdo, ordem das seções, destaques, FAQ, botões,
+                    textos de autenticação, JSON completo e publicar a versão
+                    final sem depender de mock, placeholder ou atalho visual.
+                  </CardDescription>
+                </div>
+              </CardHeader>
+            </Card>
 
-        <TabsContent
-          value="landing"
-          className="m-0 p-8 space-y-6 animate-fade-in bg-gradient-to-b from-white/30 to-transparent"
-        >
-          <div className="flex flex-col gap-2">
-            <h3 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
-              <PenTool className="h-6 w-6 text-primary" />
-              Engenharia de Layout: Landing Page
-            </h3>
-            <p className="text-sm text-muted-foreground max-w-3xl leading-relaxed">
-              Utilize o editor <strong>Monaco (VS Code Engine)</strong> abaixo para gerenciar a arquitetura de dados (JSON) da página de destino. O sistema renderizará componentes Premium de forma adaptativa. Adicione seções como <code>features</code>, modifique <code>hero.title</code> ou altere estilos do <code>cta</code> na íntegra.
-            </p>
+            <SiteExperienceBuilder />
           </div>
-
-          <div className="overflow-hidden rounded-2xl border border-border/50 shadow-inner-sm bg-[#1e1e1e]">
-            <div className="flex items-center gap-2 border-b border-white/10 bg-[#252526] px-4 py-2 text-xs font-mono text-white/50">
-              <Code2 className="h-3 w-3" />
-              <span>landing.config.json</span>
-            </div>
-            <Editor
-              height="550px"
-              defaultLanguage="json"
-              theme="vs-dark"
-              value={landingJson}
-              onChange={handleEditorChangeLanding}
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-                fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                formatOnPaste: true,
-                smoothScrolling: true,
-                padding: { top: 16, bottom: 16 },
-              }}
-          className="m-0 p-6 space-y-4 animate-fade-in"
-        >
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold text-foreground">
-                Editor de Layout em JSON (Landing)
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                O JSON Data Builder permite ao administrador controle estrito e
-                total da página modificando propriedades e features do painel em
-                tempo real.
-              </p>
-            </div>
-
-            <textarea
-              className="w-full h-[500px] rounded-xl border border-input bg-background px-3 py-2 text-sm font-mono shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              value={landingJson}
-              onChange={(e) => setLandingJson(e.target.value)}
-              spellCheck={false}
-            />
-          </div>
-        </TabsContent>
-
-        <TabsContent
-          value="login"
-          className="m-0 p-8 space-y-6 animate-fade-in bg-gradient-to-b from-white/30 to-transparent"
-        >
-          <div className="flex flex-col gap-2">
-            <h3 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
-              <PenTool className="h-6 w-6 text-primary" />
-              Engenharia de Layout: Login Hub
-            </h3>
-            <p className="text-sm text-muted-foreground max-w-3xl leading-relaxed">
-              Personalize a experiência de entrada do usuário. Defina títulos, subtítulos, textos de botões de provedores (Google, Apple) e a inteligência visual exibida no painel lateral do bento grid de login.
-            </p>
-          </div>
-
-          <div className="overflow-hidden rounded-2xl border border-border/50 shadow-inner-sm bg-[#1e1e1e]">
-             <div className="flex items-center gap-2 border-b border-white/10 bg-[#252526] px-4 py-2 text-xs font-mono text-white/50">
-              <Code2 className="h-3 w-3" />
-              <span>login.config.json</span>
-            </div>
-            <Editor
-              height="550px"
-              defaultLanguage="json"
-              theme="vs-dark"
-              value={loginJson}
-              onChange={handleEditorChangeLogin}
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-                fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                formatOnPaste: true,
-                smoothScrolling: true,
-                padding: { top: 16, bottom: 16 },
-              }}
-          className="m-0 p-6 space-y-4 animate-fade-in"
-        >
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold text-foreground">
-                Editor de Layout em JSON (Login)
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Modifique o design da página de autenticação na íntegra editando
-                a configuração JSON raiz.
-              </p>
-            </div>
-
-            <textarea
-              className="w-full h-[500px] rounded-xl border border-input bg-background px-3 py-2 text-sm font-mono shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              value={loginJson}
-              onChange={(e) => setLoginJson(e.target.value)}
-              spellCheck={false}
-            />
-          </div>
-        </TabsContent>
-        <CardFooter className="flex items-center justify-between border-t border-border/60 bg-white/40 p-6 backdrop-blur-md">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-              <Eye className="h-4 w-4 text-primary" />
-              <span>As alterações refletirão globalmente e em tempo real.</span>
-            </div>
-            <span className="text-xs text-muted-foreground pl-6">O motor de IA otimizará a entrega dos componentes via CDN Edge.</span>
-        <CardFooter className="flex items-center justify-between border-t border-border/60 bg-white/50 p-6">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Eye className="h-4 w-4" />
-            <span>
-              O conteúdo refletirá instantaneamente nas rotas públicas.
-            </span>
-          </div>
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-            size="lg"
-            className="rounded-full shadow-teal font-semibold px-8 hover:scale-105 transition-transform duration-300"
-          >
-            {saving ? (
-              <>
-                <Sparkles className="mr-2 h-4 w-4 animate-spin" />
-                Sincronizando...
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-5 w-5" />
-                Publicar Arquitetura
-              </>
-            )}
-            className="rounded-full shadow-teal"
-          >
-            <Save className="mr-2 h-4 w-4" />
-            {saving ? 'Aplicando mágica...' : 'Salvar Arquitetura Visual'}
-          </Button>
-        </CardFooter>
-      </Tabs>
-    </Card>
+        </main>
+        <MadeWithIlyra />
+      </div>
+    </div>
   );
 }
-}
-

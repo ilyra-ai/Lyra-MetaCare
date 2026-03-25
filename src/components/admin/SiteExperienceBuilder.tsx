@@ -1,0 +1,1781 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import {
+  ArrowDown,
+  ArrowUp,
+  Eye,
+  FileJson,
+  Layers3,
+  Plus,
+  Save,
+  Sparkles,
+  Upload,
+} from 'lucide-react';
+import { toast } from 'sonner';
+
+import { LoginExperience } from '@/components/auth/LoginExperience';
+import { LandingPage } from '@/components/landing/LandingPage';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@/components/ui/resizable';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import {
+  BuilderIconKey,
+  ContentItem,
+  FaqItem,
+  getDefaultPageConfig,
+  LandingPageConfig,
+  LandingStepItem,
+  LoginHighlightItem,
+  LoginPageConfig,
+  SitePageKey,
+  ToneKey,
+} from '@/lib/site-page-config/schema';
+import { builderIconOptions, toneOptions } from '@/lib/site-page-config/ui';
+
+type EditableDraft = LandingPageConfig | LoginPageConfig;
+
+type AdminConfigResponse = {
+  pageKey: SitePageKey;
+  draftConfig: EditableDraft;
+  publishedConfig: EditableDraft;
+  createdAt: string | null;
+  updatedAt: string | null;
+  updatedByUserId: string | null;
+  error?: string;
+};
+
+function cloneValue<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function createId(prefix: string) {
+  if (
+    typeof crypto !== 'undefined' &&
+    typeof crypto.randomUUID === 'function'
+  ) {
+    return `${prefix}-${crypto.randomUUID()}`;
+  }
+
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function setByPath<T>(value: T, path: string[], nextValue: unknown): T {
+  const draft = cloneValue(value);
+  let cursor: unknown = draft;
+
+  for (let index = 0; index < path.length - 1; index += 1) {
+    cursor = (cursor as Record<string, unknown>)[path[index]];
+  }
+
+  (cursor as Record<string, unknown>)[path[path.length - 1]] = nextValue;
+  return draft;
+}
+
+function updateArrayItemByPath<T>(
+  value: T,
+  path: string[],
+  itemIndex: number,
+  updater: (current: Record<string, unknown>) => Record<string, unknown>
+): T {
+  const draft = cloneValue(value);
+  let cursor: unknown = draft;
+
+  for (const segment of path) {
+    cursor = (cursor as Record<string, unknown>)[segment];
+  }
+
+  const items = cursor as Array<Record<string, unknown>>;
+  items[itemIndex] = updater(items[itemIndex]);
+  return draft;
+}
+
+function appendToArrayByPath<T>(
+  value: T,
+  path: string[],
+  nextItem: unknown
+): T {
+  const draft = cloneValue(value);
+  let cursor: unknown = draft;
+
+  for (const segment of path) {
+    cursor = (cursor as Record<string, unknown>)[segment];
+  }
+
+  (cursor as unknown[]).push(nextItem);
+  return draft;
+}
+
+function removeFromArrayByPath<T>(
+  value: T,
+  path: string[],
+  itemIndex: number
+): T {
+  const draft = cloneValue(value);
+  let cursor: unknown = draft;
+
+  for (const segment of path) {
+    cursor = (cursor as Record<string, unknown>)[segment];
+  }
+
+  (cursor as unknown[]).splice(itemIndex, 1);
+  return draft;
+}
+
+function moveInArrayByPath<T>(
+  value: T,
+  path: string[],
+  itemIndex: number,
+  direction: -1 | 1
+): T {
+  const draft = cloneValue(value);
+  let cursor: unknown = draft;
+
+  for (const segment of path) {
+    cursor = (cursor as Record<string, unknown>)[segment];
+  }
+
+  const items = cursor as unknown[];
+  const nextIndex = itemIndex + direction;
+
+  if (nextIndex < 0 || nextIndex >= items.length) {
+    return draft;
+  }
+
+  const [movedItem] = items.splice(itemIndex, 1);
+  items.splice(nextIndex, 0, movedItem);
+  return draft;
+}
+
+function FieldBlock({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <Label>{label}</Label>
+      {children}
+    </div>
+  );
+}
+
+function SwitchRow({
+  title,
+  description,
+  checked,
+  onCheckedChange,
+}: {
+  title: string;
+  description: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
+      <div className="flex flex-col gap-1">
+        <p className="text-sm font-medium text-foreground">{title}</p>
+        <p className="text-xs leading-6 text-muted-foreground">{description}</p>
+      </div>
+      <Switch checked={checked} onCheckedChange={onCheckedChange} />
+    </div>
+  );
+}
+
+function ItemShell({
+  title,
+  children,
+  onMoveUp,
+  onMoveDown,
+  onRemove,
+}: {
+  title: string;
+  children: React.ReactNode;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  onRemove: () => void;
+}) {
+  return (
+    <Card className="border-border/70 bg-white/84">
+      <CardHeader className="flex flex-row items-start justify-between gap-4">
+        <div>
+          <CardTitle className="text-base">{title}</CardTitle>
+          <CardDescription>
+            Edite o bloco, reposicione ou remova.
+          </CardDescription>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button type="button" variant="ghost" size="icon" onClick={onMoveUp}>
+            <ArrowUp className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onMoveDown}
+          >
+            <ArrowDown className="h-4 w-4" />
+          </Button>
+          <Button type="button" variant="ghost" size="icon" onClick={onRemove}>
+            <Plus className="h-4 w-4 rotate-45" />
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">{children}</CardContent>
+    </Card>
+  );
+}
+
+function ToneSelectField({
+  value,
+  onValueChange,
+}: {
+  value: ToneKey;
+  onValueChange: (value: ToneKey) => void;
+}) {
+  return (
+    <Select
+      value={value}
+      onValueChange={(nextValue) => onValueChange(nextValue as ToneKey)}
+    >
+      <SelectTrigger>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {toneOptions.map((option) => (
+          <SelectItem key={option.value} value={option.value}>
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function IconSelectField({
+  value,
+  onValueChange,
+}: {
+  value: BuilderIconKey;
+  onValueChange: (value: BuilderIconKey) => void;
+}) {
+  return (
+    <Select
+      value={value}
+      onValueChange={(nextValue) => onValueChange(nextValue as BuilderIconKey)}
+    >
+      <SelectTrigger>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {builderIconOptions.map((option) => (
+          <SelectItem key={option.value} value={option.value}>
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function buildContentItem(prefix: string): ContentItem {
+  return {
+    id: createId(prefix),
+    title: 'Novo bloco',
+    description: 'Descreva aqui o que este bloco entrega na experiencia.',
+    icon: 'sparkles',
+    tone: 'primary',
+  };
+}
+
+function buildStepItem(): LandingStepItem {
+  return {
+    id: createId('landing-step'),
+    step: '00',
+    title: 'Nova etapa',
+    description: 'Explique a jornada desta etapa.',
+    icon: 'sparkles' as BuilderIconKey,
+  };
+}
+
+function buildFaqItem(): FaqItem {
+  return {
+    id: createId('landing-faq'),
+    question: 'Nova pergunta',
+    answer: 'Nova resposta',
+  };
+}
+
+function buildLoginHighlightItem(): LoginHighlightItem {
+  return {
+    id: createId('login-highlight'),
+    title: 'Novo destaque',
+    description: 'Mostre aqui um diferencial importante do login.',
+    icon: 'sparkles',
+    tone: 'primary',
+  };
+}
+
+export function SiteExperienceBuilder() {
+  const [pageKey, setPageKey] = useState<SitePageKey>('landing');
+  const [draftConfig, setDraftConfig] = useState<EditableDraft>(
+    getDefaultPageConfig('landing')
+  );
+  const [publishedConfig, setPublishedConfig] = useState<EditableDraft>(
+    getDefaultPageConfig('landing')
+  );
+  const [jsonValue, setJsonValue] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [meta, setMeta] = useState<{
+    updatedAt: string | null;
+    updatedByUserId: string | null;
+  }>({
+    updatedAt: null,
+    updatedByUserId: null,
+  });
+
+  useEffect(() => {
+    async function loadPage() {
+      setLoading(true);
+
+      try {
+        const response = await fetch(`/api/admin/page-config/${pageKey}`, {
+          cache: 'no-store',
+        });
+        const payload = (await response.json()) as AdminConfigResponse;
+
+        if (!response.ok) {
+          throw new Error(payload.error || 'Falha ao carregar o editor.');
+        }
+
+        setDraftConfig(payload.draftConfig);
+        setPublishedConfig(payload.publishedConfig);
+        setMeta({
+          updatedAt: payload.updatedAt,
+          updatedByUserId: payload.updatedByUserId,
+        });
+      } catch (error) {
+        toast.error('Nao foi possivel carregar o editor.', {
+          description:
+            error instanceof Error ? error.message : 'Falha desconhecida.',
+        });
+
+        const fallback = getDefaultPageConfig(pageKey);
+        setDraftConfig(fallback);
+        setPublishedConfig(cloneValue(fallback));
+        setMeta({
+          updatedAt: null,
+          updatedByUserId: null,
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    void loadPage();
+  }, [pageKey]);
+
+  useEffect(() => {
+    setJsonValue(JSON.stringify(draftConfig, null, 2));
+  }, [draftConfig]);
+
+  const preview = useMemo(() => {
+    return pageKey === 'landing' ? (
+      <LandingPage
+        overrideConfig={draftConfig as LandingPageConfig}
+        previewMode
+      />
+    ) : (
+      <LoginExperience
+        overrideConfig={draftConfig as LoginPageConfig}
+        previewMode
+      />
+    );
+  }, [draftConfig, pageKey]);
+
+  const hasDraftChanges =
+    JSON.stringify(draftConfig) !== JSON.stringify(publishedConfig);
+
+  const landingDraft = draftConfig as LandingPageConfig;
+  const loginDraft = draftConfig as LoginPageConfig;
+
+  function updateDraft(path: string[], nextValue: unknown) {
+    setDraftConfig((current) => setByPath(current, path, nextValue));
+  }
+
+  function updateListItem(
+    path: string[],
+    itemIndex: number,
+    key: string,
+    nextValue: unknown
+  ) {
+    setDraftConfig((current) =>
+      updateArrayItemByPath(current, path, itemIndex, (item) => ({
+        ...item,
+        [key]: nextValue,
+      }))
+    );
+  }
+
+  function addListItem(path: string[], nextItem: unknown) {
+    setDraftConfig((current) => appendToArrayByPath(current, path, nextItem));
+  }
+
+  function removeListItem(path: string[], itemIndex: number) {
+    setDraftConfig((current) =>
+      removeFromArrayByPath(current, path, itemIndex)
+    );
+  }
+
+  function moveListItem(path: string[], itemIndex: number, direction: -1 | 1) {
+    setDraftConfig((current) =>
+      moveInArrayByPath(current, path, itemIndex, direction)
+    );
+  }
+
+  async function saveDraft(nextConfig: EditableDraft) {
+    setSaving(true);
+
+    try {
+      const response = await fetch(`/api/admin/page-config/${pageKey}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ config: nextConfig }),
+      });
+      const payload = (await response.json()) as AdminConfigResponse;
+
+      if (!response.ok) {
+        throw new Error(payload.error || 'Falha ao salvar o rascunho.');
+      }
+
+      setDraftConfig(payload.draftConfig);
+      setPublishedConfig(payload.publishedConfig);
+      setMeta({
+        updatedAt: payload.updatedAt,
+        updatedByUserId: payload.updatedByUserId,
+      });
+      toast.success('Rascunho salvo com sucesso.');
+    } catch (error) {
+      toast.error('Nao foi possivel salvar o rascunho.', {
+        description:
+          error instanceof Error ? error.message : 'Falha desconhecida.',
+      });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function runAdminAction(
+    action: 'publish' | 'restorePublished' | 'restoreDefaults'
+  ) {
+    setPublishing(true);
+
+    try {
+      const response = await fetch(`/api/admin/page-config/${pageKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+      const payload = (await response.json()) as AdminConfigResponse;
+
+      if (!response.ok) {
+        throw new Error(payload.error || 'Falha ao executar a acao.');
+      }
+
+      setDraftConfig(payload.draftConfig);
+      setPublishedConfig(payload.publishedConfig);
+      setMeta({
+        updatedAt: payload.updatedAt,
+        updatedByUserId: payload.updatedByUserId,
+      });
+
+      toast.success(
+        action === 'publish'
+          ? 'Experiencia publicada com sucesso.'
+          : action === 'restorePublished'
+            ? 'Rascunho restaurado a partir da versao publicada.'
+            : 'Rascunho restaurado para o estado padrao.'
+      );
+    } catch (error) {
+      toast.error('Nao foi possivel executar a acao.', {
+        description:
+          error instanceof Error ? error.message : 'Falha desconhecida.',
+      });
+    } finally {
+      setPublishing(false);
+    }
+  }
+
+  function applyJsonLocally() {
+    try {
+      setDraftConfig(JSON.parse(jsonValue) as EditableDraft);
+      toast.success('JSON aplicado no preview local.');
+    } catch (error) {
+      toast.error('JSON invalido.', {
+        description:
+          error instanceof Error ? error.message : 'Falha ao ler o JSON.',
+      });
+    }
+  }
+
+  async function saveJsonDraft() {
+    try {
+      await saveDraft(JSON.parse(jsonValue) as EditableDraft);
+    } catch {
+      toast.error('JSON invalido.', {
+        description: 'Corrija o JSON antes de salvar no backend.',
+      });
+    }
+  }
+
+  function renderLandingEditor() {
+    return (
+      <Accordion
+        type="multiple"
+        defaultValue={['hero', 'sections', 'features', 'faq']}
+        className="flex flex-col gap-4"
+      >
+        <AccordionItem value="hero">
+          <AccordionTrigger>Hero, entrada e preview inicial</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4">
+            <FieldBlock label="Login simples do topo">
+              <Input
+                value={landingDraft.header.loginLabel}
+                onChange={(event) =>
+                  updateDraft(['header', 'loginLabel'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Login completo do topo">
+              <Input
+                value={landingDraft.header.fullLoginLabel}
+                onChange={(event) =>
+                  updateDraft(['header', 'fullLoginLabel'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Badge do hero">
+              <Input
+                value={landingDraft.hero.badgeText}
+                onChange={(event) =>
+                  updateDraft(['hero', 'badgeText'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Titulo principal">
+              <Input
+                value={landingDraft.hero.title}
+                onChange={(event) =>
+                  updateDraft(['hero', 'title'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Titulo em destaque">
+              <Input
+                value={landingDraft.hero.accentTitle}
+                onChange={(event) =>
+                  updateDraft(['hero', 'accentTitle'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Descricao">
+              <Textarea
+                value={landingDraft.hero.description}
+                onChange={(event) =>
+                  updateDraft(['hero', 'description'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <div className="grid gap-4 md:grid-cols-2">
+              <FieldBlock label="CTA principal">
+                <Input
+                  value={landingDraft.hero.primaryCtaLabel}
+                  onChange={(event) =>
+                    updateDraft(['hero', 'primaryCtaLabel'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Link do CTA principal">
+                <Input
+                  value={landingDraft.hero.primaryCtaHref}
+                  onChange={(event) =>
+                    updateDraft(['hero', 'primaryCtaHref'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="CTA secundario">
+                <Input
+                  value={landingDraft.hero.secondaryCtaLabel}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['hero', 'secondaryCtaLabel'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Link do CTA secundario">
+                <Input
+                  value={landingDraft.hero.secondaryCtaHref}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['hero', 'secondaryCtaHref'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <FieldBlock label="Badge da entrada rapida">
+                <Input
+                  value={landingDraft.hero.quickAuthBadge}
+                  onChange={(event) =>
+                    updateDraft(['hero', 'quickAuthBadge'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Titulo da entrada rapida">
+                <Input
+                  value={landingDraft.hero.quickAuthTitle}
+                  onChange={(event) =>
+                    updateDraft(['hero', 'quickAuthTitle'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Botao principal da entrada rapida">
+                <Input
+                  value={landingDraft.hero.quickAuthSubmitLabel}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['hero', 'quickAuthSubmitLabel'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Botao secundario da entrada rapida">
+                <Input
+                  value={landingDraft.hero.quickAuthSecondaryLabel}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['hero', 'quickAuthSecondaryLabel'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+            </div>
+            <FieldBlock label="Descricao da entrada rapida">
+              <Textarea
+                value={landingDraft.hero.quickAuthDescription}
+                onChange={(event) =>
+                  updateDraft(
+                    ['hero', 'quickAuthDescription'],
+                    event.target.value
+                  )
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Badge do preview">
+              <Input
+                value={landingDraft.hero.previewBadge}
+                onChange={(event) =>
+                  updateDraft(['hero', 'previewBadge'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Titulo do preview">
+              <Input
+                value={landingDraft.hero.previewTitle}
+                onChange={(event) =>
+                  updateDraft(['hero', 'previewTitle'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Descricao do preview">
+              <Textarea
+                value={landingDraft.hero.previewDescription}
+                onChange={(event) =>
+                  updateDraft(
+                    ['hero', 'previewDescription'],
+                    event.target.value
+                  )
+                }
+              />
+            </FieldBlock>
+            <div className="flex items-center justify-between rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Cards do preview inicial
+                </p>
+                <p className="text-xs leading-6 text-muted-foreground">
+                  Adicione, reordene e personalize os cards da vitrine
+                  principal.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() =>
+                  addListItem(
+                    ['hero', 'previewItems'],
+                    buildContentItem('landing-preview')
+                  )
+                }
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Adicionar card
+              </Button>
+            </div>
+            {landingDraft.hero.previewItems.map((item, index) => (
+              <ItemShell
+                key={item.id}
+                title={item.title || `Card ${index + 1}`}
+                onMoveUp={() =>
+                  moveListItem(['hero', 'previewItems'], index, -1)
+                }
+                onMoveDown={() =>
+                  moveListItem(['hero', 'previewItems'], index, 1)
+                }
+                onRemove={() => removeListItem(['hero', 'previewItems'], index)}
+              >
+                <FieldBlock label="Titulo">
+                  <Input
+                    value={item.title}
+                    onChange={(event) =>
+                      updateListItem(
+                        ['hero', 'previewItems'],
+                        index,
+                        'title',
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <FieldBlock label="Descricao">
+                  <Textarea
+                    value={item.description}
+                    onChange={(event) =>
+                      updateListItem(
+                        ['hero', 'previewItems'],
+                        index,
+                        'description',
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FieldBlock label="Icone">
+                    <IconSelectField
+                      value={item.icon}
+                      onValueChange={(nextValue) =>
+                        updateListItem(
+                          ['hero', 'previewItems'],
+                          index,
+                          'icon',
+                          nextValue
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Tom visual">
+                    <ToneSelectField
+                      value={item.tone}
+                      onValueChange={(nextValue) =>
+                        updateListItem(
+                          ['hero', 'previewItems'],
+                          index,
+                          'tone',
+                          nextValue
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+              </ItemShell>
+            ))}
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="sections">
+          <AccordionTrigger>
+            Secoes principais, CTA final e ordem
+          </AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4">
+            <SwitchRow
+              title="Exibir recursos"
+              description="Liga ou desliga a secao de recursos."
+              checked={landingDraft.features.visible}
+              onCheckedChange={(checked) =>
+                updateDraft(['features', 'visible'], checked)
+              }
+            />
+            <SwitchRow
+              title="Exibir metricas"
+              description="Liga ou desliga a secao de metricas."
+              checked={landingDraft.metrics.visible}
+              onCheckedChange={(checked) =>
+                updateDraft(['metrics', 'visible'], checked)
+              }
+            />
+            <SwitchRow
+              title="Exibir fluxo"
+              description="Liga ou desliga a secao de fluxo."
+              checked={landingDraft.flow.visible}
+              onCheckedChange={(checked) =>
+                updateDraft(['flow', 'visible'], checked)
+              }
+            />
+            <SwitchRow
+              title="Exibir planos"
+              description="Liga ou desliga a vitrine dos planos reais."
+              checked={landingDraft.plans.visible}
+              onCheckedChange={(checked) =>
+                updateDraft(['plans', 'visible'], checked)
+              }
+            />
+            <SwitchRow
+              title="Exibir FAQ"
+              description="Liga ou desliga a secao de perguntas."
+              checked={landingDraft.faq.visible}
+              onCheckedChange={(checked) =>
+                updateDraft(['faq', 'visible'], checked)
+              }
+            />
+            <SwitchRow
+              title="Exibir CTA final"
+              description="Liga ou desliga o bloco final da landing."
+              checked={landingDraft.finalCta.visible}
+              onCheckedChange={(checked) =>
+                updateDraft(['finalCta', 'visible'], checked)
+              }
+            />
+            <FieldBlock label="Titulo da secao de recursos">
+              <Input
+                value={landingDraft.features.title}
+                onChange={(event) =>
+                  updateDraft(['features', 'title'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Titulo da secao de metricas">
+              <Input
+                value={landingDraft.metrics.title}
+                onChange={(event) =>
+                  updateDraft(['metrics', 'title'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Titulo da secao de fluxo">
+              <Input
+                value={landingDraft.flow.title}
+                onChange={(event) =>
+                  updateDraft(['flow', 'title'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Titulo da secao de planos">
+              <Input
+                value={landingDraft.plans.title}
+                onChange={(event) =>
+                  updateDraft(['plans', 'title'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Titulo da secao de FAQ">
+              <Input
+                value={landingDraft.faq.title}
+                onChange={(event) =>
+                  updateDraft(['faq', 'title'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Titulo do CTA final">
+              <Input
+                value={landingDraft.finalCta.title}
+                onChange={(event) =>
+                  updateDraft(['finalCta', 'title'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Descricao do CTA final">
+              <Textarea
+                value={landingDraft.finalCta.description}
+                onChange={(event) =>
+                  updateDraft(['finalCta', 'description'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <div className="grid gap-4 md:grid-cols-2">
+              <FieldBlock label="Botao principal do CTA final">
+                <Input
+                  value={landingDraft.finalCta.primaryLabel}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['finalCta', 'primaryLabel'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Link do botao principal">
+                <Input
+                  value={landingDraft.finalCta.primaryHref}
+                  onChange={(event) =>
+                    updateDraft(['finalCta', 'primaryHref'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Botao secundario do CTA final">
+                <Input
+                  value={landingDraft.finalCta.secondaryLabel}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['finalCta', 'secondaryLabel'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Link do botao secundario">
+                <Input
+                  value={landingDraft.finalCta.secondaryHref}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['finalCta', 'secondaryHref'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Marca do rodape">
+                <Input
+                  value={landingDraft.footer.brandLine}
+                  onChange={(event) =>
+                    updateDraft(['footer', 'brandLine'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Nota do rodape">
+                <Input
+                  value={landingDraft.footer.note}
+                  onChange={(event) =>
+                    updateDraft(['footer', 'note'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+            </div>
+            <div className="rounded-[24px] border border-border/70 bg-white/82 p-4">
+              <div className="mb-4">
+                <p className="text-sm font-medium text-foreground">
+                  Ordem das secoes da landing
+                </p>
+                <p className="text-xs leading-6 text-muted-foreground">
+                  O preview e a pagina publicada respeitam esta ordem.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3">
+                {landingDraft.sectionOrder.map((sectionKey, index) => (
+                  <div
+                    key={`${sectionKey}-${index}`}
+                    className="flex items-center justify-between rounded-[18px] border border-border/70 bg-background px-4 py-3"
+                  >
+                    <span className="text-sm font-medium text-foreground">
+                      {sectionKey}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          moveListItem(['sectionOrder'], index, -1)
+                        }
+                      >
+                        <ArrowUp className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => moveListItem(['sectionOrder'], index, 1)}
+                      >
+                        <ArrowDown className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="features">
+          <AccordionTrigger>Cards de recursos</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4">
+            <div className="flex items-center justify-between rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Lista de recursos
+                </p>
+                <p className="text-xs leading-6 text-muted-foreground">
+                  Controle titulo, texto, icone e tom visual de cada card.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() =>
+                  addListItem(
+                    ['features', 'items'],
+                    buildContentItem('landing-feature')
+                  )
+                }
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Adicionar card
+              </Button>
+            </div>
+            {landingDraft.features.items.map((item, index) => (
+              <ItemShell
+                key={item.id}
+                title={item.title || `Recurso ${index + 1}`}
+                onMoveUp={() => moveListItem(['features', 'items'], index, -1)}
+                onMoveDown={() => moveListItem(['features', 'items'], index, 1)}
+                onRemove={() => removeListItem(['features', 'items'], index)}
+              >
+                <FieldBlock label="Titulo">
+                  <Input
+                    value={item.title}
+                    onChange={(event) =>
+                      updateListItem(
+                        ['features', 'items'],
+                        index,
+                        'title',
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <FieldBlock label="Descricao">
+                  <Textarea
+                    value={item.description}
+                    onChange={(event) =>
+                      updateListItem(
+                        ['features', 'items'],
+                        index,
+                        'description',
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FieldBlock label="Icone">
+                    <IconSelectField
+                      value={item.icon}
+                      onValueChange={(nextValue) =>
+                        updateListItem(
+                          ['features', 'items'],
+                          index,
+                          'icon',
+                          nextValue
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Tom visual">
+                    <ToneSelectField
+                      value={item.tone}
+                      onValueChange={(nextValue) =>
+                        updateListItem(
+                          ['features', 'items'],
+                          index,
+                          'tone',
+                          nextValue
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+              </ItemShell>
+            ))}
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="faq">
+          <AccordionTrigger>FAQ e etapas do fluxo</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4">
+            <div className="flex items-center justify-between rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Etapas do fluxo
+                </p>
+                <p className="text-xs leading-6 text-muted-foreground">
+                  Mude numero, texto e icone de cada etapa da jornada.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => addListItem(['flow', 'items'], buildStepItem())}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Adicionar etapa
+              </Button>
+            </div>
+            {landingDraft.flow.items.map((item, index) => (
+              <ItemShell
+                key={item.id}
+                title={item.title || `Etapa ${index + 1}`}
+                onMoveUp={() => moveListItem(['flow', 'items'], index, -1)}
+                onMoveDown={() => moveListItem(['flow', 'items'], index, 1)}
+                onRemove={() => removeListItem(['flow', 'items'], index)}
+              >
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FieldBlock label="Numero">
+                    <Input
+                      value={item.step}
+                      onChange={(event) =>
+                        updateListItem(
+                          ['flow', 'items'],
+                          index,
+                          'step',
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Icone">
+                    <IconSelectField
+                      value={item.icon}
+                      onValueChange={(nextValue) =>
+                        updateListItem(
+                          ['flow', 'items'],
+                          index,
+                          'icon',
+                          nextValue
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Titulo">
+                  <Input
+                    value={item.title}
+                    onChange={(event) =>
+                      updateListItem(
+                        ['flow', 'items'],
+                        index,
+                        'title',
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <FieldBlock label="Descricao">
+                  <Textarea
+                    value={item.description}
+                    onChange={(event) =>
+                      updateListItem(
+                        ['flow', 'items'],
+                        index,
+                        'description',
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+              </ItemShell>
+            ))}
+            <div className="flex items-center justify-between rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Perguntas do FAQ
+                </p>
+                <p className="text-xs leading-6 text-muted-foreground">
+                  Adicione, reordene ou remova itens do FAQ.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => addListItem(['faq', 'items'], buildFaqItem())}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Adicionar pergunta
+              </Button>
+            </div>
+            {landingDraft.faq.items.map((item, index) => (
+              <ItemShell
+                key={item.id}
+                title={item.question || `Pergunta ${index + 1}`}
+                onMoveUp={() => moveListItem(['faq', 'items'], index, -1)}
+                onMoveDown={() => moveListItem(['faq', 'items'], index, 1)}
+                onRemove={() => removeListItem(['faq', 'items'], index)}
+              >
+                <FieldBlock label="Pergunta">
+                  <Input
+                    value={item.question}
+                    onChange={(event) =>
+                      updateListItem(
+                        ['faq', 'items'],
+                        index,
+                        'question',
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <FieldBlock label="Resposta">
+                  <Textarea
+                    value={item.answer}
+                    onChange={(event) =>
+                      updateListItem(
+                        ['faq', 'items'],
+                        index,
+                        'answer',
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+              </ItemShell>
+            ))}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+  }
+
+  function renderLoginEditor() {
+    return (
+      <Accordion
+        type="multiple"
+        defaultValue={['intro', 'auth']}
+        className="flex flex-col gap-4"
+      >
+        <AccordionItem value="intro">
+          <AccordionTrigger>Painel esquerdo da experiencia</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4">
+            <SwitchRow
+              title="Exibir painel esquerdo"
+              description="Se desligar, o card de autenticacao assume protagonismo total."
+              checked={loginDraft.intro.visible}
+              onCheckedChange={(checked) =>
+                updateDraft(['intro', 'visible'], checked)
+              }
+            />
+            <FieldBlock label="Badge">
+              <Input
+                value={loginDraft.intro.badgeText}
+                onChange={(event) =>
+                  updateDraft(['intro', 'badgeText'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Titulo">
+              <Input
+                value={loginDraft.intro.title}
+                onChange={(event) =>
+                  updateDraft(['intro', 'title'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Titulo em destaque">
+              <Input
+                value={loginDraft.intro.accentTitle}
+                onChange={(event) =>
+                  updateDraft(['intro', 'accentTitle'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <FieldBlock label="Descricao">
+              <Textarea
+                value={loginDraft.intro.description}
+                onChange={(event) =>
+                  updateDraft(['intro', 'description'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <div className="grid gap-4 md:grid-cols-2">
+              <FieldBlock label="Eyebrow da nota">
+                <Input
+                  value={loginDraft.intro.noteEyebrow}
+                  onChange={(event) =>
+                    updateDraft(['intro', 'noteEyebrow'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Nota">
+                <Textarea
+                  value={loginDraft.intro.noteText}
+                  onChange={(event) =>
+                    updateDraft(['intro', 'noteText'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+            </div>
+            <div className="flex items-center justify-between rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Highlights do painel
+                </p>
+                <p className="text-xs leading-6 text-muted-foreground">
+                  Adicione cards para tornar o login mais amigavel e
+                  explicativo.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() =>
+                  addListItem(
+                    ['intro', 'highlights'],
+                    buildLoginHighlightItem()
+                  )
+                }
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Adicionar destaque
+              </Button>
+            </div>
+            {loginDraft.intro.highlights.map((item, index) => (
+              <ItemShell
+                key={item.id}
+                title={item.title || `Destaque ${index + 1}`}
+                onMoveUp={() =>
+                  moveListItem(['intro', 'highlights'], index, -1)
+                }
+                onMoveDown={() =>
+                  moveListItem(['intro', 'highlights'], index, 1)
+                }
+                onRemove={() => removeListItem(['intro', 'highlights'], index)}
+              >
+                <FieldBlock label="Titulo">
+                  <Input
+                    value={item.title}
+                    onChange={(event) =>
+                      updateListItem(
+                        ['intro', 'highlights'],
+                        index,
+                        'title',
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <FieldBlock label="Descricao">
+                  <Textarea
+                    value={item.description}
+                    onChange={(event) =>
+                      updateListItem(
+                        ['intro', 'highlights'],
+                        index,
+                        'description',
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FieldBlock label="Icone">
+                    <IconSelectField
+                      value={item.icon}
+                      onValueChange={(nextValue) =>
+                        updateListItem(
+                          ['intro', 'highlights'],
+                          index,
+                          'icon',
+                          nextValue
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Tom visual">
+                    <ToneSelectField
+                      value={item.tone}
+                      onValueChange={(nextValue) =>
+                        updateListItem(
+                          ['intro', 'highlights'],
+                          index,
+                          'tone',
+                          nextValue
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+              </ItemShell>
+            ))}
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="auth">
+          <AccordionTrigger>Card de autenticacao</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4">
+            <FieldBlock label="Badge">
+              <Input
+                value={loginDraft.auth.badgeText}
+                onChange={(event) =>
+                  updateDraft(['auth', 'badgeText'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <div className="grid gap-4 md:grid-cols-2">
+              <FieldBlock label="Marca">
+                <Input
+                  value={loginDraft.auth.brandText}
+                  onChange={(event) =>
+                    updateDraft(['auth', 'brandText'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Titulo">
+                <Input
+                  value={loginDraft.auth.title}
+                  onChange={(event) =>
+                    updateDraft(['auth', 'title'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+            </div>
+            <FieldBlock label="Descricao">
+              <Textarea
+                value={loginDraft.auth.description}
+                onChange={(event) =>
+                  updateDraft(['auth', 'description'], event.target.value)
+                }
+              />
+            </FieldBlock>
+            <div className="grid gap-4 md:grid-cols-2">
+              <FieldBlock label="Aba entrar">
+                <Input
+                  value={loginDraft.auth.loginTabLabel}
+                  onChange={(event) =>
+                    updateDraft(['auth', 'loginTabLabel'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Aba criar conta">
+                <Input
+                  value={loginDraft.auth.registerTabLabel}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['auth', 'registerTabLabel'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Label de email">
+                <Input
+                  value={loginDraft.auth.emailLabel}
+                  onChange={(event) =>
+                    updateDraft(['auth', 'emailLabel'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Label de senha">
+                <Input
+                  value={loginDraft.auth.passwordLabel}
+                  onChange={(event) =>
+                    updateDraft(['auth', 'passwordLabel'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Label de nome">
+                <Input
+                  value={loginDraft.auth.firstNameLabel}
+                  onChange={(event) =>
+                    updateDraft(['auth', 'firstNameLabel'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Label de sobrenome">
+                <Input
+                  value={loginDraft.auth.lastNameLabel}
+                  onChange={(event) =>
+                    updateDraft(['auth', 'lastNameLabel'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Botao entrar">
+                <Input
+                  value={loginDraft.auth.loginButtonLabel}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['auth', 'loginButtonLabel'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Botao criar conta">
+                <Input
+                  value={loginDraft.auth.registerButtonLabel}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['auth', 'registerButtonLabel'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Eyebrow do rodape">
+                <Input
+                  value={loginDraft.auth.footerEyebrow}
+                  onChange={(event) =>
+                    updateDraft(['auth', 'footerEyebrow'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Voltar para a landing">
+                <Input
+                  value={loginDraft.auth.backToLandingLabel}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['auth', 'backToLandingLabel'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+            </div>
+            <FieldBlock label="Texto do rodape">
+              <Textarea
+                value={loginDraft.auth.footerText}
+                onChange={(event) =>
+                  updateDraft(['auth', 'footerText'], event.target.value)
+                }
+              />
+            </FieldBlock>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+  }
+
+  return (
+    <Card className="overflow-hidden">
+      <CardHeader className="border-b border-border/70">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-3">
+            <Badge className="rounded-full border-cosmic/20 bg-cosmic/10 px-4 py-1.5 text-cosmic">
+              <Sparkles className="mr-2 h-3.5 w-3.5" />
+              editor premium da experiencia web
+            </Badge>
+            <div className="flex flex-col gap-2">
+              <CardTitle className="text-3xl">
+                Landing e login totalmente editaveis
+              </CardTitle>
+              <CardDescription className="max-w-3xl text-sm leading-7">
+                Somente administradores podem editar, salvar rascunho, publicar,
+                restaurar e reorganizar a experiencia publica da Lyra.
+              </CardDescription>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <ToggleGroup
+              type="single"
+              value={pageKey}
+              onValueChange={(value) =>
+                value && setPageKey(value as SitePageKey)
+              }
+            >
+              <ToggleGroupItem value="landing">Landing</ToggleGroupItem>
+              <ToggleGroupItem value="login">Login</ToggleGroupItem>
+            </ToggleGroup>
+            <Button
+              variant="secondary"
+              onClick={() => runAdminAction('restoreDefaults')}
+              disabled={publishing || loading}
+            >
+              Restaurar padrao
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => runAdminAction('restorePublished')}
+              disabled={publishing || loading}
+            >
+              Restaurar publicado
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => saveDraft(draftConfig)}
+              disabled={saving || loading}
+            >
+              <Save className="mr-2 h-4 w-4" />
+              Salvar rascunho
+            </Button>
+            <Button
+              onClick={() => runAdminAction('publish')}
+              disabled={publishing || loading}
+            >
+              <Upload className="mr-2 h-4 w-4" />
+              Publicar agora
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="p-0">
+        <ResizablePanelGroup direction="horizontal" className="min-h-[980px]">
+          <ResizablePanel defaultSize={44} minSize={36}>
+            <ScrollArea className="h-[980px]">
+              <div className="flex flex-col gap-6 p-6">
+                <div className="rounded-[24px] border border-border/70 bg-white/82 p-5">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p className="text-xs font-semibold uppercase tracking-[0.26em] text-muted-foreground">
+                      publicacao
+                    </p>
+                    <Badge
+                      className={
+                        hasDraftChanges
+                          ? 'rounded-full border-accent/20 bg-accent/10 text-accent'
+                          : 'rounded-full border-success/20 bg-success/10 text-success'
+                      }
+                    >
+                      {hasDraftChanges
+                        ? 'rascunho diferente do publicado'
+                        : 'sem divergencia com o publicado'}
+                    </Badge>
+                  </div>
+                  <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                    Ultima atualizacao:{' '}
+                    {meta.updatedAt ?? 'ainda nao publicada'}.
+                  </p>
+                  <p className="text-sm leading-7 text-muted-foreground">
+                    Atualizado por: {meta.updatedByUserId ?? 'sistema padrao'}.
+                  </p>
+                </div>
+
+                <Tabs defaultValue="content" className="flex flex-col gap-5">
+                  <TabsList className="grid grid-cols-2">
+                    <TabsTrigger value="content">
+                      <Layers3 className="mr-2 h-4 w-4" />
+                      Conteudo guiado
+                    </TabsTrigger>
+                    <TabsTrigger value="json">
+                      <FileJson className="mr-2 h-4 w-4" />
+                      JSON completo
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="content" className="m-0">
+                    {loading ? (
+                      <Card className="border-dashed">
+                        <CardContent className="px-6 py-10 text-sm text-muted-foreground">
+                          Carregando editor...
+                        </CardContent>
+                      </Card>
+                    ) : pageKey === 'landing' ? (
+                      renderLandingEditor()
+                    ) : (
+                      renderLoginEditor()
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="json" className="m-0">
+                    <Card className="border-border/70 bg-white/82">
+                      <CardHeader>
+                        <CardTitle className="text-xl">Modo avancado</CardTitle>
+                        <CardDescription>
+                          Aqui voce consegue editar a estrutura completa da{' '}
+                          {pageKey === 'landing' ? 'landing' : 'tela de login'}.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="flex flex-col gap-4">
+                        <Textarea
+                          value={jsonValue}
+                          onChange={(event) => setJsonValue(event.target.value)}
+                          className="min-h-[560px] font-mono text-xs leading-6"
+                        />
+                        <div className="flex flex-wrap gap-3">
+                          <Button
+                            variant="secondary"
+                            onClick={applyJsonLocally}
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                            Aplicar JSON no preview
+                          </Button>
+                          <Button onClick={saveJsonDraft} disabled={saving}>
+                            <Save className="mr-2 h-4 w-4" />
+                            Salvar JSON como rascunho
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </Tabs>
+              </div>
+            </ScrollArea>
+          </ResizablePanel>
+
+          <ResizableHandle withHandle />
+
+          <ResizablePanel defaultSize={56} minSize={40}>
+            <div className="h-[980px] bg-[linear-gradient(180deg,rgba(249,248,252,0.96),rgba(255,255,255,0.98))] p-6">
+              <div className="mb-4 flex items-center justify-between rounded-[24px] border border-border/70 bg-white/82 px-5 py-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.26em] text-muted-foreground">
+                    preview administrativo
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    O painel ao lado renderiza a experiencia com o rascunho
+                    atual.
+                  </p>
+                </div>
+                <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary">
+                  {pageKey === 'landing' ? 'Landing' : 'Login'}
+                </Badge>
+              </div>
+
+              <div className="h-[900px] overflow-hidden rounded-[32px] border border-border/70 bg-white shadow-[0_30px_90px_-46px_rgba(22,21,48,0.34)]">
+                <ScrollArea className="h-full">{preview}</ScrollArea>
+              </div>
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </CardContent>
+    </Card>
+  );
+}
