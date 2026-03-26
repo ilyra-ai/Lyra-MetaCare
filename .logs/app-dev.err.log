@@ -1117,3 +1117,1053 @@ Watchpack Error (initial scan): Error: EINVAL: invalid argument, lstat 'C:\swapf
   path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
   page: '/'
 }
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
