@@ -81,6 +81,7 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] `admin/page-builder` validado em navegador real.
 - [~] `appointments` em revisao estrutural e visual apos validacao runtime real.
 - [x] `appointments` estabilizado sem erro fatal de runtime apos reestruturacao visual do modulo.
+- [x] `profile` validado em navegador real e ajustado para o tema claro premium.
 - [~] Varredura completa de menus, dropdowns, CRUDs, onboarding e configuracoes ainda em execucao.
 
 ## O que ja foi concluido de forma real
