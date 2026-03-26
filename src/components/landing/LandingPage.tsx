@@ -851,10 +851,10 @@ export function LandingPage({
                   <Badge className="w-fit rounded-full border-cosmic/20 bg-cosmic/10 px-3 py-1 text-cosmic">
                     {config.hero.quickAuthBadge}
                   </Badge>
-                  <CardTitle className="text-2xl">
+                  <CardTitle style={textStyles.cardTitle}>
                     {config.hero.quickAuthTitle}
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription style={textStyles.cardBody}>
                     {config.hero.quickAuthDescription}
                   </CardDescription>
                 </CardHeader>
@@ -904,6 +904,7 @@ export function LandingPage({
                       <Button
                         type="submit"
                         className="flex-1"
+                        style={textStyles.buttonLabel}
                         disabled={
                           previewMode ||
                           submitting ||
@@ -920,6 +921,7 @@ export function LandingPage({
                         type="button"
                         variant="secondary"
                         className="flex-1"
+                        style={textStyles.buttonLabel}
                         onClick={() => navigateTo(config.hero.primaryCtaHref)}
                         disabled={previewMode}
                       >
@@ -935,10 +937,10 @@ export function LandingPage({
                   <Badge className="w-fit rounded-full border-border bg-white/85 px-3 py-1 text-foreground">
                     {config.hero.previewBadge}
                   </Badge>
-                  <CardTitle className="text-2xl">
+                  <CardTitle style={textStyles.cardTitle}>
                     {config.hero.previewTitle}
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription style={textStyles.cardBody}>
                     {config.hero.previewDescription}
                   </CardDescription>
                 </CardHeader>
@@ -959,10 +961,16 @@ export function LandingPage({
                         >
                           <ItemIcon className="h-4.5 w-4.5" />
                         </div>
-                        <p className="mt-4 font-display text-lg font-semibold text-foreground">
+                        <p
+                          className="mt-4 font-display font-semibold text-foreground"
+                          style={textStyles.cardTitle}
+                        >
                           {item.title}
                         </p>
-                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        <p
+                          className="mt-2 leading-6 text-muted-foreground"
+                          style={textStyles.cardBody}
+                        >
                           {item.description}
                         </p>
                       </div>
@@ -994,7 +1002,9 @@ export function LandingPage({
               </p>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground">{config.footer.note}</p>
+          <p className="text-muted-foreground" style={textStyles.cardBody}>
+            {config.footer.note}
+          </p>
         </div>
       </footer>
     </div>

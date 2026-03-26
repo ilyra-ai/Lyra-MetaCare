@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { CSSProperties, FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import {
@@ -66,6 +66,36 @@ export function LoginExperience({
   const [submitMode, setSubmitMode] = useState<SubmitMode>(null);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+
+  const textStyles = {
+    introTitle: {
+      fontSize: `clamp(${(2.5 * config.typography.introTitle).toFixed(3)}rem, ${(3.35 * config.typography.introTitle).toFixed(3)}rem, ${(4.2 * config.typography.introTitle).toFixed(3)}rem)`,
+    } satisfies CSSProperties,
+    introBody: {
+      fontSize: `clamp(${(0.98 * config.typography.introBody).toFixed(3)}rem, ${(1.03 * config.typography.introBody).toFixed(3)}rem, ${(1.12 * config.typography.introBody).toFixed(3)}rem)`,
+    } satisfies CSSProperties,
+    highlightTitle: {
+      fontSize: `clamp(${(1.02 * config.typography.highlightTitle).toFixed(3)}rem, ${(1.12 * config.typography.highlightTitle).toFixed(3)}rem, ${(1.28 * config.typography.highlightTitle).toFixed(3)}rem)`,
+    } satisfies CSSProperties,
+    highlightBody: {
+      fontSize: `clamp(${(0.92 * config.typography.highlightBody).toFixed(3)}rem, ${(0.98 * config.typography.highlightBody).toFixed(3)}rem, ${(1.04 * config.typography.highlightBody).toFixed(3)}rem)`,
+    } satisfies CSSProperties,
+    authTitle: {
+      fontSize: `clamp(${(1.8 * config.typography.authTitle).toFixed(3)}rem, ${(2.1 * config.typography.authTitle).toFixed(3)}rem, ${(2.5 * config.typography.authTitle).toFixed(3)}rem)`,
+    } satisfies CSSProperties,
+    authBody: {
+      fontSize: `clamp(${(0.92 * config.typography.authBody).toFixed(3)}rem, ${(0.98 * config.typography.authBody).toFixed(3)}rem, ${(1.05 * config.typography.authBody).toFixed(3)}rem)`,
+    } satisfies CSSProperties,
+    fieldLabel: {
+      fontSize: `clamp(${(0.82 * config.typography.fieldLabel).toFixed(3)}rem, ${(0.88 * config.typography.fieldLabel).toFixed(3)}rem, ${(0.96 * config.typography.fieldLabel).toFixed(3)}rem)`,
+    } satisfies CSSProperties,
+    buttonLabel: {
+      fontSize: `clamp(${(0.92 * config.typography.buttonLabel).toFixed(3)}rem, ${(0.98 * config.typography.buttonLabel).toFixed(3)}rem, ${(1.04 * config.typography.buttonLabel).toFixed(3)}rem)`,
+    } satisfies CSSProperties,
+    footerText: {
+      fontSize: `clamp(${(0.92 * config.typography.footerText).toFixed(3)}rem, ${(0.98 * config.typography.footerText).toFixed(3)}rem, ${(1.04 * config.typography.footerText).toFixed(3)}rem)`,
+    } satisfies CSSProperties,
+  };
 
   useEffect(() => {
     if (overrideConfig) {
@@ -190,13 +220,19 @@ export function LoginExperience({
                   <Sparkles className="mr-2 h-3.5 w-3.5" />
                   {config.intro.badgeText}
                 </Badge>
-                <CardTitle className="max-w-2xl text-4xl leading-tight sm:text-5xl">
+                <CardTitle
+                  className="max-w-2xl leading-tight"
+                  style={textStyles.introTitle}
+                >
                   {config.intro.title}
                   <span className="mt-2 block text-gradient-aurora">
                     {config.intro.accentTitle}
                   </span>
                 </CardTitle>
-                <CardDescription className="max-w-2xl text-base leading-8 sm:text-lg">
+                <CardDescription
+                  className="max-w-2xl leading-8"
+                  style={textStyles.introBody}
+                >
                   {config.intro.description}
                 </CardDescription>
               </CardHeader>
@@ -218,10 +254,16 @@ export function LoginExperience({
                       >
                         <ItemIcon className="h-5 w-5" />
                       </div>
-                      <p className="mt-4 font-display text-xl font-semibold text-foreground">
+                      <p
+                        className="mt-4 font-display font-semibold text-foreground"
+                        style={textStyles.highlightTitle}
+                      >
                         {item.title}
                       </p>
-                      <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                      <p
+                        className="mt-2 leading-7 text-muted-foreground"
+                        style={textStyles.highlightBody}
+                      >
                         {item.description}
                       </p>
                     </div>
@@ -233,7 +275,10 @@ export function LoginExperience({
                 <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
                   {config.intro.noteEyebrow}
                 </p>
-                <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+                <p
+                  className="max-w-2xl leading-7 text-muted-foreground"
+                  style={textStyles.footerText}
+                >
                   {config.intro.noteText}
                 </p>
               </CardFooter>
@@ -259,8 +304,13 @@ export function LoginExperience({
               <p className="mt-4 font-display text-3xl font-bold lowercase text-gradient-hero">
                 {config.auth.brandText}
               </p>
-              <CardTitle className="text-3xl">{config.auth.title}</CardTitle>
-              <CardDescription className="max-w-sm text-sm leading-7">
+              <CardTitle style={textStyles.authTitle}>
+                {config.auth.title}
+              </CardTitle>
+              <CardDescription
+                className="max-w-sm leading-7"
+                style={textStyles.authBody}
+              >
                 {config.auth.description}
               </CardDescription>
             </CardHeader>
@@ -279,7 +329,10 @@ export function LoginExperience({
                 <TabsContent value="login" className="space-y-5">
                   <form className="space-y-5" onSubmit={handleLogin}>
                     <div className="space-y-2">
-                      <Label htmlFor="login-email">
+                      <Label
+                        htmlFor="login-email"
+                        style={textStyles.fieldLabel}
+                      >
                         {config.auth.emailLabel}
                       </Label>
                       <div className="relative">
@@ -299,7 +352,10 @@ export function LoginExperience({
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="login-password">
+                      <Label
+                        htmlFor="login-password"
+                        style={textStyles.fieldLabel}
+                      >
                         {config.auth.passwordLabel}
                       </Label>
                       <div className="relative">
@@ -341,6 +397,7 @@ export function LoginExperience({
                       type="submit"
                       size="lg"
                       className="w-full"
+                      style={textStyles.buttonLabel}
                       disabled={
                         previewMode ||
                         submitMode === 'login' ||
@@ -360,7 +417,10 @@ export function LoginExperience({
                   <form className="space-y-5" onSubmit={handleRegister}>
                     <div className="grid gap-5 sm:grid-cols-2">
                       <div className="space-y-2">
-                        <Label htmlFor="register-first-name">
+                        <Label
+                          htmlFor="register-first-name"
+                          style={textStyles.fieldLabel}
+                        >
                           {config.auth.firstNameLabel}
                         </Label>
                         <div className="relative">
@@ -379,7 +439,10 @@ export function LoginExperience({
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="register-last-name">
+                        <Label
+                          htmlFor="register-last-name"
+                          style={textStyles.fieldLabel}
+                        >
                           {config.auth.lastNameLabel}
                         </Label>
                         <Input
@@ -395,7 +458,10 @@ export function LoginExperience({
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="register-email">
+                      <Label
+                        htmlFor="register-email"
+                        style={textStyles.fieldLabel}
+                      >
                         {config.auth.emailLabel}
                       </Label>
                       <div className="relative">
@@ -415,7 +481,10 @@ export function LoginExperience({
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="register-password">
+                      <Label
+                        htmlFor="register-password"
+                        style={textStyles.fieldLabel}
+                      >
                         {config.auth.passwordLabel}
                       </Label>
                       <div className="relative">
@@ -458,6 +527,7 @@ export function LoginExperience({
                       size="lg"
                       variant="accent"
                       className="w-full"
+                      style={textStyles.buttonLabel}
                       disabled={
                         previewMode ||
                         submitMode === 'register' ||
@@ -481,12 +551,16 @@ export function LoginExperience({
               <p className="text-xs font-semibold uppercase tracking-[0.26em] text-muted-foreground">
                 {config.auth.footerEyebrow}
               </p>
-              <p className="text-sm leading-7 text-muted-foreground">
+              <p
+                className="leading-7 text-muted-foreground"
+                style={textStyles.footerText}
+              >
                 {config.auth.footerText}
               </p>
               <Button
                 variant="ghost"
                 className="px-0"
+                style={textStyles.buttonLabel}
                 onClick={() => navigateTo('/')}
                 disabled={previewMode}
               >

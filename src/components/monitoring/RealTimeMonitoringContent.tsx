@@ -141,7 +141,10 @@ export function RealTimeMonitoringContent({
                 <Badge variant="cosmic">plano {currentPlanKey}</Badge>
               </div>
               <div className="rounded-full border border-border bg-white/80 px-4 py-2 text-sm text-muted-foreground shadow-sm">
-                Última sincronização: <span className="font-medium text-foreground">{lastSyncLabel}</span>
+                Última sincronização:{' '}
+                <span className="font-medium text-foreground">
+                  {lastSyncLabel}
+                </span>
               </div>
             </div>
           </div>

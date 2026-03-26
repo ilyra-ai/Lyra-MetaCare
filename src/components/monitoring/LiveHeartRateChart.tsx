@@ -56,7 +56,7 @@ export function LiveHeartRateChart({ initialData }: { initialData: number }) {
       <CardHeader className="gap-3">
         <div className="flex items-center justify-between gap-3">
           <CardTitle className="text-xl">Frequência cardíaca ao vivo</CardTitle>
-          <Badge variant="accent">linha contínua</Badge>
+          <Badge variant="info">linha contínua</Badge>
         </div>
       </CardHeader>
       <CardContent className="flex-1 rounded-b-[24px] bg-[linear-gradient(180deg,rgba(255,255,255,0.84),rgba(245,247,255,0.66))] p-5">
