@@ -877,5 +877,9 @@ npm run check:types
 - [x] Modulo renomeado para `Lyra Customaze UI UX`, preservando `implement_elementor_lyra.py` por compatibilidade operacional.
 - [x] Reexport agregador `src/lib/site-page-config/index.ts` criado para apps consumidores.
 - [x] Camada generica de armazenamento extraida para `modules/lyra-customaze-ui-ux/src/site-page-config/storage.ts`.
-- [ ] Validacao final em navegador real do contexto `app` ainda pendente.
+- [x] Helper reutilizavel de runtime criado em `modules/lyra-customaze-ui-ux/src/site-page-config/runtime.ts` para escalar tipografia e dimensoes no app consumidor.
+- [x] Hook real `src/hooks/use-public-site-page-config.ts` criado para consumir configuracoes publicadas do builder no frontend cliente.
+- [x] Consumo real do `page-config/app` ligado em `sidebar`, `header`, `mobile sidebar`, `appointments`, `monitoring` e `profile`.
+- [x] Publicacao real via API administrativa do `page-config/app` validada em navegador autenticado, com reflexo visual imediato no app interno.
+- [x] Validacao final em navegador real do contexto `app` concluida para `dashboard`, `appointments`, `monitoring` e `profile`.
 - [ ] Implementacao completa desta task ainda segue em andamento.

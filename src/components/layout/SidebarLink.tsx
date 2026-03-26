@@ -11,6 +11,8 @@ type SidebarLinkProps = {
   description?: string;
   className?: string;
   onClick?: () => void;
+  iconScale?: number;
+  labelScale?: number;
 };
 
 export function SidebarLink({
@@ -20,6 +22,8 @@ export function SidebarLink({
   description,
   className,
   onClick,
+  iconScale = 1,
+  labelScale = 1,
 }: SidebarLinkProps) {
   const pathname = usePathname();
   const isActive = pathname === href;
@@ -42,18 +46,35 @@ export function SidebarLink({
             ? 'bg-primary text-primary-foreground shadow-teal'
             : 'bg-white/70 text-muted-foreground group-hover:bg-white group-hover:text-foreground'
         )}
+        style={{
+          height: `calc(2.5rem * ${iconScale})`,
+          width: `calc(2.5rem * ${iconScale})`,
+        }}
       >
-        <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
+        <Icon
+          className="h-[18px] w-[18px]"
+          strokeWidth={1.8}
+          style={{
+            height: `calc(1.125rem * ${iconScale})`,
+            width: `calc(1.125rem * ${iconScale})`,
+          }}
+        />
       </span>
 
       <span className="flex min-w-0 flex-1 flex-col items-start">
-        <span className="truncate text-sm font-semibold">{children}</span>
+        <span
+          className="truncate text-sm font-semibold"
+          style={{ fontSize: `calc(0.875rem * ${labelScale})` }}
+        >
+          {children}
+        </span>
         {description ? (
           <span
             className={cn(
               'truncate text-xs',
               isActive ? 'text-primary/80' : 'text-muted-foreground'
             )}
+            style={{ fontSize: `calc(0.75rem * ${labelScale})` }}
           >
             {description}
           </span>

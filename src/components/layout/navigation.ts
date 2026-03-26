@@ -18,6 +18,8 @@ import {
   UsersRound,
 } from 'lucide-react';
 
+import type { AppPageConfig } from '@/lib/site-page-config/schema';
+
 export type NavigationItem = {
   href: string;
   label: string;
@@ -28,13 +30,21 @@ export type NavigationItem = {
   shortcut?: string;
 };
 
-export const navigationItems: NavigationItem[] = [
+type NavigationSectionKey = 'principal' | 'guidedFlow' | 'personal' | 'admin';
+
+type NavigationDefinition = NavigationItem & {
+  sectionKey: NavigationSectionKey;
+  visible?: boolean;
+};
+
+export const navigationItems: NavigationDefinition[] = [
   {
     href: '/',
     label: 'Dashboard',
     description: 'Visão central da energia, sono, astro e insights de IA.',
     icon: LayoutDashboard,
     section: 'Principal',
+    sectionKey: 'principal',
     shortcut: 'G D',
   },
   {
@@ -44,6 +54,7 @@ export const navigationItems: NavigationItem[] = [
       'Protocolos personalizados de foco, ritmo, nutrição e recuperação.',
     icon: Sparkles,
     section: 'Principal',
+    sectionKey: 'principal',
     shortcut: 'G P',
   },
   {
@@ -52,6 +63,7 @@ export const navigationItems: NavigationItem[] = [
     description: 'Evolução diária com progresso, streaks e prioridades suaves.',
     icon: Target,
     section: 'Principal',
+    sectionKey: 'principal',
     shortcut: 'G M',
   },
   {
@@ -61,6 +73,7 @@ export const navigationItems: NavigationItem[] = [
       'Agenda de encontros, profissionais e organização do seu fluxo.',
     icon: CalendarDays,
     section: 'Fluxo Guiado',
+    sectionKey: 'guidedFlow',
     shortcut: 'G A',
   },
   {
@@ -69,6 +82,7 @@ export const navigationItems: NavigationItem[] = [
     description: 'Leituras em tempo real, tendências e estados do momento.',
     icon: Radio,
     section: 'Fluxo Guiado',
+    sectionKey: 'guidedFlow',
     shortcut: 'G R',
   },
   {
@@ -78,6 +92,7 @@ export const navigationItems: NavigationItem[] = [
       'Conversa inteligente com contexto biométrico, emocional e astral.',
     icon: BrainCircuit,
     section: 'Fluxo Guiado',
+    sectionKey: 'guidedFlow',
     shortcut: 'G C',
   },
   {
@@ -86,6 +101,7 @@ export const navigationItems: NavigationItem[] = [
     description: 'Conexão e sincronização com wearables e integrações.',
     icon: Smartphone,
     section: 'Pessoal',
+    sectionKey: 'personal',
   },
   {
     href: '/profile',
@@ -93,6 +109,7 @@ export const navigationItems: NavigationItem[] = [
     description: 'Dados pessoais, hábitos, preferências e avatar.',
     icon: UserRound,
     section: 'Pessoal',
+    sectionKey: 'personal',
   },
   {
     href: '/admin/dashboard',
@@ -100,6 +117,7 @@ export const navigationItems: NavigationItem[] = [
     description: 'Métricas de negócio, saúde da plataforma e alertas.',
     icon: Compass,
     section: 'Administração',
+    sectionKey: 'admin',
     adminOnly: true,
   },
   {
@@ -108,6 +126,7 @@ export const navigationItems: NavigationItem[] = [
     description: 'Gestão de contas, perfis e permissões.',
     icon: UsersRound,
     section: 'Administração',
+    sectionKey: 'admin',
     adminOnly: true,
   },
   {
@@ -116,6 +135,7 @@ export const navigationItems: NavigationItem[] = [
     description: 'Matriz comercial, capacidades e precificação.',
     icon: Gem,
     section: 'Administração',
+    sectionKey: 'admin',
     adminOnly: true,
   },
   {
@@ -124,6 +144,7 @@ export const navigationItems: NavigationItem[] = [
     description: 'Integridade, latência e confiabilidade dos dados.',
     icon: HeartPulse,
     section: 'Administração',
+    sectionKey: 'admin',
     adminOnly: true,
   },
   {
@@ -132,6 +153,7 @@ export const navigationItems: NavigationItem[] = [
     description: 'Curadoria operacional de hábitos, mensagens e recomendações.',
     icon: ClipboardList,
     section: 'Administração',
+    sectionKey: 'admin',
     adminOnly: true,
   },
   {
@@ -140,6 +162,7 @@ export const navigationItems: NavigationItem[] = [
     description: 'Pesos, missão, parâmetros e segurança operacional da IA.',
     icon: ShieldCheck,
     section: 'Administração',
+    sectionKey: 'admin',
     adminOnly: true,
   },
   {
@@ -148,6 +171,7 @@ export const navigationItems: NavigationItem[] = [
     description: 'Leituras analíticas e exportação executiva.',
     icon: BarChart3,
     section: 'Administração',
+    sectionKey: 'admin',
     adminOnly: true,
   },
   {
@@ -156,6 +180,7 @@ export const navigationItems: NavigationItem[] = [
     description: 'Gestão de design visual e blocos da landing page e login.',
     icon: LayoutDashboard,
     section: 'Administração',
+    sectionKey: 'admin',
     adminOnly: true,
   },
 ];
@@ -178,8 +203,57 @@ export const pageMetaByPath = Object.fromEntries(
   }
 >;
 
-export function getVisibleNavigation(isAdmin: boolean) {
-  return navigationItems.filter((item) => !item.adminOnly || isAdmin);
+function getSectionLabel(
+  sectionKey: NavigationSectionKey,
+  appConfig?: AppPageConfig
+) {
+  if (!appConfig) {
+    return navigationItems.find((item) => item.sectionKey === sectionKey)
+      ?.section;
+  }
+
+  return {
+    principal: appConfig.sidebar.sectionLabels.principal,
+    guidedFlow: appConfig.sidebar.sectionLabels.guidedFlow,
+    personal: appConfig.sidebar.sectionLabels.personal,
+    admin: appConfig.sidebar.sectionLabels.admin,
+  }[sectionKey];
+}
+
+function buildConfiguredNavigation(appConfig?: AppPageConfig) {
+  if (!appConfig) {
+    return navigationItems;
+  }
+
+  const baseItemsByHref = new Map(
+    navigationItems.map((item) => [item.href, item] as const)
+  );
+
+  return appConfig.sidebar.items.map((item) => {
+    const baseItem = baseItemsByHref.get(item.href);
+    const sectionKey = baseItem?.sectionKey ?? 'principal';
+
+    return {
+      href: item.href,
+      label: item.label,
+      description: item.description,
+      icon: baseItem?.icon ?? Sparkles,
+      section: getSectionLabel(sectionKey, appConfig) ?? 'Principal',
+      sectionKey,
+      adminOnly: baseItem?.adminOnly ?? item.href.startsWith('/admin'),
+      shortcut: baseItem?.shortcut,
+      visible: item.visible,
+    } satisfies NavigationDefinition;
+  });
+}
+
+export function getVisibleNavigation(
+  isAdmin: boolean,
+  appConfig?: AppPageConfig
+) {
+  return buildConfiguredNavigation(appConfig).filter(
+    (item) => item.visible !== false && (!item.adminOnly || isAdmin)
+  );
 }
 
 export function groupNavigation(items: NavigationItem[]) {
@@ -193,7 +267,21 @@ export function groupNavigation(items: NavigationItem[]) {
   }, {});
 }
 
-export function getPageMeta(pathname: string) {
+export function getPageMeta(pathname: string, appConfig?: AppPageConfig) {
+  const configuredItem = appConfig
+    ? getVisibleNavigation(true, appConfig).find(
+        (item) => item.href === pathname
+      )
+    : null;
+
+  if (configuredItem) {
+    return {
+      title: configuredItem.label,
+      description: configuredItem.description,
+      icon: configuredItem.icon,
+    };
+  }
+
   return (
     pageMetaByPath[pathname] ?? {
       title: 'Lyra MetaCare',
@@ -204,7 +292,17 @@ export function getPageMeta(pathname: string) {
   );
 }
 
-export function buildBreadcrumb(pathname: string) {
+export function buildBreadcrumb(pathname: string, appConfig?: AppPageConfig) {
+  const configuredItem = appConfig
+    ? getVisibleNavigation(true, appConfig).find(
+        (item) => item.href === pathname
+      )
+    : null;
+
+  if (configuredItem) {
+    return [configuredItem.section, configuredItem.label];
+  }
+
   const segments = pathname.split('/').filter(Boolean);
 
   if (segments.length === 0) {

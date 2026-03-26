@@ -29,6 +29,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
+import { scaleRem } from '@/lib/site-page-config/runtime';
 
 // Exibe um alerta push real baseado em limites de biomarcadores
 const showPushAlert = (metric: string, value: number, threshold: number) => {
@@ -47,6 +49,7 @@ export function RealTimeMonitoringContent({
   voiceUpdatesEnabled?: boolean;
   currentPlanKey?: PlanKey;
 }) {
+  const { config: appConfig } = usePublicSitePageConfig('app');
   const [liveData, setLiveData] = useState({
     heartRate: null as number | null,
     hrv: null as number | null,
@@ -56,6 +59,22 @@ export function RealTimeMonitoringContent({
   });
   const [isSpeaking, setIsSpeaking] = useState(false);
   const hasLiveData = liveData.lastUpdatedAt !== null;
+  const monitoringConfig = appConfig.monitoring;
+  const titleStyle = {
+    fontSize: scaleRem(1.875, appConfig.typography.pageTitle),
+  };
+  const bodyStyle = {
+    fontSize: scaleRem(0.95, appConfig.typography.pageBody),
+  };
+  const cardTitleStyle = {
+    fontSize: scaleRem(1.5, appConfig.typography.cardTitle),
+  };
+  const cardBodyStyle = {
+    fontSize: scaleRem(0.95, appConfig.typography.cardBody),
+  };
+  const buttonStyle = {
+    fontSize: scaleRem(0.875, appConfig.typography.buttonLabel),
+  };
   const lastSyncLabel = liveData.lastUpdatedAt
     ? new Intl.DateTimeFormat('pt-BR', {
         hour: '2-digit',
@@ -122,14 +141,12 @@ export function RealTimeMonitoringContent({
         <CardHeader className="relative gap-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="max-w-3xl">
-              <Badge variant="secondary">telemetria contínua</Badge>
-              <CardTitle className="mt-4 text-3xl">
-                Painel vivo com presença, ritmo e leitura local
+              <Badge variant="secondary">{monitoringConfig.pageEyebrow}</Badge>
+              <CardTitle className="mt-4" style={titleStyle}>
+                {monitoringConfig.pageTitle}
               </CardTitle>
-              <CardDescription className="mt-2 max-w-2xl">
-                Este módulo acompanha sinais recebidos em tempo real e mantém
-                voz, alertas locais e histórico recente em uma superfície mais
-                organizada, suave e útil.
+              <CardDescription className="mt-2 max-w-2xl" style={bodyStyle}>
+                {monitoringConfig.pageDescription}
               </CardDescription>
             </div>
 
@@ -189,12 +206,9 @@ export function RealTimeMonitoringContent({
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
             <Alert className="border-cosmic/20 bg-cosmic-light/60 text-foreground">
               <Sparkles className="text-cosmic" />
-              <AlertTitle>Leitura operacional da Lyra</AlertTitle>
+              <AlertTitle>{monitoringConfig.infoTitle}</AlertTitle>
               <AlertDescription className="leading-7">
-                Os dados deste painel nascem do canal local `realtime-wearable`.
-                Quando o pacote chega, a interface reage na hora, atualiza o
-                gráfico e pode disparar alerta local ou síntese de voz de forma
-                real.
+                {monitoringConfig.infoDescription}
               </AlertDescription>
             </Alert>
 
@@ -205,12 +219,12 @@ export function RealTimeMonitoringContent({
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-                    Contexto instantâneo
+                    {monitoringConfig.heroBadge}
                   </p>
                   <p className="mt-1 text-sm leading-6 text-foreground">
                     {hasLiveData
-                      ? 'O dispositivo está alimentando a sessão atual com sinais recentes.'
-                      : 'Assim que o wearable enviar o primeiro pacote, este painel entra em ritmo automaticamente.'}
+                      ? monitoringConfig.heroTitle
+                      : monitoringConfig.heroDescription}
                   </p>
                 </div>
               </div>
@@ -230,10 +244,11 @@ export function RealTimeMonitoringContent({
 
       <Card className="border-border/70 bg-card/90 backdrop-blur-xl">
         <CardHeader className="gap-3">
-          <CardTitle className="text-2xl">Controles em tempo real</CardTitle>
-          <CardDescription>
-            Acione uma leitura por voz ou confira a política ativa de alertas
-            locais desta sessão.
+          <CardTitle style={cardTitleStyle}>
+            {monitoringConfig.controlsTitle}
+          </CardTitle>
+          <CardDescription style={cardBodyStyle}>
+            {monitoringConfig.controlsDescription}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -249,37 +264,43 @@ export function RealTimeMonitoringContent({
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Button onClick={handleVoiceUpdate} disabled={isSpeaking}>
-              <Mic data-icon="inline-start" />
-              {isSpeaking
-                ? 'Falando agora'
-                : voiceUpdatesEnabled
-                  ? 'Ouvir atualização por voz'
-                  : 'Voz indisponível no plano'}
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() =>
-                toast.info('Alertas locais ativos', {
-                  description:
-                    'A sessão atual acompanha frequência cardíaca elevada e dispara aviso quando o limiar configurado é ultrapassado.',
-                })
-              }
-            >
-              <Bell data-icon="inline-start" />
-              Conferir alertas
-            </Button>
+            {monitoringConfig.showVoiceButton ? (
+              <Button
+                onClick={handleVoiceUpdate}
+                disabled={isSpeaking}
+                style={buttonStyle}
+              >
+                <Mic data-icon="inline-start" />
+                {isSpeaking
+                  ? 'Falando agora'
+                  : voiceUpdatesEnabled
+                    ? 'Ouvir atualização por voz'
+                    : 'Voz indisponível no plano'}
+              </Button>
+            ) : null}
+            {monitoringConfig.showAlertsButton ? (
+              <Button
+                variant="secondary"
+                style={buttonStyle}
+                onClick={() =>
+                  toast.info(monitoringConfig.alertsTitle, {
+                    description: monitoringConfig.alertsDescription,
+                  })
+                }
+              >
+                <Bell data-icon="inline-start" />
+                Conferir alertas
+              </Button>
+            ) : null}
           </div>
         </CardContent>
       </Card>
 
       <Alert className="border-warning/20 bg-warning-light/65 text-foreground">
         <ShieldAlert className="text-warning" />
-        <AlertTitle>Proteção de limiar em execução</AlertTitle>
+        <AlertTitle>{monitoringConfig.alertsTitle}</AlertTitle>
         <AlertDescription className="leading-7">
-          Se a frequência cardíaca ultrapassar 120 BPM em uma leitura recebida,
-          a aplicação dispara um aviso local real e vibração no dispositivo
-          compatível.
+          {monitoringConfig.alertsDescription}
         </AlertDescription>
       </Alert>
     </div>

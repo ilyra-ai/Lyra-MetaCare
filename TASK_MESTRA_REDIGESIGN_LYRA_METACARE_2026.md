@@ -99,6 +99,8 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] `package.json` atualizado com o script `lyra-customaze:install`.
 - [x] `src/lib/site-page-config/index.ts` criado para consolidar os reexports do nucleo segregado.
 - [x] `src/lib/site-page-config/service.ts` passou a consumir utilitarios genericos de armazenamento vindos do modulo reutilizavel.
+- [x] `page-config/app` passou a ser consumido de forma real em `sidebar`, `header`, `mobile sidebar`, `appointments`, `monitoring` e `profile`.
+- [x] Publicacao administrativa real do `page-config/app` validada com reflexo imediato no navegador.
 - [~] Varredura completa de menus, dropdowns, CRUDs, onboarding e configuracoes ainda em execucao.
 
 ## O que ja foi concluido de forma real
@@ -357,6 +359,8 @@ npm run check:types
 - 2026-03-26 28: `implement_elementor_lyra.py` foi criado na raiz e validado em execucao real no proprio projeto, detectando o alvo compativel, alinhando os reexports e registrando o script `lyra-customaze:install` no `package.json`.
 - 2026-03-26 29: a identidade do modulo foi renomeada para `Lyra Customaze UI UX`, mantendo o nome do instalador por compatibilidade com a exigencia anterior do projeto.
 - 2026-03-26 30: a camada generica de armazenamento do builder foi extraida para `modules/lyra-customaze-ui-ux/src/site-page-config/storage.ts`, e o adapter MySQL da Lyra passou a consumir esses utilitarios em `src/lib/site-page-config/service.ts`.
+- 2026-03-26 31: o modulo `Lyra Customaze UI UX` ganhou helpers reutilizaveis de runtime para escala visual, e o `page-config/app` deixou de ser apenas preview administrativo, passando a impactar de forma real `sidebar`, `header`, `mobile sidebar`, `appointments`, `monitoring` e `profile`.
+- 2026-03-26 32: validacao real em navegador autenticado confirmou publicacao administrativa do `page-config/app` e reflexo imediato no app interno, incluindo atualizacao visivel de branding lateral, placeholder do header, CTA de chat e titulos de `appointments`.
 
 ## Politica obrigatoria de commit e push
 

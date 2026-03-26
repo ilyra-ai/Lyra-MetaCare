@@ -15,13 +15,16 @@ import { SidebarLink } from './SidebarLink';
 import { getVisibleNavigation, groupNavigation } from './navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useIsAdmin } from '@/hooks/use-is-admin';
+import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
+import { scalePx, scaleRem } from '@/lib/site-page-config/runtime';
 
 export function MobileSidebar() {
   const { session } = useAuth();
   const isAdmin = useIsAdmin();
+  const { config: appConfig } = usePublicSitePageConfig('app');
   const [open, setOpen] = React.useState(false);
 
-  const sections = groupNavigation(getVisibleNavigation(isAdmin));
+  const sections = groupNavigation(getVisibleNavigation(isAdmin, appConfig));
   const firstName =
     session?.user?.email?.split('@')[0]?.replace(/\./g, ' ') || 'Paciente';
 
@@ -50,15 +53,38 @@ export function MobileSidebar() {
                 className="flex items-center gap-3"
                 onClick={() => setOpen(false)}
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-teal text-white shadow-teal">
-                  <Sparkles className="h-[18px] w-[18px]" strokeWidth={1.9} />
+                <div
+                  className="flex items-center justify-center rounded-2xl bg-gradient-teal text-white shadow-teal"
+                  style={{
+                    height: scalePx(44, appConfig.sizing.iconScale),
+                    width: scalePx(44, appConfig.sizing.iconScale),
+                  }}
+                >
+                  <Sparkles
+                    className="h-[18px] w-[18px]"
+                    strokeWidth={1.9}
+                    style={{
+                      height: scalePx(18, appConfig.sizing.iconScale),
+                      width: scalePx(18, appConfig.sizing.iconScale),
+                    }}
+                  />
                 </div>
                 <div>
-                  <SheetTitle className="font-display text-xl font-bold lowercase text-gradient-hero">
-                    lyra
+                  <SheetTitle
+                    className="font-display font-bold lowercase text-gradient-hero"
+                    style={{
+                      fontSize: scaleRem(1.25, appConfig.typography.navLabel),
+                    }}
+                  >
+                    {appConfig.sidebar.brandTitle}
                   </SheetTitle>
-                  <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                    metacare
+                  <p
+                    className="uppercase tracking-[0.24em] text-muted-foreground"
+                    style={{
+                      fontSize: scaleRem(0.75, appConfig.typography.navLabel),
+                    }}
+                  >
+                    {appConfig.sidebar.brandEyebrow}
                   </p>
                 </div>
               </Link>
@@ -77,14 +103,13 @@ export function MobileSidebar() {
 
           <div className="mb-5 rounded-[24px] border border-white/80 bg-white/70 px-4 py-4 shadow-sm">
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-              Navegação ativa
+              {appConfig.sidebar.statusEyebrow}
             </p>
             <p className="mt-2 text-base font-semibold text-foreground">
               Olá, {firstName}
             </p>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              Acesse seus fluxos de cuidado, consultas, monitoramento e operação
-              administrativa sem perder o contexto.
+              {appConfig.sidebar.statusTitle}
             </p>
           </div>
 
@@ -105,6 +130,8 @@ export function MobileSidebar() {
                       icon={item.icon}
                       description={item.description}
                       onClick={() => setOpen(false)}
+                      iconScale={appConfig.sizing.iconScale}
+                      labelScale={appConfig.typography.navLabel}
                     >
                       {item.label}
                     </SidebarLink>

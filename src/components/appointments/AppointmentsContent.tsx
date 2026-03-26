@@ -48,6 +48,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
+import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
+import { scaleRem } from '@/lib/site-page-config/runtime';
 
 interface Professional {
   id: string;
@@ -85,6 +87,7 @@ type AppointmentFormValues = {
 
 export function AppointmentsContent() {
   const { db, session } = useAuth();
+  const { config: appConfig } = usePublicSitePageConfig('app');
   const [loading, setLoading] = React.useState(true);
   const [professionals, setProfessionals] = React.useState<Professional[]>([]);
   const [appointments, setAppointments] = React.useState<Appointment[]>([]);
@@ -287,6 +290,23 @@ export function AppointmentsContent() {
     return <Skeleton className="h-[80vh] w-full" />;
   }
 
+  const appointmentsConfig = appConfig.appointments;
+  const titleStyle = {
+    fontSize: scaleRem(1.875, appConfig.typography.pageTitle),
+  };
+  const bodyStyle = {
+    fontSize: scaleRem(0.95, appConfig.typography.pageBody),
+  };
+  const cardTitleStyle = {
+    fontSize: scaleRem(1.5, appConfig.typography.cardTitle),
+  };
+  const cardBodyStyle = {
+    fontSize: scaleRem(0.95, appConfig.typography.cardBody),
+  };
+  const buttonStyle = {
+    fontSize: scaleRem(0.875, appConfig.typography.buttonLabel),
+  };
+
   return (
     <>
       <div className="flex flex-col gap-8">
@@ -297,15 +317,16 @@ export function AppointmentsContent() {
                 <div className="max-w-2xl">
                   <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary">
                     <CalendarClock className="mr-2 h-3.5 w-3.5" />
-                    agenda viva e organizada
+                    {appointmentsConfig.heroBadge}
                   </Badge>
-                  <CardTitle className="mt-4 text-3xl">
-                    Seus encontros com mais contexto e menos atrito
+                  <CardTitle className="mt-4" style={titleStyle}>
+                    {appointmentsConfig.heroTitle}
                   </CardTitle>
-                  <CardDescription className="mt-2 max-w-xl text-sm leading-7">
-                    Este espaço reúne consultas, profissionais e calendário em
-                    uma visão clara, gentil e pronta para ação, sem perder o
-                    vínculo real com os dados do banco.
+                  <CardDescription
+                    className="mt-2 max-w-xl leading-7"
+                    style={bodyStyle}
+                  >
+                    {appointmentsConfig.heroDescription}
                   </CardDescription>
                 </div>
 
@@ -316,6 +337,7 @@ export function AppointmentsContent() {
                       setSelectedDate(new Date());
                       setIsAppointmentModalOpen(true);
                     }}
+                    style={buttonStyle}
                   >
                     <Plus data-icon="inline-start" />
                     Agendar consulta
@@ -326,6 +348,7 @@ export function AppointmentsContent() {
                       setProfessionalToEdit(null);
                       setIsProfessionalModalOpen(true);
                     }}
+                    style={buttonStyle}
                   >
                     <UserRoundPlus data-icon="inline-start" />
                     Novo profissional
@@ -388,274 +411,285 @@ export function AppointmentsContent() {
         </section>
 
         <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-          <Card className="border-border/70 bg-white/88">
-            <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <CardTitle className="text-2xl">Próximas consultas</CardTitle>
-                <CardDescription className="mt-2">
-                  Sua agenda futura aparece aqui com acesso rápido para editar
-                  ou cancelar.
-                </CardDescription>
-              </div>
-              <Badge className="rounded-full border-accent/20 bg-accent/10 px-3 py-1 text-accent">
-                {upcomingAppointments.length} futura(s)
-              </Badge>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-              {upcomingAppointments.length > 0 ? (
-                upcomingAppointments.map((appointment) => (
-                  <div
-                    key={appointment.id}
-                    className="flex flex-col gap-4 rounded-[24px] border border-border/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(250,250,255,0.8))] p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar className="size-12">
-                        <AvatarImage
-                          src={
-                            appointment.professionals?.avatar_url || undefined
-                          }
-                          alt={
-                            appointment.professionals?.name || 'Profissional'
-                          }
-                        />
-                        <AvatarFallback>
-                          {getProfessionalInitial(
-                            appointment.professionals?.name
-                          )}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-semibold text-foreground">
-                          {appointment.professionals?.name || 'Profissional'}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {appointment.professionals?.specialty ||
-                            'Especialidade não informada'}
-                        </p>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {formatAppointmentDate(appointment)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-3 sm:justify-end">
-                      <Badge
-                        variant="secondary"
-                        className="rounded-full px-3 py-1"
-                      >
-                        {format(
-                          parseISO(appointment.appointment_time),
-                          'HH:mm'
-                        )}
-                      </Badge>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            aria-label="Abrir ações da consulta"
-                          >
-                            <MoreVertical />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() =>
-                              handleSelectEvent({ resource: appointment })
+          {appointmentsConfig.showUpcomingList ? (
+            <Card className="border-border/70 bg-white/88">
+              <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <CardTitle style={cardTitleStyle}>
+                    {appointmentsConfig.listTitle}
+                  </CardTitle>
+                  <CardDescription className="mt-2" style={cardBodyStyle}>
+                    {appointmentsConfig.listDescription}
+                  </CardDescription>
+                </div>
+                <Badge className="rounded-full border-accent/20 bg-accent/10 px-3 py-1 text-accent">
+                  {upcomingAppointments.length} futura(s)
+                </Badge>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3">
+                {upcomingAppointments.length > 0 ? (
+                  upcomingAppointments.map((appointment) => (
+                    <div
+                      key={appointment.id}
+                      className="flex flex-col gap-4 rounded-[24px] border border-border/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(250,250,255,0.8))] p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Avatar className="size-12">
+                          <AvatarImage
+                            src={
+                              appointment.professionals?.avatar_url || undefined
                             }
-                          >
-                            <Edit className="mr-2 h-4 w-4" /> Editar
-                          </DropdownMenuItem>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <DropdownMenuItem
-                                onSelect={(event) => event.preventDefault()}
-                                className="text-destructive"
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" /> Cancelar
-                              </DropdownMenuItem>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Cancelar consulta
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Esta ação remove o compromisso do seu
-                                  calendário e do histórico agendado.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Voltar</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() =>
-                                    handleDeleteAppointment(appointment.id)
-                                  }
-                                >
-                                  Confirmar cancelamento
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="rounded-[24px] border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
-                  <HeartHandshake className="mx-auto h-10 w-10 text-primary" />
-                  <p className="mt-4 font-display text-xl font-semibold text-foreground">
-                    Nenhuma consulta futura agendada
-                  </p>
-                  <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                    Quando você marcar um horário, ele aparecerá aqui com acesso
-                    rápido para ajustes.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="border-border/70 bg-white/88">
-            <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <CardTitle className="text-2xl">Profissionais</CardTitle>
-                <CardDescription className="mt-2">
-                  Cadastre especialistas, terapeutas e contatos recorrentes da
-                  sua rotina.
-                </CardDescription>
-              </div>
-              <Badge className="rounded-full border-primary/20 bg-primary/10 px-3 py-1 text-primary">
-                {professionals.length} cadastrado(s)
-              </Badge>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-              {professionals.length > 0 ? (
-                professionals.map((professional) => (
-                  <div
-                    key={professional.id}
-                    className="flex flex-col gap-4 rounded-[24px] border border-border/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(249,248,255,0.82))] p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar className="size-12">
-                        <AvatarImage
-                          src={professional.avatar_url || undefined}
-                          alt={professional.name}
-                        />
-                        <AvatarFallback>
-                          {getProfessionalInitial(professional.name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-semibold text-foreground">
-                          {professional.name}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {professional.specialty}
-                        </p>
-                        {professional.contact ? (
-                          <p className="mt-1 text-sm text-muted-foreground">
-                            {professional.contact}
+                            alt={
+                              appointment.professionals?.name || 'Profissional'
+                            }
+                          />
+                          <AvatarFallback>
+                            {getProfessionalInitial(
+                              appointment.professionals?.name
+                            )}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-semibold text-foreground">
+                            {appointment.professionals?.name || 'Profissional'}
                           </p>
-                        ) : null}
+                          <p className="text-sm text-muted-foreground">
+                            {appointment.professionals?.specialty ||
+                              'Especialidade não informada'}
+                          </p>
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            {formatAppointmentDate(appointment)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-3 sm:justify-end">
+                        <Badge
+                          variant="secondary"
+                          className="rounded-full px-3 py-1"
+                        >
+                          {format(
+                            parseISO(appointment.appointment_time),
+                            'HH:mm'
+                          )}
+                        </Badge>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label="Abrir ações da consulta"
+                            >
+                              <MoreVertical />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleSelectEvent({ resource: appointment })
+                              }
+                            >
+                              <Edit className="mr-2 h-4 w-4" /> Editar
+                            </DropdownMenuItem>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <DropdownMenuItem
+                                  onSelect={(event) => event.preventDefault()}
+                                  className="text-destructive"
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" /> Cancelar
+                                </DropdownMenuItem>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Cancelar consulta
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Esta ação remove o compromisso do seu
+                                    calendário e do histórico agendado.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Voltar</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() =>
+                                      handleDeleteAppointment(appointment.id)
+                                    }
+                                  >
+                                    Confirmar cancelamento
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
-
-                    <div className="flex items-center justify-between gap-3 sm:justify-end">
-                      <Badge
-                        variant="secondary"
-                        className="rounded-full px-3 py-1"
-                      >
-                        ativo
-                      </Badge>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            aria-label="Abrir ações do profissional"
-                          >
-                            <MoreVertical />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setProfessionalToEdit(professional);
-                              setIsProfessionalModalOpen(true);
-                            }}
-                          >
-                            <Edit className="mr-2 h-4 w-4" /> Editar
-                          </DropdownMenuItem>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <DropdownMenuItem
-                                onSelect={(event) => event.preventDefault()}
-                                className="text-destructive"
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" /> Remover
-                              </DropdownMenuItem>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Remover profissional
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Esta ação exclui o cadastro do profissional da
-                                  sua lista pessoal.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() =>
-                                    handleDeleteProfessional(professional.id)
-                                  }
-                                >
-                                  Confirmar remoção
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-[24px] border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
+                    <HeartHandshake className="mx-auto h-10 w-10 text-primary" />
+                    <p className="mt-4 font-display text-xl font-semibold text-foreground">
+                      Nenhuma consulta futura agendada
+                    </p>
+                    <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                      Quando você marcar um horário, ele aparecerá aqui com
+                      acesso rápido para ajustes.
+                    </p>
                   </div>
-                ))
-              ) : (
-                <div className="rounded-[24px] border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
-                  <Stethoscope className="mx-auto h-10 w-10 text-cosmic" />
-                  <p className="mt-4 font-display text-xl font-semibold text-foreground">
-                    Nenhum profissional cadastrado
-                  </p>
-                  <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                    Adicione seus contatos para acelerar o agendamento e manter
-                    tudo organizado.
-                  </p>
+                )}
+              </CardContent>
+            </Card>
+          ) : null}
+
+          {appointmentsConfig.showProfessionalsList ? (
+            <Card className="border-border/70 bg-white/88">
+              <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <CardTitle style={cardTitleStyle}>
+                    {appointmentsConfig.professionalsTitle}
+                  </CardTitle>
+                  <CardDescription className="mt-2" style={cardBodyStyle}>
+                    {appointmentsConfig.professionalsDescription}
+                  </CardDescription>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+                <Badge className="rounded-full border-primary/20 bg-primary/10 px-3 py-1 text-primary">
+                  {professionals.length} cadastrado(s)
+                </Badge>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3">
+                {professionals.length > 0 ? (
+                  professionals.map((professional) => (
+                    <div
+                      key={professional.id}
+                      className="flex flex-col gap-4 rounded-[24px] border border-border/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(249,248,255,0.82))] p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Avatar className="size-12">
+                          <AvatarImage
+                            src={professional.avatar_url || undefined}
+                            alt={professional.name}
+                          />
+                          <AvatarFallback>
+                            {getProfessionalInitial(professional.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-semibold text-foreground">
+                            {professional.name}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {professional.specialty}
+                          </p>
+                          {professional.contact ? (
+                            <p className="mt-1 text-sm text-muted-foreground">
+                              {professional.contact}
+                            </p>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-3 sm:justify-end">
+                        <Badge
+                          variant="secondary"
+                          className="rounded-full px-3 py-1"
+                        >
+                          ativo
+                        </Badge>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label="Abrir ações do profissional"
+                            >
+                              <MoreVertical />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setProfessionalToEdit(professional);
+                                setIsProfessionalModalOpen(true);
+                              }}
+                            >
+                              <Edit className="mr-2 h-4 w-4" /> Editar
+                            </DropdownMenuItem>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <DropdownMenuItem
+                                  onSelect={(event) => event.preventDefault()}
+                                  className="text-destructive"
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" /> Remover
+                                </DropdownMenuItem>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Remover profissional
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Esta ação exclui o cadastro do profissional
+                                    da sua lista pessoal.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>
+                                    Cancelar
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() =>
+                                      handleDeleteProfessional(professional.id)
+                                    }
+                                  >
+                                    Confirmar remoção
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-[24px] border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
+                    <Stethoscope className="mx-auto h-10 w-10 text-cosmic" />
+                    <p className="mt-4 font-display text-xl font-semibold text-foreground">
+                      Nenhum profissional cadastrado
+                    </p>
+                    <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                      Adicione seus contatos para acelerar o agendamento e
+                      manter tudo organizado.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ) : null}
         </section>
 
-        <Card className="border-border/70 bg-white/90">
-          <CardHeader>
-            <CardTitle className="text-2xl">Agenda</CardTitle>
-            <CardDescription className="mt-2">
-              Clique em um dia para agendar ou toque em um evento para editar os
-              detalhes.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-4">
-            <Agenda
-              events={calendarEvents}
-              onSelectSlot={handleSelectSlot}
-              onSelectEvent={handleSelectEvent}
-            />
-          </CardContent>
-        </Card>
+        {appointmentsConfig.showCalendar ? (
+          <Card className="border-border/70 bg-white/90">
+            <CardHeader>
+              <CardTitle style={cardTitleStyle}>
+                {appointmentsConfig.calendarTitle}
+              </CardTitle>
+              <CardDescription className="mt-2" style={cardBodyStyle}>
+                {appointmentsConfig.calendarDescription}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-4">
+              <Agenda
+                events={calendarEvents}
+                onSelectSlot={handleSelectSlot}
+                onSelectEvent={handleSelectEvent}
+              />
+            </CardContent>
+          </Card>
+        ) : null}
       </div>
 
       {isAppointmentModalOpen ? (

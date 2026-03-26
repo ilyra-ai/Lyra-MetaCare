@@ -9,14 +9,18 @@ import { AccountSubscriptionCard } from '@/components/subscription/AccountSubscr
 import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
 import { useAuth } from '@/context/AuthContext';
 import { usePlanFeatureAccess } from '@/hooks/use-plan-feature-access';
+import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
+import { scaleRem } from '@/lib/site-page-config/runtime';
 
 export default function ProfilePage() {
   const { session } = useAuth();
+  const { config: appConfig } = usePublicSitePageConfig('app');
   const {
     subscription,
     enabled: profileEnabled,
     loading: subscriptionLoading,
   } = usePlanFeatureAccess('profile_management');
+  const profileConfig = appConfig.profile;
 
   if (session === undefined || subscriptionLoading) {
     return <SplashScreen />;
@@ -34,15 +38,23 @@ export default function ProfilePage() {
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           <div className="mb-8 space-y-2">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-              Perfil
+              {profileConfig.pageEyebrow}
             </p>
-            <h1 className="font-display text-3xl font-bold text-foreground">
-              Seu espaço pessoal
+            <h1
+              className="font-display font-bold text-foreground"
+              style={{
+                fontSize: scaleRem(1.875, appConfig.typography.pageTitle),
+              }}
+            >
+              {profileConfig.pageTitle}
             </h1>
-            <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
-              Ajuste seus dados, contexto de nascimento, hábitos e assinatura em
-              uma experiência mais clara, acolhedora e consistente com a nova
-              identidade da Lyra.
+            <p
+              className="max-w-3xl leading-7 text-muted-foreground"
+              style={{
+                fontSize: scaleRem(0.95, appConfig.typography.pageBody),
+              }}
+            >
+              {profileConfig.pageDescription}
             </p>
           </div>
           {profileEnabled ? (

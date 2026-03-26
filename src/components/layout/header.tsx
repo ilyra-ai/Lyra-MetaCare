@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useAccountSubscription } from '@/hooks/use-account-subscription';
+import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
+import { scalePx, scaleRem } from '@/lib/site-page-config/runtime';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -51,14 +53,15 @@ export function Header() {
   const { session, db } = useAuth();
   const { data: subscription } = useAccountSubscription();
   const isAdmin = useIsAdmin();
+  const { config: appConfig } = usePublicSitePageConfig('app');
   const pathname = usePathname();
   const router = useRouter();
   const [profile, setProfile] = React.useState<ProfileState | null>(null);
   const [commandOpen, setCommandOpen] = React.useState(false);
 
-  const pageMeta = getPageMeta(pathname);
-  const breadcrumbs = buildBreadcrumb(pathname);
-  const navigation = groupNavigation(getVisibleNavigation(isAdmin));
+  const pageMeta = getPageMeta(pathname, appConfig);
+  const breadcrumbs = buildBreadcrumb(pathname, appConfig);
+  const navigation = groupNavigation(getVisibleNavigation(isAdmin, appConfig));
 
   React.useEffect(() => {
     if (!session?.user) return;
@@ -135,10 +138,20 @@ export function Header() {
                   </React.Fragment>
                 ))}
               </div>
-              <h1 className="truncate font-display text-xl font-bold tracking-tight text-foreground md:text-2xl">
+              <h1
+                className="truncate font-display font-bold tracking-tight text-foreground"
+                style={{
+                  fontSize: scaleRem(1.5, appConfig.typography.pageTitle),
+                }}
+              >
                 {pageMeta.title}
               </h1>
-              <p className="hidden truncate text-sm text-muted-foreground md:block">
+              <p
+                className="hidden truncate text-muted-foreground md:block"
+                style={{
+                  fontSize: scaleRem(0.875, appConfig.typography.pageBody),
+                }}
+              >
                 {pageMeta.description}
               </p>
             </div>
@@ -155,11 +168,15 @@ export function Header() {
                 <Search
                   className="h-[18px] w-[18px] text-muted-foreground"
                   strokeWidth={1.8}
+                  style={{
+                    height: scalePx(18, appConfig.sizing.iconScale),
+                    width: scalePx(18, appConfig.sizing.iconScale),
+                  }}
                 />
-                <span>Buscar páginas, fluxos e ações</span>
+                <span>{appConfig.header.commandPlaceholder}</span>
               </span>
               <span className="rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm">
-                Ctrl K
+                {appConfig.header.commandShortcutLabel}
               </span>
             </button>
           </div>
@@ -175,6 +192,10 @@ export function Header() {
               <Bell
                 className="h-[18px] w-[18px] text-foreground"
                 strokeWidth={1.8}
+                style={{
+                  height: scalePx(18, appConfig.sizing.iconScale),
+                  width: scalePx(18, appConfig.sizing.iconScale),
+                }}
               />
               <span className="absolute right-2.5 top-2.5 h-2.5 w-2.5 rounded-full bg-accent shadow-coral animate-pulse-slow" />
             </Button>
@@ -183,12 +204,19 @@ export function Header() {
               type="button"
               className="hidden rounded-full bg-gradient-coral px-5 text-white shadow-coral hover:brightness-105 md:inline-flex"
               onClick={() => router.push('/chat')}
+              style={{
+                fontSize: scaleRem(0.875, appConfig.typography.buttonLabel),
+              }}
             >
               <MessageCircleHeart
                 className="mr-2 h-[18px] w-[18px]"
                 strokeWidth={1.8}
+                style={{
+                  height: scalePx(18, appConfig.sizing.iconScale),
+                  width: scalePx(18, appConfig.sizing.iconScale),
+                }}
               />
-              Chat IA
+              {appConfig.header.assistantLabel}
             </Button>
 
             <DropdownMenu>
@@ -255,7 +283,7 @@ export function Header() {
                   onClick={() => router.push('/profile')}
                 >
                   <UserRound className="mr-2 h-[18px] w-[18px]" />
-                  Meu perfil
+                  {appConfig.header.profileMenuLabel}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="rounded-2xl px-3 py-3"
@@ -279,7 +307,9 @@ export function Header() {
       </header>
 
       <CommandDialog open={commandOpen} onOpenChange={setCommandOpen}>
-        <CommandInput placeholder="Buscar por página, fluxo ou atalho..." />
+        <CommandInput
+          placeholder={`${appConfig.header.commandPlaceholder}...`}
+        />
         <CommandList>
           <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
           {Object.entries(navigation).map(([section, items]) => (
