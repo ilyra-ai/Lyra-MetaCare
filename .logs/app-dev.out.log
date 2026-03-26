@@ -449,3 +449,57 @@ C:\temp\Lyra-MetaCare>odules;C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.
  GET / 500 in 280ms
  GET / 500 in 278ms
  GET / 500 in 258ms
+ GET / 500 in 281ms
+ ○ Compiling /api/auth/session ...
+ ✓ Compiled /api/auth/session in 1811ms (3754 modules)
+ GET /api/auth/session 200 in 1976ms
+ GET /login 200 in 2258ms
+ GET / 500 in 325ms
+ GET / 500 in 299ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 1029ms (1746 modules)
+ GET /favicon.ico 200 in 1135ms
+ GET / 500 in 2952ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1119ms (3540 modules)
+ GET / 404 in 1631ms
+ GET / 500 in 1339ms
+ GET / 500 in 260ms
+ GET /favicon.ico 500 in 36ms
+ GET / 500 in 556ms
+ GET / 500 in 258ms
+ GET / 500 in 586ms
+ GET / 500 in 262ms
+ GET / 500 in 569ms
+ GET / 500 in 262ms
+ GET / 500 in 585ms
+ GET / 500 in 258ms
+ GET / 500 in 601ms
+ GET / 500 in 294ms
+ GET / 500 in 618ms
+ GET / 500 in 278ms
+ GET /favicon.ico 500 in 36ms
+ GET / 500 in 569ms
+ GET / 500 in 256ms
+ GET / 500 in 572ms
+ GET / 500 in 272ms
+ GET / 500 in 610ms
+ GET / 500 in 281ms
+ GET / 500 in 583ms
+ GET / 500 in 266ms
+ GET / 500 in 611ms
+ GET / 500 in 290ms
+ GET / 500 in 612ms
+ GET / 500 in 270ms
+ GET / 500 in 611ms
+ GET / 500 in 262ms
+ GET / 500 in 596ms
+ GET / 500 in 288ms
+ GET / 500 in 569ms
+ GET / 500 in 259ms
+ GET / 500 in 569ms
+ GET / 500 in 258ms
+ GET / 500 in 570ms
+ GET / 500 in 260ms
+ GET / 500 in 565ms
+ GET / 500 in 256ms

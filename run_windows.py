@@ -419,6 +419,12 @@ def start_app(mode: str) -> bool:
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     STATE_DIR.mkdir(parents=True, exist_ok=True)
 
+    if mode == "dev":
+        next_dir = ROOT_DIR / ".next"
+        if next_dir.exists():
+            emit_info("Limpando cache .next antes da subida em desenvolvimento...")
+            shutil.rmtree(next_dir, ignore_errors=True)
+
     out_log = LOG_DIR / f"run_windows_{mode}.out.log"
     err_log = LOG_DIR / f"run_windows_{mode}.err.log"
     command = package_run_cmd("dev" if mode == "dev" else "start")

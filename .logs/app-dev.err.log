@@ -2167,3 +2167,1411 @@ Watchpack Error (initial scan): Error: EINVAL: invalid argument, lstat 'C:\swapf
   path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
   page: '/'
 }
+ ⨯ Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\vendor-chunks\zod@3.25.28.js'
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\vendor-chunks\\zod@3.25.28.js',
+  page: '/'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\api\auth\session\route.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\api\auth\session\route.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+[Error: ENOENT: no such file or directory, stat 'C:\temp\Lyra-MetaCare\.next\cache\webpack\client-development\3.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\cache\\webpack\\client-development\\3.pack.gz'
+}
+ ⨯ unhandledRejection: [Error: ENOENT: no such file or directory, stat 'C:\temp\Lyra-MetaCare\.next\cache\webpack\client-development\3.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\cache\\webpack\\client-development\\3.pack.gz'
+}
+ ⨯ unhandledRejection:  [Error: ENOENT: no such file or directory, stat 'C:\temp\Lyra-MetaCare\.next\cache\webpack\client-development\3.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\cache\\webpack\\client-development\\3.pack.gz'
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, stat 'C:\temp\Lyra-MetaCare\.next\cache\webpack\client-development\3.pack.gz'
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\app-paths-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\app-paths-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages-manifest.json'
+}
+Watchpack Error (initial scan): Error: EINVAL: invalid argument, lstat 'C:\DumpStack.log.tmp'
+Watchpack Error (initial scan): Error: EINVAL: invalid argument, lstat 'C:\hiberfil.sys'
+Watchpack Error (initial scan): Error: EINVAL: invalid argument, lstat 'C:\pagefile.sys'
+Watchpack Error (initial scan): Error: EINVAL: invalid argument, lstat 'C:\swapfile.sys'
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\app\favicon.ico\route.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\app\\favicon.ico\\route.js',
+  page: '/favicon.ico'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\app\favicon.ico\route.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\app\\favicon.ico\\route.js',
+  page: '/favicon.ico'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
+ ⨯ Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+Error: Cannot find module './vendor-chunks/lodash@4.17.21.js'
+Require stack:
+- C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js
+- C:\temp\Lyra-MetaCare\.next\server\app\_not-found\page.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\require.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\load-components.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\utils.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\options.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\swc\index.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\config.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\next.js
+- C:\temp\Lyra-MetaCare\node_modules\.pnpm\next@15.3.4_@babel+core@7.2_96ebd3291836330e16229182522ca087\node_modules\next\dist\server\lib\start-server.js
+    at __webpack_require__.f.require (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:208:28)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\temp\Lyra-MetaCare\.next\server\webpack-runtime.js:167:22)
+    at <unknown> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:825:47)
+    at Object.<anonymous> (C:\temp\Lyra-MetaCare\.next\server\app\page.js:828:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\server\\pages\\_document.js'
+}
+[Error: ENOENT: no such file or directory, open 'C:\temp\Lyra-MetaCare\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\temp\\Lyra-MetaCare\\.next\\fallback-build-manifest.json'
+}
