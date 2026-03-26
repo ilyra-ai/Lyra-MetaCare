@@ -82,6 +82,8 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [~] `appointments` em revisao estrutural e visual apos validacao runtime real.
 - [x] `appointments` estabilizado sem erro fatal de runtime apos reestruturacao visual do modulo.
 - [x] `profile` validado em navegador real e ajustado para o tema claro premium.
+- [x] `monitoring` reescrito no padrao claro premium e validado tecnicamente.
+- [x] `admin/page-builder` ampliado com controles reais de tipografia para landing e login.
 - [~] Varredura completa de menus, dropdowns, CRUDs, onboarding e configuracoes ainda em execucao.
 
 ## O que ja foi concluido de forma real
@@ -241,6 +243,10 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [~] `src/components/monitoring/RealTimeMetricCard.tsx`
 - [~] `src/components/monitoring/LiveHeartRateChart.tsx`
 - [~] `src/components/monitoring/MapPlaceholder.tsx`
+- [x] `src/components/monitoring/RealTimeMonitoringContent.tsx`
+- [x] `src/components/monitoring/RealTimeMetricCard.tsx`
+- [x] `src/components/monitoring/LiveHeartRateChart.tsx`
+- [x] `src/components/monitoring/MapPlaceholder.tsx`
 - [~] `src/components/chat/ChatAssistantContent.tsx`
 - [~] `src/components/chat/ChatBubble.tsx`
 - [~] `src/components/chat/ChatInput.tsx`
@@ -328,6 +334,10 @@ npm run check:types
 - 2026-03-25 20: geracao do plano validada na propria interface em `/plan`, com retorno real de 3 pilares e 6 recomendacoes, console limpo no navegador e confirmacao da gravacao em `ai_plans` dentro do container MySQL `lyra-metacare-mysql`.
 - 2026-03-25 21: `GoalTrackingContent` e a pagina `/goals` foram reescritos no design system claro atual, trocando o estado vazio antigo por uma experiencia editorial mais acolhedora, com cards-resumo, leitura de progresso medio e lista real de metas sem dados simulados.
 - 2026-03-25 22: fluxo real de criacao manual de meta validado em `/goals` com Playwright, incluindo toast de sucesso na UI, exibicao imediata do card da meta criada e persistencia confirmada na tabela `goals` no MySQL local via Docker.
+- 2026-03-26 23: modulo `monitoring` reescrito para o design system claro premium, removendo classes antigas `gray`, `dark` e sombras legadas, mantendo canal realtime, grafico, feed local e controles de voz/alerta em funcionamento real.
+- 2026-03-26 24: `admin/page-builder` passou a expor controles visuais de tipografia para landing e login, com persistencia real em schema/configuracao publicada e reflexo direto no frontend publico.
+- 2026-03-26 25: validacao em navegador real confirmou a presenca dos controles de tipografia no construtor administrativo da landing, incluindo sliders para hero, secoes, cards, botoes, painel introdutorio, card de auth, labels e rodape.
+- 2026-03-26 26: `pnpm run fix:format`, `pnpm run fix:lint`, `pnpm run check:lint`, `pnpm run check:format` e `pnpm run check:types` executados com sucesso apos o bloco monitoring + tipografia do page builder.
 
 ## Politica obrigatoria de commit e push
 
