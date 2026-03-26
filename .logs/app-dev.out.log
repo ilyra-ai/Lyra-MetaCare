@@ -1,0 +1,186 @@
+
+> next-template@0.1.0 dev C:\temp\Lyra-MetaCare
+> next dev
+
+   ▲ Next.js 15.3.4
+   - Local:        http://localhost:3000
+   - Network:      http://172.20.144.1:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+It looks like you're trying to use TypeScript but do not have the required package(s) installed.
+Installing dependencies
+
+If you are not trying to use TypeScript, please remove the tsconfig.json file from your package root (and any TypeScript files in your app and pages directories).
+
+
+Installing devDependencies (pnpm):
+- @types/react
+- @types/node
+
+Progress: resolved 0, reused 1, downloaded 0, added 0
+ WARN  deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+Progress: resolved 71, reused 68, downloaded 2, added 0
+Progress: resolved 242, reused 231, downloaded 2, added 0
+Progress: resolved 514, reused 484, downloaded 2, added 0
+Progress: resolved 1053, reused 951, downloaded 12, added 0
+Progress: resolved 1068, reused 959, downloaded 12, added 0
+Progress: resolved 1110, reused 1003, downloaded 12, added 0
+ WARN  8 deprecated subdependencies found: @humanwhocodes/config-array@0.13.0, @humanwhocodes/object-schema@2.0.3, glob@10.4.5, glob@7.2.3, glob@9.3.5, inflight@1.0.6, node-domexception@1.0.0, rimraf@3.0.2
+Packages: +9 -4
++++++++++----
+Progress: resolved 1110, reused 1003, downloaded 12, added 1
+Progress: resolved 1110, reused 1003, downloaded 12, added 8
+Progress: resolved 1110, reused 1003, downloaded 12, added 9
+Progress: resolved 1110, reused 1003, downloaded 12, added 9, done
+ WARN  Issues with peer dependencies found
+.
+└─┬ @tremor/react 3.18.7
+  ├── ✕ unmet peer react@^18.0.0: found 19.1.0
+  └─┬ react-day-picker 8.10.1
+    └── ✕ unmet peer react@"^16.8.0 || ^17.0.0 || ^18.0.0": found 19.1.0
+
+dependencies:
++ @hookform/resolvers 5.0.1
++ @monaco-editor/react 4.7.0
++ @radix-ui/react-accordion 1.2.11
++ @radix-ui/react-alert-dialog 1.1.14
++ @radix-ui/react-aspect-ratio 1.1.7
++ @radix-ui/react-avatar 1.1.10
++ @radix-ui/react-checkbox 1.3.2
++ @radix-ui/react-collapsible 1.1.11
++ @radix-ui/react-context-menu 2.2.15
++ @radix-ui/react-dialog 1.1.14
++ @radix-ui/react-dropdown-menu 2.1.15
++ @radix-ui/react-hover-card 1.1.14
++ @radix-ui/react-label 2.1.7
++ @radix-ui/react-menubar 1.1.15
++ @radix-ui/react-navigation-menu 1.2.13
++ @radix-ui/react-popover 1.1.14
++ @radix-ui/react-progress 1.1.7
++ @radix-ui/react-radio-group 1.3.7
++ @radix-ui/react-scroll-area 1.2.9
++ @radix-ui/react-select 2.2.5
++ @radix-ui/react-separator 1.1.7
++ @radix-ui/react-slider 1.3.5
++ @radix-ui/react-slot 1.2.3
++ @radix-ui/react-switch 1.2.5
++ @radix-ui/react-tabs 1.1.12
++ @radix-ui/react-toggle 1.1.9
++ @radix-ui/react-toggle-group 1.1.10
++ @radix-ui/react-tooltip 1.2.7
++ @sentry/nextjs 10.20.0
++ @tremor/react 3.18.7
++ @types/react-big-calendar 1.16.3
++ monaco-editor 0.55.1
+
+devDependencies:
++ @tailwindcss/typography 0.5.19
++ @types/node 20.17.50
++ @types/react 19.1.5
++ @types/react-dom 19.1.5
+
+Done in 13s using pnpm v10.33.0
+
+ ✓ Ready in 16.6s
+ ○ Compiling / ...
+ ✓ Compiled / in 13.9s (2545 modules)
+ ✓ Compiled in 1164ms (1189 modules)
+ GET / 200 in 59ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 1270ms (2524 modules)
+ GET /login 200 in 1531ms
+ ○ Compiling /api/auth/session ...
+ ✓ Compiled /api/auth/session in 859ms (1357 modules)
+ ✓ Compiled in 556ms (1184 modules)
+ GET /favicon.ico 200 in 2810ms
+ GET /api/auth/session 200 in 2932ms
+ ○ Compiling /api/public/page-config/[pageKey] ...
+ ✓ Compiled /api/public/page-config/[pageKey] in 633ms (2754 modules)
+ GET /api/public/page-config/login 200 in 2079ms
+ ✓ Compiled /api/auth/login in 434ms (1920 modules)
+ POST /api/auth/login 200 in 775ms
+ ○ Compiling / ...
+ ✓ Compiled / in 852ms (2763 modules)
+ GET / 200 in 1252ms
+ GET / 200 in 41ms
+ GET /favicon.ico 200 in 20ms
+ GET /api/data/profiles?select=onboarding_completed%2C+role&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D 200 in 2303ms
+ GET /api/data/profiles?select=first_name&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 428ms
+ GET /api/data/profiles?select=first_name&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 35ms
+ ○ Compiling /api/account/subscription ...
+ ✓ Compiled /api/account/subscription in 960ms (2765 modules)
+ GET /api/data/profiles?select=avatar_url%2C+first_name&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 1080ms
+ GET /api/data/profiles?select=first_name%2C+avatar_url&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 1091ms
+ GET /api/account/subscription 200 in 1169ms
+ GET /api/data/profiles?select=avatar_url%2C+first_name&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 32ms
+ GET /api/data/profiles?select=first_name%2C+avatar_url&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 36ms
+ GET /api/account/subscription 200 in 44ms
+ GET /api/account/subscription 200 in 19ms
+ GET /api/account/subscription 200 in 20ms
+ GET /api/account/subscription 200 in 26ms
+ GET /api/account/subscription 200 in 20ms
+ ○ Compiling /api/functions/calculate-longevity-score ...
+ ✓ Compiled /api/functions/calculate-longevity-score in 877ms (2768 modules)
+ GET /api/data/daily_metrics?select=%0A++++++++date%2C+steps%2C+sleep_duration_minutes%2C+resting_heart_rate%2C+calories_burned%2C+hrv_ms%2C+deep_sleep_minutes%2C%0A++++++++resting_heart_rate_min%2C+resting_heart_rate_max%2C+spo2_average%2C+respiratory_rate%2C+body_temperature_celsius%2C%0A++++++++total_distance_km%2C+active_minutes%2C+workout_calories%2C+vo2_max%2C+sleep_latency_minutes%2C+rem_sleep_minutes%2C%0A++++++++light_sleep_minutes%2C+sleep_efficiency%2C+sleep_score%2C+protein_grams%2C+carb_grams%2C+fat_grams%2C+water_liters%2C%0A++++++++caffeine_mg%2C+stress_score%2C+recovery_score%2C+readiness_score%2C+blood_glucose_mgdl%2C+blood_pressure_systolic%2C%0A++++++++blood_pressure_diastolic%2C+weight_kg%2C+mood_score%2C+meditation_minutes%2C%0A++++++++hrr_1min_bpm%2C%0A++++++++sleep_regularity_index%2C+social_jetlag_hours%2C+waso_minutes%2C%0A++++++++training_load_epoc%2C+daily_strain%2C+sedentary_hours%2C+sedentary_breaks%2C%0A++++++++time_in_range_percent%2C+glycemic_variability_cv%2C+gmi_percent%2C+post_prandial_peak_mgdl%2C+time_below_range_percent%2C+iauc_per_meal_mgdl_h%2C%0A++++++++whtr_ratio%2C+protein_g_per_kg%2C+dietary_fiber_grams%2C+eating_window_hours%2C+sodium_potassium_ratio%2C+hydration_ml_per_kg%2C%0A++++++++reaction_time_pvt_ms%2C+pvt_lapses_count%2C+cognitive_test_score%2C+hrv_stress_index%2C+eda_tonic_microsiemens%2C+afib_history_percent%0A++++++&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22user_id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%2C%7B%22type%22%3A%22gte%22%2C%22column%22%3A%22date%22%2C%22value%22%3A%222026-03-20%22%7D%2C%7B%22type%22%3A%22lte%22%2C%22column%22%3A%22date%22%2C%22value%22%3A%222026-03-26%22%7D%5D&orders=%5B%7B%22column%22%3A%22date%22%2C%22ascending%22%3Atrue%7D%5D 200 in 1102ms
+ POST /api/functions/calculate-longevity-score 200 in 1115ms
+ GET /api/data/ai_tips?select=*&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22is_active%22%2C%22value%22%3Atrue%7D%5D&count=exact&head=true 200 in 1108ms
+ GET /api/data/ai_tips?select=*&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22is_active%22%2C%22value%22%3Atrue%7D%5D&count=exact&head=true 200 in 25ms
+ GET /api/data/ai_tips?select=id%2C+title%2C+detail&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22is_active%22%2C%22value%22%3Atrue%7D%5D&rangeFrom=2&rangeTo=2&singleMode=maybeSingle 200 in 22ms
+ GET /api/data/ai_tips?select=*&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22is_active%22%2C%22value%22%3Atrue%7D%5D&count=exact&head=true 200 in 16ms
+ GET /api/data/ai_tips?select=*&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22is_active%22%2C%22value%22%3Atrue%7D%5D&count=exact&head=true 200 in 18ms
+ GET /api/data/ai_tips?select=id%2C+title%2C+detail&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22is_active%22%2C%22value%22%3Atrue%7D%5D&rangeFrom=1&rangeTo=1&singleMode=maybeSingle 200 in 28ms
+ GET /api/data/ai_tips?select=id%2C+title%2C+detail&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22is_active%22%2C%22value%22%3Atrue%7D%5D&rangeFrom=0&rangeTo=0&singleMode=maybeSingle 200 in 34ms
+ GET /api/data/ai_tips?select=id%2C+title%2C+detail&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22is_active%22%2C%22value%22%3Atrue%7D%5D&rangeFrom=1&rangeTo=1&singleMode=maybeSingle 200 in 20ms
+ ○ Compiling /admin/page-builder ...
+ ✓ Compiled /admin/page-builder in 2.1s (2596 modules)
+ GET /admin/page-builder 200 in 2404ms
+ ○ Compiling /admin/reports ...
+ ✓ Compiled /admin/reports in 685ms (2613 modules)
+ GET /admin/reports 200 in 860ms
+ GET /admin/page-builder 200 in 42ms
+ ✓ Compiled /api/data/[table] in 377ms (1611 modules)
+ ✓ Compiled in 450ms (1225 modules)
+ GET /api/public/plans 200 in 1247ms
+ GET /api/data/profiles?select=first_name%2C+avatar_url&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 1174ms
+ GET /api/data/profiles?select=avatar_url%2C+first_name&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 1176ms
+ GET /api/account/subscription 200 in 1313ms
+ ✓ Compiled /favicon.ico in 401ms (1624 modules)
+ GET /favicon.ico 200 in 1138ms
+ GET /api/data/profiles?select=first_name%2C+avatar_url&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 1135ms
+ GET /api/data/profiles?select=avatar_url%2C+first_name&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 1138ms
+ GET /api/admin/page-config/landing 200 in 2449ms
+ GET /api/account/subscription 200 in 1151ms
+ GET /api/admin/page-config/landing 200 in 2452ms
+ GET /api/account/subscription 200 in 20ms
+ GET /api/account/subscription 200 in 19ms
+ GET /api/admin/page-config/login 200 in 32ms
+ GET /api/public/plans 200 in 18ms
+ GET /api/admin/page-config/landing 200 in 32ms
+ GET /api/public/plans 200 in 32ms
+ ○ Compiling /profile ...
+ ✓ Compiled /profile in 4.6s (4506 modules)
+ GET /profile 200 in 4772ms
+ GET /api/account/subscription 200 in 138ms
+ GET /favicon.ico 200 in 20ms
+ GET /api/account/subscription 200 in 24ms
+ GET /api/account/subscription 200 in 26ms
+ GET /api/data/profiles?select=first_name%2C+avatar_url&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 45ms
+ GET /api/data/profiles?select=first_name%2C+last_name%2C+age%2C+gender%2C+birth_date%2C+birth_time%2C+birth_location%2C+avatar_url&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 47ms
+ GET /api/data/profiles?select=avatar_url%2C+first_name&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 49ms
+ GET /api/account/subscription 200 in 58ms
+ GET /api/data/profiles?select=first_name%2C+avatar_url&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 23ms
+ GET /api/data/profiles?select=first_name%2C+last_name%2C+age%2C+gender%2C+birth_date%2C+birth_time%2C+birth_location%2C+avatar_url&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 32ms
+ GET /api/data/profiles?select=avatar_url%2C+first_name&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&singleMode=maybeSingle 200 in 32ms
+ GET /api/account/subscription 200 in 32ms
+ GET /api/account/subscription 200 in 17ms
+ GET /api/account/subscription 200 in 18ms
+ GET /api/account/subscription 200 in 34ms
+ GET /api/data/daily_metrics?select=date%2C+weight_kg&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22user_id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%2C%7B%22type%22%3A%22gte%22%2C%22column%22%3A%22date%22%2C%22value%22%3A%222025-09-27%22%7D%2C%7B%22type%22%3A%22not%22%2C%22column%22%3A%22weight_kg%22%2C%22operator%22%3A%22is%22%2C%22value%22%3Anull%7D%5D&orders=%5B%7B%22column%22%3A%22date%22%2C%22ascending%22%3Atrue%7D%5D 200 in 35ms
+ GET /api/data/habits?select=*&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22user_id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&orders=%5B%7B%22column%22%3A%22created_at%22%2C%22ascending%22%3Atrue%7D%5D 200 in 40ms
+ GET /api/data/daily_metrics?select=date%2C+weight_kg&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22user_id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%2C%7B%22type%22%3A%22gte%22%2C%22column%22%3A%22date%22%2C%22value%22%3A%222025-09-27%22%7D%2C%7B%22type%22%3A%22not%22%2C%22column%22%3A%22weight_kg%22%2C%22operator%22%3A%22is%22%2C%22value%22%3Anull%7D%5D&orders=%5B%7B%22column%22%3A%22date%22%2C%22ascending%22%3Atrue%7D%5D 200 in 27ms
+ GET /api/data/habits?select=*&filters=%5B%7B%22type%22%3A%22eq%22%2C%22column%22%3A%22user_id%22%2C%22value%22%3A%220192a19d-e176-42d6-b729-0af4e747c5f7%22%7D%5D&orders=%5B%7B%22column%22%3A%22created_at%22%2C%22ascending%22%3Atrue%7D%5D 200 in 25ms
+ ○ Compiling /api/account/billing ...
+ ✓ Compiled /api/account/billing in 1717ms (4674 modules)
+ GET /api/account/billing 200 in 1959ms
+ GET /api/account/billing 200 in 17ms
