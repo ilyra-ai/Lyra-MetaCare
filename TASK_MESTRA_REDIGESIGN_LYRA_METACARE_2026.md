@@ -94,9 +94,9 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] `site-page-config` corrigido para suportar `landing`, `login` e `app` de forma coerente na tipagem.
 - [x] `SiteExperienceBuilder` ampliado com contexto real de `App Interno`, incluindo preview administrativo e controles reais de sidebar, header, tipografia, sizing e modulos internos.
 - [x] Causa raiz dos erros de `check:format` e `check:lint` apos a inclusao da pasta `ELEMENTOR` corrigida com isolamento apropriado nos arquivos de ignore.
-- [x] Modulo reutilizavel `modules/elementor-lyra` fortalecido com contrato tecnico de integracao.
+- [x] Modulo reutilizavel `modules/lyra-customaze-ui-ux` fortalecido com contrato tecnico de integracao.
 - [x] `implement_elementor_lyra.py` criado na raiz com instalacao real para projetos compativeis com Next.js App Router + TypeScript.
-- [x] `package.json` atualizado com o script `elementor:install`.
+- [x] `package.json` atualizado com o script `lyra-customaze:install`.
 - [x] `src/lib/site-page-config/index.ts` criado para consolidar os reexports do nucleo segregado.
 - [~] Varredura completa de menus, dropdowns, CRUDs, onboarding e configuracoes ainda em execucao.
 
@@ -352,8 +352,9 @@ npm run check:types
 - 2026-03-26 24: `admin/page-builder` passou a expor controles visuais de tipografia para landing e login, com persistencia real em schema/configuracao publicada e reflexo direto no frontend publico.
 - 2026-03-26 25: validacao em navegador real confirmou a presenca dos controles de tipografia no construtor administrativo da landing, incluindo sliders para hero, secoes, cards, botoes, painel introdutorio, card de auth, labels e rodape.
 - 2026-03-26 26: `pnpm run fix:format`, `pnpm run fix:lint`, `pnpm run check:lint`, `pnpm run check:format` e `pnpm run check:types` executados com sucesso apos o bloco monitoring + tipografia do page builder.
-- 2026-03-26 27: o modulo portavel `modules/elementor-lyra` recebeu contrato tecnico de integracao para apps consumidores, separando melhor o nucleo reutilizavel da Lyra.
-- 2026-03-26 28: `implement_elementor_lyra.py` foi criado na raiz e validado em execucao real no proprio projeto, detectando o alvo compativel, alinhando os reexports e registrando o script `elementor:install` no `package.json`.
+- 2026-03-26 27: o modulo portavel `modules/lyra-customaze-ui-ux` recebeu contrato tecnico de integracao para apps consumidores, separando melhor o nucleo reutilizavel da Lyra.
+- 2026-03-26 28: `implement_elementor_lyra.py` foi criado na raiz e validado em execucao real no proprio projeto, detectando o alvo compativel, alinhando os reexports e registrando o script `lyra-customaze:install` no `package.json`.
+- 2026-03-26 29: a identidade do modulo foi renomeada para `Lyra Customaze UI UX`, mantendo o nome do instalador por compatibilidade com a exigencia anterior do projeto.
 
 ## Politica obrigatoria de commit e push
 

@@ -17,7 +17,7 @@
     "db:migrate": "node scripts/mysql-migrate.mjs",
     "db:stop": "docker compose down",
     "db:logs": "docker compose logs -f mysql",
-    "elementor:install": "python implement_elementor_lyra.py"
+    "lyra-customaze:install": "python implement_elementor_lyra.py"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",

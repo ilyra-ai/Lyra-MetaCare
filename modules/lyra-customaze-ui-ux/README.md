@@ -1,4 +1,4 @@
-# Elementor Lyra Builder
+# Lyra Customaze UI UX
 
 ## Objetivo
 
@@ -30,14 +30,14 @@ Este modulo concentra a base reutilizavel do construtor visual administrativo da
 
 ## Instalacao portavel
 
-1. Copie a pasta `modules/elementor-lyra` para a raiz do projeto-alvo.
+1. Copie a pasta `modules/lyra-customaze-ui-ux` para a raiz do projeto-alvo.
 2. Copie o script `implement_elementor_lyra.py` para a raiz do projeto-alvo.
 3. Execute `python implement_elementor_lyra.py`.
 4. O instalador vai:
    - validar se o projeto-alvo é compatível;
-   - sincronizar o módulo em `modules/elementor-lyra`;
+   - sincronizar o módulo em `modules/lyra-customaze-ui-ux`;
    - criar ou alinhar `schema.ts`, `ui.ts` e `index.ts` em `lib/site-page-config`;
-   - registrar o script `elementor:install` no `package.json`.
+   - registrar o script `lyra-customaze:install` no `package.json`.
 
 ## Limites honestos desta etapa
 

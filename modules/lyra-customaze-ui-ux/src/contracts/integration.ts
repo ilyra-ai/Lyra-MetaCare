@@ -1,38 +1,38 @@
-export type ElementorLyraSupportedProject = 'nextjs-app-router-typescript';
+export type LyraCustomazeSupportedProject = 'nextjs-app-router-typescript';
 
-export type ElementorLyraSurfaceScope =
+export type LyraCustomazeSurfaceScope =
   | 'public-page'
   | 'auth-page'
   | 'internal-page'
   | 'layout'
   | 'template';
 
-export interface ElementorLyraEditableZone {
+export interface LyraCustomazeEditableZone {
   key: string;
   label: string;
   description: string;
-  scope: ElementorLyraSurfaceScope;
+  scope: LyraCustomazeSurfaceScope;
   supportsChildren: boolean;
   supportsReorder: boolean;
   supportsVisibilityToggle: boolean;
 }
 
-export interface ElementorLyraEditableSurface {
+export interface LyraCustomazeEditableSurface {
   key: string;
   label: string;
   description: string;
   route: string;
-  scope: ElementorLyraSurfaceScope;
-  zones: ElementorLyraEditableZone[];
+  scope: LyraCustomazeSurfaceScope;
+  zones: LyraCustomazeEditableZone[];
   adminOnly: boolean;
 }
 
-export interface ElementorLyraConsumerContract {
+export interface LyraCustomazeConsumerContract {
   moduleId: string;
   moduleVersion: string;
-  supportedProject: ElementorLyraSupportedProject;
+  supportedProject: LyraCustomazeSupportedProject;
   sourceRoot: string;
-  editableSurfaces: ElementorLyraEditableSurface[];
+  editableSurfaces: LyraCustomazeEditableSurface[];
   adminRouteBase: string;
   publicReadApiBase: string;
   adminReadApiBase: string;
@@ -40,19 +40,19 @@ export interface ElementorLyraConsumerContract {
   adminRoleKeys: string[];
 }
 
-export interface ElementorLyraInstallAction {
+export interface LyraCustomazeInstallAction {
   kind: 'create' | 'update' | 'skip' | 'validate';
   path: string;
   details: string;
 }
 
-export interface ElementorLyraInstallReport {
+export interface LyraCustomazeInstallReport {
   moduleId: string;
   moduleVersion: string;
-  supportedProject: ElementorLyraSupportedProject;
+  supportedProject: LyraCustomazeSupportedProject;
   installedAt: string;
   targetRoot: string;
   sourceRoot: string;
-  actions: ElementorLyraInstallAction[];
+  actions: LyraCustomazeInstallAction[];
   warnings: string[];
 }

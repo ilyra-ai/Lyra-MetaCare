@@ -17,10 +17,14 @@ import {
 } from '@/components/ui/card';
 import { useAuth } from '@/context/AuthContext';
 import { useIsAdmin } from '@/hooks/use-is-admin';
+import { lyraCustomazeEditableSurfaces } from '@/lib/site-page-config/registry';
 
 export function PageBuilderContent() {
   const { session } = useAuth();
   const isAdmin = useIsAdmin();
+  const surfaceLabels = lyraCustomazeEditableSurfaces
+    .map((surface) => surface.label.toLowerCase())
+    .join(', ');
 
   if (session === undefined) {
     return <SplashScreen />;
@@ -36,8 +40,7 @@ export function PageBuilderContent() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              Somente perfis administradores podem editar a landing page e a
-              tela de login.
+              Somente perfis administradores podem editar {surfaceLabels}.
             </p>
           </CardContent>
         </Card>
@@ -60,14 +63,15 @@ export function PageBuilderContent() {
                 </Badge>
                 <div className="max-w-4xl space-y-3">
                   <CardTitle className="text-3xl">
-                    Landing e login editáveis em tempo real
+                    Superfícies editáveis em tempo real
                   </CardTitle>
                   <CardDescription className="text-sm leading-7">
                     Esta rota administrativa concentra o editor avançado da
                     experiência web da Lyra. Aqui o administrador consegue
                     ajustar conteúdo, ordem das seções, destaques, FAQ, botões,
-                    textos de autenticação, JSON completo e publicar a versão
-                    final sem depender de mock, placeholder ou atalho visual.
+                    textos, experiência interna, JSON completo e publicar a
+                    versão final sem depender de mock, placeholder ou atalho
+                    visual.
                   </CardDescription>
                 </div>
               </CardHeader>

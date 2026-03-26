@@ -1,1 +1,1 @@
-export * from '../../../modules/elementor-lyra/src/site-page-config/ui';
+export * from '../../../modules/lyra-customaze-ui-ux/src/site-page-config/ui';

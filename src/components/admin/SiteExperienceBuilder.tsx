@@ -64,6 +64,10 @@ import {
   SitePageKey,
   ToneKey,
 } from '@/lib/site-page-config/schema';
+import {
+  getSitePageLabel,
+  lyraCustomazeEditableSurfaces,
+} from '@/lib/site-page-config/registry';
 import { builderIconOptions, toneOptions } from '@/lib/site-page-config/ui';
 
 type EditableDraft = LandingPageConfig | LoginPageConfig | AppPageConfig;
@@ -2767,12 +2771,12 @@ export function SiteExperienceBuilder() {
               <Sparkles className="mr-2 h-3.5 w-3.5" />
               editor premium da experiencia web
             </Badge>
-            <div className="flex flex-col gap-2">
-              <CardTitle className="text-3xl">
-                Landing, login e app interno totalmente editaveis
-              </CardTitle>
-              <CardDescription className="max-w-3xl text-sm leading-7">
-                Somente administradores podem editar, salvar rascunho, publicar,
+              <div className="flex flex-col gap-2">
+                <CardTitle className="text-3xl">
+                  Superfícies editáveis do módulo Lyra Customaze UI UX
+                </CardTitle>
+                <CardDescription className="max-w-3xl text-sm leading-7">
+                  Somente administradores podem editar, salvar rascunho, publicar,
                 restaurar e reorganizar a experiência pública e a camada visual
                 do app da Lyra.
               </CardDescription>
@@ -2787,9 +2791,11 @@ export function SiteExperienceBuilder() {
                 value && setPageKey(value as SitePageKey)
               }
             >
-              <ToggleGroupItem value="landing">Landing</ToggleGroupItem>
-              <ToggleGroupItem value="login">Login</ToggleGroupItem>
-              <ToggleGroupItem value="app">App interno</ToggleGroupItem>
+              {lyraCustomazeEditableSurfaces.map((surface) => (
+                <ToggleGroupItem key={surface.key} value={surface.key}>
+                  {surface.label}
+                </ToggleGroupItem>
+              ))}
             </ToggleGroup>
             <Button
               variant="secondary"
@@ -2889,11 +2895,9 @@ export function SiteExperienceBuilder() {
                         <CardTitle className="text-xl">Modo avancado</CardTitle>
                         <CardDescription>
                           Aqui voce consegue editar a estrutura completa da{' '}
-                          {pageKey === 'landing'
-                            ? 'landing'
-                            : pageKey === 'login'
-                              ? 'tela de login'
-                              : 'experiência interna do app'}
+                          {pageKey === 'login'
+                            ? 'tela de login'
+                            : getSitePageLabel(pageKey).toLowerCase()}
                           .
                         </CardDescription>
                       </CardHeader>
@@ -2939,11 +2943,7 @@ export function SiteExperienceBuilder() {
                   </p>
                 </div>
                 <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary">
-                  {pageKey === 'landing'
-                    ? 'Landing'
-                    : pageKey === 'login'
-                      ? 'Login'
-                      : 'App interno'}
+                  {getSitePageLabel(pageKey)}
                 </Badge>
               </div>
 

@@ -329,12 +329,17 @@ export type AppNavigationItemConfig = z.infer<typeof appNavigationItemSchema>;
 export type AppPageConfig = z.infer<typeof appPageConfigSchema>;
 export type AppTypographyConfig = z.infer<typeof appTypographySchema>;
 export type AppSizingConfig = z.infer<typeof appSizingSchema>;
-export type SitePageKey = 'landing' | 'login' | 'app';
+export const sitePageKeys = ['landing', 'login', 'app'] as const;
+export type SitePageKey = (typeof sitePageKeys)[number];
 export type SitePageConfigMap = {
   landing: LandingPageConfig;
   login: LoginPageConfig;
   app: AppPageConfig;
 };
+
+export function isSitePageKey(value: string): value is SitePageKey {
+  return (sitePageKeys as readonly string[]).includes(value);
+}
 
 const defaultLandingPageConfig: LandingPageConfig = {
   typography: {

@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 
-MODULE_ID = "elementor-lyra"
+MODULE_ID = "lyra-customaze-ui-ux"
 SUPPORTED_PROJECT = "nextjs-app-router-typescript"
 
 
@@ -109,7 +109,7 @@ def validate_supported_project(project_root: Path, package_json: dict[str, Any])
     missing = sorted(required - installed_names)
     if missing:
         raise InstallError(
-            "Projeto incompatível com o instalador do Elementor Lyra. "
+            "Projeto incompatível com o instalador do Lyra Customaze UI UX. "
             f"Dependências ausentes: {', '.join(missing)}."
         )
 
@@ -164,18 +164,22 @@ def ensure_package_script(
 ) -> None:
     scripts = package_json.setdefault("scripts", {})
     expected = "python implement_elementor_lyra.py"
+    script_name = "lyra-customaze:install"
 
-    if scripts.get("elementor:install") == expected:
+    if scripts.get(script_name) == expected:
         actions.append(
             InstallAction(
                 "skip",
                 str(project_root / "package.json"),
-                "Script elementor:install já estava configurado.",
+                f"Script {script_name} já estava configurado.",
             )
         )
         return
 
-    scripts["elementor:install"] = expected
+    if "elementor:install" in scripts:
+        scripts.pop("elementor:install")
+
+    scripts[script_name] = expected
     package_json_path = project_root / "package.json"
     package_json_path.write_text(
         json.dumps(package_json, indent=2, ensure_ascii=False) + "\n",
@@ -185,7 +189,7 @@ def ensure_package_script(
         InstallAction(
             "update",
             str(package_json_path),
-            "Script elementor:install registrado no package.json.",
+            f"Script {script_name} registrado no package.json.",
         )
     )
 
@@ -200,18 +204,26 @@ def install_reexports(
     ensure_directory(site_page_config_dir, actions)
 
     schema_target = site_page_config_dir / "schema.ts"
+    registry_target = site_page_config_dir / "registry.ts"
     ui_target = site_page_config_dir / "ui.ts"
     index_target = site_page_config_dir / "index.ts"
 
     schema_source = target_module_dir / "src" / "site-page-config" / "schema"
+    registry_source = target_module_dir / "src" / "site-page-config" / "registry"
     ui_source = target_module_dir / "src" / "site-page-config" / "ui"
 
     schema_import = relative_ts_import(schema_target, schema_source)
+    registry_import = relative_ts_import(registry_target, registry_source)
     ui_import = relative_ts_import(ui_target, ui_source)
 
     write_text_file(
         schema_target,
         f"export * from '{schema_import}';\n",
+        actions,
+    )
+    write_text_file(
+        registry_target,
+        f"export * from '{registry_import}';\n",
         actions,
     )
     write_text_file(
@@ -221,7 +233,7 @@ def install_reexports(
     )
     write_text_file(
         index_target,
-        "export * from './schema';\nexport * from './ui';\n",
+        "export * from './schema';\nexport * from './registry';\nexport * from './ui';\n",
         actions,
     )
 
@@ -246,7 +258,7 @@ def build_report(
 
 def print_report(report: InstallReport) -> None:
     print("")
-    print("Relatório da instalação do módulo Elementor Lyra")
+    print("Relatório da instalação do módulo Lyra Customaze UI UX")
     print(f"- Módulo: {report.moduleId} {report.moduleVersion}")
     print(f"- Projeto compatível: {report.supportedProject}")
     print(f"- Raiz alvo: {report.targetRoot}")
@@ -264,7 +276,7 @@ def print_report(report: InstallReport) -> None:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Instala e configura o módulo reutilizável Elementor Lyra "
+            "Instala e configura o módulo reutilizável Lyra Customaze UI UX "
             "em projetos compatíveis com Next.js App Router + TypeScript."
         )
     )
@@ -316,5 +328,5 @@ if __name__ == "__main__":
     try:
         raise SystemExit(main())
     except InstallError as exc:
-        print(f"Erro de instalação do Elementor Lyra: {exc}", file=sys.stderr)
+        print(f"Erro de instalação do Lyra Customaze UI UX: {exc}", file=sys.stderr)
         raise SystemExit(1)

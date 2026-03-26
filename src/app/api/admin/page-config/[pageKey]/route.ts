@@ -9,12 +9,12 @@ import {
   restoreSitePageDraftFromPublished,
   saveSitePageDraft,
 } from '@/lib/site-page-config/service';
-import { SitePageKey } from '@/lib/site-page-config/schema';
+import { isSitePageKey, SitePageKey } from '@/lib/site-page-config/schema';
 
 export const runtime = 'nodejs';
 
 function assertPageKey(value: string): asserts value is SitePageKey {
-  if (value !== 'landing' && value !== 'login') {
+  if (!isSitePageKey(value)) {
     throw new Error(`Pagina nao suportada: ${value}`);
   }
 }

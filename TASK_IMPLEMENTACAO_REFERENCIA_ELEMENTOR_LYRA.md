@@ -303,7 +303,7 @@ Estruturar a implementacao, dentro da Lyra MetaCare, de um construtor administra
 
 ### Estrutura proposta do modulo reutilizavel
 
-- [x] Criar a pasta raiz do modulo reutilizavel em `modules/elementor-lyra`.
+- [x] Criar a pasta raiz do modulo reutilizavel em `modules/lyra-customaze-ui-ux`.
 - [x] Criar manifesto tecnico do modulo.
 - [x] Criar README tecnico do modulo.
 - [x] Extrair o nucleo inicial reutilizavel de `schema` e `ui` para o modulo.
@@ -868,11 +868,12 @@ npm run check:types
 - [x] Causa raiz da inviabilidade de integracao direta documentada.
 - [x] Schema e builder administrativo alinhados para `landing`, `login` e `app`.
 - [x] `ELEMENTOR` isolado corretamente dos checks do app em lint/format.
-- [x] Modulo raiz `modules/elementor-lyra` criado e documentado.
+- [x] Modulo raiz `modules/lyra-customaze-ui-ux` criado e documentado.
 - [x] Nucleo inicial segregado do app sem quebrar imports existentes.
-- [x] Contrato tecnico de integracao reutilizavel criado em `modules/elementor-lyra/src/contracts/integration.ts`.
+- [x] Contrato tecnico de integracao reutilizavel criado em `modules/lyra-customaze-ui-ux/src/contracts/integration.ts`.
 - [x] Instalador portavel `implement_elementor_lyra.py` criado e validado no proprio projeto.
-- [x] Script `elementor:install` registrado no `package.json`.
+- [x] Script `lyra-customaze:install` registrado no `package.json`.
+- [x] Modulo renomeado para `Lyra Customaze UI UX`, preservando `implement_elementor_lyra.py` por compatibilidade operacional.
 - [x] Reexport agregador `src/lib/site-page-config/index.ts` criado para apps consumidores.
 - [ ] Validacao final em navegador real do contexto `app` ainda pendente.
 - [ ] Implementacao completa desta task ainda segue em andamento.
