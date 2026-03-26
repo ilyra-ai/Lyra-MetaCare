@@ -503,7 +503,28 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
             </CardHeader>
           </Card>
 
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+            <Card className="border-border/70 bg-white/88 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  {config.dashboard.pulseTitle}
+                </CardTitle>
+                <CardDescription>
+                  {config.dashboard.pulseDescription}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <p>{config.dashboard.heroEyebrow}</p>
+                <p>{config.dashboard.harmonyEyebrow}</p>
+                <p>{config.dashboard.weeklyTitle}</p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="default">{config.dashboard.pulseBadge}</Badge>
+                  <Badge variant="cosmic">{config.dashboard.astroBadge}</Badge>
+                  <Badge variant="info">{config.dashboard.sleepBadge}</Badge>
+                </div>
+              </CardContent>
+            </Card>
+
             <Card className="border-border/70 bg-white/88 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg">
@@ -2433,6 +2454,466 @@ export function SiteExperienceBuilder() {
         <AccordionItem value="pages">
           <AccordionTrigger>Páginas internas</AccordionTrigger>
           <AccordionContent className="space-y-6">
+            <Card className="border-border/70 bg-white/84">
+              <CardHeader>
+                <CardTitle className="text-base">Dashboard</CardTitle>
+                <CardDescription>
+                  Controle os textos-chave da home e dos grandes blocos do
+                  painel principal.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Eyebrow da home">
+                    <Input
+                      value={appDraft.dashboard.heroEyebrow}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'heroEyebrow'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Eyebrow da harmonia">
+                    <Input
+                      value={appDraft.dashboard.harmonyEyebrow}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'harmonyEyebrow'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+
+                <FieldBlock label="Descrição da home">
+                  <Textarea
+                    value={appDraft.dashboard.heroDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['dashboard', 'heroDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+
+                <FieldBlock label="Nota da harmonia atual">
+                  <Textarea
+                    value={appDraft.dashboard.harmonyNote}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['dashboard', 'harmonyNote'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <FieldBlock label="Badge do pulso">
+                    <Input
+                      value={appDraft.dashboard.pulseBadge}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'pulseBadge'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Badge astral">
+                    <Input
+                      value={appDraft.dashboard.astroBadge}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'astroBadge'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Badge do sono">
+                    <Input
+                      value={appDraft.dashboard.sleepBadge}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'sleepBadge'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Título do pulso">
+                    <Input
+                      value={appDraft.dashboard.pulseTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'pulseTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Botão de sincronização">
+                    <Input
+                      value={appDraft.dashboard.syncButtonLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'syncButtonLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+
+                <FieldBlock label="Descrição do pulso">
+                  <Textarea
+                    value={appDraft.dashboard.pulseDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['dashboard', 'pulseDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <FieldBlock label="Status sincronizando">
+                    <Input
+                      value={appDraft.dashboard.syncStatusLoading}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'syncStatusLoading'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Status parcial">
+                    <Input
+                      value={appDraft.dashboard.syncStatusPartial}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'syncStatusPartial'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Status pronto">
+                    <Input
+                      value={appDraft.dashboard.syncStatusReady}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'syncStatusReady'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Fallback do título astral">
+                    <Input
+                      value={appDraft.dashboard.astroCardFallbackTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'astroCardFallbackTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Label do insight astral">
+                    <Input
+                      value={appDraft.dashboard.astroInsightLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'astroInsightLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+
+                <FieldBlock label="Fallback da descrição astral">
+                  <Textarea
+                    value={appDraft.dashboard.astroCardFallbackDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['dashboard', 'astroCardFallbackDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+
+                <FieldBlock label="Fallback do insight astral">
+                  <Textarea
+                    value={appDraft.dashboard.astroInsightFallback}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['dashboard', 'astroInsightFallback'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <FieldBlock label="Label da meta de sono">
+                    <Input
+                      value={appDraft.dashboard.sleepGoalLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'sleepGoalLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Label do sono profundo">
+                    <Input
+                      value={appDraft.dashboard.deepSleepLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'deepSleepLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Label do sono REM">
+                    <Input
+                      value={appDraft.dashboard.remSleepLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'remSleepLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+
+                <FieldBlock label="Descrição do sono com dados">
+                  <Textarea
+                    value={appDraft.dashboard.sleepDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['dashboard', 'sleepDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+
+                <FieldBlock label="Descrição do sono sem dados">
+                  <Textarea
+                    value={appDraft.dashboard.sleepEmptyDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['dashboard', 'sleepEmptyDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+
+                <FieldBlock label="Fallback do insight de sono">
+                  <Textarea
+                    value={appDraft.dashboard.sleepInsightFallback}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['dashboard', 'sleepInsightFallback'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <FieldBlock label="Badge semanal">
+                    <Input
+                      value={appDraft.dashboard.weeklyBadge}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'weeklyBadge'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Label da IA">
+                    <Input
+                      value={appDraft.dashboard.aiUnlockedLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'aiUnlockedLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Label do contexto vivo">
+                    <Input
+                      value={appDraft.dashboard.liveContextLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'liveContextLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Título semanal">
+                    <Input
+                      value={appDraft.dashboard.weeklyTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'weeklyTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título dos pilares">
+                    <Input
+                      value={appDraft.dashboard.pillarsTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'pillarsTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+
+                <FieldBlock label="Descrição semanal">
+                  <Textarea
+                    value={appDraft.dashboard.weeklyDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['dashboard', 'weeklyDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Texto da IA liberada">
+                    <Input
+                      value={appDraft.dashboard.aiUnlockedYes}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'aiUnlockedYes'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Texto da IA bloqueada">
+                    <Input
+                      value={appDraft.dashboard.aiUnlockedNo}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'aiUnlockedNo'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <FieldBlock label="Label da prontidão">
+                    <Input
+                      value={appDraft.dashboard.currentReadinessLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'currentReadinessLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Label da longevidade">
+                    <Input
+                      value={appDraft.dashboard.longevityLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'longevityLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título sem métricas">
+                    <Input
+                      value={appDraft.dashboard.emptyMetricsTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['dashboard', 'emptyMetricsTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+
+                <FieldBlock label="Descrição dos pilares">
+                  <Textarea
+                    value={appDraft.dashboard.pillarsDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['dashboard', 'pillarsDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+
+                <FieldBlock label="Fallback do contexto vivo">
+                  <Textarea
+                    value={appDraft.dashboard.liveContextFallback}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['dashboard', 'liveContextFallback'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+
+                <FieldBlock label="Descrição sem métricas">
+                  <Textarea
+                    value={appDraft.dashboard.emptyMetricsDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['dashboard', 'emptyMetricsDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+              </CardContent>
+            </Card>
+
             <Card className="border-border/70 bg-white/84">
               <CardHeader>
                 <CardTitle className="text-base">Agendamentos</CardTitle>

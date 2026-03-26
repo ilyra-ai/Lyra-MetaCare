@@ -9,6 +9,8 @@ import { LandingPage } from '@/components/landing/LandingPage';
 import { AppShell } from '@/components/layout/AppShell';
 import { useAuth } from '@/context/AuthContext';
 import { HealthOrchestratorProvider } from '@/context/HealthOrchestratorContext';
+import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
+import { scaleRem } from '@/lib/site-page-config/runtime';
 
 type UserProfile = {
   first_name: string | null;
@@ -24,6 +26,7 @@ function getGreeting() {
 
 export default function Home() {
   const { session, db } = useAuth();
+  const { config: appConfig } = usePublicSitePageConfig('app');
   const [minimumTimeElapsed, setMinimumTimeElapsed] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
@@ -74,6 +77,7 @@ export default function Home() {
   }
 
   const firstName = profile?.first_name?.trim() || 'Paciente';
+  const dashboardConfig = appConfig.dashboard;
 
   return (
     <AppShell>
@@ -84,32 +88,69 @@ export default function Home() {
 
           <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="max-w-3xl">
-              <span className="eyebrow">
+              <span
+                className="eyebrow"
+                style={{
+                  fontSize: scaleRem(0.72, appConfig.typography.cardBody),
+                }}
+              >
                 <Sparkles className="h-3.5 w-3.5" />
-                Santuário digital de bem-estar
+                {dashboardConfig.heroEyebrow}
               </span>
-              <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground md:text-5xl">
+              <h1
+                className="mt-4 font-display font-bold tracking-tight text-foreground"
+                style={{
+                  fontSize: scaleRem(2.65, appConfig.typography.pageTitle),
+                  lineHeight: 1.05,
+                }}
+              >
                 {greeting},{' '}
                 <span className="text-gradient-hero">{firstName}</span>
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
-                Sua leitura do dia reúne biometria, sono, energia, astrologia
-                védica e protocolos orientados por IA em uma visão premium,
-                clara e acionável.
+              <p
+                className="mt-3 max-w-2xl text-muted-foreground"
+                style={{
+                  fontSize: scaleRem(0.98, appConfig.typography.pageBody),
+                  lineHeight: 1.7,
+                }}
+              >
+                {dashboardConfig.heroDescription}
               </p>
             </div>
 
-            <div className="glass-card flex max-w-sm items-center gap-4 rounded-[24px] px-5 py-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-cosmic text-white shadow-cosmic">
+            <div
+              className="glass-card flex max-w-sm items-center gap-4 rounded-[24px] px-5 py-4"
+              style={{
+                transform: `scale(${appConfig.sizing.cardScale})`,
+                transformOrigin: 'top right',
+              }}
+            >
+              <div
+                className="flex items-center justify-center rounded-full bg-gradient-cosmic text-white shadow-cosmic"
+                style={{
+                  width: scaleRem(3, appConfig.sizing.iconScale),
+                  height: scaleRem(3, appConfig.sizing.iconScale),
+                }}
+              >
                 <Waves className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                  Harmonia atual
+                <p
+                  className="font-semibold uppercase tracking-[0.22em] text-muted-foreground"
+                  style={{
+                    fontSize: scaleRem(0.72, appConfig.typography.cardBody),
+                  }}
+                >
+                  {dashboardConfig.harmonyEyebrow}
                 </p>
                 <p className="metric-display text-gradient-aurora">94.2</p>
-                <p className="text-xs text-muted-foreground">
-                  Janela de recuperação alta nas últimas 24 horas
+                <p
+                  className="text-muted-foreground"
+                  style={{
+                    fontSize: scaleRem(0.76, appConfig.typography.cardBody),
+                  }}
+                >
+                  {dashboardConfig.harmonyNote}
                 </p>
               </div>
             </div>

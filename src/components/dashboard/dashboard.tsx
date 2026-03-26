@@ -21,8 +21,10 @@ import {
 import { useDailyMetrics } from '@/hooks/use-daily-metrics';
 import { useAIScores } from '@/hooks/use-ai-scores';
 import { useAccountSubscription } from '@/hooks/use-account-subscription';
+import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { useHealthOrchestrator } from '@/context/HealthOrchestratorContext';
 import { isPlanFeatureEnabled } from '@/lib/plans/access';
+import { scaleRem } from '@/lib/site-page-config/runtime';
 import { cn } from '@/lib/utils';
 import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
 import { AITipsCard } from './AITipsCard';
@@ -201,6 +203,7 @@ function MiniMetricCard({
 }
 
 export function Dashboard() {
+  const { config: appConfig } = usePublicSitePageConfig('app');
   const { data: subscription, loading: subscriptionLoading } =
     useAccountSubscription();
   const { astrology, isSyncing, syncError, vitals, triggerManualSync } =
@@ -313,10 +316,10 @@ export function Dashboard() {
       : 'success';
 
   const syncBadgeLabel = isSyncing
-    ? 'Sincronizando'
+    ? appConfig.dashboard.syncStatusLoading
     : syncError
-      ? 'Parcial'
-      : 'Em sintonia';
+      ? appConfig.dashboard.syncStatusPartial
+      : appConfig.dashboard.syncStatusReady;
 
   const syncSummary = isSyncing
     ? 'Reavaliando sinais disponíveis e o céu do momento.'
@@ -326,10 +329,10 @@ export function Dashboard() {
 
   const astroTitle = astrology
     ? `Lua em ${astrology.moonSign}`
-    : 'Céu do momento';
+    : appConfig.dashboard.astroCardFallbackTitle;
   const astroDetail = astrology
     ? astrology.impactOnHealth.energy
-    : 'O contexto astrológico do momento será mostrado assim que a orquestração local terminar.';
+    : appConfig.dashboard.astroCardFallbackDescription;
 
   const handleSyncNow = async () => {
     await triggerManualSync();
@@ -359,14 +362,25 @@ export function Dashboard() {
           <CardHeader className="relative gap-5">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="flex flex-col gap-3">
-                <Badge variant="default">Pulso do dia</Badge>
+                <Badge variant="default">
+                  {appConfig.dashboard.pulseBadge}
+                </Badge>
                 <div className="flex flex-col gap-1">
-                  <CardTitle className="text-2xl md:text-3xl">
-                    Sua cadência corporal está em foco.
+                  <CardTitle
+                    className="md:text-3xl"
+                    style={{
+                      fontSize: scaleRem(1.5, appConfig.typography.pageTitle),
+                    }}
+                  >
+                    {appConfig.dashboard.pulseTitle}
                   </CardTitle>
-                  <CardDescription className="max-w-2xl">
-                    Uma leitura clara do que merece sua energia agora, unindo
-                    biometria, IA e atmosfera cósmica sem ruído visual.
+                  <CardDescription
+                    className="max-w-2xl"
+                    style={{
+                      fontSize: scaleRem(0.95, appConfig.typography.pageBody),
+                    }}
+                  >
+                    {appConfig.dashboard.pulseDescription}
                   </CardDescription>
                 </div>
               </div>
@@ -377,7 +391,7 @@ export function Dashboard() {
                 disabled={isSyncing}
               >
                 <TimerReset />
-                Reavaliar agora
+                {appConfig.dashboard.syncButtonLabel}
               </Button>
             </div>
           </CardHeader>
@@ -493,7 +507,7 @@ export function Dashboard() {
 
           <CardHeader className="relative gap-5">
             <div className="flex items-center justify-between gap-3">
-              <Badge variant="cosmic">Céu do momento</Badge>
+              <Badge variant="cosmic">{appConfig.dashboard.astroBadge}</Badge>
               <div className="flex size-11 items-center justify-center rounded-2xl bg-cosmic-light text-cosmic shadow-cosmic">
                 <MoonStar />
               </div>
@@ -519,11 +533,11 @@ export function Dashboard() {
 
             <div className="rounded-[24px] border border-white/80 bg-white/80 p-4 shadow-sm backdrop-blur-md">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                Leitura gentil
+                {appConfig.dashboard.astroInsightLabel}
               </p>
               <p className="mt-3 text-sm leading-7 text-foreground">
                 {astrology?.impactOnHealth.stress ??
-                  'Assim que o cálculo astrológico terminar, esta área mostra um resumo prático do céu para seu corpo e sua rotina.'}
+                  appConfig.dashboard.astroInsightFallback}
               </p>
             </div>
           </CardContent>
@@ -532,7 +546,7 @@ export function Dashboard() {
         <Card className="overflow-hidden border-info/15 bg-[radial-gradient(circle_at_bottom_left,hsl(var(--info)/0.16)_0%,hsl(var(--card))_48%,hsl(var(--card))_100%)]">
           <CardHeader className="gap-5">
             <div className="flex items-center justify-between gap-3">
-              <Badge variant="info">Sono restaurador</Badge>
+              <Badge variant="info">{appConfig.dashboard.sleepBadge}</Badge>
               <div className="flex size-11 items-center justify-center rounded-2xl bg-info-light text-info shadow-md">
                 <BedDouble />
               </div>
@@ -543,8 +557,8 @@ export function Dashboard() {
               </CardTitle>
               <CardDescription>
                 {sleepMinutes > 0
-                  ? 'Uma visão delicada do quanto seu descanso sustentou a energia de hoje.'
-                  : 'Conecte uma fonte real de sono para destravar esta leitura.'}
+                  ? appConfig.dashboard.sleepDescription
+                  : appConfig.dashboard.sleepEmptyDescription}
               </CardDescription>
             </div>
           </CardHeader>
@@ -552,7 +566,9 @@ export function Dashboard() {
           <CardContent className="flex flex-col gap-5">
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="text-muted-foreground">Meta sugerida</span>
+                <span className="text-muted-foreground">
+                  {appConfig.dashboard.sleepGoalLabel}
+                </span>
                 <span className="font-medium text-foreground">
                   8h por noite
                 </span>
@@ -563,7 +579,7 @@ export function Dashboard() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-[20px] border border-border/70 bg-card/80 p-4">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                  Sono profundo
+                  {appConfig.dashboard.deepSleepLabel}
                 </p>
                 <p className="mt-2 font-mono text-2xl text-foreground">
                   {formatMinutes(deepSleepMinutes)}
@@ -571,7 +587,7 @@ export function Dashboard() {
               </div>
               <div className="rounded-[20px] border border-border/70 bg-card/80 p-4">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                  Sono REM
+                  {appConfig.dashboard.remSleepLabel}
                 </p>
                 <p className="mt-2 font-mono text-2xl text-foreground">
                   {formatMinutes(remSleepMinutes)}
@@ -581,7 +597,7 @@ export function Dashboard() {
 
             <p className="text-sm leading-7 text-muted-foreground">
               {astrology?.impactOnHealth.sleep ??
-                'O painel de sono cruza duração, profundidade e o momento astrológico atual para sugerir um ritmo mais doce.'}
+                appConfig.dashboard.sleepInsightFallback}
             </p>
           </CardContent>
         </Card>
@@ -605,20 +621,23 @@ export function Dashboard() {
         <CardHeader className="gap-3">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex flex-col gap-2">
-              <Badge variant="secondary">Trajetória semanal</Badge>
+              <Badge variant="secondary">
+                {appConfig.dashboard.weeklyBadge}
+              </Badge>
               <CardTitle className="text-2xl">
-                Como sua prontidão desenhou a semana
+                {appConfig.dashboard.weeklyTitle}
               </CardTitle>
               <CardDescription>
-                Uma curva simples para enxergar ritmo, recuperação e constância
-                sem poluição visual.
+                {appConfig.dashboard.weeklyDescription}
               </CardDescription>
             </div>
             <div className="flex items-center gap-3 rounded-full border border-border bg-card px-4 py-2 text-sm text-muted-foreground">
               <Bot className="text-primary" />
-              IA liberada:{' '}
+              {appConfig.dashboard.aiUnlockedLabel}:{' '}
               <span className="font-semibold text-foreground">
-                {aiScoresEnabled ? 'sim' : 'não'}
+                {aiScoresEnabled
+                  ? appConfig.dashboard.aiUnlockedYes
+                  : appConfig.dashboard.aiUnlockedNo}
               </span>
             </div>
           </div>
@@ -665,7 +684,7 @@ export function Dashboard() {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-[22px] border border-border/70 bg-card/80 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                Prontidão atual
+                {appConfig.dashboard.currentReadinessLabel}
               </p>
               <p className="mt-2 font-mono text-3xl text-foreground">
                 {readinessScore ? Math.round(readinessScore) : 'N/A'}
@@ -673,7 +692,7 @@ export function Dashboard() {
             </div>
             <div className="rounded-[22px] border border-border/70 bg-card/80 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                Score de longevidade
+                {appConfig.dashboard.longevityLabel}
               </p>
               <p className="mt-2 font-mono text-3xl text-foreground">
                 {longevityScore ? longevityScore.toFixed(1) : 'Bloqueado'}
@@ -681,11 +700,11 @@ export function Dashboard() {
             </div>
             <div className="rounded-[22px] border border-border/70 bg-card/80 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                Contexto vivo
+                {appConfig.dashboard.liveContextLabel}
               </p>
               <p className="mt-2 text-sm leading-7 text-foreground">
                 {astrology?.impactOnHealth.energy ??
-                  'O céu do momento será sincronizado aqui assim que a orquestração local terminar.'}
+                  appConfig.dashboard.liveContextFallback}
               </p>
             </div>
           </div>
@@ -696,11 +715,10 @@ export function Dashboard() {
         <section className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <h2 className="text-2xl font-display font-bold tracking-tight text-gradient-hero">
-              Pilares profundos da sua saúde
+              {appConfig.dashboard.pillarsTitle}
             </h2>
             <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
-              Esta camada organiza métricas mais técnicas em blocos legíveis,
-              mantendo profundidade sem transformar a tela em ruído.
+              {appConfig.dashboard.pillarsDescription}
             </p>
           </div>
           <div className="rounded-[32px] border border-border/70 bg-card/80 p-5 shadow-sm backdrop-blur-xl">
@@ -711,12 +729,10 @@ export function Dashboard() {
         <Card className="border-dashed border-border/80 bg-card/80">
           <CardHeader className="gap-3">
             <CardTitle className="text-2xl">
-              As métricas do dia ainda não chegaram
+              {appConfig.dashboard.emptyMetricsTitle}
             </CardTitle>
             <CardDescription>
-              Assim que uma fonte real alimentar `daily_metrics`, este bloco
-              passa a exibir leituras detalhadas sem nenhum preenchimento
-              artificial.
+              {appConfig.dashboard.emptyMetricsDescription}
             </CardDescription>
           </CardHeader>
         </Card>
