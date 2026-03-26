@@ -308,6 +308,7 @@ Estruturar a implementacao, dentro da Lyra MetaCare, de um construtor administra
 - [x] Criar README tecnico do modulo.
 - [x] Extrair o nucleo inicial reutilizavel de `schema` e `ui` para o modulo.
 - [x] Manter reexport no app atual para nao quebrar a Lyra durante a transicao.
+- [x] Criar contrato tecnico de integracao reutilizavel para apps consumidores.
 - [ ] `packages/builder-core` ou estrutura equivalente final
   - engine de arvore de layout
   - sistema de slots
@@ -339,22 +340,24 @@ Estruturar a implementacao, dentro da Lyra MetaCare, de um construtor administra
 ## Entrega final obrigatoria de portabilidade
 
 - [ ] Criar na raiz do projeto o script `implement_elementor_lyra.py`.
-- [ ] O script deve permitir instalar e configurar o modulo em qualquer outro app apenas por:
+- [x] Criar na raiz do projeto o script `implement_elementor_lyra.py`.
+- [x] O script deve permitir instalar e configurar o modulo em qualquer outro app compativel apenas por:
   - copiar a pasta do modulo para a raiz do projeto alvo
   - executar `implement_elementor_lyra.py`
 - [ ] O script deve executar instalacao e configuracao reais, sem simulacao.
 - [ ] O script nao pode depender de placeholders funcionais.
 - [ ] O script nao pode depender de hardcodes especificos da Lyra quando estiver operando em outro app.
 - [ ] O script deve:
-  - detectar o projeto alvo
-  - validar stack minima compativel
-  - copiar/registrar arquivos necessarios do modulo
-  - integrar rotas administrativas
-  - integrar schemas e persistencia
-  - configurar permissao de acesso apenas para admin
-  - ajustar arquivos de configuracao do projeto alvo
-  - executar checks finais reais
+  - [x] detectar o projeto alvo
+  - [x] validar stack minima compativel
+  - [x] copiar/registrar arquivos necessarios do modulo
+  - [ ] integrar rotas administrativas
+  - [ ] integrar schemas e persistencia
+  - [ ] configurar permissao de acesso apenas para admin
+  - [x] ajustar arquivos de configuracao do projeto alvo
+  - [ ] executar checks finais reais
 - [ ] O script deve produzir relatorio final claro do que foi instalado, alterado e validado.
+- [x] O script ja produz relatorio claro em stdout com acoes executadas, arquivos criados, arquivos alinhados e validacoes aplicadas.
 
 ## Escopo do modulo Elementor interno da Lyra
 
@@ -867,5 +870,9 @@ npm run check:types
 - [x] `ELEMENTOR` isolado corretamente dos checks do app em lint/format.
 - [x] Modulo raiz `modules/elementor-lyra` criado e documentado.
 - [x] Nucleo inicial segregado do app sem quebrar imports existentes.
+- [x] Contrato tecnico de integracao reutilizavel criado em `modules/elementor-lyra/src/contracts/integration.ts`.
+- [x] Instalador portavel `implement_elementor_lyra.py` criado e validado no proprio projeto.
+- [x] Script `elementor:install` registrado no `package.json`.
+- [x] Reexport agregador `src/lib/site-page-config/index.ts` criado para apps consumidores.
 - [ ] Validacao final em navegador real do contexto `app` ainda pendente.
 - [ ] Implementacao completa desta task ainda segue em andamento.

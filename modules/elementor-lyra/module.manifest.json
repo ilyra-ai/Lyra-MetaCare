@@ -7,7 +7,8 @@
   "description": "Engine administrativa visual inspirada nas capacidades reais do ecossistema Elementor, adaptada para apps React/Next.js com persistencia real, schemas validados e integracao controlada por adapters.",
   "entrypoints": {
     "schema": "src/site-page-config/schema.ts",
-    "ui": "src/site-page-config/ui.ts"
+    "ui": "src/site-page-config/ui.ts",
+    "contracts": "src/contracts/integration.ts"
   },
   "capabilities": [
     "editor-visual-vivo",
@@ -28,5 +29,6 @@
     "tailwind-css",
     "mysql"
   ],
+  "supportedProjects": ["nextjs-app-router-typescript"],
   "adminOnly": true
 }
