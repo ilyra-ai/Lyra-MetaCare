@@ -331,6 +331,26 @@ Estruturar a implementacao, dentro da Lyra MetaCare, de um construtor administra
   - regras de permissao admin
   - integracao com MySQL e APIs do projeto
 
+## Entrega final obrigatoria de portabilidade
+
+- [ ] Criar na raiz do projeto o script `implement_elementor_lyra.py`.
+- [ ] O script deve permitir instalar e configurar o modulo em qualquer outro app apenas por:
+  - copiar a pasta do modulo para a raiz do projeto alvo
+  - executar `implement_elementor_lyra.py`
+- [ ] O script deve executar instalacao e configuracao reais, sem simulacao.
+- [ ] O script nao pode depender de placeholders funcionais.
+- [ ] O script nao pode depender de hardcodes especificos da Lyra quando estiver operando em outro app.
+- [ ] O script deve:
+  - detectar o projeto alvo
+  - validar stack minima compativel
+  - copiar/registrar arquivos necessarios do modulo
+  - integrar rotas administrativas
+  - integrar schemas e persistencia
+  - configurar permissao de acesso apenas para admin
+  - ajustar arquivos de configuracao do projeto alvo
+  - executar checks finais reais
+- [ ] O script deve produzir relatorio final claro do que foi instalado, alterado e validado.
+
 ## Escopo do modulo Elementor interno da Lyra
 
 ### Acesso e seguranca

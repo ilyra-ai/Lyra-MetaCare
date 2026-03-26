@@ -32,6 +32,10 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
   - puxar para astrologia moderna, toque esoterico sofisticado e fusao com tecnologia de modelos de IA;
   - manter confianca, serenidade, luxo suave, clareza e acessibilidade;
   - usar cores claras, etereas e luminosas.
+- Nova obrigacao adicionada pelo usuario:
+  - ao final da linha de implementacao do modulo Elementor/Lyra, criar `implement_elementor_lyra.py` na raiz;
+  - o script deve instalar e configurar o modulo em qualquer outro app de forma real;
+  - o modulo precisa ser portavel e segregado do app para viabilizar reaproveitamento.
 
 ## Regras de infraestrutura e operacao
 

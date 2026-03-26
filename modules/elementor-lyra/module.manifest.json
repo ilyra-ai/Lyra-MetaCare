@@ -1,0 +1,32 @@
+{
+  "id": "elementor-lyra",
+  "name": "Elementor Lyra Builder",
+  "version": "0.1.0",
+  "language": "pt-BR",
+  "moduleType": "admin-visual-builder",
+  "description": "Engine administrativa visual inspirada nas capacidades reais do ecossistema Elementor, adaptada para apps React/Next.js com persistencia real, schemas validados e integracao controlada por adapters.",
+  "entrypoints": {
+    "schema": "src/site-page-config/schema.ts",
+    "ui": "src/site-page-config/ui.ts"
+  },
+  "capabilities": [
+    "editor-visual-vivo",
+    "drag-and-drop-planejado",
+    "controle-responsivo-por-breakpoint",
+    "theme-builder-interno",
+    "global-brand-settings",
+    "dynamic-loops-planejados",
+    "display-conditions-planejadas",
+    "time-travel-planejado",
+    "publicacao-real",
+    "persistencia-real"
+  ],
+  "integrationTargets": [
+    "nextjs-app-router",
+    "react-19",
+    "typescript-5",
+    "tailwind-css",
+    "mysql"
+  ],
+  "adminOnly": true
+}
