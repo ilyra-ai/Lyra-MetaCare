@@ -11,6 +11,405 @@ Status geral: planejamento estruturado, sem execucao completa ainda
 
 Estruturar a implementacao, dentro da Lyra MetaCare, de um construtor administrativo inspirado nas capacidades reais identificadas no Elementor, respeitando integralmente a stack atual do projeto, sem adicionar dependencias proibidas, sem simulacoes, sem placeholders funcionais, sem hardcode indevido e com persistencia real em banco de dados.
 
+## Auditoria real da pasta ELEMENTOR
+
+### Inventario local auditado
+
+- [x] Pasta auditada na raiz: `C:\temp\Lyra-MetaCare\ELEMENTOR`
+- [x] Subpacotes encontrados:
+  - `elementor-pro`
+  - `elementskit`
+  - `essential-addons-elementor`
+  - `powerpack-elements`
+  - `unlimited-elements-for-elementor-premium`
+- [x] O core `elementor` nao foi encontrado na pasta auditada.
+
+### Evidencias tecnicas objetivas da auditoria
+
+- [x] Os pacotes auditados sao majoritariamente baseados em PHP e runtime WordPress.
+- [x] Nao foi encontrado um conjunto moderno de componentes React/TSX prontos para consumo direto no app.
+- [x] Contagem levantada durante a auditoria:
+  - `elementor-pro`: 756 arquivos PHP e 244 arquivos JS
+  - `elementskit`: 1124 arquivos PHP e 30 arquivos JS
+  - `essential-addons-elementor`: 445 arquivos PHP e 221 arquivos JS
+  - `powerpack-elements`: 429 arquivos PHP e 174 arquivos JS
+  - `unlimited-elements-for-elementor-premium`: 795 arquivos PHP e 91 arquivos JS
+- [x] Nao foi encontrado core React/TSX reutilizavel:
+  - `elementor-pro`: 0 arquivos TSX/JSX/TS reaproveitaveis
+  - `elementskit`: 0 arquivos TSX/JSX/TS reaproveitaveis
+  - `essential-addons-elementor`: 0 arquivos TSX/JSX/TS reaproveitaveis
+  - `powerpack-elements`: 0 arquivos TSX/JSX/TS reaproveitaveis
+  - `unlimited-elements-for-elementor-premium`: 0 arquivos TSX/JSX/TS reaproveitaveis
+
+### Conclusao honesta da auditoria de causa raiz
+
+- [x] Nao e tecnicamente correto tratar a pasta `ELEMENTOR` como um pacote plug-and-play para o app Next.js da Lyra.
+- [x] A causa raiz e arquitetural:
+  - dependencia de WordPress
+  - dependencia de PHP
+  - dependencia do runtime do Elementor core
+  - dependencia de hooks, filtros, controles e widgets internos do ecossistema WordPress
+- [x] Sem o plugin core `elementor`, os addons locais nao conseguem operar como no WordPress.
+- [x] Portanto, o caminho profissional nao e "plugar os plugins no Next.js", e sim:
+  - auditar
+  - decompor capacidades
+  - modelar schemas
+  - reproduzir as capacidades relevantes em engine propria
+  - criar adaptadores para a Lyra
+
+## Mapa completo das capacidades identificadas
+
+### Capacidades nucleares do Elementor Pro encontradas na auditoria
+
+- [x] `Theme Builder`
+- [x] `Theme Elements`
+- [x] `Forms`
+- [x] `Popup Builder`
+- [x] `Dynamic Tags`
+- [x] `Display Conditions`
+- [x] `Loop Builder`
+- [x] `Query Control`
+- [x] `Custom CSS`
+- [x] `Global Widget`
+- [x] `Role Manager`
+- [x] `Notes`
+- [x] `Mega Menu`
+- [x] `Link in Bio`
+- [x] `Payments`
+- [x] `WooCommerce Builder`
+- [x] `Variables`
+- [x] `Atomic Widgets`
+- [x] `Atomic Form`
+- [x] `Motion / Interactions / Transitions / Scroll Snap / Page Transitions`
+
+### Capacidades identificadas no ElementsKit
+
+- [x] Layout packs
+- [x] Custom controls
+- [x] Header / Footer module
+- [x] Sticky content
+- [x] Wrapper link
+- [x] Advanced tooltip
+- [x] Conditional content
+- [x] Parallax
+- [x] Particles
+- [x] Glass morphism
+- [x] Liquid glass
+- [x] Mouse cursor
+- [x] Masking
+- [x] Cross-domain copy/paste
+- [x] Widgets auditados:
+  - advanced accordion
+  - advanced search
+  - advanced slider
+  - advanced tab
+  - advanced toggle
+  - audio player
+  - blog posts
+  - breadcrumb
+  - chart
+  - circle menu
+  - comparison table
+  - content ticker
+  - creative button
+  - fancy animated text
+  - flip box
+  - gallery
+  - google map
+  - hotspot
+  - image hover effect
+  - image morphing
+  - image swap
+  - instagram feed
+  - interactive links
+  - popup modal
+  - price menu
+  - protected content
+  - table
+  - timeline
+  - video gallery
+  - whatsapp
+  - woo product carousel
+  - woo mini cart
+
+### Capacidades identificadas no Essential Addons for Elementor
+
+- [x] Biblioteca ampla de elementos premium
+- [x] Extensoes auditadas:
+  - particles
+  - parallax
+  - advanced tooltip
+  - content protection
+  - reading progress bar
+  - custom JS
+  - conditional display
+- [x] Templates auditados:
+  - content timeline
+  - dynamic filterable gallery
+  - post block
+  - post carousel
+  - post list
+  - woo account dashboard
+  - woo cross sells
+  - woo product slider
+  - woo thank you
+- [x] Elementos auditados:
+  - advanced search
+  - content timeline
+  - fancy chart
+  - figma to elementor
+  - flip carousel
+  - google map
+  - image comparison
+  - image hot spots
+  - image scroller
+  - instagram feed
+  - interactive promo
+  - lightbox
+  - logo carousel
+  - mailchimp
+  - multicolumn pricing table
+  - offcanvas
+  - one page navigation
+  - post block
+  - post carousel
+  - post list
+  - price menu
+  - protected content
+  - stacked cards
+  - static product
+  - team member carousel
+  - testimonial slider
+  - toggle
+  - woo account dashboard
+  - woo collections
+  - woo cross sells
+  - woo product slider
+  - woo thank you
+
+### Capacidades identificadas no PowerPack
+
+- [x] Biblioteca ampla de widgets criativos e extensoes
+- [x] Widgets auditados:
+  - advanced accordion
+  - advanced menu
+  - advanced tabs
+  - author list
+  - breadcrumbs
+  - business reviews
+  - buttons
+  - categories
+  - charts
+  - contact form integrations
+  - content reveal
+  - countdown
+  - counter
+  - custom fields
+  - devices
+  - display conditions
+  - divider
+  - dynamic tags
+  - faq
+  - flipbox
+  - gallery
+  - google maps
+  - headings
+  - hotspots
+  - icon list
+  - image accordion
+  - info box
+  - info list
+  - info table
+  - instagram feed
+  - login form
+  - logos
+  - modal popup
+  - offcanvas content
+  - posts
+  - pricing
+  - progress bar
+  - promo box
+  - protected content
+  - query control
+  - query post
+  - review box
+  - table
+  - team member
+  - testimonials
+  - timeline
+  - toc
+  - toggle
+  - twitter
+  - video
+  - woocommerce
+  - wpforms
+
+### Capacidades identificadas no Unlimited Elements
+
+- [x] Widget library
+- [x] Widget creator framework
+- [x] Template kits
+- [x] Loop builder
+- [x] Background widgets
+- [x] Post widgets e filtros
+- [x] WooCommerce widgets e filtros
+- [x] Remote control widgets
+- [x] Sync between widgets
+- [x] Multi-source galleries
+- [x] Live copy paste
+- [x] Mega menu builder
+- [x] Mega slider builder
+- [x] Multi-source widgets
+- [x] Dynamic popup builder
+- [x] Form builder
+- [x] Calculator builder
+- [x] AJAX faceted filters
+
+## Decisao arquitetural recomendada
+
+### Nao fazer
+
+- [x] Nao tentar rodar diretamente os plugins PHP do Elementor dentro do app Next.js.
+- [x] Nao injetar WordPress dentro da Lyra apenas para reaproveitar addons.
+- [x] Nao acoplar o futuro construtor visual da Lyra a uma infraestrutura WordPress.
+
+### Fazer
+
+- [ ] Criar um modulo proprio inspirado no Elementor, mas nativo da Lyra.
+- [ ] Modelar esse modulo como produto reutilizavel para outros apps.
+- [ ] Separar a arquitetura em:
+  - `builder-core`
+  - `builder-admin`
+  - `builder-renderer`
+  - `builder-schema`
+  - `builder-storage`
+  - `builder-adapters`
+- [ ] Fazer a Lyra ser o primeiro app consumidor desse modulo.
+
+## Meta adicional: modulo reutilizavel entre apps
+
+### Objetivo de produto
+
+- [ ] O modulo deve nascer com arquitetura reutilizavel para qualquer outro app futuro.
+- [ ] O modulo nao deve depender de nomes de pagina, componentes ou rotas exclusivas da Lyra.
+- [ ] O modulo deve aceitar adaptadores por aplicacao:
+  - catalogo de componentes
+  - rotas editaveis
+  - zonas editaveis
+  - permissoes
+  - schemas
+  - dados dinamicos
+  - tema
+
+### Estrutura proposta do modulo reutilizavel
+
+- [ ] `packages/builder-core`
+  - engine de arvore de layout
+  - sistema de slots
+  - sistema de props editaveis
+  - sistema de breakpoints
+  - sistema de estilos responsivos
+  - sistema de conditions
+  - sistema de revisions
+- [ ] `packages/builder-admin`
+  - canvas ao vivo
+  - drag-and-drop
+  - navigator de arvore
+  - painel Content
+  - painel Style
+  - painel Advanced
+  - time-travel
+  - controle de publicacao
+- [ ] `packages/builder-renderer`
+  - renderer publico
+  - renderer do app interno
+  - injecao segura de CSS customizado
+  - consumo de configuracao publicada
+- [ ] `packages/builder-adapter-lyra`
+  - registro de componentes reais da Lyra
+  - registro de zonas editaveis
+  - regras de permissao admin
+  - integracao com MySQL e APIs do projeto
+
+## Escopo do modulo Elementor interno da Lyra
+
+### Acesso e seguranca
+
+- [ ] Criar um modulo administrativo chamado `Elementor` ou nome equivalente aprovado.
+- [ ] Restringir acesso somente ao administrador total do sistema.
+- [ ] Exibir o acesso dentro das configuracoes do app.
+- [ ] Ao clicar, abrir o construtor visual com lista real de:
+  - landing page
+  - login
+  - sidebar
+  - header
+  - rodape
+  - paginas internas elegiveis
+  - templates globais
+
+### Editor visual total
+
+- [ ] Editor ao vivo com drag-and-drop real.
+- [ ] DOM Navigator interativo.
+- [ ] Abas:
+  - `Content`
+  - `Style`
+  - `Advanced`
+- [ ] Selecao visual de blocos e componentes.
+- [ ] Reordenacao hierarquica real.
+- [ ] Insercao e remocao real de componentes suportados.
+- [ ] Edicao de texto em pt-BR.
+- [ ] Configuracao de tamanho de:
+  - fontes
+  - cards
+  - icones
+  - tabelas
+  - botoes
+  - containers
+
+### Controles globais de marca
+
+- [ ] Configuracoes globais de:
+  - tipografia
+  - escala tipografica
+  - cores
+  - gradientes
+  - bordas
+  - raios
+  - sombras
+  - espacamentos
+  - largura maxima
+  - densidade visual
+- [ ] Publicacao global refletida em todo o app.
+
+### Theme Builder interno
+
+- [ ] Builder visual de:
+  - cabecalho
+  - sidebar
+  - rodape
+  - layouts globais
+  - templates de pagina
+  - estados especiais
+  - resultados de busca futuros
+- [ ] Sistema de atribuicao de template por alvo.
+
+### Dynamic Content e Loop Builder
+
+- [ ] Dynamic loops reais para listas repetitivas.
+- [ ] Separacao clara entre:
+  - configuracao visual
+  - dados vivos do sistema
+- [ ] Conectores reais para dados do app sem mock.
+
+### Revisions, historico e publicacao
+
+- [ ] Rascunho e publicado.
+- [ ] Revisoes persistidas em banco.
+- [ ] Restauracao de revisao.
+- [ ] Time-travel de UI.
+- [ ] Auditoria com autor, data e diff.
+
 ## Premissas obrigatorias
 
 - A implementacao deve seguir a identidade da Lyra:
@@ -285,11 +684,11 @@ Estruturar a implementacao, dentro da Lyra MetaCare, de um construtor administra
 
 ### Camada 1. Schema
 
-- [ ] Expandir `src/lib/site-page-config/schema.ts`.
+- [x] Expandir `src/lib/site-page-config/schema.ts`.
 - [ ] Suportar `pageKey`:
-  - `landing`
-  - `login`
-  - `app`
+  - [x] `landing`
+  - [x] `login`
+  - [x] `app`
   - outros futuros somente quando houver escopo real
 - [ ] Criar schemas separados para:
   - tipografia
@@ -319,13 +718,13 @@ Estruturar a implementacao, dentro da Lyra MetaCare, de um construtor administra
 
 ### Camada 4. Builder administrativo
 
-- [ ] Evoluir `src/components/admin/SiteExperienceBuilder.tsx`.
-- [ ] Adicionar terceira aba ou terceiro contexto:
-  - Landing
-  - Login
-  - App Interno
+- [x] Evoluir `src/components/admin/SiteExperienceBuilder.tsx`.
+- [x] Adicionar terceira aba ou terceiro contexto:
+  - [x] Landing
+  - [x] Login
+  - [x] App Interno
 - [ ] Expor controles reais de UI/UX global.
-- [ ] Expor preview coerente do estado atual.
+- [x] Expor preview coerente do estado atual.
 
 ### Camada 5. Consumo no frontend
 
@@ -344,24 +743,24 @@ Estruturar a implementacao, dentro da Lyra MetaCare, de um construtor administra
 
 ### Fase A - Fundacao do builder global
 
-- [ ] Ampliar schema para `app`.
-- [ ] Criar defaults reais do `app`.
+- [x] Ampliar schema para `app`.
+- [x] Criar defaults reais do `app`.
 - [ ] Ampliar service.
 - [ ] Ampliar APIs por `pageKey`.
 
 ### Fase B - Editor administrativo do app
 
-- [ ] Adicionar contexto `App Interno` no construtor.
-- [ ] Criar controles de:
-  - tipografia
-  - tamanhos
-  - sidebar
-  - header
-  - cards
-  - tabelas
-  - botoes
-  - textos
-  - visibilidade de blocos
+- [x] Adicionar contexto `App Interno` no construtor.
+- [x] Criar controles de:
+  - [x] tipografia
+  - [x] tamanhos
+  - [x] sidebar
+  - [x] header
+  - [x] cards
+  - [x] tabelas
+  - [x] botoes
+  - [x] textos
+  - [x] visibilidade de blocos
 
 ### Fase C - Consumo nas partes globais
 
@@ -437,5 +836,9 @@ npm run check:types
 ## Estado atual desta task
 
 - [x] Task criada na raiz do projeto.
-- [ ] Implementacao ainda nao iniciada por completo nesta task.
-- [ ] Aguardando proxima instrucao do usuario.
+- [x] Auditoria local profunda da pasta `ELEMENTOR` consolidada na task.
+- [x] Causa raiz da inviabilidade de integracao direta documentada.
+- [x] Schema e builder administrativo alinhados para `landing`, `login` e `app`.
+- [x] `ELEMENTOR` isolado corretamente dos checks do app em lint/format.
+- [ ] Validacao final em navegador real do contexto `app` ainda pendente.
+- [ ] Implementacao completa desta task ainda segue em andamento.

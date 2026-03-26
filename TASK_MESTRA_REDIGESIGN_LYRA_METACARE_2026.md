@@ -84,6 +84,12 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] `profile` validado em navegador real e ajustado para o tema claro premium.
 - [x] `monitoring` reescrito no padrao claro premium e validado tecnicamente.
 - [x] `admin/page-builder` ampliado com controles reais de tipografia para landing e login.
+- [x] Auditoria profunda inicial da pasta `ELEMENTOR` executada com inventario real dos pacotes locais.
+- [x] Causa raiz identificada para a integracao direta do Elementor: dependencia de WordPress/PHP/core `elementor`, ausente na pasta auditada.
+- [x] Task especifica `TASK_IMPLEMENTACAO_REFERENCIA_ELEMENTOR_LYRA.md` fortalecida com mapa completo de capacidades, bloqueios e proposta de engine reutilizavel.
+- [x] `site-page-config` corrigido para suportar `landing`, `login` e `app` de forma coerente na tipagem.
+- [x] `SiteExperienceBuilder` ampliado com contexto real de `App Interno`, incluindo preview administrativo e controles reais de sidebar, header, tipografia, sizing e modulos internos.
+- [x] Causa raiz dos erros de `check:format` e `check:lint` apos a inclusao da pasta `ELEMENTOR` corrigida com isolamento apropriado nos arquivos de ignore.
 - [~] Varredura completa de menus, dropdowns, CRUDs, onboarding e configuracoes ainda em execucao.
 
 ## O que ja foi concluido de forma real

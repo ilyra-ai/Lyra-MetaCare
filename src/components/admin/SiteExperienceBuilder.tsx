@@ -52,6 +52,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import {
+  AppPageConfig,
   BuilderIconKey,
   ContentItem,
   FaqItem,
@@ -65,7 +66,7 @@ import {
 } from '@/lib/site-page-config/schema';
 import { builderIconOptions, toneOptions } from '@/lib/site-page-config/ui';
 
-type EditableDraft = LandingPageConfig | LoginPageConfig;
+type EditableDraft = LandingPageConfig | LoginPageConfig | AppPageConfig;
 
 type AdminConfigResponse = {
   pageKey: SitePageKey;
@@ -83,6 +84,12 @@ function isLandingConfig(config: EditableDraft): config is LandingPageConfig {
 
 function isLoginConfig(config: EditableDraft): config is LoginPageConfig {
   return 'intro' in config && 'auth' in config;
+}
+
+function isAppConfig(config: EditableDraft): config is AppPageConfig {
+  return (
+    'sidebar' in config && 'appointments' in config && 'monitoring' in config
+  );
 }
 
 function cloneValue<T>(value: T): T {
@@ -398,6 +405,234 @@ function buildLoginHighlightItem(): LoginHighlightItem {
   };
 }
 
+function buildAppNavigationItem() {
+  return {
+    href: '/nova-rota',
+    label: 'Novo item',
+    description: 'Explique o propósito deste ponto de navegação.',
+    visible: true,
+  };
+}
+
+function AppExperiencePreview({ config }: { config: AppPageConfig }) {
+  const visibleItems = config.sidebar.items.filter((item) => item.visible);
+
+  return (
+    <div className="min-h-full bg-[linear-gradient(180deg,rgba(249,248,252,0.98),rgba(255,255,255,0.98))] p-6">
+      <div className="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
+        <Card className="border-border/70 bg-white/88 shadow-sm">
+          <CardHeader className="gap-4">
+            <div className="rounded-[22px] border border-border/70 bg-gradient-to-br from-white via-white to-cosmic-light/45 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
+                {config.sidebar.brandEyebrow}
+              </p>
+              <CardTitle className="mt-2 text-3xl lowercase">
+                {config.sidebar.brandTitle}
+              </CardTitle>
+            </div>
+            <CardDescription>
+              Sidebar prevista com largura de {config.sizing.sidebarWidth}px e{' '}
+              {visibleItems.length} itens visíveis.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-[20px] border border-border/70 bg-cosmic-light/45 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+                {config.sidebar.statusEyebrow}
+              </p>
+              <p className="mt-2 text-sm font-medium text-foreground">
+                {config.sidebar.statusTitle}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {Object.entries(config.sidebar.sectionLabels).map(
+                ([sectionKey, label]) => (
+                  <div
+                    key={sectionKey}
+                    className="rounded-[18px] border border-border/60 bg-white/90 px-4 py-3"
+                  >
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                      {sectionKey}
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-foreground">
+                      {label}
+                    </p>
+                  </div>
+                )
+              )}
+            </div>
+
+            <div className="rounded-[20px] border border-border/70 bg-white/90 p-4">
+              <p className="text-sm font-semibold text-foreground">
+                {config.sidebar.preferencesTitle}
+              </p>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                {config.sidebar.preferencesDescription}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="space-y-5">
+          <Card className="border-border/70 bg-white/88 shadow-sm">
+            <CardHeader>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+                    Header do app
+                  </p>
+                  <CardTitle className="mt-2 text-2xl">
+                    {config.header.commandPlaceholder}
+                  </CardTitle>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary">
+                    atalho {config.header.commandShortcutLabel}
+                  </Badge>
+                  <Badge variant="cosmic">{config.header.assistantLabel}</Badge>
+                </div>
+              </div>
+              <CardDescription>
+                Menu do perfil: {config.header.profileMenuLabel}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            <Card className="border-border/70 bg-white/88 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  {config.appointments.heroTitle}
+                </CardTitle>
+                <CardDescription>
+                  {config.appointments.heroDescription}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <p>{config.appointments.listTitle}</p>
+                <p>{config.appointments.professionalsTitle}</p>
+                <p>{config.appointments.calendarTitle}</p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge
+                    variant={
+                      config.appointments.showUpcomingList
+                        ? 'success'
+                        : 'secondary'
+                    }
+                  >
+                    lista
+                  </Badge>
+                  <Badge
+                    variant={
+                      config.appointments.showProfessionalsList
+                        ? 'success'
+                        : 'secondary'
+                    }
+                  >
+                    profissionais
+                  </Badge>
+                  <Badge
+                    variant={
+                      config.appointments.showCalendar ? 'success' : 'secondary'
+                    }
+                  >
+                    calendário
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/70 bg-white/88 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  {config.monitoring.pageTitle}
+                </CardTitle>
+                <CardDescription>
+                  {config.monitoring.pageDescription}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <p>{config.monitoring.infoTitle}</p>
+                <p>{config.monitoring.controlsTitle}</p>
+                <p>{config.monitoring.alertsTitle}</p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge
+                    variant={
+                      config.monitoring.showEventFeed ? 'success' : 'secondary'
+                    }
+                  >
+                    feed
+                  </Badge>
+                  <Badge
+                    variant={
+                      config.monitoring.showVoiceButton
+                        ? 'success'
+                        : 'secondary'
+                    }
+                  >
+                    voz
+                  </Badge>
+                  <Badge
+                    variant={
+                      config.monitoring.showAlertsButton
+                        ? 'success'
+                        : 'secondary'
+                    }
+                  >
+                    alertas
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/70 bg-white/88 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  {config.profile.pageTitle}
+                </CardTitle>
+                <CardDescription>
+                  {config.profile.pageDescription}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground">
+                <p>{config.profile.pageEyebrow}</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card className="border-border/70 bg-white/88 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-xl">Navegação visível</CardTitle>
+              <CardDescription>
+                Itens ativos conforme o rascunho atual da experiência interna.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-3 md:grid-cols-2">
+              {visibleItems.map((item) => (
+                <div
+                  key={item.href}
+                  className="rounded-[20px] border border-border/70 bg-white/92 p-4"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-foreground">
+                      {item.label}
+                    </p>
+                    <Badge variant="outline">{item.href}</Badge>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    {item.description}
+                  </p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SiteExperienceBuilder() {
   const [pageKey, setPageKey] = useState<SitePageKey>('landing');
   const [draftConfig, setDraftConfig] = useState<EditableDraft>(
@@ -475,19 +710,37 @@ export function SiteExperienceBuilder() {
       : getDefaultPageConfig('login');
   }, [draftConfig]);
 
+  const normalizedAppDraft = useMemo(() => {
+    return isAppConfig(draftConfig) ? draftConfig : getDefaultPageConfig('app');
+  }, [draftConfig]);
+
   const preview = useMemo(() => {
-    return pageKey === 'landing' ? (
-      <LandingPage overrideConfig={normalizedLandingDraft} previewMode />
-    ) : (
-      <LoginExperience overrideConfig={normalizedLoginDraft} previewMode />
-    );
-  }, [normalizedLandingDraft, normalizedLoginDraft, pageKey]);
+    if (pageKey === 'landing') {
+      return (
+        <LandingPage overrideConfig={normalizedLandingDraft} previewMode />
+      );
+    }
+
+    if (pageKey === 'login') {
+      return (
+        <LoginExperience overrideConfig={normalizedLoginDraft} previewMode />
+      );
+    }
+
+    return <AppExperiencePreview config={normalizedAppDraft} />;
+  }, [
+    normalizedAppDraft,
+    normalizedLandingDraft,
+    normalizedLoginDraft,
+    pageKey,
+  ]);
 
   const hasDraftChanges =
     JSON.stringify(draftConfig) !== JSON.stringify(publishedConfig);
 
   const landingDraft = normalizedLandingDraft;
   const loginDraft = normalizedLoginDraft;
+  const appDraft = normalizedAppDraft;
 
   function updateDraft(path: string[], nextValue: unknown) {
     setDraftConfig((current) => setByPath(current, path, nextValue));
@@ -1792,6 +2045,719 @@ export function SiteExperienceBuilder() {
     );
   }
 
+  function renderAppEditor() {
+    return (
+      <Accordion type="multiple" defaultValue={['visual', 'sidebar', 'pages']}>
+        <AccordionItem value="visual">
+          <AccordionTrigger>Visual global do app</AccordionTrigger>
+          <AccordionContent className="space-y-5">
+            <div className="grid gap-4 xl:grid-cols-2">
+              <TypographySliderField
+                label="Título de página"
+                description="Ajusta o tamanho dos títulos principais das páginas internas."
+                value={appDraft.typography.pageTitle}
+                onValueChange={(value) =>
+                  updateDraft(['typography', 'pageTitle'], value)
+                }
+              />
+              <TypographySliderField
+                label="Texto de página"
+                description="Controla descrições e textos introdutórios das páginas."
+                value={appDraft.typography.pageBody}
+                onValueChange={(value) =>
+                  updateDraft(['typography', 'pageBody'], value)
+                }
+              />
+              <TypographySliderField
+                label="Título de cards"
+                description="Escala usada em títulos de cards e painéis do app."
+                value={appDraft.typography.cardTitle}
+                onValueChange={(value) =>
+                  updateDraft(['typography', 'cardTitle'], value)
+                }
+              />
+              <TypographySliderField
+                label="Corpo de cards"
+                description="Escala para descrições, apoio visual e conteúdos internos dos cards."
+                value={appDraft.typography.cardBody}
+                onValueChange={(value) =>
+                  updateDraft(['typography', 'cardBody'], value)
+                }
+              />
+              <TypographySliderField
+                label="Botões"
+                description="Ajusta o tamanho do texto em botões do app."
+                value={appDraft.typography.buttonLabel}
+                onValueChange={(value) =>
+                  updateDraft(['typography', 'buttonLabel'], value)
+                }
+              />
+              <TypographySliderField
+                label="Rótulos de navegação"
+                description="Escala usada na sidebar e em labels de navegação."
+                value={appDraft.typography.navLabel}
+                onValueChange={(value) =>
+                  updateDraft(['typography', 'navLabel'], value)
+                }
+              />
+            </div>
+
+            <div className="grid gap-4 xl:grid-cols-2">
+              <TypographySliderField
+                label="Escala dos cards"
+                description="Amplia ou reduz os cards internos do app."
+                value={appDraft.sizing.cardScale}
+                onValueChange={(value) =>
+                  updateDraft(['sizing', 'cardScale'], value)
+                }
+              />
+              <TypographySliderField
+                label="Escala dos ícones"
+                description="Ajusta o tamanho percebido dos ícones da interface."
+                value={appDraft.sizing.iconScale}
+                onValueChange={(value) =>
+                  updateDraft(['sizing', 'iconScale'], value)
+                }
+              />
+              <TypographySliderField
+                label="Escala das tabelas"
+                description="Controla a densidade visual das tabelas do app."
+                value={appDraft.sizing.tableScale}
+                onValueChange={(value) =>
+                  updateDraft(['sizing', 'tableScale'], value)
+                }
+              />
+              <TypographySliderField
+                label="Escala dos botões"
+                description="Ajusta a presença visual dos botões internos."
+                value={appDraft.sizing.buttonScale}
+                onValueChange={(value) =>
+                  updateDraft(['sizing', 'buttonScale'], value)
+                }
+              />
+            </div>
+
+            <div className="rounded-[20px] border border-border/70 bg-white/82 p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    Largura da sidebar
+                  </p>
+                  <p className="text-xs leading-6 text-muted-foreground">
+                    Defina a largura base da navegação lateral do app.
+                  </p>
+                </div>
+                <Badge variant="secondary">
+                  {appDraft.sizing.sidebarWidth}px
+                </Badge>
+              </div>
+              <div className="mt-4 space-y-3">
+                <Slider
+                  min={240}
+                  max={360}
+                  step={4}
+                  value={[appDraft.sizing.sidebarWidth]}
+                  onValueChange={(values) =>
+                    updateDraft(['sizing', 'sidebarWidth'], values[0] ?? 288)
+                  }
+                />
+                <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                  <span>compacta</span>
+                  <span>equilibrada</span>
+                  <span>ampla</span>
+                </div>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="sidebar">
+          <AccordionTrigger>Sidebar e branding</AccordionTrigger>
+          <AccordionContent className="space-y-5">
+            <div className="grid gap-4 xl:grid-cols-2">
+              <FieldBlock label="Marca principal">
+                <Input
+                  value={appDraft.sidebar.brandTitle}
+                  onChange={(event) =>
+                    updateDraft(['sidebar', 'brandTitle'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Eyebrow da marca">
+                <Input
+                  value={appDraft.sidebar.brandEyebrow}
+                  onChange={(event) =>
+                    updateDraft(['sidebar', 'brandEyebrow'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Eyebrow do estado do dia">
+                <Input
+                  value={appDraft.sidebar.statusEyebrow}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['sidebar', 'statusEyebrow'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Título do estado do dia">
+                <Input
+                  value={appDraft.sidebar.statusTitle}
+                  onChange={(event) =>
+                    updateDraft(['sidebar', 'statusTitle'], event.target.value)
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Título do bloco final">
+                <Input
+                  value={appDraft.sidebar.preferencesTitle}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['sidebar', 'preferencesTitle'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Descrição do bloco final">
+                <Input
+                  value={appDraft.sidebar.preferencesDescription}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['sidebar', 'preferencesDescription'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+            </div>
+
+            <div className="grid gap-4 xl:grid-cols-2">
+              <FieldBlock label="Label da seção principal">
+                <Input
+                  value={appDraft.sidebar.sectionLabels.principal}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['sidebar', 'sectionLabels', 'principal'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Label do fluxo guiado">
+                <Input
+                  value={appDraft.sidebar.sectionLabels.guidedFlow}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['sidebar', 'sectionLabels', 'guidedFlow'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Label da seção pessoal">
+                <Input
+                  value={appDraft.sidebar.sectionLabels.personal}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['sidebar', 'sectionLabels', 'personal'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Label da seção admin">
+                <Input
+                  value={appDraft.sidebar.sectionLabels.admin}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['sidebar', 'sectionLabels', 'admin'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="nav-items">
+          <AccordionTrigger>Navegação editável</AccordionTrigger>
+          <AccordionContent className="space-y-4">
+            <div className="flex items-center justify-between gap-3 rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Itens da sidebar
+                </p>
+                <p className="text-xs leading-6 text-muted-foreground">
+                  Reordene, oculte, reescreva e expanda a navegação interna.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() =>
+                  addListItem(['sidebar', 'items'], buildAppNavigationItem())
+                }
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Novo item
+              </Button>
+            </div>
+
+            {appDraft.sidebar.items.map((item, index) => (
+              <ItemShell
+                key={`${item.href}-${index}`}
+                title={item.label}
+                onMoveUp={() => moveListItem(['sidebar', 'items'], index, -1)}
+                onMoveDown={() => moveListItem(['sidebar', 'items'], index, 1)}
+                onRemove={() => removeListItem(['sidebar', 'items'], index)}
+              >
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Rota">
+                    <Input
+                      value={item.href}
+                      onChange={(event) =>
+                        updateListItem(
+                          ['sidebar', 'items'],
+                          index,
+                          'href',
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Label">
+                    <Input
+                      value={item.label}
+                      onChange={(event) =>
+                        updateListItem(
+                          ['sidebar', 'items'],
+                          index,
+                          'label',
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Descrição">
+                  <Textarea
+                    value={item.description}
+                    onChange={(event) =>
+                      updateListItem(
+                        ['sidebar', 'items'],
+                        index,
+                        'description',
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <SwitchRow
+                  title="Item visível"
+                  description="Desative para esconder este item sem removê-lo da configuração."
+                  checked={item.visible}
+                  onCheckedChange={(checked) =>
+                    updateListItem(
+                      ['sidebar', 'items'],
+                      index,
+                      'visible',
+                      checked
+                    )
+                  }
+                />
+              </ItemShell>
+            ))}
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="header">
+          <AccordionTrigger>Header do app</AccordionTrigger>
+          <AccordionContent className="space-y-4">
+            <div className="grid gap-4 xl:grid-cols-2">
+              <FieldBlock label="Placeholder da busca global">
+                <Input
+                  value={appDraft.header.commandPlaceholder}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['header', 'commandPlaceholder'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Atalho da busca">
+                <Input
+                  value={appDraft.header.commandShortcutLabel}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['header', 'commandShortcutLabel'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Botão do assistente">
+                <Input
+                  value={appDraft.header.assistantLabel}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['header', 'assistantLabel'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+              <FieldBlock label="Menu de perfil">
+                <Input
+                  value={appDraft.header.profileMenuLabel}
+                  onChange={(event) =>
+                    updateDraft(
+                      ['header', 'profileMenuLabel'],
+                      event.target.value
+                    )
+                  }
+                />
+              </FieldBlock>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="pages">
+          <AccordionTrigger>Páginas internas</AccordionTrigger>
+          <AccordionContent className="space-y-6">
+            <Card className="border-border/70 bg-white/84">
+              <CardHeader>
+                <CardTitle className="text-base">Agendamentos</CardTitle>
+                <CardDescription>
+                  Controle o texto-base e os blocos visíveis do módulo.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Badge">
+                    <Input
+                      value={appDraft.appointments.heroBadge}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['appointments', 'heroBadge'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título principal">
+                    <Input
+                      value={appDraft.appointments.heroTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['appointments', 'heroTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título da lista">
+                    <Input
+                      value={appDraft.appointments.listTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['appointments', 'listTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título dos profissionais">
+                    <Input
+                      value={appDraft.appointments.professionalsTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['appointments', 'professionalsTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Descrição principal">
+                  <Textarea
+                    value={appDraft.appointments.heroDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['appointments', 'heroDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <FieldBlock label="Descrição da lista">
+                  <Textarea
+                    value={appDraft.appointments.listDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['appointments', 'listDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <FieldBlock label="Descrição dos profissionais">
+                  <Textarea
+                    value={appDraft.appointments.professionalsDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['appointments', 'professionalsDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <FieldBlock label="Título do calendário">
+                  <Input
+                    value={appDraft.appointments.calendarTitle}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['appointments', 'calendarTitle'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <FieldBlock label="Descrição do calendário">
+                  <Textarea
+                    value={appDraft.appointments.calendarDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['appointments', 'calendarDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <SwitchRow
+                    title="Lista de consultas"
+                    description="Mostra o bloco de próximas consultas."
+                    checked={appDraft.appointments.showUpcomingList}
+                    onCheckedChange={(checked) =>
+                      updateDraft(['appointments', 'showUpcomingList'], checked)
+                    }
+                  />
+                  <SwitchRow
+                    title="Lista de profissionais"
+                    description="Mostra o bloco da rede profissional."
+                    checked={appDraft.appointments.showProfessionalsList}
+                    onCheckedChange={(checked) =>
+                      updateDraft(
+                        ['appointments', 'showProfessionalsList'],
+                        checked
+                      )
+                    }
+                  />
+                  <SwitchRow
+                    title="Calendário"
+                    description="Mostra o calendário visual do módulo."
+                    checked={appDraft.appointments.showCalendar}
+                    onCheckedChange={(checked) =>
+                      updateDraft(['appointments', 'showCalendar'], checked)
+                    }
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/70 bg-white/84">
+              <CardHeader>
+                <CardTitle className="text-base">Monitoramento</CardTitle>
+                <CardDescription>
+                  Ajuste textos-base, contexto e blocos ativos do painel vivo.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Eyebrow da página">
+                    <Input
+                      value={appDraft.monitoring.pageEyebrow}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['monitoring', 'pageEyebrow'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título da página">
+                    <Input
+                      value={appDraft.monitoring.pageTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['monitoring', 'pageTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Descrição da página">
+                  <Textarea
+                    value={appDraft.monitoring.pageDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['monitoring', 'pageDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Badge principal">
+                    <Input
+                      value={appDraft.monitoring.heroBadge}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['monitoring', 'heroBadge'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título do hero">
+                    <Input
+                      value={appDraft.monitoring.heroTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['monitoring', 'heroTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Descrição do hero">
+                  <Textarea
+                    value={appDraft.monitoring.heroDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['monitoring', 'heroDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <FieldBlock label="Título do bloco informativo">
+                    <Input
+                      value={appDraft.monitoring.infoTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['monitoring', 'infoTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título dos controles">
+                    <Input
+                      value={appDraft.monitoring.controlsTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['monitoring', 'controlsTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título dos alertas">
+                    <Input
+                      value={appDraft.monitoring.alertsTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['monitoring', 'alertsTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <SwitchRow
+                    title="Feed de eventos"
+                    description="Mantém o feed recente visível no painel."
+                    checked={appDraft.monitoring.showEventFeed}
+                    onCheckedChange={(checked) =>
+                      updateDraft(['monitoring', 'showEventFeed'], checked)
+                    }
+                  />
+                  <SwitchRow
+                    title="Botão de voz"
+                    description="Permite acionar leitura falada das métricas."
+                    checked={appDraft.monitoring.showVoiceButton}
+                    onCheckedChange={(checked) =>
+                      updateDraft(['monitoring', 'showVoiceButton'], checked)
+                    }
+                  />
+                  <SwitchRow
+                    title="Botão de alertas"
+                    description="Exibe o acesso rápido aos alertas locais."
+                    checked={appDraft.monitoring.showAlertsButton}
+                    onCheckedChange={(checked) =>
+                      updateDraft(['monitoring', 'showAlertsButton'], checked)
+                    }
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/70 bg-white/84">
+              <CardHeader>
+                <CardTitle className="text-base">Perfil</CardTitle>
+                <CardDescription>
+                  Textos-base do módulo de perfil e contexto pessoal.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <FieldBlock label="Eyebrow">
+                  <Input
+                    value={appDraft.profile.pageEyebrow}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['profile', 'pageEyebrow'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <FieldBlock label="Título">
+                  <Input
+                    value={appDraft.profile.pageTitle}
+                    onChange={(event) =>
+                      updateDraft(['profile', 'pageTitle'], event.target.value)
+                    }
+                  />
+                </FieldBlock>
+                <FieldBlock label="Descrição">
+                  <Textarea
+                    value={appDraft.profile.pageDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['profile', 'pageDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+              </CardContent>
+            </Card>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+  }
+
   return (
     <Card className="overflow-hidden">
       <CardHeader className="border-b border-border/70">
@@ -1803,11 +2769,12 @@ export function SiteExperienceBuilder() {
             </Badge>
             <div className="flex flex-col gap-2">
               <CardTitle className="text-3xl">
-                Landing e login totalmente editaveis
+                Landing, login e app interno totalmente editaveis
               </CardTitle>
               <CardDescription className="max-w-3xl text-sm leading-7">
                 Somente administradores podem editar, salvar rascunho, publicar,
-                restaurar e reorganizar a experiencia publica da Lyra.
+                restaurar e reorganizar a experiência pública e a camada visual
+                do app da Lyra.
               </CardDescription>
             </div>
           </div>
@@ -1822,6 +2789,7 @@ export function SiteExperienceBuilder() {
             >
               <ToggleGroupItem value="landing">Landing</ToggleGroupItem>
               <ToggleGroupItem value="login">Login</ToggleGroupItem>
+              <ToggleGroupItem value="app">App interno</ToggleGroupItem>
             </ToggleGroup>
             <Button
               variant="secondary"
@@ -1908,6 +2876,8 @@ export function SiteExperienceBuilder() {
                       </Card>
                     ) : pageKey === 'landing' ? (
                       renderLandingEditor()
+                    ) : pageKey === 'app' ? (
+                      renderAppEditor()
                     ) : (
                       renderLoginEditor()
                     )}
@@ -1919,7 +2889,12 @@ export function SiteExperienceBuilder() {
                         <CardTitle className="text-xl">Modo avancado</CardTitle>
                         <CardDescription>
                           Aqui voce consegue editar a estrutura completa da{' '}
-                          {pageKey === 'landing' ? 'landing' : 'tela de login'}.
+                          {pageKey === 'landing'
+                            ? 'landing'
+                            : pageKey === 'login'
+                              ? 'tela de login'
+                              : 'experiência interna do app'}
+                          .
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="flex flex-col gap-4">
@@ -1964,7 +2939,11 @@ export function SiteExperienceBuilder() {
                   </p>
                 </div>
                 <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary">
-                  {pageKey === 'landing' ? 'Landing' : 'Login'}
+                  {pageKey === 'landing'
+                    ? 'Landing'
+                    : pageKey === 'login'
+                      ? 'Login'
+                      : 'App interno'}
                 </Badge>
               </div>
 

@@ -636,15 +636,205 @@ const defaultLoginPageConfig: LoginPageConfig = {
   },
 };
 
+const defaultAppPageConfig: AppPageConfig = {
+  typography: {
+    pageTitle: 1,
+    pageBody: 1,
+    cardTitle: 1,
+    cardBody: 1,
+    buttonLabel: 1,
+    navLabel: 1,
+  },
+  sizing: {
+    sidebarWidth: 288,
+    cardScale: 1,
+    iconScale: 1,
+    tableScale: 1,
+    buttonScale: 1,
+  },
+  sidebar: {
+    brandTitle: 'lyra',
+    brandEyebrow: 'metacare 2026',
+    statusEyebrow: 'Estado do dia',
+    statusTitle: 'Janela de foco, leveza e recuperação alta',
+    preferencesTitle: 'Preferências e acesso',
+    preferencesDescription:
+      'Ajuste perfil, hábitos e configurações do ambiente.',
+    sectionLabels: {
+      principal: 'Principal',
+      guidedFlow: 'Fluxo Guiado',
+      personal: 'Pessoal',
+      admin: 'Administração',
+    },
+    items: [
+      {
+        href: '/',
+        label: 'Dashboard',
+        description: 'Visão central da energia, sono, astro e insights de IA.',
+        visible: true,
+      },
+      {
+        href: '/plan',
+        label: 'Plano de IA',
+        description:
+          'Protocolos personalizados de foco, ritmo, nutrição e recuperação.',
+        visible: true,
+      },
+      {
+        href: '/goals',
+        label: 'Metas',
+        description:
+          'Evolução diária com progresso, streaks e prioridades suaves.',
+        visible: true,
+      },
+      {
+        href: '/appointments',
+        label: 'Agendamentos',
+        description:
+          'Agenda de encontros, profissionais e organização do seu fluxo.',
+        visible: true,
+      },
+      {
+        href: '/monitoring',
+        label: 'Monitoramento',
+        description: 'Leituras em tempo real, tendências e estados do momento.',
+        visible: true,
+      },
+      {
+        href: '/chat',
+        label: 'Chat IA',
+        description:
+          'Conversa inteligente com contexto biométrico, emocional e astral.',
+        visible: true,
+      },
+      {
+        href: '/connect',
+        label: 'Dispositivos',
+        description: 'Conexão e sincronização com wearables e integrações.',
+        visible: true,
+      },
+      {
+        href: '/profile',
+        label: 'Perfil',
+        description: 'Dados pessoais, hábitos, preferências e avatar.',
+        visible: true,
+      },
+      {
+        href: '/admin/dashboard',
+        label: 'Visão Geral Admin',
+        description: 'Métricas de negócio, saúde da plataforma e alertas.',
+        visible: true,
+      },
+      {
+        href: '/admin/users',
+        label: 'Usuários',
+        description: 'Gestão de contas, perfis e permissões.',
+        visible: true,
+      },
+      {
+        href: '/admin/plans',
+        label: 'Planos',
+        description: 'Matriz comercial, capacidades e precificação.',
+        visible: true,
+      },
+      {
+        href: '/admin/data-health',
+        label: 'Saúde dos Dados',
+        description: 'Integridade, latência e confiabilidade dos dados.',
+        visible: true,
+      },
+      {
+        href: '/admin/content',
+        label: 'Conteúdo',
+        description:
+          'Curadoria operacional de hábitos, mensagens e recomendações.',
+        visible: true,
+      },
+      {
+        href: '/admin/ai-config',
+        label: 'Configuração de IA',
+        description: 'Pesos, missão, parâmetros e segurança operacional da IA.',
+        visible: true,
+      },
+      {
+        href: '/admin/reports',
+        label: 'Relatórios',
+        description: 'Leituras analíticas e exportação executiva.',
+        visible: true,
+      },
+      {
+        href: '/admin/page-builder',
+        label: 'Construtor UI',
+        description: 'Gestão do design visual do app, da landing e do login.',
+        visible: true,
+      },
+    ],
+  },
+  header: {
+    commandPlaceholder: 'Buscar páginas, fluxos e ações',
+    commandShortcutLabel: 'Ctrl K',
+    assistantLabel: 'Chat IA',
+    profileMenuLabel: 'Meu perfil',
+  },
+  appointments: {
+    heroBadge: 'agenda viva',
+    heroTitle: 'Organize encontros, profissionais e próximos horários',
+    heroDescription:
+      'Concentre consultas, pessoas de referência e calendário em um fluxo claro e fácil de ajustar.',
+    listTitle: 'Próximas consultas',
+    listDescription:
+      'Acompanhe horários confirmados, contexto do encontro e observações registradas.',
+    professionalsTitle: 'Profissionais salvos',
+    professionalsDescription:
+      'Cadastre, edite e mantenha sua rede de acompanhamento organizada.',
+    calendarTitle: 'Calendário da agenda',
+    calendarDescription:
+      'Visualize seus compromissos por dia e distribua a rotina com mais leveza.',
+    showUpcomingList: true,
+    showProfessionalsList: true,
+    showCalendar: true,
+  },
+  monitoring: {
+    pageEyebrow: 'telemetria contínua',
+    pageTitle: 'Painel vivo com presença, ritmo e leitura local',
+    pageDescription:
+      'Acompanhe sinais em tempo real com alertas, voz e histórico recente em uma superfície mais clara e útil.',
+    heroBadge: 'fluxo biométrico',
+    heroTitle: 'Seus sinais chegam ao painel com contexto imediato',
+    heroDescription:
+      'A cada pacote recebido, a interface reage, atualiza gráficos e mantém o momento sob leitura local.',
+    infoTitle: 'Leitura operacional da Lyra',
+    infoDescription:
+      'O módulo acompanha o canal local de wearable e organiza alertas e síntese de voz em tempo real.',
+    controlsTitle: 'Controles em tempo real',
+    controlsDescription:
+      'Acione leitura por voz, acompanhe alertas locais e ajuste o comportamento da sessão.',
+    alertsTitle: 'Alertas locais',
+    alertsDescription:
+      'Notificações e sinais de atenção disparam apenas quando os biomarcadores cruzam os limites definidos.',
+    showEventFeed: true,
+    showVoiceButton: true,
+    showAlertsButton: true,
+  },
+  profile: {
+    pageEyebrow: 'identidade pessoal',
+    pageTitle: 'Seu perfil, hábitos e contexto em um só lugar',
+    pageDescription:
+      'Atualize dados pessoais, nascimento, hábitos e histórico com uma experiência mais organizada e acolhedora.',
+  },
+};
+
 const defaultPageConfigByKey = {
   landing: defaultLandingPageConfig,
   login: defaultLoginPageConfig,
+  app: defaultAppPageConfig,
 } satisfies SitePageConfigMap;
 
 const pageConfigSchemaByKey = {
   landing: landingPageConfigSchema,
   login: loginPageConfigSchema,
-};
+  app: internalAppPageConfigSchema,
+} as const;
 
 function cloneConfig<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
@@ -660,7 +850,11 @@ export function validatePageConfig<TKey extends SitePageKey>(
   pageKey: TKey,
   input: unknown
 ) {
-  return pageConfigSchemaByKey[pageKey].safeParse(input);
+  const schema = pageConfigSchemaByKey[pageKey] as unknown as z.ZodType<
+    SitePageConfigMap[TKey]
+  >;
+
+  return schema.safeParse(input);
 }
 
 export function parsePageConfig<TKey extends SitePageKey>(
