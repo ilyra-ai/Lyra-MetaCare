@@ -59,6 +59,30 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [ ] Navegacao visual completa validada.
 - [ ] Checks finais, commits por bloco e pushs concluidos.
 
+## Infraestrutura local validada nesta etapa
+
+- [x] `run.py` auditado e classificado como inadequado para Windows e desalinhado da stack real atual.
+- [x] `run_windows.py` criado na raiz para orquestrar ambiente Windows real.
+- [x] `run_windows.py` validado com:
+  - `doctor`
+  - `setup-env`
+  - `start-dev`
+- [x] MySQL validado em Docker Compose na porta `3307`.
+- [x] Migracoes MySQL executadas de forma real.
+- [x] App validado em `http://localhost:3000`.
+- [x] Causa raiz do erro `500` na home encontrada e corrigida via limpeza controlada de `.next` antes da subida dev no Windows.
+- [x] Teste administrativo de conectividade de IA ampliado para validar Gemini quando configurado no ambiente local.
+
+## QA funcional real em andamento
+
+- [x] Login administrativo real validado com `admin@admin.com`.
+- [x] Sidebar administrativa validada em navegador real.
+- [x] Dashboard validado em navegador real.
+- [x] `admin/page-builder` validado em navegador real.
+- [~] `appointments` em revisao estrutural e visual apos validacao runtime real.
+- [x] `appointments` estabilizado sem erro fatal de runtime apos reestruturacao visual do modulo.
+- [~] Varredura completa de menus, dropdowns, CRUDs, onboarding e configuracoes ainda em execucao.
+
 ## O que ja foi concluido de forma real
 
 ### Fase 1 - Fundacao
@@ -204,6 +228,7 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [~] `src/components/goals/CreateGoalModal.tsx`
 - [~] `src/components/goals/UpdateGoalProgressModal.tsx`
 - [~] `src/components/appointments/AppointmentsContent.tsx`
+- [x] `src/components/appointments/AppointmentsContent.tsx`
 - [~] `src/components/appointments/Agenda.tsx`
 - [~] `src/components/appointments/AppointmentFormModal.tsx`
 - [~] `src/components/appointments/BookingConfirmationModal.tsx`
