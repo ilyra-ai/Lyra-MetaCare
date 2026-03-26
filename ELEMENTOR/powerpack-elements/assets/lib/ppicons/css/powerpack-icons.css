@@ -1,0 +1,375 @@
+@font-face {
+  font-family: 'ppicons';
+  src:  url('../fonts/ppicons.eot?9mz493');
+  src:  url('../fonts/ppicons.eot?9mz493#iefix') format('embedded-opentype'),
+    url('../fonts/ppicons.ttf?9mz493') format('truetype'),
+    url('../fonts/ppicons.woff?9mz493') format('woff'),
+    url('../fonts/ppicons.svg?9mz493#ppicons') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="ppicon-"], [class*=" ppicon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'ppicons' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ppicon-advanced-charts:before {
+  content: "\e900";
+}
+.ppicon-interactive-circle:before {
+  content: "\e901";
+}
+.ppicon-business-hours:before {
+  content: "\e902";
+}
+.ppicon-contact-form:before {
+  content: "\e903";
+}
+.ppicon-content-toggle:before {
+  content: "\e904";
+}
+.ppicon-counter:before {
+  content: "\e905";
+}
+.ppicon-divider:before {
+  content: "\e906";
+}
+.ppicon-dual-heading:before {
+  content: "\e907";
+}
+.ppicon-icon-list:before {
+  content: "\e908";
+}
+.ppicon-image-comparison:before {
+  content: "\e909";
+}
+.ppicon-image-hotspot:before {
+  content: "\e90a";
+}
+.ppicon-info-box-carousel:before {
+  content: "\e90b";
+}
+.ppicon-info-box:before {
+  content: "\e90c";
+}
+.ppicon-info-list:before {
+  content: "\e90d";
+}
+.ppicon-info-table:before {
+  content: "\e90e";
+}
+.ppicon-instagram-feed:before {
+  content: "\e90f";
+}
+.ppicon-link-effects:before {
+  content: "\e910";
+}
+.ppicon-logo-carousel:before {
+  content: "\e911";
+}
+.ppicon-logo-grid:before {
+  content: "\e912";
+}
+.ppicon-map:before {
+  content: "\e913";
+}
+.ppicon-page-navigation:before {
+  content: "\e914";
+}
+.ppicon-popup-box:before {
+  content: "\e915";
+}
+.ppicon-powerpack-blue:before {
+  content: "\e916";
+}
+.ppicon-powerpack-grey:before {
+  content: "\e917";
+}
+.ppicon-advanced-menu:before {
+  content: "\e918";
+}
+.ppicon-countdown:before {
+  content: "\e919";
+}
+.ppicon-business-reviews:before {
+  content: "\e91a";
+}
+.ppicon-layout-1:before {
+  content: "\e91b";
+}
+.ppicon-author-list:before {
+  content: "\e91c";
+}
+.ppicon-layout-2:before {
+  content: "\e91d";
+}
+.ppicon-calender:before {
+  content: "\e91e";
+}
+.ppicon-pricing-menu:before {
+  content: "\e91f";
+}
+.ppicon-pricing-table:before {
+  content: "\e920";
+}
+.ppicon-promo-box:before {
+  content: "\e921";
+}
+.ppicon-recipe:before {
+  content: "\e922";
+}
+.ppicon-table:before {
+  content: "\e923";
+}
+.ppicon-team-member-carousel:before {
+  content: "\e924";
+}
+.ppicon-team-member:before {
+  content: "\e925";
+}
+.ppicon-tiled-post:before {
+  content: "\e926";
+}
+.ppicon-layout-3:before {
+  content: "\e927";
+}
+.ppicon-layout-4:before {
+  content: "\e928";
+}
+.ppicon-progress-bar-2:before {
+  content: "\e929";
+}
+.ppicon-layout-5:before {
+  content: "\e92a";
+}
+.ppicon-showcase:before {
+  content: "\e92b";
+}
+.ppicon-tabs:before {
+  content: "\e92c";
+}
+.ppicon-layout-6:before {
+  content: "\e92d";
+}
+.ppicon-timeline:before {
+  content: "\e92e";
+}
+.ppicon-card-slider:before {
+  content: "\e92f";
+}
+.ppicon-content-reveal:before {
+  content: "\e930";
+}
+.ppicon-breadcrumbs:before {
+  content: "\e931";
+}
+.ppicon-cart:before {
+  content: "\e932";
+}
+.ppicon-content-ticker:before {
+  content: "\e933";
+}
+.ppicon-tabbed-carousel:before {
+  content: "\e934";
+}
+.ppicon-twitter-tweet:before {
+  content: "\e935";
+}
+.ppicon-woo-products:before {
+  content: "\e936";
+}
+.ppicon-video-gallery:before {
+  content: "\e937";
+}
+.ppicon-video:before {
+  content: "\e938";
+}
+.ppicon-advanced-accordion:before {
+  content: "\e939";
+}
+.ppicon-flip-box:before {
+  content: "\e93a";
+}
+.ppicon-image-accordion:before {
+  content: "\e93b";
+}
+.ppicon-magazine-slider:before {
+  content: "\e93c";
+}
+.ppicon-progress-bar-1:before {
+  content: "\e93d";
+}
+.ppicon-protected-content:before {
+  content: "\e93e";
+}
+.ppicon-video-playlist:before {
+  content: "\e93f";
+}
+.ppicon-album:before {
+  content: "\e940";
+}
+.ppicon-dynamic-gallery:before {
+  content: "\e941";
+}
+.ppicon-gallery-carousel:before {
+  content: "\e942";
+}
+.ppicon-testimonial-carousel:before {
+  content: "\e943";
+}
+.ppicon-scroll-image:before {
+  content: "\e944";
+}
+.ppicon-woo-checkout:before {
+  content: "\e945";
+}
+.ppicon-add-to-cart:before {
+  content: "\e946";
+}
+.ppicon-gallery-slider:before {
+  content: "\e947";
+}
+.ppicon-image-gallery:before {
+  content: "\e948";
+}
+.ppicon-multi-buttons:before {
+  content: "\e949";
+}
+.ppicon-offcanvas-content:before {
+  content: "\e94a";
+}
+.ppicon-product-categories:before {
+  content: "\e94b";
+}
+.ppicon-products-grid:before {
+  content: "\e94c";
+}
+.ppicon-products-slider:before {
+  content: "\e94d";
+}
+.ppicon-woo-categories:before {
+  content: "\e94e";
+}
+.ppicon-woo-cart:before {
+  content: "\e94f";
+}
+.ppicon-woo-add-to-cart:before {
+  content: "\e950";
+}
+.ppicon-tabbed-gallery:before {
+  content: "\e951";
+}
+.ppicon-twitter-timeline:before {
+  content: "\e952";
+}
+.ppicon-posts-grid:before {
+  content: "\e953";
+}
+.ppicon-twitter-grid:before {
+  content: "\e954";
+}
+.ppicon-twitter-buttons:before {
+  content: "\e955";
+}
+.ppicon-mini-cart:before {
+  content: "\e956";
+}
+.ppicon-offcanvas-cart:before {
+  content: "\e957";
+}
+.ppicon-cta-button:before {
+  content: "\e958";
+}
+.ppicon-device:before {
+  content: "\e959";
+}
+.ppicon-heading:before {
+  content: "\e95a";
+}
+.ppicon-review-box:before {
+  content: "\e95b";
+}
+.ppicon-how-to:before {
+  content: "\e95c";
+}
+.ppicon-coupon:before {
+  content: "\e95d";
+}
+.ppicon-categories:before {
+  content: "\e95e";
+}
+.ppicon-powerpack-small:before {
+  content: "\e95f";
+}
+.ppicon-toc:before {
+  content: "\e960";
+}
+.ppicon-login-form:before {
+  content: "\e961";
+}
+.ppicon-my-account:before {
+  content: "\e962";
+}
+.ppicon-registration-form:before {
+  content: "\e963";
+}
+.ppicon-sitemap:before {
+  content: "\e964";
+}
+.ppicon-woo-add-to-cart-notification:before {
+  content: "\e965";
+}
+.ppicon-woo-archive-description:before {
+  content: "\e966";
+}
+.ppicon-data-tabs-2:before {
+  content: "\e967";
+}
+.ppicon-data-tabs:before {
+  content: "\e968";
+}
+.ppicon-product-content:before {
+  content: "\e969";
+}
+.ppicon-product-short-desc:before {
+  content: "\e96a";
+}
+.ppicon-product-filter:before {
+  content: "\e96b";
+}
+.ppicon-product-images:before {
+  content: "\e96c";
+}
+.ppicon-product-meta:before {
+  content: "\e96d";
+}
+.ppicon-product-price:before {
+  content: "\e96e";
+}
+.ppicon-product-rating:before {
+  content: "\e96f";
+}
+.ppicon-product-reviews:before {
+  content: "\e970";
+}
+.ppicon-product-stock:before {
+  content: "\e971";
+}
+.ppicon-product-title:before {
+  content: "\e972";
+}
+.ppicon-product-upsell:before {
+  content: "\e973";
+}

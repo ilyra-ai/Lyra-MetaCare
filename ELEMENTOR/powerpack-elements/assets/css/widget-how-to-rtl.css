@@ -1,0 +1,26 @@
+.pp-how-to-step-title {
+  margin: 0;
+}
+
+.pp-step-icon-image {
+  display: inline-block;
+}
+
+.pp-how-to-step.pp-has-img {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+.pp-how-to-step.pp-has-img .pp-how-to-step-content {
+  width: 70%;
+}
+.pp-how-to-step.pp-has-img .pp-how-to-step-image {
+  width: 30%;
+}
+
+@media only screen and (max-width: 767px) {
+  .pp-how-to-step.pp-has-img.pp-step-img-left .pp-how-to-step-content,
+  .pp-how-to-step.pp-has-img.pp-step-img-right .pp-how-to-step-content {
+    width: 100% !important;
+  }
+}

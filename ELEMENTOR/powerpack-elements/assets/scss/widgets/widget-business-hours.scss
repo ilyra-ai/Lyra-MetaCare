@@ -1,0 +1,13 @@
+.pp-business-hours {
+    .pp-business-hours-row {
+        display: flex;
+        justify-content: space-between;
+    }
+    .pp-business-day,
+    .pp-business-timing {
+        flex-grow: 1;
+    }
+    .pp-business-timing {
+        text-align: right;
+    }
+}

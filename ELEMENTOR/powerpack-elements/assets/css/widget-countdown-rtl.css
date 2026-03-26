@@ -1,0 +1,140 @@
+.pp-countdown-wrapper {
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  text-align: center;
+  /* Circle layout */
+  /* Square layout */
+}
+.pp-countdown-wrapper .pp-countdown-item {
+  display: inline-block;
+  margin-bottom: 15px;
+  position: relative;
+}
+.pp-countdown-wrapper .pp-countdown-item .pp-countdown-label,
+.pp-countdown-wrapper .pp-countdown-item .pp-countdown-digit {
+  padding: 0;
+  margin: 0;
+}
+.pp-countdown-wrapper .pp-countdown-digit-wrapper {
+  -webkit-box-sizing: content-box;
+          box-sizing: content-box;
+}
+.pp-countdown-wrapper .pp-countdown-digit-wrapper,
+.pp-countdown-wrapper .pp-countdown-label-wrapper {
+  text-align: center;
+  position: relative;
+}
+.pp-countdown-wrapper.pp-countdown-separator-line .pp-countdown-item, .pp-countdown-wrapper.pp-countdown-separator-colon .pp-countdown-item {
+  position: relative;
+  padding: 0;
+  margin-right: 0;
+  margin-left: 0;
+}
+.pp-countdown-wrapper.pp-countdown-separator-colon .pp-countdown-item .pp-countdown-digit-wrapper:after {
+  content: ":";
+  display: inline-block;
+  font-size: 30px;
+  position: absolute;
+  left: -5px;
+  top: 45%;
+  z-index: 10;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
+}
+.pp-countdown-wrapper.pp-countdown-separator-colon .pp-countdown-item:last-child .pp-countdown-digit-wrapper:after {
+  content: none;
+}
+.pp-countdown-wrapper.pp-countdown-separator-line .pp-countdown-item:after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+  border-left: 1px solid #ccc;
+}
+.pp-countdown-wrapper.pp-countdown-separator-line .pp-countdown-item:last-child:after {
+  content: none;
+}
+.pp-countdown-wrapper.pp-countdown-style-circle .pp-countdown-item .pp-countdown-digit-wrapper {
+  border-radius: 50%;
+  background: #333;
+  color: #fff;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+.pp-countdown-wrapper.pp-countdown-style-circle .pp-countdown-item .pp-countdown-digit {
+  color: #fff;
+}
+.pp-countdown-wrapper.pp-countdown-style-circle.pp-countdown-label-pos-out_left .pp-countdown-item, .pp-countdown-wrapper.pp-countdown-style-circle.pp-countdown-label-pos-out_right .pp-countdown-item {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  direction: rtl;
+}
+.pp-countdown-wrapper.pp-countdown-style-circle.pp-countdown-label-pos-out_right .pp-countdown-item {
+  direction: ltr;
+}
+.pp-countdown-wrapper.pp-countdown-style-square .pp-countdown-item .pp-countdown-digit-wrapper {
+  background: #333;
+  color: #fff;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  box-pack: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  box-align: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  box-orient: vertical;
+  box-direction: normal;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+.pp-countdown-wrapper.pp-countdown-style-square .pp-countdown-item .pp-countdown-digit {
+  color: #fff;
+}
+.pp-countdown-wrapper.pp-countdown-style-square.pp-countdown-label-pos-out_left .pp-countdown-item, .pp-countdown-wrapper.pp-countdown-style-square.pp-countdown-label-pos-out_right .pp-countdown-item {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  direction: rtl;
+}
+.pp-countdown-wrapper.pp-countdown-style-square.pp-countdown-label-pos-out_right .pp-countdown-item {
+  direction: ltr;
+}
+
+/* Countdown Media Queries */
+@media only screen and (max-width: 767px) {
+  .pp-countdown-wrapper.pp-countdown-separator-hide-mobile .pp-countdown-item:after {
+    display: none;
+  }
+  .pp-countdown-wrapper.pp-countdown-separator-hide-mobile .pp-countdown-item .pp-countdown-digit-wrapper::after {
+    display: none;
+  }
+}

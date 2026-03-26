@@ -1,0 +1,146 @@
+.pp-icon {
+  display: inline-block;
+  line-height: 1;
+  text-align: center;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.pp-icon i,
+.pp-icon svg {
+  width: 1em;
+  height: 1em;
+  position: relative;
+  display: block;
+}
+
+.pp-coupon {
+  overflow: hidden;
+}
+.pp-coupon .pp-coupon-image-wrapper {
+  position: relative;
+}
+.pp-coupon .pp-coupon-image-wrapper img {
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+.pp-coupon-discount {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #fff;
+  background: #e1124d;
+  padding: 10px;
+}
+.pp-coupon-discount-right .pp-coupon-discount {
+  left: auto;
+  right: 0;
+}
+
+.pp-coupon-code {
+  color: #fff;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: #3b4452;
+  cursor: pointer;
+  overflow: hidden;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.pp-coupon-code-right .pp-coupon-code {
+  left: auto;
+  right: 0;
+}
+
+.pp-coupon-code-icon {
+  margin-right: 8px;
+}
+.pp-coupon-code-icon img {
+  width: 30px;
+}
+
+.pp-coupon-code-text {
+  color: #fff;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.pp-coupon-style-copy {
+  padding: 10px;
+}
+.pp-coupon-style-copy .pp-coupon-code-text {
+  border-right: 2px dotted #fff;
+  padding-right: 10px;
+}
+
+.pp-coupon-style-no-code {
+  cursor: default;
+  padding: 10px;
+}
+
+.pp-coupon-copy-text {
+  color: #fff;
+  padding-left: 10px;
+}
+
+.pp-coupon-reveal-wrap {
+  background-color: #ff0000;
+  -webkit-box-shadow: 0px 0px 0px 20px #ff0000;
+          box-shadow: 0px 0px 0px 20px #ff0000;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  float: left;
+  padding: 10px;
+  z-index: 9999;
+}
+
+.pp-coupon-code.pp-coupon-style-reveal:hover .pp-coupon-reveal-wrap {
+  -webkit-box-shadow: 0px 0px 0px 3px #ff0000;
+          box-shadow: 0px 0px 0px 3px #ff0000;
+}
+
+.pp-coupon-code-text-wrap {
+  float: right;
+  padding: 10px;
+}
+.pp-copied .pp-coupon-code-text-wrap {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.pp-coupon-content {
+  padding: 15px 0 0;
+}
+
+.pp-coupon-separator {
+  border: 0;
+  border-top-color: #3b4452;
+  border-top-style: solid;
+  border-top-width: 1px;
+  margin-bottom: 20px;
+}
+
+.pp-coupon-code.pp-copied.pp-coupon-style-reveal .pp-coupon-code-text {
+  border-right: 2px dotted #fff;
+  padding-right: 10px;
+}
+
+.pp-coupons-infinite-scroll .pp-posts-pagination {
+  display: none;
+}

@@ -1,0 +1,33 @@
+.pp-image-gallery {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+}
+.pp-image-gallery .pp-grid-item-wrap {
+	-webkit-transition: none;
+	transition: none;
+}
+.pp-image-gallery .pp-image-gallery-item-link {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	z-index: 1;
+}
+.pp-image-gallery-thumbnail-wrap {
+    overflow: hidden;
+	position: relative;
+	-webkit-transition: all 0.25s linear;
+    transition: all 0.25s linear;
+}
+.pp-image-gallery-thumbnail-wrap a {
+	cursor: pointer;
+	display: block;
+	position: relative;
+}
+.pp-image-gallery-thumbnail {
+    overflow: hidden;
+}

@@ -1,0 +1,276 @@
+@import "../mixins/mixins-master";
+
+.pp-media-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	@include transition();
+}
+.pp-media-content {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+.pp-image-slider-wrap,
+.pp-image-slider-box,
+.pp-image-slider-slide {
+    position: relative;
+}
+.pp-image-slider-slide-link {
+    cursor: pointer;
+}
+.pp-image-slider {
+    overflow: hidden;
+    img {
+        vertical-align: middle;
+    }
+}
+.pp-image-slider-slideshow {
+    .pp-image-slider-container {
+        display: flex;
+        align-items: flex-start;
+    }
+    .pp-image-slider-wrap {
+        flex: 1 1 auto;
+        width: 70%;
+    }
+    .pp-image-slider-thumb-pagination {
+        flex: 1 1 auto;
+        width: 30%;
+    }
+}
+.pp-image-slider-align-right .pp-image-slider-container {
+    flex-direction: row-reverse;
+}
+.pp-image-slider-align-top .pp-image-slider-container {
+    flex-direction: column;
+}
+.pp-image-slider-align-top .pp-image-slider-wrap,
+.pp-image-slider-align-top .pp-image-slider-thumb-pagination {
+    flex: 1 1 auto;
+    width: 100%;
+}
+.pp-image-slider-content {
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+.pp-image-slider-thumb-item {
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    img {
+        -webkit-transition: all 0.25s linear 0s;
+        transition: all 0.25s linear 0s;
+		vertical-align: middle;
+        width: 100%;
+    }
+}
+.pp-thumbs-equal-height {
+    .pp-image-slider-thumb-item {
+        height: 300px;
+        img {
+            display: none;
+        }
+    }
+    .pp-image-slider-thumb-image {
+        background-position: center center;
+        background-size: cover;
+        height: 100%;
+    }
+}
+.pp-image-slider-content,
+.pp-image-slider-caption {
+    @include transition($target: all, $time: 0.25s, $timing-function: linear);
+}
+.pp-caption-hover-effect-fade-in {
+	.pp-image-slider-caption {
+		opacity: 0;
+	}
+	.pp-image:hover {
+		.pp-media-content {
+			.pp-image-slider-caption {
+				opacity: 1;
+			}
+		}
+	}
+}
+.pp-caption-hover-effect-fade-out {
+	.pp-image-slider-caption {
+		opacity: 1;
+	}
+	.pp-image:hover {
+		.pp-media-content {
+			.pp-image-slider-caption {
+				opacity: 0;
+			}
+		}
+	}
+}
+.pp-caption-hover-effect-slide-from-top {
+    .pp-media-content {
+        transform: translateY(-100%);
+    }
+}
+.pp-caption-hover-effect-slide-from-bottom {
+    .pp-media-content {
+        transform: translateY(100%);
+    }
+}
+.pp-caption-hover-effect-slide-from-left {
+    .pp-media-content {
+        transform: translateX(-100%);
+    }
+}
+.pp-caption-hover-effect-slide-from-right {
+    .pp-media-content {
+        transform: translateX(100%);
+    }
+}
+.pp-caption-hover-effect-fade-from-top {
+    .pp-media-content {
+        transform: translateY(-24px);
+    }
+}
+.pp-caption-hover-effect-fade-from-bottom {
+    .pp-media-content {
+        transform: translateY(24px);
+    }
+}
+.pp-caption-hover-effect-fade-from-left {
+    .pp-media-content {
+        transform: translateX(-24px);
+    }
+}
+.pp-caption-hover-effect-fade-from-right {
+    .pp-media-content {
+        transform: translateX(24px);
+    }
+}
+.pp-caption-hover-effect-fade-to-top {
+	.pp-image:hover {
+    	.pp-media-content {
+            transform: translateY(-24px);
+        }
+    }
+}
+.pp-caption-hover-effect-fade-to-bottom {
+	.pp-image:hover {
+    	.pp-media-content {
+            transform: translateY(24px);
+        }
+    }
+}
+.pp-caption-hover-effect-fade-to-left {
+    .pp-image:hover {
+    	.pp-media-content {
+            transform: translateX(-24px);
+        }
+    }
+}
+.pp-caption-hover-effect-fade-to-right {
+    .pp-image:hover {
+    	.pp-media-content {
+            transform: translateX(24px);
+        }
+    }
+}
+.pp-caption-hover-effect-slide-to-top {
+    .pp-image:hover {
+    	.pp-media-content {
+            transform: translateY(-100%);
+        }
+    }
+}
+.pp-caption-hover-effect-slide-to-bottom {
+    .pp-image:hover {
+    	.pp-media-content {
+            transform: translateY(100%);
+        }
+    }
+}
+.pp-caption-hover-effect-slide-to-left {
+    .pp-image:hover {
+    	.pp-media-content {
+            transform: translateX(-100%);
+        }
+    }
+}
+.pp-caption-hover-effect-slide-to-right {
+    .pp-image:hover {
+    	.pp-media-content {
+            transform: translateX(100%);
+        }
+    }
+}
+.pp-caption-hover-effect-fade-from-top,
+.pp-caption-hover-effect-fade-from-bottom,
+.pp-caption-hover-effect-fade-from-left,
+.pp-caption-hover-effect-fade-from-right {
+    .pp-media-content {
+        opacity: 0;
+    }
+}
+.pp-caption-hover-effect-fade-to-top,
+.pp-caption-hover-effect-fade-to-bottom,
+.pp-caption-hover-effect-fade-to-left,
+.pp-caption-hover-effect-fade-to-right {
+    .pp-image:hover {
+    	.pp-media-content {
+            opacity: 0;
+        }
+    }
+}
+.pp-caption-hover-effect-slide-from-bottom,
+.pp-caption-hover-effect-slide-from-top,
+.pp-caption-hover-effect-slide-from-right,
+.pp-caption-hover-effect-slide-from-left,
+.pp-caption-hover-effect-fade-from-top,
+.pp-caption-hover-effect-fade-from-bottom,
+.pp-caption-hover-effect-fade-from-left,
+.pp-caption-hover-effect-fade-from-right {
+    .pp-image:hover {
+    	.pp-media-content {
+            transform: translateY(0) translateX(0);
+        }
+    }
+}
+.pp-caption-hover-effect-fade-from-top,
+.pp-caption-hover-effect-fade-from-bottom,
+.pp-caption-hover-effect-fade-from-left,
+.pp-caption-hover-effect-fade-from-right {
+    .pp-image:hover {
+    	.pp-media-content {
+            opacity: 1;
+        }
+    }
+}
+.logged-in #wpadminbar~.pp-gallery-fancybox .fancybox-toolbar {
+    margin-top: 32px;
+}
+@media (max-width: 1024px) {
+    .pp-image-slider-stack-tablet {
+        .pp-image-slider-container {
+            display: block;
+        }
+        .pp-image-slider-wrap,
+        .pp-image-slider-thumb-pagination {
+            width: 100% !important;
+        }
+    }
+}
+@media only screen and (max-width: 767px) {
+    .pp-image-slider-stack-mobile {
+        .pp-image-slider-container {
+            display: block;
+        }
+        .pp-image-slider-wrap,
+        .pp-image-slider-thumb-pagination {
+            width: 100% !important;
+        }
+    }
+}

@@ -96,8 +96,112 @@ const loginTypographySchema = z.object({
   footerText: typographyScaleSchema,
 });
 
+const elementScaleSchema = z.number().min(0.8).max(1.4);
+
+const landingSizingSchema = z.object({
+  heroCard: elementScaleSchema,
+  featureCard: elementScaleSchema,
+  planCard: elementScaleSchema,
+  iconScale: elementScaleSchema,
+  buttonScale: elementScaleSchema,
+});
+
+const loginSizingSchema = z.object({
+  introCard: elementScaleSchema,
+  authCard: elementScaleSchema,
+  iconScale: elementScaleSchema,
+  buttonScale: elementScaleSchema,
+});
+
+const appNavigationItemSchema = z.object({
+  href: z.string().min(1),
+  label: z.string().min(1),
+  description: z.string().min(1),
+  visible: z.boolean(),
+});
+
+const appTypographySchema = z.object({
+  pageTitle: typographyScaleSchema,
+  pageBody: typographyScaleSchema,
+  cardTitle: typographyScaleSchema,
+  cardBody: typographyScaleSchema,
+  buttonLabel: typographyScaleSchema,
+  navLabel: typographyScaleSchema,
+});
+
+const appSizingSchema = z.object({
+  sidebarWidth: z.number().min(240).max(360),
+  cardScale: elementScaleSchema,
+  iconScale: elementScaleSchema,
+  tableScale: elementScaleSchema,
+  buttonScale: elementScaleSchema,
+});
+
+const appPageConfigSchema = z.object({
+  typography: appTypographySchema,
+  sizing: appSizingSchema,
+  sidebar: z.object({
+    brandTitle: z.string().min(1),
+    brandEyebrow: z.string().min(1),
+    statusEyebrow: z.string().min(1),
+    statusTitle: z.string().min(1),
+    preferencesTitle: z.string().min(1),
+    preferencesDescription: z.string().min(1),
+    sectionLabels: z.object({
+      principal: z.string().min(1),
+      guidedFlow: z.string().min(1),
+      personal: z.string().min(1),
+      admin: z.string().min(1),
+    }),
+    items: z.array(appNavigationItemSchema).min(1),
+  }),
+  header: z.object({
+    commandPlaceholder: z.string().min(1),
+    commandShortcutLabel: z.string().min(1),
+    assistantLabel: z.string().min(1),
+    profileMenuLabel: z.string().min(1),
+  }),
+  appointments: z.object({
+    heroBadge: z.string().min(1),
+    heroTitle: z.string().min(1),
+    heroDescription: z.string().min(1),
+    listTitle: z.string().min(1),
+    listDescription: z.string().min(1),
+    professionalsTitle: z.string().min(1),
+    professionalsDescription: z.string().min(1),
+    calendarTitle: z.string().min(1),
+    calendarDescription: z.string().min(1),
+    showUpcomingList: z.boolean(),
+    showProfessionalsList: z.boolean(),
+    showCalendar: z.boolean(),
+  }),
+  monitoring: z.object({
+    pageEyebrow: z.string().min(1),
+    pageTitle: z.string().min(1),
+    pageDescription: z.string().min(1),
+    heroBadge: z.string().min(1),
+    heroTitle: z.string().min(1),
+    heroDescription: z.string().min(1),
+    infoTitle: z.string().min(1),
+    infoDescription: z.string().min(1),
+    controlsTitle: z.string().min(1),
+    controlsDescription: z.string().min(1),
+    alertsTitle: z.string().min(1),
+    alertsDescription: z.string().min(1),
+    showEventFeed: z.boolean(),
+    showVoiceButton: z.boolean(),
+    showAlertsButton: z.boolean(),
+  }),
+  profile: z.object({
+    pageEyebrow: z.string().min(1),
+    pageTitle: z.string().min(1),
+    pageDescription: z.string().min(1),
+  }),
+});
+
 export const landingPageConfigSchema = z.object({
   typography: landingTypographySchema,
+  sizing: landingSizingSchema,
   header: z.object({
     loginLabel: z.string().min(1),
     fullLoginLabel: z.string().min(1),
@@ -175,6 +279,7 @@ export const landingPageConfigSchema = z.object({
 
 export const loginPageConfigSchema = z.object({
   typography: loginTypographySchema,
+  sizing: loginSizingSchema,
   intro: z.object({
     visible: z.boolean(),
     badgeText: z.string().min(1),
@@ -204,6 +309,8 @@ export const loginPageConfigSchema = z.object({
   }),
 });
 
+export const internalAppPageConfigSchema = appPageConfigSchema;
+
 export type BuilderIconKey = z.infer<typeof builderIconKeySchema>;
 export type ToneKey = z.infer<typeof toneKeySchema>;
 export type LandingSectionKey = z.infer<typeof landingSectionKeySchema>;
@@ -216,10 +323,17 @@ export type LandingPageConfig = z.infer<typeof landingPageConfigSchema>;
 export type LoginPageConfig = z.infer<typeof loginPageConfigSchema>;
 export type LandingTypographyConfig = z.infer<typeof landingTypographySchema>;
 export type LoginTypographyConfig = z.infer<typeof loginTypographySchema>;
-export type SitePageKey = 'landing' | 'login';
+export type LandingSizingConfig = z.infer<typeof landingSizingSchema>;
+export type LoginSizingConfig = z.infer<typeof loginSizingSchema>;
+export type AppNavigationItemConfig = z.infer<typeof appNavigationItemSchema>;
+export type AppPageConfig = z.infer<typeof appPageConfigSchema>;
+export type AppTypographyConfig = z.infer<typeof appTypographySchema>;
+export type AppSizingConfig = z.infer<typeof appSizingSchema>;
+export type SitePageKey = 'landing' | 'login' | 'app';
 export type SitePageConfigMap = {
   landing: LandingPageConfig;
   login: LoginPageConfig;
+  app: AppPageConfig;
 };
 
 const defaultLandingPageConfig: LandingPageConfig = {
@@ -231,6 +345,13 @@ const defaultLandingPageConfig: LandingPageConfig = {
     cardTitle: 1,
     cardBody: 1,
     buttonLabel: 1,
+  },
+  sizing: {
+    heroCard: 1,
+    featureCard: 1,
+    planCard: 1,
+    iconScale: 1,
+    buttonScale: 1,
   },
   header: {
     loginLabel: 'Entrar',
@@ -450,6 +571,12 @@ const defaultLoginPageConfig: LoginPageConfig = {
     fieldLabel: 1,
     buttonLabel: 1,
     footerText: 1,
+  },
+  sizing: {
+    introCard: 1,
+    authCard: 1,
+    iconScale: 1,
+    buttonScale: 1,
   },
   intro: {
     visible: true,

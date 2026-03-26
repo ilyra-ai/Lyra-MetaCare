@@ -1,0 +1,257 @@
+.pp-social-login-wrap {
+  margin-top: 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+.pp-social-login-wrap.pp-social-login--layout-stacked {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+.pp-social-login-wrap.pp-social-login--layout-stacked .pp-social-login-button {
+  margin-right: 0;
+  margin-bottom: 8px;
+  width: 100%;
+}
+.pp-social-login-wrap.pp-social-login--layout-stacked .pp-social-login-button:last-of-type {
+  margin-bottom: 0;
+}
+.pp-social-login-wrap.pp-social-login--layout-stacked span.pp-social-login-label {
+  text-align: center;
+}
+
+.pp-login-form-wrap .pp-lf-error {
+  color: red;
+}
+.pp-login-form-wrap .pp-login-form > .pp-lf-error {
+  display: block;
+  margin-top: 15px;
+}
+.pp-login-form-wrap.pp-event-disabled .pp-login-form {
+  pointer-events: none;
+  opacity: 0.2;
+}
+.pp-login-form-wrap.pp-event-disabled:before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  content: " ";
+  display: block;
+  width: 50px;
+  height: 50px;
+  margin: -25px 0 0 -25px;
+  border-radius: 50%;
+  border: 5px solid #fff;
+  border-color: #000 transparent #000 transparent;
+  -webkit-animation: pp-loader-dual-ring 1.2s linear infinite;
+          animation: pp-loader-dual-ring 1.2s linear infinite;
+}
+
+.pp-login-form .pp-field-type-recaptcha .pp-grecaptcha {
+  display: inline-block;
+}
+.pp-login-form .pp-social-login-button {
+  cursor: pointer;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-right: 10px;
+  color: #fff;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
+.pp-login-form .pp-social-login-button:last-of-type {
+  margin-right: 0;
+}
+.pp-login-form .pp-social-login-button span svg {
+  height: 24px;
+  width: 24px;
+  vertical-align: top;
+}
+.pp-login-form .pp-social-login-button span svg path {
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
+.pp-login-form .pp-social-login-button span.pp-social-login-icon {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 auto;
+          flex: 0 0 auto;
+  padding: 10px;
+}
+.pp-login-form .pp-social-login-button span.pp-social-login-label {
+  overflow: hidden;
+  text-align: left;
+  text-overflow: clip;
+  white-space: nowrap;
+  -webkit-box-flex: 1;
+      -ms-flex: 1 1 auto;
+          flex: 1 1 auto;
+  margin: 0 20px 0 10px;
+  padding: 10px 0;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0.25px;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.pp-login-form .pp-social-login-button.pp-fb-login-button {
+  background-color: #4267b2;
+}
+.pp-login-form .pp-social-login-button.pp-fb-login-button svg path {
+  fill: #fff;
+}
+.pp-login-form .pp-social-login--transparent .pp-social-login-button {
+  border: 1px solid;
+}
+.pp-login-form .pp-social-login--transparent .pp-social-login-button.pp-fb-login-button {
+  color: #4267b2;
+  background-color: transparent;
+}
+.pp-login-form .pp-social-login--transparent .pp-social-login-button.pp-fb-login-button:hover {
+  background-color: rgba(66, 103, 178, 0.1);
+}
+.pp-login-form .pp-social-login--transparent .pp-social-login-button.pp-fb-login-button svg path {
+  fill: #4267b2;
+}
+.pp-login-form .pp-social-login--transparent .pp-social-login-button.pp-google-login-button {
+  color: #4285f4;
+  background-color: transparent;
+}
+.pp-login-form .pp-social-login--transparent .pp-social-login-button.pp-google-login-button:hover {
+  background-color: rgba(66, 133, 244, 0.1);
+}
+.pp-login-form .pp-social-login--transparent .pp-social-login-button.pp-google-login-button .pp-social-login-icon {
+  background-color: transparent;
+  border: none;
+}
+.pp-login-form .pp-login-form-sep {
+  margin-top: 20px;
+  text-align: center;
+}
+.pp-login-form .pp-login-form-sep-text {
+  display: inline-block;
+  position: relative;
+  font-weight: bold;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.pp-login-form .pp-login-form-sep-text:before, .pp-login-form .pp-login-form-sep-text:after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 50%;
+  border-width: 0;
+  border-style: solid;
+  border-bottom-width: 1px;
+  width: 5px;
+}
+.pp-login-form .pp-login-form-sep-text:before {
+  right: 100%;
+}
+.pp-login-form .pp-login-form-sep-text:after {
+  left: 100%;
+}
+
+.pp-login-form .pp-lf-field-inner {
+  width: 100%;
+  position: relative;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+.pp-login-form button.pp-lf-toggle-pw {
+  display: none;
+  background: 0 0;
+  border: 1px solid transparent;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  color: #000;
+  opacity: 0.5;
+  font-size: 14px;
+  line-height: 2;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
+  text-decoration: none;
+}
+.pp-login-form .pp-lf-field-pw-toggle button.pp-lf-toggle-pw {
+  display: inline-block;
+}
+.pp-login-form .pp-lf-field-pw-toggle button.pp-lf-toggle-pw .e-font-icon-svg-container {
+  width: 100%;
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.pp-login-form .pp-lf-field-pw-toggle button.pp-lf-toggle-pw svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pp-login-form-links a {
+  position: relative;
+}
+.pp-login-form-links a:not(:last-child):after {
+  content: "|";
+  margin: 0 0.3em;
+}
+
+.pp-social-login-wrap iframe {
+  max-width: unset;
+}
+
+.pp-submit-button {
+  cursor: pointer;
+}
+
+@-webkit-keyframes pp-loader-dual-ring {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+@keyframes pp-loader-dual-ring {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}

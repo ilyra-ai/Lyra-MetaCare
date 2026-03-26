@@ -1,0 +1,106 @@
+.pp-hidden {
+  display: none !important;
+}
+
+.pp-image-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+
+.pp-media-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+
+.pp-icon {
+  display: inline-block;
+  line-height: 1;
+  text-align: center;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.pp-icon i,
+.pp-icon svg {
+  width: 1em;
+  height: 1em;
+  position: relative;
+  display: block;
+}
+
+.pp-tabbed-carousel-item-image {
+  overflow: hidden;
+}
+.pp-tabbed-carousel-item-image img {
+  -webkit-transition: all 0.25s linear 0s;
+  transition: all 0.25s linear 0s;
+}
+
+.pp-carousel-side-blur .pp-tabbed-carousel-slide {
+  -webkit-filter: blur(1px);
+          filter: blur(1px);
+  -webkit-transition: opacity 0.3s, -webkit-filter 0.3s;
+  transition: opacity 0.3s, -webkit-filter 0.3s;
+  transition: opacity 0.3s, filter 0.3s;
+  transition: opacity 0.3s, filter 0.3s, -webkit-filter 0.3s;
+  opacity: 0.3;
+}
+.pp-carousel-side-blur .pp-tabbed-carousel-slide.swiper-slide-visible {
+  -webkit-filter: none;
+          filter: none;
+  opacity: 1;
+}
+
+.pp-swiper-center-mode .pp-tabbed-carousel-slide {
+  overflow: visible;
+}
+
+.pp-tabbed-carousel-filters {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  margin: 0 0 30px;
+}
+.pp-tabbed-carousel-filters .pp-gallery-filter {
+  --space-between: 10px;
+  margin: 0;
+  margin-left: var(--space-between);
+}
+
+.pp-tabbed-gallery-thumbnail-wrap {
+  overflow: hidden;
+  position: relative;
+  -webkit-transition: all 0.25s linear 0s;
+  transition: all 0.25s linear 0s;
+}
+
+.pp-tabbed-gallery-thumbnail img {
+  -webkit-transition: all 0.25s linear 0s;
+  transition: all 0.25s linear 0s;
+  margin-right: auto;
+  margin-left: auto;
+  vertical-align: middle;
+}
+
+.pp-filter-icon-block .pp-gallery-filter-label {
+  display: block;
+}
+
+.pp-swiper-equal-height .pp-tabbed-gallery-thumbnail-wrap {
+  height: 300px;
+}
+.pp-swiper-equal-height .pp-tabbed-gallery-thumbnail {
+  height: 100%;
+}
+.pp-swiper-equal-height .pp-tabbed-gallery-thumbnail {
+  background-repeat: no-repeat;
+  background-size: cover;
+}

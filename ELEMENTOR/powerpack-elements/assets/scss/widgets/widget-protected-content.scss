@@ -1,0 +1,26 @@
+.pp-password-protected-content-form {
+    > form {
+        display: flex;
+        align-items: center;
+    }
+    .pp-password-form-password {
+        padding: 10px 20px;
+        border-radius: 0;
+        font-size: 1em;
+        line-height: 1em;
+    }
+    .pp-password-form-submit {
+        text-transform: uppercase;
+        padding: 10px 20px;
+        border: 1px solid #333;
+        border-radius: 0;
+        font-size: 1em;
+        line-height: 1em;
+    }
+}
+.pp-protected-content-info-message {
+    padding: 10px;
+}
+.pp-protected-content-error-message {
+    color: #f00;
+}

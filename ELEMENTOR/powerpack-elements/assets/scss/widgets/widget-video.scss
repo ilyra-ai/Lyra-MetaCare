@@ -1,0 +1,130 @@
+@import "../mixins/mixins-master";
+
+.e-con-inner > .elementor-widget-pp-video,
+.e-con > .elementor-widget-pp-video {
+    width: var(--container-widget-width);
+    --flex-grow: var(--container-widget-flex-grow);
+}
+.pp-media-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	@include transition();
+}
+.pp-media-content {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+.pp-video-container {
+    background-color: #000;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+.pp-video-play-icon {
+    box-sizing: content-box;
+    border-radius: var(--pp-play-icon-radius, 0);
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: var(--pp-play-icon-size, 50px);
+    width: var(--pp-play-icon-size, 50px);
+    height: var(--pp-play-icon-size, 50px);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    text-align: center;
+    z-index: 10;
+    transition: .25s all;
+    i,
+    svg {
+        width: 1em;
+        height: 1em;
+        position: relative;
+        display: block;
+        transition: .25s all;
+    }
+    img {
+        border-radius: var(--pp-play-icon-radius, 0);
+        display: block;
+    }
+    &.pp-play-icon-glow:before,
+    &.pp-play-icon-glow:after {
+        content: '';
+        border-radius: var(--pp-play-icon-radius, 50%);
+        color: var(--pp-glow-color, #000000);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        animation: pp-play-icon-glow 3s infinite;
+        opacity: 0.5;
+        z-index: -1;
+    }
+    &.pp-play-icon-glow:before {
+        animation-delay: 0.9s;
+    }
+    &.pp-play-icon-glow:after {
+        animation-delay: 0.3s;
+    }
+}
+@keyframes pp-play-icon-glow {
+	70% {
+		box-shadow: 0 0 0 var(--pp-glow-size, 15px) currentColor;
+        opacity: 0;
+	}
+	100% {
+        box-shadow: 0 0 0 0 currentColor;
+        opacity: 0;
+	}
+}
+.pp-video-player {
+    .pp-video-thumb,
+    iframe,
+	video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+    .pp-video-thumb {
+        border: none;
+        bottom: 0;
+        cursor: pointer;
+        display: block;
+        margin: auto;
+        max-width: 100%;
+        height: auto;
+        right: 0;
+        margin: 0;
+        transition: .25s all;
+    }
+    iframe {
+        height: 100%;
+        z-index: 1;
+    }
+    .pp-media-content {
+        z-index: 2;
+    }
+}
+.pp-video {
+    position: relative;
+    .pp-video-player .pp-video-thumb {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+}
+.pp-video-overlay {
+    z-index: 1;
+}

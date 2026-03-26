@@ -1,0 +1,30 @@
+.elementor-section.pp-animated-gradient-bg-yes,
+.elementor-element.pp-animated-gradient-bg-yes,
+.elementor-section.pp-animated-gradient-bg-yes .pp-animated-gradient-bg,
+.elementor-element.pp-animated-gradient-bg-yes .pp-animated-gradient-bg {
+  background-size: 400% 400% !important;
+  -webkit-animation: AnimatedGradientBg 15s ease-in-out infinite;
+          animation: AnimatedGradientBg 15s ease-in-out infinite; }
+
+.pp-animated-gradient-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%; }
+
+@keyframes AnimatedGradientBg {
+  0% {
+    background-position: 100% 50%; }
+  50% {
+    background-position: 0% 50%; }
+  100% {
+    background-position: 100% 50%; } }
+
+@-webkit-keyframes AnimatedGradientBg {
+  0% {
+    background-position: 100% 50%; }
+  50% {
+    background-position: 0% 50%; }
+  100% {
+    background-position: 100% 50%; } }

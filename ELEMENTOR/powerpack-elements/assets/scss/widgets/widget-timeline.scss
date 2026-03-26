@@ -1,0 +1,343 @@
+@import "../mixins/mixins-master";
+
+.pp-icon {
+	display: inline-block;
+	line-height: 1;
+	text-align: center;
+    transition: all .3s;
+}
+.pp-icon i,
+.pp-icon svg {
+    width: 1em;
+    height: 1em;
+    position: relative;
+    display: block;
+}
+.pp-timeline {
+    .pp-timeline-card-title {
+        @include transition($target: all, $time: 0.25s, $timing-function: linear);
+        a {
+            color: inherit;
+        }
+    }
+}
+.pp-timeline-vertical {
+    position: relative;
+    .pp-timeline-item {
+        display: flex;
+        align-items: flex-start;
+		margin-bottom: 20px;
+		&.pp-timeline-item-hidden .pp-timeline-card-wrapper {
+			visibility: hidden;
+		}
+		&.bounce-in .pp-timeline-card-wrapper {
+			visibility: visible;
+    		animation: 1s pp-bounce-odd;
+		}
+		&:nth-of-type(even).bounce-in .pp-timeline-card-wrapper {
+			visibility: visible;
+    		animation: 1s pp-bounce-even;
+		}
+        .pp-timeline-card-wrapper {
+            flex-grow: 1;
+        }
+		&:last-child {
+			margin-bottom: 0;
+		}
+    }
+    .pp-timeline-card-date-wrapper {
+        display: flex;
+        justify-content: flex-start;
+    }
+    .pp-timeline-connector-wrap {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 40px;
+	}
+    .pp-timeline-connector {
+        position: absolute;
+        background: #ccc;
+        width: 4px;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+	}
+	.pp-timeline-connector-inner {
+		background: #111;
+	}
+    .pp-timeline-arrow {
+        width: 10px;
+        right: 0;
+        top: 0;
+        &:after {
+            border-bottom: 10px solid transparent;
+            border-left: 10px solid currentColor;
+        }
+    }
+    &.pp-timeline-left {
+        .pp-timeline-connector-wrap {
+            left: 0;
+        }
+        .pp-timeline-marker-wrapper {
+            order: 1;
+        }
+        .pp-timeline-card-wrapper {
+            order: 2;
+            padding-right: 0;
+        }
+    }
+    &.pp-timeline-center {
+        .pp-timeline-connector-wrap {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .pp-timeline-item {
+            &.pp-timeline-item-right {
+                flex-direction: row-reverse;
+                .pp-timeline-card-date-wrapper {
+                    justify-content: flex-end;
+                }
+                .pp-timeline-card-wrapper {
+                    padding-left: 10px;
+                    padding-right: 0;
+                }
+            }
+        }
+        .pp-timeline-card-date {
+            display: inline-block;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+        .pp-timeline-card {
+            .pp-timeline-card-date {
+                display: none;
+            }
+        }
+        .pp-timeline-card-wrapper {
+            padding-left: 0;
+        }
+        .pp-timeline-card-wrapper,
+        .pp-timeline-card-date-wrapper {
+            flex-grow: 1;
+            flex-basis: 50%;
+        }
+    }
+    &.pp-timeline-right {
+        .pp-timeline-connector-wrap {
+            right: 0;
+        }
+        .pp-timeline-card-wrapper {
+            padding-left: 0;
+        }
+    }
+    &.pp-timeline-left,
+    &.pp-timeline-center .pp-timeline-item.pp-timeline-item-right {
+        .pp-timeline-arrow {
+            left: 0;
+            right: auto;
+            &:after {
+                border-right: 10px solid currentColor;
+                border-left: none;
+            }
+        }
+    }
+    &.pp-timeline-left,
+    &.pp-timeline-right {
+        .pp-timeline-card-date-wrapper {
+            display: none;
+        }
+    }
+}
+.pp-timeline-horizontal {
+    margin-top: 20px;
+    .pp-timeline-item {
+        padding-left: 10px;
+    }
+    .pp-timeline-card-wrapper {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .slick-list {
+        margin: 0 -10px;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        padding-top: 10px !important;
+    }
+    .slick-current.slick-active {
+        .pp-timeline-arrow {
+            width: 20px;
+            height: 20px;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            &:after {
+                border-bottom: 10px solid currentColor;
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+            }
+        }
+    }
+}
+.pp-timeline-card-wrapper {
+    padding-left: 10px;
+    padding-right: 10px;
+    position: relative;
+}
+.pp-timeline-arrow {
+    color: #f1f1f1;
+    position: absolute;
+    height: 40px;
+    &:after {
+        content: '';
+        width: 0;
+        height: 0;
+        border-top: 10px solid transparent;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        @include transition($target: all, $time: 0.25s, $timing-function: linear);
+    }
+}
+.pp-timeline-arrows-middle {
+    .pp-timeline-item {
+        align-items: center;
+    }
+    .pp-timeline-arrow {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+.pp-timeline-arrows-bottom {
+    .pp-timeline-item {
+        align-items: flex-end;
+    }
+    .pp-timeline-arrow {
+        top: auto;
+        bottom: 0;
+    }
+}
+.pp-timeline-card {
+    background: #f1f1f1;
+    padding: 20px;
+	position: relative;
+	overflow: hidden;
+    @include transition($target: all, $time: 0.25s, $timing-function: linear);
+}
+.pp-timeline-card-image {
+    img {
+        display: inline-block;
+        vertical-align: middle;
+    }
+}
+.pp-timeline-marker {
+    background-color: #111;
+    border-radius: 50%;
+    color: #fff;
+    height: 40px;
+    width: 40px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 0;
+    flex-shrink: 0;
+    vertical-align: bottom;
+    z-index: 1;
+    @include transition($target: all, $time: 0.25s, $timing-function: linear);
+	.pp-icon {
+		transition: none;
+	}
+}
+.pp-timeline-card-date {
+    display: inline-block;
+}
+.pp-timeline-card-title-wrap {
+    @include transition($target: all, $time: 0.25s, $timing-function: linear);
+}
+.pp-timeline-items {
+    position: relative;
+}
+.pp-timeline-navigation {
+    position: relative;
+    &:before {
+        position: absolute;
+        content: '';
+        height: 4px;
+        width: 100%;
+        background: #ccc;
+        display: block;
+        bottom: 20px;
+        top: auto;
+        transform: translateY(2px);
+    }
+    .slick-list {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    .pp-timeline-marker-wrapper {
+        cursor: pointer;
+        text-align: center;
+    }
+}
+.pp-timeline-navigation-wrap {
+    position: relative;
+    .pp-slider-arrow {
+        transform: none;
+        top: auto;
+        bottom: 20px;
+        padding: 0;
+        height: 40px;
+        width: 40px;
+    }
+    .pp-arrow-prev {
+        background: #ccc;
+        left: -20px;
+    }
+    .pp-arrow-next {
+        background: #ccc;
+        right: -20px;
+    }
+}
+.pp-timeline-marker-wrapper:focus,
+.pp-timeline-item:focus {
+    outline: none;
+}
+.pp-timeline-equal-height {
+    .slick-slide > div,
+    .pp-timeline-item,
+    .pp-timeline-card-wrapper,
+    .pp-timeline-card {
+        height: 100%;
+    }
+}
+
+@keyframes pp-bounce-even {
+	0% {
+		opacity: 0;
+		transform: translateX(-100px);
+	}
+
+	60% {
+		opacity: 1;
+		transform: translateX(10px);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
+@keyframes pp-bounce-odd {
+	0% {
+		opacity: 0;
+		transform: translateX(100px);
+	}
+
+	60% {
+		opacity: 1;
+		transform: translateX(-10px);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
