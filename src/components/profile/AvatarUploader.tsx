@@ -89,7 +89,7 @@ export function AvatarUploader({
   const initial = firstName.charAt(0).toUpperCase() || 'U';
 
   return (
-    <div className="flex flex-col items-center space-y-4">
+    <div className="flex flex-col items-center gap-4">
       <input
         type="file"
         id="avatar-upload"
@@ -104,17 +104,16 @@ export function AvatarUploader({
         className="relative group cursor-pointer"
         onClick={() => fileInputRef.current?.click()}
       >
-        <Avatar className="h-32 w-32 border-4 border-green-500 shadow-xl transition-all duration-300 group-hover:scale-[1.02]">
+        <Avatar className="size-32 border-4 border-primary/20 shadow-[0_22px_50px_-28px_rgba(49,155,142,0.45)] transition-all duration-300 group-hover:scale-[1.02]">
           <AvatarImage src={currentAvatarUrl || undefined} alt={firstName} />
-          <AvatarFallback className="text-5xl bg-green-100 text-green-700">
+          <AvatarFallback className="bg-[linear-gradient(145deg,rgba(49,155,142,0.12),rgba(139,92,246,0.12),rgba(255,255,255,0.92))] text-5xl text-primary">
             {uploading ? <Loader2 className="h-8 w-8 animate-spin" /> : initial}
           </AvatarFallback>
         </Avatar>
 
-        {/* Overlay de Edição */}
         <div
           className={cn(
-            'absolute inset-0 rounded-full bg-black/30 flex items-center justify-center opacity-0 transition-opacity duration-300',
+            'absolute inset-0 flex items-center justify-center rounded-full bg-foreground/14 opacity-0 transition-opacity duration-300',
             !uploading && 'group-hover:opacity-100'
           )}
         >
@@ -127,12 +126,12 @@ export function AvatarUploader({
       </div>
 
       <Button
-        variant="outline"
+        variant="secondary"
         size="sm"
         onClick={() => fileInputRef.current?.click()}
         disabled={uploading}
       >
-        {uploading ? 'Enviando...' : 'Mudar Avatar'}
+        {uploading ? 'Enviando...' : 'Atualizar avatar'}
       </Button>
     </div>
   );

@@ -396,7 +396,8 @@ export function ProfileForm() {
                           {...field}
                           disabled={!!birthDateWatch}
                           className={cn(
-                            !!birthDateWatch && 'bg-gray-100 cursor-not-allowed'
+                            !!birthDateWatch &&
+                              'cursor-not-allowed border-border bg-muted/70'
                           )}
                         />
                       </FormControl>

@@ -27,12 +27,24 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50/50 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex min-h-screen bg-background/80">
       <Sidebar />
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <Header />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
-          <h1 className="mb-8 text-3xl font-bold">Seu Perfil</h1>
+          <div className="mb-8 space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+              Perfil
+            </p>
+            <h1 className="font-display text-3xl font-bold text-foreground">
+              Seu espaço pessoal
+            </h1>
+            <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
+              Ajuste seus dados, contexto de nascimento, hábitos e assinatura em
+              uma experiência mais clara, acolhedora e consistente com a nova
+              identidade da Lyra.
+            </p>
+          </div>
           {profileEnabled ? (
             <ProfileForm />
           ) : (
