@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Activity, MapPin } from 'lucide-react';
 import { db } from '@/integrations/mysql/client';
+import { Badge } from '@/components/ui/badge';
 
 interface ActivityEvent {
   timestamp: string;
@@ -39,13 +40,20 @@ export function MapPlaceholder() {
   }, []);
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader>
-        <CardTitle>Atividade Recente</CardTitle>
+    <Card className="flex h-full flex-col border-border/70 bg-card/90 backdrop-blur-xl">
+      <CardHeader className="gap-3">
+        <div className="flex items-center justify-between gap-3">
+          <CardTitle className="text-xl">Fluxo local de eventos</CardTitle>
+          <Badge variant="secondary">
+            {events.length > 0 ? `${events.length} eventos` : 'em espera'}
+          </Badge>
+        </div>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col gap-4 bg-gray-100 dark:bg-gray-800 rounded-b-lg">
-        <div className="flex items-center gap-3 rounded-xl bg-white/70 p-4 shadow-sm dark:bg-gray-900/70">
-          <MapPin className="h-10 w-10 text-teal-600" />
+      <CardContent className="flex flex-1 flex-col gap-4 rounded-b-[24px] bg-muted/35 p-5">
+        <div className="flex items-center gap-3 rounded-[24px] border border-border/70 bg-white/82 p-4 shadow-sm">
+          <div className="flex size-12 items-center justify-center rounded-2xl bg-cosmic-light text-cosmic shadow-cosmic">
+            <MapPin />
+          </div>
           <div>
             <p className="font-medium">Feed local de telemetria</p>
             <p className="text-sm text-muted-foreground">
@@ -54,20 +62,24 @@ export function MapPlaceholder() {
           </div>
         </div>
         {events.length > 0 ? (
-          <ul className="space-y-3">
+          <ul className="flex flex-col gap-3">
             {events.map((event) => (
               <li
                 key={`${event.timestamp}-${event.description}`}
-                className="rounded-xl bg-white/70 p-3 text-sm shadow-sm dark:bg-gray-900/70"
+                className="rounded-[20px] border border-border/70 bg-white/82 p-4 text-sm shadow-sm"
               >
-                <p className="font-medium">{event.timestamp}</p>
-                <p className="text-muted-foreground">{event.description}</p>
+                <p className="font-medium text-foreground">{event.timestamp}</p>
+                <p className="mt-1 leading-6 text-muted-foreground">
+                  {event.description}
+                </p>
               </li>
             ))}
           </ul>
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-            <Activity className="h-10 w-10 text-gray-400" />
+            <div className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Activity />
+            </div>
             <p className="text-muted-foreground">
               Aguardando o primeiro pacote real do wearable via Bluetooth.
             </p>

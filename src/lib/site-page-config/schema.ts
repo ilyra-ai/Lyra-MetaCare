@@ -72,7 +72,32 @@ const loginHighlightItemSchema = z.object({
   tone: toneKeySchema,
 });
 
+const typographyScaleSchema = z.number().min(0.8).max(1.4);
+
+const landingTypographySchema = z.object({
+  heroTitle: typographyScaleSchema,
+  heroBody: typographyScaleSchema,
+  sectionTitle: typographyScaleSchema,
+  sectionBody: typographyScaleSchema,
+  cardTitle: typographyScaleSchema,
+  cardBody: typographyScaleSchema,
+  buttonLabel: typographyScaleSchema,
+});
+
+const loginTypographySchema = z.object({
+  introTitle: typographyScaleSchema,
+  introBody: typographyScaleSchema,
+  highlightTitle: typographyScaleSchema,
+  highlightBody: typographyScaleSchema,
+  authTitle: typographyScaleSchema,
+  authBody: typographyScaleSchema,
+  fieldLabel: typographyScaleSchema,
+  buttonLabel: typographyScaleSchema,
+  footerText: typographyScaleSchema,
+});
+
 export const landingPageConfigSchema = z.object({
+  typography: landingTypographySchema,
   header: z.object({
     loginLabel: z.string().min(1),
     fullLoginLabel: z.string().min(1),
@@ -149,6 +174,7 @@ export const landingPageConfigSchema = z.object({
 });
 
 export const loginPageConfigSchema = z.object({
+  typography: loginTypographySchema,
   intro: z.object({
     visible: z.boolean(),
     badgeText: z.string().min(1),
@@ -188,6 +214,8 @@ export type FaqItem = z.infer<typeof faqItemSchema>;
 export type LoginHighlightItem = z.infer<typeof loginHighlightItemSchema>;
 export type LandingPageConfig = z.infer<typeof landingPageConfigSchema>;
 export type LoginPageConfig = z.infer<typeof loginPageConfigSchema>;
+export type LandingTypographyConfig = z.infer<typeof landingTypographySchema>;
+export type LoginTypographyConfig = z.infer<typeof loginTypographySchema>;
 export type SitePageKey = 'landing' | 'login';
 export type SitePageConfigMap = {
   landing: LandingPageConfig;
@@ -195,6 +223,15 @@ export type SitePageConfigMap = {
 };
 
 const defaultLandingPageConfig: LandingPageConfig = {
+  typography: {
+    heroTitle: 1,
+    heroBody: 1,
+    sectionTitle: 1,
+    sectionBody: 1,
+    cardTitle: 1,
+    cardBody: 1,
+    buttonLabel: 1,
+  },
   header: {
     loginLabel: 'Entrar',
     fullLoginLabel: 'Tela completa',
@@ -403,6 +440,17 @@ const defaultLandingPageConfig: LandingPageConfig = {
 };
 
 const defaultLoginPageConfig: LoginPageConfig = {
+  typography: {
+    introTitle: 1,
+    introBody: 1,
+    highlightTitle: 1,
+    highlightBody: 1,
+    authTitle: 1,
+    authBody: 1,
+    fieldLabel: 1,
+    buttonLabel: 1,
+    footerText: 1,
+  },
   intro: {
     visible: true,
     badgeText: 'uma entrada mais doce, clara e acolhedora',

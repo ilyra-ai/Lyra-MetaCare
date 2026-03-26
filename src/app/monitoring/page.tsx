@@ -32,14 +32,24 @@ export default function MonitoringPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50/50 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex min-h-screen bg-background/80">
       <Sidebar />
-      <div className="flex flex-col flex-1">
+      <div className="flex min-w-0 flex-1 flex-col">
         <Header />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
-          <h1 className="text-3xl font-bold mb-8">
-            Monitoramento em Tempo Real
-          </h1>
+          <div className="mb-8 flex flex-col gap-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+              Monitoramento
+            </p>
+            <h1 className="font-display text-3xl font-bold text-foreground">
+              Sinais vivos do seu ritmo corporal
+            </h1>
+            <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
+              Acompanhe telemetria contínua, alertas locais e leitura em tempo
+              real em uma experiência clara, luminosa e coerente com a nova
+              identidade da Lyra.
+            </p>
+          </div>
           {monitoringEnabled ? (
             <RealTimeMonitoringContent
               voiceUpdatesEnabled={voiceUpdatesEnabled}

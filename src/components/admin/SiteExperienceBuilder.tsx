@@ -47,6 +47,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -197,6 +198,46 @@ function FieldBlock({
     <div className="flex flex-col gap-2">
       <Label>{label}</Label>
       {children}
+    </div>
+  );
+}
+
+function TypographySliderField({
+  label,
+  description,
+  value,
+  onValueChange,
+}: {
+  label: string;
+  description: string;
+  value: number;
+  onValueChange: (value: number) => void;
+}) {
+  return (
+    <div className="rounded-[20px] border border-border/70 bg-white/82 p-4">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <p className="text-sm font-medium text-foreground">{label}</p>
+          <p className="text-xs leading-6 text-muted-foreground">
+            {description}
+          </p>
+        </div>
+        <Badge variant="secondary">{value.toFixed(2)}x</Badge>
+      </div>
+      <div className="mt-4 flex flex-col gap-3">
+        <Slider
+          min={0.8}
+          max={1.4}
+          step={0.05}
+          value={[value]}
+          onValueChange={(values) => onValueChange(values[0] ?? value)}
+        />
+        <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+          <span>menor</span>
+          <span>base</span>
+          <span>maior</span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -581,7 +622,7 @@ export function SiteExperienceBuilder() {
     return (
       <Accordion
         type="multiple"
-        defaultValue={['hero', 'sections', 'features', 'faq']}
+        defaultValue={['hero', 'typography', 'sections', 'features', 'faq']}
         className="flex flex-col gap-4"
       >
         <AccordionItem value="hero">
@@ -845,6 +886,70 @@ export function SiteExperienceBuilder() {
                 </div>
               </ItemShell>
             ))}
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="typography">
+          <AccordionTrigger>Tipografia e escala visual</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <TypographySliderField
+                label="Hero principal"
+                description="Controla o tamanho do titulo principal da landing."
+                value={landingDraft.typography.heroTitle}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'heroTitle'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Texto do hero"
+                description="Ajusta o paragrafo principal logo abaixo do titulo."
+                value={landingDraft.typography.heroBody}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'heroBody'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Titulos de secao"
+                description="Afeta recursos, metricas, fluxo, planos, FAQ e CTA final."
+                value={landingDraft.typography.sectionTitle}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'sectionTitle'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Textos de secao"
+                description="Ajusta descricoes de blocos e introducoes das secoes."
+                value={landingDraft.typography.sectionBody}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'sectionBody'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Titulos de cards"
+                description="Controla titulos de cards do hero, recursos e planos."
+                value={landingDraft.typography.cardTitle}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'cardTitle'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Corpo dos cards"
+                description="Ajusta descricoes internas dos cards da landing."
+                value={landingDraft.typography.cardBody}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'cardBody'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Rotulos de botoes"
+                description="Ajusta o tamanho dos CTAs e botoes de navegacao da landing."
+                value={landingDraft.typography.buttonLabel}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'buttonLabel'], nextValue)
+                }
+              />
+            </div>
           </AccordionContent>
         </AccordionItem>
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   ChartContainer,
   ChartTooltip,
@@ -51,11 +52,14 @@ export function LiveHeartRateChart({ initialData }: { initialData: number }) {
   }, [initialData]);
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader>
-        <CardTitle>Frequência Cardíaca (Ao Vivo)</CardTitle>
+    <Card className="flex h-full flex-col border-border/70 bg-card/90 backdrop-blur-xl">
+      <CardHeader className="gap-3">
+        <div className="flex items-center justify-between gap-3">
+          <CardTitle className="text-xl">Frequência cardíaca ao vivo</CardTitle>
+          <Badge variant="accent">linha contínua</Badge>
+        </div>
       </CardHeader>
-      <CardContent className="flex-1">
+      <CardContent className="flex-1 rounded-b-[24px] bg-[linear-gradient(180deg,rgba(255,255,255,0.84),rgba(245,247,255,0.66))] p-5">
         <ChartContainer config={chartConfig} className="h-full w-full">
           <LineChart
             data={data}
@@ -72,7 +76,7 @@ export function LiveHeartRateChart({ initialData }: { initialData: number }) {
               dataKey="heartRate"
               type="monotone"
               stroke="var(--color-heartRate)"
-              strokeWidth={2}
+              strokeWidth={3}
               dot={false}
               isAnimationActive={false}
             />
