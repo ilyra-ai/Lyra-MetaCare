@@ -8,6 +8,84 @@ import { requireServerSession } from '@/lib/mysql/server-auth';
 
 export const runtime = 'nodejs';
 
+async function testGeminiConnection() {
+  const apiKey = process.env.GEMINI_API_KEY;
+  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+
+  if (!apiKey) {
+    return {
+      configured: false,
+      ok: false,
+      provider: 'gemini',
+      message:
+        'Gemini nao configurado no ambiente local. Os motores locais continuam disponiveis.',
+    };
+  }
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: 'Responda apenas com OK para validar a conexao administrativa.',
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0,
+          maxOutputTokens: 8,
+        },
+      }),
+      cache: 'no-store',
+    }
+  );
+
+  const payload = (await response.json()) as {
+    candidates?: Array<{
+      content?: {
+        parts?: Array<{ text?: string }>;
+      };
+    }>;
+    error?: {
+      message?: string;
+    };
+  };
+
+  if (!response.ok) {
+    return {
+      configured: true,
+      ok: false,
+      provider: 'gemini',
+      model,
+      status: response.status,
+      error: payload.error?.message || 'Falha ao consultar o Gemini.',
+    };
+  }
+
+  const preview =
+    payload.candidates
+      ?.flatMap((candidate) => candidate.content?.parts ?? [])
+      .map((part) => part.text?.trim() || '')
+      .filter(Boolean)
+      .join(' ') || '';
+
+  return {
+    configured: true,
+    ok: preview.toLowerCase().includes('ok'),
+    provider: 'gemini',
+    model,
+    preview,
+  };
+}
+
 export async function POST() {
   try {
     const session = await requireServerSession();
@@ -59,6 +137,7 @@ export async function POST() {
       },
       astrology,
     });
+    const geminiCheck = await testGeminiConnection();
 
     return NextResponse.json({
       success: true,
@@ -86,9 +165,10 @@ export async function POST() {
           ok: assistantCheck.length > 0,
           preview: assistantCheck,
         },
+        gemini: geminiCheck,
       },
       message:
-        'Motores locais testados em runtime e prontos para uso no backend MySQL/Next.js.',
+        'Motores locais testados em runtime. Quando configurado, o Gemini tambem e validado em tempo real por esta rota administrativa.',
     });
   } catch (error) {
     return NextResponse.json(
