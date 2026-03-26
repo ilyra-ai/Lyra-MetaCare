@@ -2771,12 +2771,12 @@ export function SiteExperienceBuilder() {
               <Sparkles className="mr-2 h-3.5 w-3.5" />
               editor premium da experiencia web
             </Badge>
-              <div className="flex flex-col gap-2">
-                <CardTitle className="text-3xl">
-                  Superfícies editáveis do módulo Lyra Customaze UI UX
-                </CardTitle>
-                <CardDescription className="max-w-3xl text-sm leading-7">
-                  Somente administradores podem editar, salvar rascunho, publicar,
+            <div className="flex flex-col gap-2">
+              <CardTitle className="text-3xl">
+                Superfícies editáveis do módulo Lyra Customaze UI UX
+              </CardTitle>
+              <CardDescription className="max-w-3xl text-sm leading-7">
+                Somente administradores podem editar, salvar rascunho, publicar,
                 restaurar e reorganizar a experiência pública e a camada visual
                 do app da Lyra.
               </CardDescription>
