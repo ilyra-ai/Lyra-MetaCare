@@ -6,8 +6,14 @@ import {
   parsePageConfig,
   SitePageConfigMap,
   SitePageKey,
-  validatePageConfig,
 } from '@/lib/site-page-config/schema';
+import {
+  normalizeStoredPageConfig,
+  parseStoredJson,
+  serializePageConfig,
+  StoredPageConfig,
+  validatePageConfigOrThrow,
+} from '@/lib/site-page-config/storage';
 
 interface SitePageConfigRow {
   id: string;
@@ -17,35 +23,6 @@ interface SitePageConfigRow {
   updated_by_user_id: string | null;
   created_at: string;
   updated_at: string;
-}
-
-type StoredPageConfig<TKey extends SitePageKey> = {
-  pageKey: TKey;
-  draftConfig: SitePageConfigMap[TKey];
-  publishedConfig: SitePageConfigMap[TKey];
-  createdAt: string | null;
-  updatedAt: string | null;
-  updatedByUserId: string | null;
-};
-
-function parseStoredJson(value: string | Record<string, unknown> | null) {
-  if (!value) {
-    return null;
-  }
-
-  if (typeof value === 'string') {
-    try {
-      return JSON.parse(value) as unknown;
-    } catch {
-      return null;
-    }
-  }
-
-  return value;
-}
-
-function serializeConfig(value: unknown) {
-  return JSON.stringify(value);
 }
 
 async function getSitePageConfigRow(pageKey: SitePageKey) {
@@ -84,29 +61,13 @@ export async function getAdminSitePageConfig<TKey extends SitePageKey>(
   pageKey: TKey
 ): Promise<StoredPageConfig<TKey>> {
   const row = await getSitePageConfigRow(pageKey);
-  if (!row) {
-    const defaultConfig = getDefaultPageConfig(pageKey);
-    return {
-      pageKey,
-      draftConfig: defaultConfig,
-      publishedConfig: getDefaultPageConfig(pageKey),
-      createdAt: null,
-      updatedAt: null,
-      updatedByUserId: null,
-    };
-  }
-
-  return {
-    pageKey,
-    draftConfig: parsePageConfig(pageKey, parseStoredJson(row.draft_config)),
-    publishedConfig: parsePageConfig(
-      pageKey,
-      parseStoredJson(row.published_config)
-    ),
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    updatedByUserId: row.updated_by_user_id,
-  };
+  return normalizeStoredPageConfig(pageKey, {
+    draftConfig: row?.draft_config ?? null,
+    publishedConfig: row?.published_config ?? null,
+    updatedByUserId: row?.updated_by_user_id ?? null,
+    createdAt: row?.created_at ?? null,
+    updatedAt: row?.updated_at ?? null,
+  });
 }
 
 export async function saveSitePageDraft<TKey extends SitePageKey>(options: {
@@ -114,16 +75,10 @@ export async function saveSitePageDraft<TKey extends SitePageKey>(options: {
   actorUserId: string;
   draftConfig: unknown;
 }): Promise<StoredPageConfig<TKey>> {
-  const validation = validatePageConfig(options.pageKey, options.draftConfig);
-  if (!validation.success) {
-    throw new Error(
-      validation.error.issues
-        .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
-        .join(' | ')
-    );
-  }
-
-  const normalizedDraft = validation.data;
+  const normalizedDraft = validatePageConfigOrThrow(
+    options.pageKey,
+    options.draftConfig
+  );
   const row = await getSitePageConfigRow(options.pageKey);
   const nowPublished = row
     ? parsePageConfig(options.pageKey, parseStoredJson(row.published_config))
@@ -138,7 +93,11 @@ export async function saveSitePageDraft<TKey extends SitePageKey>(options: {
           updated_by_user_id = ?
         WHERE page_key = ?
       `,
-      [serializeConfig(normalizedDraft), options.actorUserId, options.pageKey]
+      [
+        serializePageConfig(normalizedDraft),
+        options.actorUserId,
+        options.pageKey,
+      ]
     );
   } else {
     await executeStatement(
@@ -155,8 +114,8 @@ export async function saveSitePageDraft<TKey extends SitePageKey>(options: {
       [
         randomUUID(),
         options.pageKey,
-        serializeConfig(normalizedDraft),
-        serializeConfig(nowPublished),
+        serializePageConfig(normalizedDraft),
+        serializePageConfig(nowPublished),
         options.actorUserId,
       ]
     );
@@ -186,8 +145,8 @@ export async function publishSitePageDraft<TKey extends SitePageKey>(options: {
         WHERE page_key = ?
       `,
       [
-        serializeConfig(draftConfig),
-        serializeConfig(draftConfig),
+        serializePageConfig(draftConfig),
+        serializePageConfig(draftConfig),
         options.actorUserId,
         options.pageKey,
       ]
@@ -207,8 +166,8 @@ export async function publishSitePageDraft<TKey extends SitePageKey>(options: {
       [
         randomUUID(),
         options.pageKey,
-        serializeConfig(draftConfig),
-        serializeConfig(draftConfig),
+        serializePageConfig(draftConfig),
+        serializePageConfig(draftConfig),
         options.actorUserId,
       ]
     );
@@ -237,7 +196,11 @@ export async function restoreSitePageDraftFromPublished<
           updated_by_user_id = ?
         WHERE page_key = ?
       `,
-      [serializeConfig(publishedConfig), options.actorUserId, options.pageKey]
+      [
+        serializePageConfig(publishedConfig),
+        options.actorUserId,
+        options.pageKey,
+      ]
     );
   } else {
     await executeStatement(
@@ -254,8 +217,8 @@ export async function restoreSitePageDraftFromPublished<
       [
         randomUUID(),
         options.pageKey,
-        serializeConfig(publishedConfig),
-        serializeConfig(publishedConfig),
+        serializePageConfig(publishedConfig),
+        serializePageConfig(publishedConfig),
         options.actorUserId,
       ]
     );
@@ -282,7 +245,7 @@ export async function restoreSitePageDefaults<
           updated_by_user_id = ?
         WHERE page_key = ?
       `,
-      [serializeConfig(defaultConfig), options.actorUserId, options.pageKey]
+      [serializePageConfig(defaultConfig), options.actorUserId, options.pageKey]
     );
   } else {
     await executeStatement(
@@ -299,8 +262,8 @@ export async function restoreSitePageDefaults<
       [
         randomUUID(),
         options.pageKey,
-        serializeConfig(defaultConfig),
-        serializeConfig(defaultConfig),
+        serializePageConfig(defaultConfig),
+        serializePageConfig(defaultConfig),
         options.actorUserId,
       ]
     );

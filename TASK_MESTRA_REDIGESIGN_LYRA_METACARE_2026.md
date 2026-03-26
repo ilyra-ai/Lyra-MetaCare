@@ -98,6 +98,7 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] `implement_elementor_lyra.py` criado na raiz com instalacao real para projetos compativeis com Next.js App Router + TypeScript.
 - [x] `package.json` atualizado com o script `lyra-customaze:install`.
 - [x] `src/lib/site-page-config/index.ts` criado para consolidar os reexports do nucleo segregado.
+- [x] `src/lib/site-page-config/service.ts` passou a consumir utilitarios genericos de armazenamento vindos do modulo reutilizavel.
 - [~] Varredura completa de menus, dropdowns, CRUDs, onboarding e configuracoes ainda em execucao.
 
 ## O que ja foi concluido de forma real
@@ -355,6 +356,7 @@ npm run check:types
 - 2026-03-26 27: o modulo portavel `modules/lyra-customaze-ui-ux` recebeu contrato tecnico de integracao para apps consumidores, separando melhor o nucleo reutilizavel da Lyra.
 - 2026-03-26 28: `implement_elementor_lyra.py` foi criado na raiz e validado em execucao real no proprio projeto, detectando o alvo compativel, alinhando os reexports e registrando o script `lyra-customaze:install` no `package.json`.
 - 2026-03-26 29: a identidade do modulo foi renomeada para `Lyra Customaze UI UX`, mantendo o nome do instalador por compatibilidade com a exigencia anterior do projeto.
+- 2026-03-26 30: a camada generica de armazenamento do builder foi extraida para `modules/lyra-customaze-ui-ux/src/site-page-config/storage.ts`, e o adapter MySQL da Lyra passou a consumir esses utilitarios em `src/lib/site-page-config/service.ts`.
 
 ## Politica obrigatoria de commit e push
 

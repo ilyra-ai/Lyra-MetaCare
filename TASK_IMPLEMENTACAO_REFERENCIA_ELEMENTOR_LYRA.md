@@ -309,6 +309,7 @@ Estruturar a implementacao, dentro da Lyra MetaCare, de um construtor administra
 - [x] Extrair o nucleo inicial reutilizavel de `schema` e `ui` para o modulo.
 - [x] Manter reexport no app atual para nao quebrar a Lyra durante a transicao.
 - [x] Criar contrato tecnico de integracao reutilizavel para apps consumidores.
+- [x] Extrair utilitarios genericos de armazenamento do builder para o modulo.
 - [ ] `packages/builder-core` ou estrutura equivalente final
   - engine de arvore de layout
   - sistema de slots
@@ -875,5 +876,6 @@ npm run check:types
 - [x] Script `lyra-customaze:install` registrado no `package.json`.
 - [x] Modulo renomeado para `Lyra Customaze UI UX`, preservando `implement_elementor_lyra.py` por compatibilidade operacional.
 - [x] Reexport agregador `src/lib/site-page-config/index.ts` criado para apps consumidores.
+- [x] Camada generica de armazenamento extraida para `modules/lyra-customaze-ui-ux/src/site-page-config/storage.ts`.
 - [ ] Validacao final em navegador real do contexto `app` ainda pendente.
 - [ ] Implementacao completa desta task ainda segue em andamento.
