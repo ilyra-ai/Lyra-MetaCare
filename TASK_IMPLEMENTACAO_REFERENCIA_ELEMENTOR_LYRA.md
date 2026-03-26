@@ -303,7 +303,12 @@ Estruturar a implementacao, dentro da Lyra MetaCare, de um construtor administra
 
 ### Estrutura proposta do modulo reutilizavel
 
-- [ ] `packages/builder-core`
+- [x] Criar a pasta raiz do modulo reutilizavel em `modules/elementor-lyra`.
+- [x] Criar manifesto tecnico do modulo.
+- [x] Criar README tecnico do modulo.
+- [x] Extrair o nucleo inicial reutilizavel de `schema` e `ui` para o modulo.
+- [x] Manter reexport no app atual para nao quebrar a Lyra durante a transicao.
+- [ ] `packages/builder-core` ou estrutura equivalente final
   - engine de arvore de layout
   - sistema de slots
   - sistema de props editaveis
@@ -311,7 +316,7 @@ Estruturar a implementacao, dentro da Lyra MetaCare, de um construtor administra
   - sistema de estilos responsivos
   - sistema de conditions
   - sistema de revisions
-- [ ] `packages/builder-admin`
+- [ ] `packages/builder-admin` ou estrutura equivalente final
   - canvas ao vivo
   - drag-and-drop
   - navigator de arvore
@@ -320,12 +325,12 @@ Estruturar a implementacao, dentro da Lyra MetaCare, de um construtor administra
   - painel Advanced
   - time-travel
   - controle de publicacao
-- [ ] `packages/builder-renderer`
+- [ ] `packages/builder-renderer` ou estrutura equivalente final
   - renderer publico
   - renderer do app interno
   - injecao segura de CSS customizado
   - consumo de configuracao publicada
-- [ ] `packages/builder-adapter-lyra`
+- [ ] `packages/builder-adapter-lyra` ou estrutura equivalente final
   - registro de componentes reais da Lyra
   - registro de zonas editaveis
   - regras de permissao admin
@@ -860,5 +865,7 @@ npm run check:types
 - [x] Causa raiz da inviabilidade de integracao direta documentada.
 - [x] Schema e builder administrativo alinhados para `landing`, `login` e `app`.
 - [x] `ELEMENTOR` isolado corretamente dos checks do app em lint/format.
+- [x] Modulo raiz `modules/elementor-lyra` criado e documentado.
+- [x] Nucleo inicial segregado do app sem quebrar imports existentes.
 - [ ] Validacao final em navegador real do contexto `app` ainda pendente.
 - [ ] Implementacao completa desta task ainda segue em andamento.
