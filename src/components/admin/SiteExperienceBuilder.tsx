@@ -1408,7 +1408,7 @@ export function SiteExperienceBuilder() {
     return (
       <Accordion
         type="multiple"
-        defaultValue={['intro', 'auth']}
+        defaultValue={['intro', 'typography', 'auth']}
         className="flex flex-col gap-4"
       >
         <AccordionItem value="intro">
@@ -1564,6 +1564,86 @@ export function SiteExperienceBuilder() {
                 </div>
               </ItemShell>
             ))}
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="typography">
+          <AccordionTrigger>Tipografia e escala visual</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <TypographySliderField
+                label="Titulo do painel esquerdo"
+                description="Controla o tamanho do titulo principal da experiencia de login."
+                value={loginDraft.typography.introTitle}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'introTitle'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Texto do painel esquerdo"
+                description="Ajusta descricao e nota da area introdutoria."
+                value={loginDraft.typography.introBody}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'introBody'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Titulos dos destaques"
+                description="Ajusta os titulos dos cards explicativos do login."
+                value={loginDraft.typography.highlightTitle}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'highlightTitle'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Descricoes dos destaques"
+                description="Controla o texto dos cards do painel esquerdo."
+                value={loginDraft.typography.highlightBody}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'highlightBody'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Titulo do card de auth"
+                description="Ajusta a hierarquia principal do card de autenticacao."
+                value={loginDraft.typography.authTitle}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'authTitle'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Texto do card de auth"
+                description="Ajusta descricoes, apoio e contexto do formulario."
+                value={loginDraft.typography.authBody}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'authBody'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Labels dos campos"
+                description="Controla o tamanho das labels dos formularios."
+                value={loginDraft.typography.fieldLabel}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'fieldLabel'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Rotulos dos botoes"
+                description="Ajusta o texto dos botoes principais do login."
+                value={loginDraft.typography.buttonLabel}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'buttonLabel'], nextValue)
+                }
+              />
+              <TypographySliderField
+                label="Rodape do card"
+                description="Controla o texto final e o bloco de apoio do login."
+                value={loginDraft.typography.footerText}
+                onValueChange={(nextValue) =>
+                  updateDraft(['typography', 'footerText'], nextValue)
+                }
+              />
+            </div>
           </AccordionContent>
         </AccordionItem>
 

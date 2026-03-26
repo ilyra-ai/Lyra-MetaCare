@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { CSSProperties, FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
@@ -61,6 +61,15 @@ function formatCurrency(value: number, currencyCode: string) {
   }).format(value);
 }
 
+function buildFluidFontSize(
+  minRem: number,
+  preferredRem: number,
+  maxRem: number,
+  scale: number
+) {
+  return `clamp(${(minRem * scale).toFixed(3)}rem, ${(preferredRem * scale).toFixed(3)}rem, ${(maxRem * scale).toFixed(3)}rem)`;
+}
+
 export function LandingPage({
   overrideConfig,
   previewMode = false,
@@ -79,6 +88,55 @@ export function LandingPage({
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const textStyles = {
+    heroTitle: {
+      fontSize: buildFluidFontSize(2.9, 4.3, 6.2, config.typography.heroTitle),
+    } satisfies CSSProperties,
+    heroBody: {
+      fontSize: buildFluidFontSize(1.0, 1.08, 1.18, config.typography.heroBody),
+    } satisfies CSSProperties,
+    sectionTitle: {
+      fontSize: buildFluidFontSize(
+        1.85,
+        2.35,
+        3.1,
+        config.typography.sectionTitle
+      ),
+    } satisfies CSSProperties,
+    sectionBody: {
+      fontSize: buildFluidFontSize(
+        1,
+        1.04,
+        1.12,
+        config.typography.sectionBody
+      ),
+    } satisfies CSSProperties,
+    cardTitle: {
+      fontSize: buildFluidFontSize(
+        1.05,
+        1.2,
+        1.45,
+        config.typography.cardTitle
+      ),
+    } satisfies CSSProperties,
+    cardBody: {
+      fontSize: buildFluidFontSize(
+        0.92,
+        0.98,
+        1.05,
+        config.typography.cardBody
+      ),
+    } satisfies CSSProperties,
+    buttonLabel: {
+      fontSize: buildFluidFontSize(
+        0.92,
+        0.98,
+        1.04,
+        config.typography.buttonLabel
+      ),
+    } satisfies CSSProperties,
+  };
 
   useEffect(() => {
     if (overrideConfig) {
@@ -231,10 +289,16 @@ export function LandingPage({
                 <Badge className="rounded-full border-cosmic/20 bg-cosmic/10 px-4 py-1.5 text-cosmic">
                   {config.features.badgeText}
                 </Badge>
-                <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                <h2
+                  className="mt-5 font-display font-bold tracking-tight text-foreground"
+                  style={textStyles.sectionTitle}
+                >
                   {config.features.title}
                 </h2>
-                <p className="mt-4 text-base leading-8 text-muted-foreground sm:text-lg">
+                <p
+                  className="mt-4 leading-8 text-muted-foreground"
+                  style={textStyles.sectionBody}
+                >
                   {config.features.description}
                 </p>
               </div>
@@ -257,10 +321,12 @@ export function LandingPage({
                         >
                           <FeatureIcon className="h-5 w-5" />
                         </div>
-                        <CardTitle className="text-xl">
+                        <CardTitle style={textStyles.cardTitle}>
                           {feature.title}
                         </CardTitle>
-                        <CardDescription>{feature.description}</CardDescription>
+                        <CardDescription style={textStyles.cardBody}>
+                          {feature.description}
+                        </CardDescription>
                       </CardHeader>
                     </Card>
                   );
@@ -281,10 +347,16 @@ export function LandingPage({
                 <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary">
                   {config.metrics.badgeText}
                 </Badge>
-                <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                <h2
+                  className="mt-5 font-display font-bold tracking-tight text-foreground"
+                  style={textStyles.sectionTitle}
+                >
                   {config.metrics.title}
                 </h2>
-                <p className="mt-4 text-base leading-8 text-muted-foreground sm:text-lg">
+                <p
+                  className="mt-4 leading-8 text-muted-foreground"
+                  style={textStyles.sectionBody}
+                >
                   {config.metrics.description}
                 </p>
               </div>
@@ -320,7 +392,9 @@ export function LandingPage({
                           >
                             {resolveMetricValue(item.source, item.customValue)}
                           </CardTitle>
-                          <CardDescription>{item.note}</CardDescription>
+                          <CardDescription style={textStyles.cardBody}>
+                            {item.note}
+                          </CardDescription>
                         </CardHeader>
                       </Card>
                     ))}
@@ -340,10 +414,16 @@ export function LandingPage({
                 <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary">
                   {config.flow.badgeText}
                 </Badge>
-                <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                <h2
+                  className="mt-5 font-display font-bold tracking-tight text-foreground"
+                  style={textStyles.sectionTitle}
+                >
                   {config.flow.title}
                 </h2>
-                <p className="mt-4 text-base leading-8 text-muted-foreground sm:text-lg">
+                <p
+                  className="mt-4 leading-8 text-muted-foreground"
+                  style={textStyles.sectionBody}
+                >
                   {config.flow.description}
                 </p>
               </div>
@@ -366,8 +446,12 @@ export function LandingPage({
                             <StepIcon className="h-5 w-5" />
                           </span>
                         </div>
-                        <CardTitle className="text-xl">{step.title}</CardTitle>
-                        <CardDescription>{step.description}</CardDescription>
+                        <CardTitle style={textStyles.cardTitle}>
+                          {step.title}
+                        </CardTitle>
+                        <CardDescription style={textStyles.cardBody}>
+                          {step.description}
+                        </CardDescription>
                       </CardHeader>
                     </Card>
                   );
@@ -391,10 +475,16 @@ export function LandingPage({
                 <Badge className="rounded-full border-accent/20 bg-accent/10 px-4 py-1.5 text-accent">
                   {config.plans.badgeText}
                 </Badge>
-                <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                <h2
+                  className="mt-5 font-display font-bold tracking-tight text-foreground"
+                  style={textStyles.sectionTitle}
+                >
                   {config.plans.title}
                 </h2>
-                <p className="mt-4 text-base leading-8 text-muted-foreground sm:text-lg">
+                <p
+                  className="mt-4 leading-8 text-muted-foreground"
+                  style={textStyles.sectionBody}
+                >
                   {config.plans.description}
                 </p>
               </div>
@@ -440,13 +530,16 @@ export function LandingPage({
                               {plan.highlightText}
                             </Badge>
                           ) : null}
-                          <CardTitle className="text-3xl">
+                          <CardTitle style={textStyles.cardTitle}>
                             {plan.name}
                           </CardTitle>
                           <CardDescription className="text-sm font-medium text-foreground">
                             {plan.tagline}
                           </CardDescription>
-                          <p className="text-sm leading-7 text-muted-foreground">
+                          <p
+                            className="leading-7 text-muted-foreground"
+                            style={textStyles.cardBody}
+                          >
                             {plan.description}
                           </p>
                         </CardHeader>
@@ -491,6 +584,7 @@ export function LandingPage({
                         <CardFooter>
                           <Button
                             className="w-full"
+                            style={textStyles.buttonLabel}
                             variant={
                               plan.key === 'meta' ? 'default' : 'secondary'
                             }
@@ -534,10 +628,16 @@ export function LandingPage({
                 <Badge className="rounded-full border-cosmic/20 bg-cosmic/10 px-4 py-1.5 text-cosmic">
                   {config.faq.badgeText}
                 </Badge>
-                <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                <h2
+                  className="mt-5 font-display font-bold tracking-tight text-foreground"
+                  style={textStyles.sectionTitle}
+                >
                   {config.faq.title}
                 </h2>
-                <p className="mt-4 text-base leading-8 text-muted-foreground">
+                <p
+                  className="mt-4 leading-8 text-muted-foreground"
+                  style={textStyles.sectionBody}
+                >
                   {config.faq.description}
                 </p>
               </div>
@@ -565,15 +665,22 @@ export function LandingPage({
                 <Badge className="rounded-full border-white/70 bg-white/78 px-4 py-1.5 text-foreground">
                   {config.finalCta.badgeText}
                 </Badge>
-                <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                <h2
+                  className="mt-5 font-display font-bold tracking-tight text-foreground"
+                  style={textStyles.sectionTitle}
+                >
                   {config.finalCta.title}
                 </h2>
-                <p className="mt-4 text-base leading-8 text-foreground/80">
+                <p
+                  className="mt-4 leading-8 text-foreground/80"
+                  style={textStyles.sectionBody}
+                >
                   {config.finalCta.description}
                 </p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <Button
                     size="xl"
+                    style={textStyles.buttonLabel}
                     onClick={() => navigateTo(config.finalCta.primaryHref)}
                   >
                     {config.finalCta.primaryLabel}
@@ -582,6 +689,7 @@ export function LandingPage({
                   <Button
                     size="xl"
                     variant="secondary"
+                    style={textStyles.buttonLabel}
                     onClick={() => navigateTo(config.finalCta.secondaryHref)}
                   >
                     {config.finalCta.secondaryLabel}
@@ -637,16 +745,32 @@ export function LandingPage({
           </button>
 
           <nav className="hidden items-center gap-1 md:flex">
-            <Button variant="ghost" onClick={() => navigateTo('#recursos')}>
+            <Button
+              variant="ghost"
+              style={textStyles.buttonLabel}
+              onClick={() => navigateTo('#recursos')}
+            >
               Recursos
             </Button>
-            <Button variant="ghost" onClick={() => navigateTo('#fluxo')}>
+            <Button
+              variant="ghost"
+              style={textStyles.buttonLabel}
+              onClick={() => navigateTo('#fluxo')}
+            >
               Fluxo
             </Button>
-            <Button variant="ghost" onClick={() => navigateTo('#planos')}>
+            <Button
+              variant="ghost"
+              style={textStyles.buttonLabel}
+              onClick={() => navigateTo('#planos')}
+            >
               Planos
             </Button>
-            <Button variant="ghost" onClick={() => navigateTo('#faq')}>
+            <Button
+              variant="ghost"
+              style={textStyles.buttonLabel}
+              onClick={() => navigateTo('#faq')}
+            >
               FAQ
             </Button>
           </nav>
@@ -654,11 +778,15 @@ export function LandingPage({
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
+              style={textStyles.buttonLabel}
               onClick={() => navigateTo(config.hero.primaryCtaHref)}
             >
               {config.header.loginLabel}
             </Button>
-            <Button onClick={() => navigateTo(config.hero.primaryCtaHref)}>
+            <Button
+              style={textStyles.buttonLabel}
+              onClick={() => navigateTo(config.hero.primaryCtaHref)}
+            >
               {config.header.fullLoginLabel}
             </Button>
           </div>
@@ -680,20 +808,27 @@ export function LandingPage({
                 {config.hero.badgeText}
               </Badge>
 
-              <h1 className="mt-6 max-w-4xl font-display text-4xl font-bold leading-[1.02] tracking-tight text-foreground sm:text-5xl lg:text-[4.4rem]">
+              <h1
+                className="mt-6 max-w-4xl font-display font-bold leading-[1.02] tracking-tight text-foreground"
+                style={textStyles.heroTitle}
+              >
                 {config.hero.title}
                 <span className="block text-gradient-aurora">
                   {config.hero.accentTitle}
                 </span>
               </h1>
 
-              <p className="mt-6 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
+              <p
+                className="mt-6 max-w-2xl leading-8 text-muted-foreground"
+                style={textStyles.heroBody}
+              >
                 {config.hero.description}
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button
                   size="xl"
+                  style={textStyles.buttonLabel}
                   onClick={() => navigateTo(config.hero.primaryCtaHref)}
                 >
                   {config.hero.primaryCtaLabel}
@@ -702,6 +837,7 @@ export function LandingPage({
                 <Button
                   size="xl"
                   variant="secondary"
+                  style={textStyles.buttonLabel}
                   onClick={() => navigateTo(config.hero.secondaryCtaHref)}
                 >
                   {config.hero.secondaryCtaLabel}
