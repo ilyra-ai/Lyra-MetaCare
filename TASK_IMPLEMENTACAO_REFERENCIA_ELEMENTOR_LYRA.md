@@ -899,4 +899,10 @@ npm run check:types
 - [x] Consumo real do `page-config/app` ligado em `sidebar`, `header`, `mobile sidebar`, `appointments`, `monitoring` e `profile`.
 - [x] Publicacao real via API administrativa do `page-config/app` validada em navegador autenticado, com reflexo visual imediato no app interno.
 - [x] Validacao final em navegador real do contexto `app` concluida para `dashboard`, `appointments`, `monitoring` e `profile`.
+- [x] Dominio `chat` adicionado ao `page-config/app` com schema real, defaults reais e zona registrada no modulo reutilizavel.
+- [x] `admin/page-builder` passou a expor edicao guiada real do `Chat IA` no contexto `App interno`, incluindo sugestoes iniciais, mensagem de boas-vindas e camada de integracoes.
+- [x] `src/components/chat/ChatAssistantContent.tsx` e `src/app/chat/page.tsx` passaram a consumir `page-config/app.chat` de forma real no frontend autenticado.
+- [x] Causa raiz do travamento na validacao HTTP identificada: a instancia responde em `http://localhost:3000`, enquanto `http://127.0.0.1:3000` expirava neste ambiente.
+- [x] Publicacao administrativa real do `chat` validada com login administrativo, `PUT` real em `/api/admin/page-config/app` e `POST` real de publish.
+- [x] Navegador real confirmou reflexo publicado em `/admin/page-builder` e `/chat` com textos editados do bloco `chat`.
 - [ ] Implementacao completa desta task ainda segue em andamento.

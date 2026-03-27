@@ -371,6 +371,12 @@ npm run check:types
 - 2026-03-26 30: a camada generica de armazenamento do builder foi extraida para `modules/lyra-customaze-ui-ux/src/site-page-config/storage.ts`, e o adapter MySQL da Lyra passou a consumir esses utilitarios em `src/lib/site-page-config/service.ts`.
 - 2026-03-26 31: o modulo `Lyra Customaze UI UX` ganhou helpers reutilizaveis de runtime para escala visual, e o `page-config/app` deixou de ser apenas preview administrativo, passando a impactar de forma real `sidebar`, `header`, `mobile sidebar`, `appointments`, `monitoring` e `profile`.
 - 2026-03-26 32: validacao real em navegador autenticado confirmou publicacao administrativa do `page-config/app` e reflexo imediato no app interno, incluindo atualizacao visivel de branding lateral, placeholder do header, CTA de chat e titulos de `appointments`.
+- 2026-03-27 33: `page-config/app` foi expandido com o dominio real `chat`, cobrindo eyebrow, titulo, descricao, mensagem inicial da IA, respostas rapidas, placeholder do input e camada de integracoes.
+- 2026-03-27 34: `admin/page-builder` passou a exibir edicao guiada real do bloco `Chat IA` no contexto `App interno`, alem do preview administrativo com resumo do modulo.
+- 2026-03-27 35: `src/components/chat/ChatAssistantContent.tsx` e `src/app/chat/page.tsx` foram reescritos para consumir `page-config/app.chat` e abandonar o viés visual antigo, deixando o chat mais claro, acolhedor e configuravel.
+- 2026-03-27 36: a causa raiz do travamento na validacao HTTP foi isolada na diferenca entre `127.0.0.1` e `localhost`; a instancia local desta etapa responde em `http://localhost:3000`, e a validacao administrativa passou a usar essa origem.
+- 2026-03-27 37: login administrativo, `PUT` de rascunho e `POST` de publish em `/api/admin/page-config/app` foram executados com sucesso para o bloco `chat`.
+- 2026-03-27 38: navegador real autenticado confirmou o reflexo do bloco publicado em `/admin/page-builder` e `/chat`, incluindo os textos `Chat Lyra publicado pelo builder com conversa mais clara e elegante`, `Perguntas iniciais editáveis` e `Base operacional da conversa`.
 
 ## Politica obrigatoria de commit e push
 
