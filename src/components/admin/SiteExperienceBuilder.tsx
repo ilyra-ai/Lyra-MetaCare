@@ -614,6 +614,39 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
             <Card className="border-border/70 bg-white/88 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg">
+                  {config.chat.pageTitle}
+                </CardTitle>
+                <CardDescription>{config.chat.pageDescription}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <p>{config.chat.assistantTitle}</p>
+                <p>{config.chat.quickRepliesTitle}</p>
+                <p>{config.chat.integrationsTitle}</p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge
+                    variant={
+                      config.chat.showQuickReplies ? 'success' : 'secondary'
+                    }
+                  >
+                    respostas rápidas
+                  </Badge>
+                  <Badge
+                    variant={
+                      config.chat.showIntegrations ? 'success' : 'secondary'
+                    }
+                  >
+                    integrações
+                  </Badge>
+                  <Badge variant="cosmic">
+                    {config.chat.quickReplies.length} prompts
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/70 bg-white/88 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg">
                   {config.profile.pageTitle}
                 </CardTitle>
                 <CardDescription>
@@ -3191,6 +3224,215 @@ export function SiteExperienceBuilder() {
                     checked={appDraft.monitoring.showAlertsButton}
                     onCheckedChange={(checked) =>
                       updateDraft(['monitoring', 'showAlertsButton'], checked)
+                    }
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/70 bg-white/84">
+              <CardHeader>
+                <CardTitle className="text-base">Chat IA</CardTitle>
+                <CardDescription>
+                  Ajuste a conversa, as sugestões iniciais e a camada de
+                  transparência das integrações.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Eyebrow da página">
+                    <Input
+                      value={appDraft.chat.pageEyebrow}
+                      onChange={(event) =>
+                        updateDraft(['chat', 'pageEyebrow'], event.target.value)
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título da página">
+                    <Input
+                      value={appDraft.chat.pageTitle}
+                      onChange={(event) =>
+                        updateDraft(['chat', 'pageTitle'], event.target.value)
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Descrição da página">
+                  <Textarea
+                    value={appDraft.chat.pageDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['chat', 'pageDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <FieldBlock label="Título do assistente">
+                    <Input
+                      value={appDraft.chat.assistantTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['chat', 'assistantTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Status curto">
+                    <Input
+                      value={appDraft.chat.assistantStatusLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['chat', 'assistantStatusLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Nota do status">
+                    <Input
+                      value={appDraft.chat.assistantStatusNote}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['chat', 'assistantStatusNote'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Mensagem inicial da IA">
+                  <Textarea
+                    value={appDraft.chat.welcomeMessage}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['chat', 'welcomeMessage'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Título das respostas rápidas">
+                    <Input
+                      value={appDraft.chat.quickRepliesTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['chat', 'quickRepliesTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Placeholder do campo">
+                    <Input
+                      value={appDraft.chat.inputPlaceholder}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['chat', 'inputPlaceholder'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Descrição das respostas rápidas">
+                  <Textarea
+                    value={appDraft.chat.quickRepliesDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['chat', 'quickRepliesDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <FieldBlock label="Hint de estado inicial">
+                  <Textarea
+                    value={appDraft.chat.emptyStateHint}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['chat', 'emptyStateHint'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Botão de integrações">
+                    <Input
+                      value={appDraft.chat.integrationsButtonLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['chat', 'integrationsButtonLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título das integrações">
+                    <Input
+                      value={appDraft.chat.integrationsTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['chat', 'integrationsTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Descrição das integrações">
+                  <Textarea
+                    value={appDraft.chat.integrationsDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['chat', 'integrationsDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  {appDraft.chat.quickReplies.map((reply, index) => (
+                    <FieldBlock
+                      key={`chat-quick-reply-${index}`}
+                      label={`Resposta rápida ${index + 1}`}
+                    >
+                      <Input
+                        value={reply}
+                        onChange={(event) =>
+                          updateDraft(
+                            ['chat', 'quickReplies'],
+                            appDraft.chat.quickReplies.map(
+                              (currentReply, currentIndex) =>
+                                currentIndex === index
+                                  ? event.target.value
+                                  : currentReply
+                            )
+                          )
+                        }
+                      />
+                    </FieldBlock>
+                  ))}
+                </div>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <SwitchRow
+                    title="Mostrar integrações"
+                    description="Mantém o botão e o painel lateral de transparência técnica."
+                    checked={appDraft.chat.showIntegrations}
+                    onCheckedChange={(checked) =>
+                      updateDraft(['chat', 'showIntegrations'], checked)
+                    }
+                  />
+                  <SwitchRow
+                    title="Mostrar respostas rápidas"
+                    description="Mantém as sugestões iniciais disponíveis ao abrir a conversa."
+                    checked={appDraft.chat.showQuickReplies}
+                    onCheckedChange={(checked) =>
+                      updateDraft(['chat', 'showQuickReplies'], checked)
                     }
                   />
                 </div>

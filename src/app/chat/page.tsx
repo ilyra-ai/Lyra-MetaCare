@@ -26,13 +26,12 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50/50 dark:bg-gray-950 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex min-h-screen bg-[linear-gradient(180deg,hsl(var(--background)),hsl(var(--background))_45%,rgba(255,255,255,0.96))] font-[family-name:var(--font-geist-sans)]">
       <Sidebar />
       <div className="flex flex-col flex-1 min-w-0">
         <Header />
-        <main className="flex-1 flex items-center justify-center p-4 animate-in fade-in duration-500">
-          {/* Container que centraliza e define a largura máxima do chat */}
-          <div className="h-full w-full max-w-6xl">
+        <main className="flex flex-1 items-stretch justify-center p-4 animate-in fade-in duration-500 md:p-6">
+          <div className="h-full w-full max-w-[96rem]">
             {chatEnabled ? (
               <ChatAssistantContent />
             ) : (
@@ -44,7 +43,7 @@ export default function ChatPage() {
             )}
           </div>
         </main>
-        <div className="border-t border-gray-100 dark:border-gray-800">
+        <div className="border-t border-border/70">
           <MadeWithIlyra />
         </div>
       </div>

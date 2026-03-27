@@ -65,6 +65,7 @@ interface ChatInputProps {
   onSendMessage: (text: string) => void;
   disabled?: boolean;
   maxLength?: number;
+  placeholder?: string;
 }
 
 // ===== Defaults =====
@@ -76,6 +77,7 @@ function ChatInput({
   onSendMessage,
   disabled = false,
   maxLength = DEFAULT_MAX_LENGTH,
+  placeholder = 'Digite ou fale sua mensagem...',
 }: ChatInputProps) {
   const [text, setText] = useState('');
   const [isListening, setIsListening] = useState(false);
@@ -197,9 +199,7 @@ function ChatInput({
           <TextareaAutosize
             ref={inputRef}
             id={inputId}
-            placeholder={
-              isListening ? 'Escutando...' : 'Digite ou fale sua mensagem...'
-            }
+            placeholder={isListening ? 'Escutando...' : placeholder}
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={onKeyDown}

@@ -169,6 +169,16 @@ export const lyraCustomazeEditableSurfaceMap: Record<
         supportsVisibilityToggle: true,
       },
       {
+        key: 'chat',
+        label: 'Chat IA',
+        description:
+          'Conversa guiada, sugestões rápidas e transparência das integrações.',
+        scope: 'internal-page',
+        supportsChildren: true,
+        supportsReorder: false,
+        supportsVisibilityToggle: true,
+      },
+      {
         key: 'profile',
         label: 'Perfil',
         description: 'Textos-base e contexto pessoal do perfil.',

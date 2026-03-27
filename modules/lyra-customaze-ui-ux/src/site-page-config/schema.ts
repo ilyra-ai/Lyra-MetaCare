@@ -231,6 +231,25 @@ const appPageConfigSchema = z.object({
     showVoiceButton: z.boolean(),
     showAlertsButton: z.boolean(),
   }),
+  chat: z.object({
+    pageEyebrow: z.string().min(1),
+    pageTitle: z.string().min(1),
+    pageDescription: z.string().min(1),
+    assistantTitle: z.string().min(1),
+    assistantStatusLabel: z.string().min(1),
+    assistantStatusNote: z.string().min(1),
+    integrationsButtonLabel: z.string().min(1),
+    integrationsTitle: z.string().min(1),
+    integrationsDescription: z.string().min(1),
+    welcomeMessage: z.string().min(1),
+    quickRepliesTitle: z.string().min(1),
+    quickRepliesDescription: z.string().min(1),
+    inputPlaceholder: z.string().min(1),
+    emptyStateHint: z.string().min(1),
+    quickReplies: z.array(z.string().min(1)).min(1),
+    showIntegrations: z.boolean(),
+    showQuickReplies: z.boolean(),
+  }),
   profile: z.object({
     pageEyebrow: z.string().min(1),
     pageTitle: z.string().min(1),
@@ -909,6 +928,34 @@ const defaultAppPageConfig: AppPageConfig = {
     showEventFeed: true,
     showVoiceButton: true,
     showAlertsButton: true,
+  },
+  chat: {
+    pageEyebrow: 'conversa contextual',
+    pageTitle: 'Converse com a Lyra de um jeito claro, gentil e realmente útil',
+    pageDescription:
+      'O chat cruza biometria, agenda, contexto do perfil e sinais recentes para responder com mais profundidade, sem perder leveza visual.',
+    assistantTitle: 'Assistente Lyra',
+    assistantStatusLabel: 'online',
+    assistantStatusNote: 'responde em segundos com contexto vivo',
+    integrationsButtonLabel: 'Tecnologias vivas',
+    integrationsTitle: 'Camadas que sustentam a conversa',
+    integrationsDescription:
+      'Este painel mostra a base real que alimenta o assistente, para que a conversa continue transparente e ancorada em dados do projeto.',
+    welcomeMessage:
+      'Olá. Eu sou a Lyra e posso te ajudar com sono, energia, agenda, contexto astral e próximos passos com base nos dados reais disponíveis agora.',
+    quickRepliesTitle: 'Sugestões iniciais',
+    quickRepliesDescription:
+      'Use uma pergunta pronta para começar rápido ou escreva algo totalmente seu.',
+    inputPlaceholder: 'Digite ou grave sua mensagem para a Lyra...',
+    emptyStateHint:
+      'Quando a conversa começa, esta área prioriza clareza, foco e acolhimento sem poluição visual.',
+    quickReplies: [
+      'Como posso dormir melhor hoje?',
+      'Me mostra um resumo do meu ritmo recente.',
+      'Quero organizar meus próximos agendamentos.',
+    ],
+    showIntegrations: true,
+    showQuickReplies: true,
   },
   profile: {
     pageEyebrow: 'identidade pessoal',

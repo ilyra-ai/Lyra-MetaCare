@@ -1,28 +1,39 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { ChatBubble } from './ChatBubble';
-import { ChatInput } from './ChatInput';
-import { TypingIndicator } from './TypingIndicator';
-import { QuickReply } from './QuickReply';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Sparkles,
+  BookOpen,
   Brain,
+  Calendar,
   ChevronDown,
   Cpu,
-  Stethoscope,
   HeartPulse,
-  Calendar,
-  BookOpen,
+  Sparkles,
+  Waves,
 } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
-import { toast } from 'sonner';
+import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
+import { scaleRem } from '@/lib/site-page-config/runtime';
+import { cn } from '@/lib/utils';
+import { ChatBubble } from './ChatBubble';
+import { ChatInput } from './ChatInput';
+import { QuickReply } from './QuickReply';
+import { TypingIndicator } from './TypingIndicator';
 
 export interface Message {
   id: number;
@@ -30,57 +41,60 @@ export interface Message {
   sender: 'user' | 'ai';
 }
 
-const quickReplies = [
-  'Como posso melhorar meu sono?',
-  'Qual meu resumo de ontem?',
-  'Agendar consulta',
-];
+type IntegrationItem = {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+};
 
-const integrations = [
+const integrations: IntegrationItem[] = [
   {
     icon: Cpu,
     title: 'API local Next.js',
     description:
-      'Camada interna responsável por autenticação, CRUDs e orquestração do backend MySQL.',
-  },
-  {
-    icon: Stethoscope,
-    title: 'Motor clínico local',
-    description:
-      'Regras determinísticas e cálculo contextual sobre métricas recentes sem enviar dados sensíveis a terceiros.',
+      'Camada interna responsável pela autenticação, pelas rotas protegidas e pela orquestração do backend MySQL.',
   },
   {
     icon: HeartPulse,
-    title: 'Wearables via Bluetooth',
+    title: 'Contexto fisiológico vivo',
     description:
-      'Leitura local em tempo real para frequência cardíaca e eventos de monitoramento no dispositivo.',
+      'Métricas recentes, sinais do dia e leituras de monitoramento ajudam a compor respostas mais situadas.',
   },
   {
     icon: Brain,
-    title: 'Lyra Orchestrator',
+    title: 'Orquestração Lyra',
     description:
-      'Motor local que cruza métricas fisiológicas, perfil e astrologia computacional para respostas contextuais.',
+      'A conversa cruza IA, preferências, astrologia computacional e histórico recente de forma local e contextual.',
   },
   {
     icon: Calendar,
-    title: 'Agenda MySQL',
+    title: 'Agenda sincronizada',
     description:
-      'Persistência de profissionais e consultas diretamente no banco MySQL do projeto.',
+      'Consultas, profissionais e próximos compromissos ajudam a guiar respostas práticas dentro do fluxo do app.',
   },
   {
     icon: BookOpen,
-    title: 'Contexto biométrico',
+    title: 'Perfil e hábitos',
     description:
-      'Perfil, metas e última janela de métricas utilizados para personalizar a conversa em tempo real.',
+      'Dados de perfil, hábitos e preferências do usuário moldam a linguagem e a direção das orientações.',
+  },
+  {
+    icon: Waves,
+    title: 'Camada de ritmo diário',
+    description:
+      'Sono, energia e percepção de ritmo ajudam a priorizar respostas mais gentis e realistas.',
   },
 ];
 
 export function ChatAssistantContent() {
   const { db } = useAuth();
+  const { config: appConfig } = usePublicSitePageConfig('app');
+  const chatConfig = appConfig.chat;
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: 'Olá! Sou seu assistente de saúde. Como posso ajudar hoje?',
+      text: chatConfig.welcomeMessage,
       sender: 'ai',
     },
   ]);
@@ -89,6 +103,33 @@ export function ChatAssistantContent() {
   const [isNearBottom, setIsNearBottom] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMessages((current) => {
+      if (current.length !== 1 || current[0]?.sender !== 'ai') {
+        return current;
+      }
+
+      if (current[0].text === chatConfig.welcomeMessage) {
+        return current;
+      }
+
+      return [
+        {
+          ...current[0],
+          text: chatConfig.welcomeMessage,
+        },
+      ];
+    });
+  }, [chatConfig.welcomeMessage]);
+
+  const quickReplies = useMemo(
+    () =>
+      chatConfig.quickReplies
+        .filter((item) => item.trim().length > 0)
+        .slice(0, 6),
+    [chatConfig.quickReplies]
+  );
 
   const scrollToBottom = (smooth = true) => {
     messagesEndRef.current?.scrollIntoView({
@@ -100,11 +141,13 @@ export function ChatAssistantContent() {
     if (isNearBottom) {
       scrollToBottom();
     }
-  }, [messages, isTyping, isNearBottom]);
+  }, [isNearBottom, isTyping, messages]);
 
   useEffect(() => {
     const container = messagesContainerRef.current;
-    if (!container) return;
+    if (!container) {
+      return;
+    }
 
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
@@ -119,13 +162,16 @@ export function ChatAssistantContent() {
   }, []);
 
   const handleSendMessage = async (text: string) => {
-    if (!text.trim()) return;
+    if (!text.trim()) {
+      return;
+    }
 
     const newUserMessage: Message = {
       id: Date.now(),
       text,
       sender: 'user',
     };
+
     setMessages((prev) => [...prev, newUserMessage]);
     setIsTyping(true);
     setIsNearBottom(true);
@@ -147,9 +193,11 @@ export function ChatAssistantContent() {
         text: data.response,
         sender: 'ai',
       };
+
       setMessages((prev) => [...prev, newAiMessage]);
     } catch (error) {
       const errorMessage = (error as Error).message;
+
       toast.error('Erro ao contatar o assistente.', {
         description: errorMessage,
       });
@@ -159,6 +207,7 @@ export function ChatAssistantContent() {
         text: `Desculpe, ocorreu um erro ao processar sua solicitação: ${errorMessage}`,
         sender: 'ai',
       };
+
       setMessages((prev) => [...prev, errorAiMessage]);
     } finally {
       setIsTyping(false);
@@ -166,218 +215,317 @@ export function ChatAssistantContent() {
   };
 
   return (
-    <div className="relative flex flex-col h-full rounded-2xl overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 dark:from-gray-900 dark:via-gray-900 dark:to-violet-950 opacity-60"></div>
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.03)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
-
-      <div className="relative z-10 flex items-center justify-between px-6 py-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-violet-100/50 dark:border-violet-900/30">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500 rounded-2xl blur-md opacity-50 animate-pulse-slow"></div>
-            <div className="relative flex items-center justify-center w-10 h-10 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-purple-600 rounded-xl shadow-lg">
-              <Brain className="w-5 h-5 text-white" />
-            </div>
-            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full"></div>
-          </div>
-
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <h3 className="text-lg font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
-                Assistente de Saúde
-              </h3>
-              <Sparkles className="w-4 h-4 text-violet-500 animate-pulse" />
-            </div>
-            <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
-              <span className="flex items-center gap-1">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                Online
-              </span>
-              <span className="text-neutral-300 dark:text-neutral-600">•</span>
-              <span>Responde em segundos</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-auto px-3 py-1.5 bg-violet-50/80 dark:bg-violet-900/20 rounded-xl border-violet-100/50 dark:border-violet-800/30 hover:bg-violet-100/90"
-              >
-                <Cpu className="h-3.5 w-3.5 mr-2 text-violet-600 dark:text-violet-400" />
-                <span className="text-xs font-medium text-violet-700 dark:text-violet-300">
-                  Tecnologias
-                </span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80">
-              <div className="space-y-4">
-                <h4 className="font-medium leading-none">Integrações Ativas</h4>
-                <p className="text-sm text-muted-foreground">
-                  Este assistente é alimentado por uma combinação de tecnologias
-                  de ponta.
+    <section className="flex h-full flex-col gap-4">
+      <Card className="overflow-hidden border-border/70 bg-white/88 shadow-sm backdrop-blur-xl">
+        <CardHeader className="gap-4 border-b border-border/60 bg-[radial-gradient(circle_at_top_left,hsl(var(--cosmic)/0.10)_0%,transparent_38%),radial-gradient(circle_at_top_right,hsl(var(--primary)/0.14)_0%,transparent_44%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(249,248,252,0.92))]">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-[22px] bg-gradient-to-br from-cosmic/45 via-accent/20 to-primary/45 blur-xl" />
+                <div className="relative flex h-14 w-14 items-center justify-center rounded-[22px] border border-white/80 bg-[linear-gradient(135deg,hsl(var(--cosmic)),hsl(var(--primary)))] text-white shadow-cosmic">
+                  <Brain className="h-6 w-6" />
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <p
+                  className="text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground"
+                  style={{
+                    fontSize: scaleRem(0.68, appConfig.typography.navLabel),
+                  }}
+                >
+                  {chatConfig.pageEyebrow}
                 </p>
-                <div className="space-y-3">
-                  {integrations.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <div key={item.title} className="flex items-start gap-3">
-                        <Icon className="h-4 w-4 mt-1 text-violet-500 flex-shrink-0" />
+                <CardTitle
+                  className="text-2xl md:text-3xl"
+                  style={{
+                    fontSize: scaleRem(1.8, appConfig.typography.pageTitle),
+                  }}
+                >
+                  {chatConfig.pageTitle}
+                </CardTitle>
+                <CardDescription
+                  className="max-w-3xl leading-7"
+                  style={{
+                    fontSize: scaleRem(0.98, appConfig.typography.pageBody),
+                  }}
+                >
+                  {chatConfig.pageDescription}
+                </CardDescription>
+              </div>
+            </div>
+
+            {chatConfig.showIntegrations ? (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="rounded-full border-cosmic/20 bg-cosmic-light/50 px-4"
+                  >
+                    <Cpu className="text-cosmic" />
+                    {chatConfig.integrationsButtonLabel}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[22rem] border-border/70 bg-white/92 p-0 backdrop-blur-xl">
+                  <div className="border-b border-border/60 px-5 py-4">
+                    <h4 className="text-base font-semibold text-foreground">
+                      {chatConfig.integrationsTitle}
+                    </h4>
+                    <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                      {chatConfig.integrationsDescription}
+                    </p>
+                  </div>
+                  <div className="space-y-3 px-5 py-4">
+                    {integrations.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <div
+                          key={item.title}
+                          className="flex items-start gap-3"
+                        >
+                          <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-2xl bg-cosmic-light text-cosmic">
+                            <Icon className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">
+                              {item.title}
+                            </p>
+                            <p className="text-xs leading-6 text-muted-foreground">
+                              {item.description}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            ) : null}
+          </div>
+        </CardHeader>
+      </Card>
+
+      <div className="grid flex-1 gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
+        <Card className="relative flex min-h-[44rem] flex-col overflow-hidden border-border/70 bg-[radial-gradient(circle_at_top_left,hsl(var(--cosmic)/0.08)_0%,transparent_30%),radial-gradient(circle_at_top_right,hsl(var(--primary)/0.10)_0%,transparent_32%),linear-gradient(180deg,rgba(255,255,255,0.94),rgba(249,248,252,0.96))] shadow-sm backdrop-blur-xl">
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.04)_1px,transparent_1px)] bg-[size:22px_22px] opacity-40" />
+
+          <div className="relative z-10 flex items-center justify-between gap-4 border-b border-border/60 px-6 py-5">
+            <div className="flex items-center gap-3">
+              <div className="relative flex h-12 w-12 items-center justify-center rounded-[20px] bg-[linear-gradient(135deg,hsl(var(--cosmic)),hsl(var(--primary)))] text-white shadow-cosmic">
+                <Brain className="h-5 w-5" />
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-success text-[9px] font-bold text-white">
+                  •
+                </span>
+              </div>
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <h3
+                    className="font-semibold text-foreground"
+                    style={{
+                      fontSize: scaleRem(1.12, appConfig.typography.cardTitle),
+                    }}
+                  >
+                    {chatConfig.assistantTitle}
+                  </h3>
+                  <Sparkles className="h-4 w-4 text-cosmic" />
+                </div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <span className="h-2 w-2 rounded-full bg-success" />
+                    {chatConfig.assistantStatusLabel}
+                  </span>
+                  <span className="text-border">•</span>
+                  <span>{chatConfig.assistantStatusNote}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            ref={messagesContainerRef}
+            className="relative z-10 flex-1 overflow-y-auto px-4 py-5"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'rgba(139, 92, 246, 0.28) transparent',
+            }}
+          >
+            <div className="mx-auto flex max-w-4xl flex-col gap-6">
+              {messages.length === 1 ? (
+                <div className="rounded-[24px] border border-border/70 bg-white/84 p-5 shadow-sm">
+                  <p className="text-sm leading-7 text-muted-foreground">
+                    {chatConfig.emptyStateHint}
+                  </p>
+                </div>
+              ) : null}
+
+              {messages.map((msg, index) => (
+                <div
+                  key={msg.id}
+                  className="animate-in fade-in-50 slide-in-from-bottom-4"
+                  style={{
+                    animationDelay: `${index * 50}ms`,
+                    animationFillMode: 'backwards',
+                  }}
+                >
+                  <ChatBubble
+                    message={msg.text}
+                    isUser={msg.sender === 'user'}
+                  />
+                </div>
+              ))}
+
+              {isTyping ? (
+                <div className="animate-in fade-in-50 slide-in-from-bottom-4">
+                  <TypingIndicator />
+                </div>
+              ) : null}
+
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+
+          {showScrollButton ? (
+            <button
+              onClick={() => {
+                scrollToBottom();
+                setIsNearBottom(true);
+              }}
+              className="absolute bottom-32 right-6 z-20 flex h-12 w-12 items-center justify-center rounded-full border border-cosmic/20 bg-white/92 shadow-xl transition-all duration-300 hover:scale-110"
+              aria-label="Voltar para o final da conversa"
+            >
+              <ChevronDown className="h-5 w-5 text-cosmic" />
+            </button>
+          ) : null}
+
+          <div className="relative z-10 border-t border-border/60 bg-white/88 px-4 py-4 backdrop-blur-xl">
+            {chatConfig.showQuickReplies && messages.length <= 2 ? (
+              <div className="mb-4 space-y-3">
+                <div className="flex flex-col gap-1">
+                  <p
+                    className="text-sm font-semibold text-foreground"
+                    style={{
+                      fontSize: scaleRem(0.95, appConfig.typography.cardTitle),
+                    }}
+                  >
+                    {chatConfig.quickRepliesTitle}
+                  </p>
+                  <p
+                    className="text-xs leading-6 text-muted-foreground"
+                    style={{
+                      fontSize: scaleRem(0.8, appConfig.typography.cardBody),
+                    }}
+                  >
+                    {chatConfig.quickRepliesDescription}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {quickReplies.map((reply, index) => (
+                    <div
+                      key={reply}
+                      className="animate-in fade-in-50 slide-in-from-left-4"
+                      style={{
+                        animationDelay: `${index * 90}ms`,
+                        animationFillMode: 'backwards',
+                      }}
+                    >
+                      <QuickReply text={reply} onSelect={handleSendMessage} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            <ChatInput
+              onSendMessage={handleSendMessage}
+              disabled={isTyping}
+              placeholder={chatConfig.inputPlaceholder}
+            />
+          </div>
+        </Card>
+
+        <aside className="flex flex-col gap-4">
+          <Card className="border-border/70 bg-white/88 shadow-sm">
+            <CardHeader className="gap-2">
+              <CardTitle
+                className="text-lg"
+                style={{
+                  fontSize: scaleRem(1.02, appConfig.typography.cardTitle),
+                }}
+              >
+                {chatConfig.quickRepliesTitle}
+              </CardTitle>
+              <CardDescription
+                style={{
+                  fontSize: scaleRem(0.84, appConfig.typography.cardBody),
+                }}
+              >
+                {chatConfig.quickRepliesDescription}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-2">
+              {quickReplies.map((reply) => (
+                <button
+                  key={reply}
+                  type="button"
+                  onClick={() => void handleSendMessage(reply)}
+                  className={cn(
+                    'rounded-[18px] border border-border/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(249,248,252,0.96))] px-4 py-3 text-left text-sm text-foreground transition hover:border-cosmic/25 hover:bg-cosmic-light/40'
+                  )}
+                >
+                  {reply}
+                </button>
+              ))}
+            </CardContent>
+          </Card>
+
+          {chatConfig.showIntegrations ? (
+            <Card className="border-border/70 bg-white/88 shadow-sm">
+              <CardHeader className="gap-2">
+                <CardTitle
+                  className="text-lg"
+                  style={{
+                    fontSize: scaleRem(1.02, appConfig.typography.cardTitle),
+                  }}
+                >
+                  {chatConfig.integrationsTitle}
+                </CardTitle>
+                <CardDescription
+                  style={{
+                    fontSize: scaleRem(0.84, appConfig.typography.cardBody),
+                  }}
+                >
+                  {chatConfig.integrationsDescription}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {integrations.slice(0, 4).map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <div
+                      key={item.title}
+                      className="rounded-[20px] border border-border/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(249,248,252,0.94))] p-4"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                          <Icon className="h-4 w-4" />
+                        </div>
                         <div>
-                          <p className="text-sm font-semibold">{item.title}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-sm font-semibold text-foreground">
+                            {item.title}
+                          </p>
+                          <p className="mt-1 text-xs leading-6 text-muted-foreground">
                             {item.description}
                           </p>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          ) : null}
+        </aside>
       </div>
-
-      <div
-        ref={messagesContainerRef}
-        className="relative flex-1 overflow-y-auto scroll-smooth"
-        style={{
-          scrollbarWidth: 'thin',
-          scrollbarColor: 'rgba(139, 92, 246, 0.3) transparent',
-        }}
-      >
-        <div className="max-w-4xl mx-auto p-6 space-y-6">
-          {messages.map((msg, index) => (
-            <div
-              key={msg.id}
-              className="animate-in fade-in-50 slide-in-from-bottom-4"
-              style={{
-                animationDelay: `${index * 50}ms`,
-                animationFillMode: 'backwards',
-              }}
-            >
-              <ChatBubble message={msg.text} isUser={msg.sender === 'user'} />
-            </div>
-          ))}
-
-          {isTyping && (
-            <div className="animate-in fade-in-50 slide-in-from-bottom-4">
-              <TypingIndicator />
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
-        </div>
-      </div>
-
-      {showScrollButton && (
-        <button
-          onClick={() => {
-            scrollToBottom();
-            setIsNearBottom(true);
-          }}
-          className="absolute bottom-32 right-6 z-20 flex items-center justify-center w-12 h-12 bg-white dark:bg-gray-800 rounded-full shadow-xl border border-violet-200 dark:border-violet-800 hover:scale-110 transition-all duration-300 group animate-bounce-subtle"
-        >
-          <ChevronDown className="w-5 h-5 text-violet-600 dark:text-violet-400 group-hover:translate-y-0.5 transition-transform" />
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 opacity-0 group-hover:opacity-20 blur-md transition-opacity"></div>
-        </button>
-      )}
-
-      <div className="relative z-10 p-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-t border-violet-100/50 dark:border-violet-900/30">
-        {messages.length <= 2 && (
-          <div className="mb-3 animate-in fade-in-50 slide-in-from-bottom-2">
-            <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {quickReplies.map((reply, index) => (
-                <div
-                  key={reply}
-                  className="animate-in fade-in-50 slide-in-from-left-4"
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                    animationFillMode: 'backwards',
-                  }}
-                >
-                  <QuickReply text={reply} onSelect={handleSendMessage} />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <ChatInput onSendMessage={handleSendMessage} disabled={isTyping} />
-      </div>
-
-      <style jsx>{`
-        @keyframes pulse-slow {
-          0%,
-          100% {
-            opacity: 0.5;
-          }
-          50% {
-            opacity: 0.8;
-          }
-        }
-
-        @keyframes bounce-subtle {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-4px);
-          }
-        }
-
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        .animate-pulse-slow {
-          animation: pulse-slow 3s ease-in-out infinite;
-        }
-
-        .animate-bounce-subtle {
-          animation: bounce-subtle 2s ease-in-out infinite;
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out;
-        }
-
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-
-        /* Custom scrollbar */
-        *::-webkit-scrollbar {
-          width: 6px;
-        }
-
-        *::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        *::-webkit-scrollbar-thumb {
-          background: rgba(139, 92, 246, 0.3);
-          border-radius: 10px;
-        }
-
-        *::-webkit-scrollbar-thumb:hover {
-          background: rgba(139, 92, 246, 0.5);
-        }
-      `}</style>
-    </div>
+    </section>
   );
 }
