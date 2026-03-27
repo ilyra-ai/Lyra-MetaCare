@@ -982,7 +982,8 @@ const defaultAppPageConfig: AppPageConfig = {
   },
   connect: {
     pageEyebrow: 'conexao de sinais reais',
-    pageTitle: 'Conecte wearables e leituras locais com uma experiência mais clara',
+    pageTitle:
+      'Conecte wearables e leituras locais com uma experiência mais clara',
     pageDescription:
       'Este módulo organiza a entrada de sinais bluetooth de forma elegante, explicando estado, compatibilidade e próximos passos sem ruído visual.',
     cardTitle: 'Conexão real por Bluetooth',

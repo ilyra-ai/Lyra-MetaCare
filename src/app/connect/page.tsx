@@ -63,20 +63,20 @@ export default function DataConnectionPage() {
                 {appConfig.connect.pageDescription}
               </p>
             </div>
-          {wearableEnabled ? (
+            {wearableEnabled ? (
               <WearableConnection
                 config={appConfig.connect}
                 typography={appConfig.typography}
               />
-          ) : (
-            <PlanUpgradeNotice
-              currentPlanKey={subscription?.plan.key ?? 'free'}
-              title="Conexão Bluetooth indisponível"
-              description="Seu plano atual não inclui a camada de conexão com wearables via Bluetooth. O entitlement é aplicado de forma real na matriz de capacidades."
-              showAction
-              preferredPlanKey="meta"
-            />
-          )}
+            ) : (
+              <PlanUpgradeNotice
+                currentPlanKey={subscription?.plan.key ?? 'free'}
+                title="Conexão Bluetooth indisponível"
+                description="Seu plano atual não inclui a camada de conexão com wearables via Bluetooth. O entitlement é aplicado de forma real na matriz de capacidades."
+                showAction
+                preferredPlanKey="meta"
+              />
+            )}
           </section>
         </main>
         <MadeWithIlyra />

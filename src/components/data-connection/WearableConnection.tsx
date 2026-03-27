@@ -205,9 +205,7 @@ export function WearableConnection({
         return (
           <div className="text-center space-y-4">
             <Watch className="h-16 w-16 text-gray-400 mx-auto" />
-            <p className="text-muted-foreground">
-              {config.idleDescription}
-            </p>
+            <p className="text-muted-foreground">{config.idleDescription}</p>
             {bluetoothSupported === false ? (
               <Alert className="border-amber-500/50 bg-amber-50 text-left">
                 <XCircle className="h-4 w-4 text-amber-600" />

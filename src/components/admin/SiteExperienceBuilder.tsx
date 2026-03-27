@@ -658,7 +658,9 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
                 <p>{config.connect.idleTitle}</p>
                 <p>{config.connect.connectedAlertTitle}</p>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="info">{config.connect.connectButtonLabel}</Badge>
+                  <Badge variant="info">
+                    {config.connect.connectButtonLabel}
+                  </Badge>
                   <Badge variant="success">
                     {config.connect.connectedTitle}
                   </Badge>
@@ -3466,7 +3468,8 @@ export function SiteExperienceBuilder() {
               <CardHeader>
                 <CardTitle className="text-base">Dispositivos</CardTitle>
                 <CardDescription>
-                  Ajuste a linguagem, os estados da conexão Bluetooth e a explicação da compatibilidade do navegador.
+                  Ajuste a linguagem, os estados da conexão Bluetooth e a
+                  explicação da compatibilidade do navegador.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -3486,7 +3489,10 @@ export function SiteExperienceBuilder() {
                     <Input
                       value={appDraft.connect.pageTitle}
                       onChange={(event) =>
-                        updateDraft(['connect', 'pageTitle'], event.target.value)
+                        updateDraft(
+                          ['connect', 'pageTitle'],
+                          event.target.value
+                        )
                       }
                     />
                   </FieldBlock>
@@ -3507,7 +3513,10 @@ export function SiteExperienceBuilder() {
                     <Input
                       value={appDraft.connect.cardTitle}
                       onChange={(event) =>
-                        updateDraft(['connect', 'cardTitle'], event.target.value)
+                        updateDraft(
+                          ['connect', 'cardTitle'],
+                          event.target.value
+                        )
                       }
                     />
                   </FieldBlock>
@@ -3528,7 +3537,10 @@ export function SiteExperienceBuilder() {
                     <Input
                       value={appDraft.connect.idleTitle}
                       onChange={(event) =>
-                        updateDraft(['connect', 'idleTitle'], event.target.value)
+                        updateDraft(
+                          ['connect', 'idleTitle'],
+                          event.target.value
+                        )
                       }
                     />
                   </FieldBlock>

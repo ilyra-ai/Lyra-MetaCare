@@ -168,29 +168,29 @@ export const lyraCustomazeEditableSurfaceMap: Record<
         supportsReorder: false,
         supportsVisibilityToggle: true,
       },
-        {
-          key: 'chat',
-          label: 'Chat IA',
-          description:
-            'Conversa guiada, sugestões rápidas e transparência das integrações.',
-          scope: 'internal-page',
-          supportsChildren: true,
-          supportsReorder: false,
-          supportsVisibilityToggle: true,
-        },
-        {
-          key: 'connect',
-          label: 'Dispositivos',
-          description:
-            'Conexão bluetooth, compatibilidade do navegador e estado operacional do wearable.',
-          scope: 'internal-page',
-          supportsChildren: true,
-          supportsReorder: false,
-          supportsVisibilityToggle: true,
-        },
-        {
-          key: 'profile',
-          label: 'Perfil',
+      {
+        key: 'chat',
+        label: 'Chat IA',
+        description:
+          'Conversa guiada, sugestões rápidas e transparência das integrações.',
+        scope: 'internal-page',
+        supportsChildren: true,
+        supportsReorder: false,
+        supportsVisibilityToggle: true,
+      },
+      {
+        key: 'connect',
+        label: 'Dispositivos',
+        description:
+          'Conexão bluetooth, compatibilidade do navegador e estado operacional do wearable.',
+        scope: 'internal-page',
+        supportsChildren: true,
+        supportsReorder: false,
+        supportsVisibilityToggle: true,
+      },
+      {
+        key: 'profile',
+        label: 'Perfil',
         description: 'Textos-base e contexto pessoal do perfil.',
         scope: 'internal-page',
         supportsChildren: false,
