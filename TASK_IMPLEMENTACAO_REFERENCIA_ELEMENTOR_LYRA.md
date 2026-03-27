@@ -11,6 +11,23 @@ Status geral: planejamento estruturado, sem execucao completa ainda
 
 Estruturar a implementacao, dentro da Lyra MetaCare, de um construtor administrativo inspirado nas capacidades reais identificadas no Elementor, respeitando integralmente a stack atual do projeto, sem adicionar dependencias proibidas, sem simulacoes, sem placeholders funcionais, sem hardcode indevido e com persistencia real em banco de dados.
 
+## Progresso real mais recente
+
+- [x] `AppPageConfig` expandido com dominio real de `dashboard`.
+- [x] Home principal (`src/app/page.tsx`) conectada ao `page-config/app.dashboard`.
+- [x] `Dashboard` principal conectado ao `page-config/app.dashboard` com consumo real de textos publicados.
+- [x] `SiteExperienceBuilder` ampliado com:
+  - preview administrativo do `dashboard`
+  - painel guiado de edicao do `dashboard`
+- [x] Publicacao administrativa real validada em `2026-03-27 00:08:15`.
+- [x] Validacao em navegador real confirmou:
+  - home exibindo `Painel astral vivo`
+  - dashboard exibindo `Seu painel principal agora responde ao builder`
+  - dashboard exibindo `Semana editável com ritmo, contexto e clareza`
+  - dashboard exibindo `Camadas profundas sob seu comando`
+  - `admin/page-builder` exibindo a secao `Dashboard` no contexto `App interno`
+  - preview administrativo refletindo os textos publicados do `dashboard`
+
 ## Auditoria real da pasta ELEMENTOR
 
 ### Inventario local auditado

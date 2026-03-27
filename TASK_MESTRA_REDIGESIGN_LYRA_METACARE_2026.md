@@ -101,6 +101,9 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] `src/lib/site-page-config/service.ts` passou a consumir utilitarios genericos de armazenamento vindos do modulo reutilizavel.
 - [x] `page-config/app` passou a ser consumido de forma real em `sidebar`, `header`, `mobile sidebar`, `appointments`, `monitoring` e `profile`.
 - [x] Publicacao administrativa real do `page-config/app` validada com reflexo imediato no navegador.
+- [x] `page-config/app.dashboard` passou a ser consumido de forma real na home principal e no `dashboard`.
+- [x] `admin/page-builder` passou a expor edicao guiada real do `dashboard` no contexto `App interno`.
+- [x] Publicacao administrativa real do `dashboard` validada com reflexo imediato na home, no dashboard e no preview do builder.
 - [~] Varredura completa de menus, dropdowns, CRUDs, onboarding e configuracoes ainda em execucao.
 
 ## O que ja foi concluido de forma real
@@ -118,6 +121,13 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] `src/components/layout/navigation.ts`
 - [x] `src/components/layout/sidebar.tsx`
 - [x] `src/components/layout/SidebarLink.tsx`
+
+## Log de progresso recente
+
+- 2026-03-27 00:08:15
+  - publicacao real do `page-config/app` executada com autenticacao administrativa
+  - novos campos de `dashboard` publicados no banco
+  - reflexo validado em navegador real na home e no `admin/page-builder`
 - [x] `src/components/layout/header.tsx`
 - [x] `src/components/layout/MobileSidebar.tsx`
 - [x] `src/components/SplashScreen.tsx`
