@@ -162,7 +162,8 @@ export const lyraCustomazeEditableSurfaceMap: Record<
       {
         key: 'aiPlan',
         label: 'Plano de IA',
-        description: 'Hero editorial, contexto vivo e empty state da orquestração personalizada.',
+        description:
+          'Hero editorial, contexto vivo e empty state da orquestração personalizada.',
         scope: 'internal-page',
         supportsChildren: true,
         supportsReorder: false,

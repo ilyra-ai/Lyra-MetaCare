@@ -449,9 +449,7 @@ export function AIPlanContent() {
                       fontSize: scaleRem(1, appConfig.typography.pageBody),
                     }}
                   >
-                    {plan
-                      ? plan.summary
-                      : planConfig.heroEmptyDescription}
+                    {plan ? plan.summary : planConfig.heroEmptyDescription}
                   </CardDescription>
                 </div>
               </div>

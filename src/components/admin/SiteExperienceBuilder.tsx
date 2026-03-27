@@ -3142,7 +3142,8 @@ export function SiteExperienceBuilder() {
               <CardHeader>
                 <CardTitle className="text-base">Plano de IA</CardTitle>
                 <CardDescription>
-                  Ajuste a camada editorial, os rótulos de contexto e o empty state do plano personalizado.
+                  Ajuste a camada editorial, os rótulos de contexto e o empty
+                  state do plano personalizado.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
