@@ -377,6 +377,11 @@ npm run check:types
 - 2026-03-27 36: a causa raiz do travamento na validacao HTTP foi isolada na diferenca entre `127.0.0.1` e `localhost`; a instancia local desta etapa responde em `http://localhost:3000`, e a validacao administrativa passou a usar essa origem.
 - 2026-03-27 37: login administrativo, `PUT` de rascunho e `POST` de publish em `/api/admin/page-config/app` foram executados com sucesso para o bloco `chat`.
 - 2026-03-27 38: navegador real autenticado confirmou o reflexo do bloco publicado em `/admin/page-builder` e `/chat`, incluindo os textos `Chat Lyra publicado pelo builder com conversa mais clara e elegante`, `Perguntas iniciais editáveis` e `Base operacional da conversa`.
+- 2026-03-27 39: `page-config/app` foi expandido com o dominio real `connect`, cobrindo linguagem editorial da pagina, estados de bluetooth, mensagens de compatibilidade, sucesso, erro e botoes do fluxo de conexao.
+- 2026-03-27 40: `admin/page-builder` passou a expor edicao guiada real do modulo `Dispositivos` dentro de `App interno`, com preview administrativo refletindo o bloco publicado.
+- 2026-03-27 41: `src/app/connect/page.tsx` e `src/components/data-connection/WearableConnection.tsx` foram conectados ao `page-config/app.connect`, deixando a tela de wearables configuravel pelo builder.
+- 2026-03-27 42: publicacao administrativa real do bloco `connect` foi executada com sucesso na API de `page-config/app`.
+- 2026-03-27 43: navegador real autenticado confirmou o reflexo do bloco `connect` em `/connect` e no preview do `App interno`, incluindo os textos `Conexão Lyra publicada pelo builder para wearables e bluetooth`, `Painel vivo de conexão bluetooth` e `Fluxo biométrico em recepção`.
 
 ## Politica obrigatoria de commit e push
 

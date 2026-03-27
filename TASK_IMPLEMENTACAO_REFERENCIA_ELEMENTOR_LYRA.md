@@ -905,4 +905,9 @@ npm run check:types
 - [x] Causa raiz do travamento na validacao HTTP identificada: a instancia responde em `http://localhost:3000`, enquanto `http://127.0.0.1:3000` expirava neste ambiente.
 - [x] Publicacao administrativa real do `chat` validada com login administrativo, `PUT` real em `/api/admin/page-config/app` e `POST` real de publish.
 - [x] Navegador real confirmou reflexo publicado em `/admin/page-builder` e `/chat` com textos editados do bloco `chat`.
+- [x] Dominio `connect` adicionado ao `page-config/app` com schema real para estados de bluetooth, compatibilidade, conexao, erro e sucesso.
+- [x] `admin/page-builder` passou a expor edicao guiada real do modulo `Dispositivos` no contexto `App interno`, incluindo estados de conexao e preview administrativo.
+- [x] `src/app/connect/page.tsx` e `src/components/data-connection/WearableConnection.tsx` passaram a consumir `page-config/app.connect` de forma real no frontend autenticado.
+- [x] Publicacao administrativa real do `connect` validada com login administrativo, `PUT` real em `/api/admin/page-config/app` e `POST` real de publish.
+- [x] Navegador real confirmou reflexo publicado em `/connect` e no preview administrativo do `App interno` com textos editados do bloco `Dispositivos`.
 - [ ] Implementacao completa desta task ainda segue em andamento.
