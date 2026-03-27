@@ -382,6 +382,7 @@ npm run check:types
 - 2026-03-27 41: `src/app/connect/page.tsx` e `src/components/data-connection/WearableConnection.tsx` foram conectados ao `page-config/app.connect`, deixando a tela de wearables configuravel pelo builder.
 - 2026-03-27 42: publicacao administrativa real do bloco `connect` foi executada com sucesso na API de `page-config/app`.
 - 2026-03-27 43: navegador real autenticado confirmou o reflexo do bloco `connect` em `/connect` e no preview do `App interno`, incluindo os textos `Conexão Lyra publicada pelo builder para wearables e bluetooth`, `Painel vivo de conexão bluetooth` e `Fluxo biométrico em recepção`.
+- 2026-03-27 44: manual completo `MANUAL_COMPLETO_LYRA_CUSTOMAZE_UI_UX.md` criado na raiz do projeto, documentando instalacao, configuracao, operacao, persistencia, publicacao e troubleshooting do modulo para publico leigo em nivel premium.
 
 ## Politica obrigatoria de commit e push
 

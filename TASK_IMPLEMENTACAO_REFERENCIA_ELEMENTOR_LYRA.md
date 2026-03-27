@@ -910,4 +910,5 @@ npm run check:types
 - [x] `src/app/connect/page.tsx` e `src/components/data-connection/WearableConnection.tsx` passaram a consumir `page-config/app.connect` de forma real no frontend autenticado.
 - [x] Publicacao administrativa real do `connect` validada com login administrativo, `PUT` real em `/api/admin/page-config/app` e `POST` real de publish.
 - [x] Navegador real confirmou reflexo publicado em `/connect` e no preview administrativo do `App interno` com textos editados do bloco `Dispositivos`.
+- [x] Manual completo `MANUAL_COMPLETO_LYRA_CUSTOMAZE_UI_UX.md` criado na raiz, com orientacoes de instalacao, configuracao, uso administrativo, persistencia, publicacao e resolucao de problemas para publico leigo.
 - [ ] Implementacao completa desta task ainda segue em andamento.
