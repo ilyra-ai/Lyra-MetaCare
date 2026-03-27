@@ -571,6 +571,31 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
             <Card className="border-border/70 bg-white/88 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg">
+                  {config.aiPlan.pageTitle}
+                </CardTitle>
+                <CardDescription>
+                  {config.aiPlan.pageDescription}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <p>{config.aiPlan.heroReadyTitle}</p>
+                <p>{config.aiPlan.liveContextTitleFallback}</p>
+                <p>{config.aiPlan.persistenceTitle}</p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="cosmic">{config.aiPlan.heroBadge}</Badge>
+                  <Badge variant="default">
+                    {config.aiPlan.generateButtonLabel}
+                  </Badge>
+                  <Badge variant="info">
+                    {config.aiPlan.regenerateButtonLabel}
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/70 bg-white/88 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg">
                   {config.monitoring.pageTitle}
                 </CardTitle>
                 <CardDescription>
@@ -3109,6 +3134,302 @@ export function SiteExperienceBuilder() {
                       updateDraft(['appointments', 'showCalendar'], checked)
                     }
                   />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/70 bg-white/84">
+              <CardHeader>
+                <CardTitle className="text-base">Plano de IA</CardTitle>
+                <CardDescription>
+                  Ajuste a camada editorial, os rótulos de contexto e o empty state do plano personalizado.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Eyebrow da página">
+                    <Input
+                      value={appDraft.aiPlan.pageEyebrow}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'pageEyebrow'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título da página">
+                    <Input
+                      value={appDraft.aiPlan.pageTitle}
+                      onChange={(event) =>
+                        updateDraft(['aiPlan', 'pageTitle'], event.target.value)
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Descrição da página">
+                  <Textarea
+                    value={appDraft.aiPlan.pageDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['aiPlan', 'pageDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Badge principal">
+                    <Input
+                      value={appDraft.aiPlan.heroBadge}
+                      onChange={(event) =>
+                        updateDraft(['aiPlan', 'heroBadge'], event.target.value)
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título com plano pronto">
+                    <Input
+                      value={appDraft.aiPlan.heroReadyTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'heroReadyTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Título sem plano gerado">
+                  <Input
+                    value={appDraft.aiPlan.heroEmptyTitle}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['aiPlan', 'heroEmptyTitle'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <FieldBlock label="Descrição sem plano gerado">
+                  <Textarea
+                    value={appDraft.aiPlan.heroEmptyDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['aiPlan', 'heroEmptyDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Botão gerar">
+                    <Input
+                      value={appDraft.aiPlan.generateButtonLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'generateButtonLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Botão regenerar">
+                    <Input
+                      value={appDraft.aiPlan.regenerateButtonLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'regenerateButtonLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Botão gerando">
+                    <Input
+                      value={appDraft.aiPlan.generatingButtonLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'generatingButtonLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Botão sincronizando">
+                    <Input
+                      value={appDraft.aiPlan.syncingButtonLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'syncingButtonLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <FieldBlock label="Label pilares">
+                    <Input
+                      value={appDraft.aiPlan.pillarsCountLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'pillarsCountLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Label recomendações">
+                    <Input
+                      value={appDraft.aiPlan.recommendationsLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'recommendationsLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Label sinais">
+                    <Input
+                      value={appDraft.aiPlan.signalsLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'signalsLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Badge do contexto vivo">
+                    <Input
+                      value={appDraft.aiPlan.liveContextBadge}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'liveContextBadge'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título fallback do contexto">
+                    <Input
+                      value={appDraft.aiPlan.liveContextTitleFallback}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'liveContextTitleFallback'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Descrição fallback do contexto">
+                  <Textarea
+                    value={appDraft.aiPlan.liveContextDescriptionFallback}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['aiPlan', 'liveContextDescriptionFallback'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Título da persistência">
+                    <Input
+                      value={appDraft.aiPlan.persistenceTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'persistenceTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Descrição da persistência">
+                    <Textarea
+                      value={appDraft.aiPlan.persistenceDescription}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'persistenceDescription'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <FieldBlock label="Card local/IA - título">
+                    <Input
+                      value={appDraft.aiPlan.emptyLocalAiTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'emptyLocalAiTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Card astro - título">
+                    <Input
+                      value={appDraft.aiPlan.emptyAstroTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'emptyAstroTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Card persistência - título">
+                    <Input
+                      value={appDraft.aiPlan.emptyPersistenceTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'emptyPersistenceTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <FieldBlock label="Card local/IA - descrição">
+                    <Textarea
+                      value={appDraft.aiPlan.emptyLocalAiDescription}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'emptyLocalAiDescription'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Card astro - descrição">
+                    <Textarea
+                      value={appDraft.aiPlan.emptyAstroDescription}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'emptyAstroDescription'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Card persistência - descrição">
+                    <Textarea
+                      value={appDraft.aiPlan.emptyPersistenceDescription}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['aiPlan', 'emptyPersistenceDescription'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
                 </div>
               </CardContent>
             </Card>

@@ -7,11 +7,14 @@ import { useAuth } from '@/context/AuthContext';
 import { SplashScreen } from '@/components/SplashScreen';
 import { AIPlanContent } from '@/components/ai-plan/AIPlanContent';
 import { usePlanFeatureAccess } from '@/hooks/use-plan-feature-access';
+import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
+import { scaleRem } from '@/lib/site-page-config/runtime';
 import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
 import { HealthOrchestratorProvider } from '@/context/HealthOrchestratorContext';
 
 export default function AIPlanPage() {
   const { session } = useAuth();
+  const { config: appConfig } = usePublicSitePageConfig('app');
   const {
     subscription,
     enabled: planEnabled,
@@ -38,17 +41,30 @@ export default function AIPlanPage() {
           className="flex-1 space-y-8 px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-8"
         >
           <section className="flex flex-col gap-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              Orquestração guiada
+            <p
+              className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground"
+              style={{
+                fontSize: scaleRem(0.68, appConfig.typography.navLabel),
+              }}
+            >
+              {appConfig.aiPlan.pageEyebrow}
             </p>
             <div className="space-y-2">
-              <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-                Seu plano de IA
+              <h1
+                className="font-display font-semibold tracking-tight text-foreground md:text-4xl"
+                style={{
+                  fontSize: scaleRem(2, appConfig.typography.pageTitle),
+                }}
+              >
+                {appConfig.aiPlan.pageTitle}
               </h1>
-              <p className="max-w-3xl text-sm leading-7 text-muted-foreground md:text-base">
-                Protocolos personalizados de foco, ritmo, nutrição e
-                recuperação, com cruzamento real entre astrologia, biometria e
-                persistência local.
+              <p
+                className="max-w-3xl text-sm leading-7 text-muted-foreground md:text-base"
+                style={{
+                  fontSize: scaleRem(0.98, appConfig.typography.pageBody),
+                }}
+              >
+                {appConfig.aiPlan.pageDescription}
               </p>
             </div>
           </section>

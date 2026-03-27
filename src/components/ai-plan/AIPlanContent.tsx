@@ -37,6 +37,8 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
+import { scaleRem } from '@/lib/site-page-config/runtime';
 import { cn } from '@/lib/utils';
 
 interface PlanItemData {
@@ -289,6 +291,8 @@ function PillarPanel({
 export function AIPlanContent() {
   const { db, session } = useAuth();
   const { vitals, astrology, isSyncing, syncError } = useHealthOrchestrator();
+  const { config: appConfig } = usePublicSitePageConfig('app');
+  const planConfig = appConfig.aiPlan;
   const [plan, setPlan] = useState<PlanData | null>(null);
   const [loading, setLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -427,19 +431,27 @@ export function AIPlanContent() {
           <CardHeader className="relative gap-5">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="space-y-4">
-                <Badge variant="cosmic">
-                  Orquestração local com astrologia + IA
-                </Badge>
+                <Badge variant="cosmic">{planConfig.heroBadge}</Badge>
                 <div className="space-y-3">
-                  <CardTitle className="text-3xl md:text-4xl">
+                  <CardTitle
+                    className="text-3xl md:text-4xl"
+                    style={{
+                      fontSize: scaleRem(2, appConfig.typography.pageTitle),
+                    }}
+                  >
                     {plan
-                      ? 'Seu plano do dia está pronto.'
-                      : 'Vamos desenhar seu próximo passo com elegância e contexto real.'}
+                      ? planConfig.heroReadyTitle
+                      : planConfig.heroEmptyTitle}
                   </CardTitle>
-                  <CardDescription className="max-w-3xl text-base leading-7">
+                  <CardDescription
+                    className="max-w-3xl text-base leading-7"
+                    style={{
+                      fontSize: scaleRem(1, appConfig.typography.pageBody),
+                    }}
+                  >
                     {plan
                       ? plan.summary
-                      : 'Esta experiência cruza os sinais realmente disponíveis no dispositivo e no banco com o céu atual, gerando um protocolo utilizável e persistido na sua base principal.'}
+                      : planConfig.heroEmptyDescription}
                   </CardDescription>
                 </div>
               </div>
@@ -454,17 +466,19 @@ export function AIPlanContent() {
                 {isGenerating ? (
                   <>
                     <Loader2 className="animate-spin" />
-                    Orquestrando agora
+                    {planConfig.generatingButtonLabel}
                   </>
                 ) : isSyncing ? (
                   <>
                     <RefreshCw className="animate-spin" />
-                    Sincronizando sinais
+                    {planConfig.syncingButtonLabel}
                   </>
                 ) : (
                   <>
                     <Sparkles />
-                    {plan ? 'Regenerar plano' : 'Gerar plano real'}
+                    {plan
+                      ? planConfig.regenerateButtonLabel
+                      : planConfig.generateButtonLabel}
                   </>
                 )}
               </Button>
@@ -474,7 +488,7 @@ export function AIPlanContent() {
           <CardContent className="relative grid gap-4 md:grid-cols-3">
             <div className="rounded-[24px] border border-white/80 bg-white/78 p-4 shadow-sm backdrop-blur-md">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                Pilares ativos
+                {planConfig.pillarsCountLabel}
               </p>
               <p className="mt-3 font-mono text-4xl font-semibold tracking-[-0.04em] text-foreground">
                 {plan ? pillarEntries.length : 0}
@@ -486,7 +500,7 @@ export function AIPlanContent() {
 
             <div className="rounded-[24px] border border-white/80 bg-white/78 p-4 shadow-sm backdrop-blur-md">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                Recomendações reais
+                {planConfig.recommendationsLabel}
               </p>
               <p className="mt-3 font-mono text-4xl font-semibold tracking-[-0.04em] text-foreground">
                 {plan ? totalRecommendations : 0}
@@ -498,7 +512,7 @@ export function AIPlanContent() {
 
             <div className="rounded-[24px] border border-white/80 bg-white/78 p-4 shadow-sm backdrop-blur-md">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                Sinais disponíveis
+                {planConfig.signalsLabel}
               </p>
               <p className="mt-3 font-mono text-4xl font-semibold tracking-[-0.04em] text-foreground">
                 {availableSignals}/5
@@ -512,7 +526,7 @@ export function AIPlanContent() {
 
         <Card className="border-cosmic/12 bg-[radial-gradient(circle_at_top,hsl(var(--cosmic)/0.12)_0%,rgba(255,255,255,0.98)_40%,rgba(255,255,255,0.94)_100%)]">
           <CardHeader className="gap-4">
-            <Badge variant="info">Contexto vivo</Badge>
+            <Badge variant="info">{planConfig.liveContextBadge}</Badge>
             <div className="flex items-center gap-3">
               <div className="flex size-12 items-center justify-center rounded-[18px] bg-cosmic/12 text-cosmic">
                 <Orbit className="h-6 w-6" />
@@ -521,12 +535,12 @@ export function AIPlanContent() {
                 <CardTitle className="text-2xl">
                   {astrology
                     ? `Lua em ${astrology.moonSign}`
-                    : 'Céu do momento'}
+                    : planConfig.liveContextTitleFallback}
                 </CardTitle>
                 <CardDescription>
                   {astrology
                     ? `${astrology.nakshatra} · ${astrology.tithi}`
-                    : 'O contexto astrológico será consolidado localmente ao sincronizar.'}
+                    : planConfig.liveContextDescriptionFallback}
                 </CardDescription>
               </div>
             </div>
@@ -556,11 +570,10 @@ export function AIPlanContent() {
             </div>
             <div className="rounded-[24px] border border-white/75 bg-white/76 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                Persistência
+                {planConfig.persistenceTitle}
               </p>
               <p className="mt-2 text-sm leading-7 text-foreground">
-                O plano é salvo de forma real em `ai_plans` no MySQL desta
-                instância.
+                {planConfig.persistenceDescription}
               </p>
             </div>
           </CardContent>
@@ -575,11 +588,10 @@ export function AIPlanContent() {
                 <BrainCircuit className="h-6 w-6" />
               </div>
               <h3 className="mt-4 text-lg font-semibold text-foreground">
-                IA local e determinística
+                {planConfig.emptyLocalAiTitle}
               </h3>
               <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                A geração usa a função local `generate-ai-plan`, sem mock visual
-                e sem plano fictício.
+                {planConfig.emptyLocalAiDescription}
               </p>
             </div>
 
@@ -588,11 +600,10 @@ export function AIPlanContent() {
                 <Moon className="h-6 w-6" />
               </div>
               <h3 className="mt-4 text-lg font-semibold text-foreground">
-                Astrologia viva
+                {planConfig.emptyAstroTitle}
               </h3>
               <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                O céu do momento vem do motor astrológico local e influencia a
-                síntese do protocolo.
+                {planConfig.emptyAstroDescription}
               </p>
             </div>
 
@@ -601,11 +612,10 @@ export function AIPlanContent() {
                 <CheckCircle2 className="h-6 w-6" />
               </div>
               <h3 className="mt-4 text-lg font-semibold text-foreground">
-                Persistência real
+                {planConfig.emptyPersistenceTitle}
               </h3>
               <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                Assim que você gerar, o resultado fica salvo e pode ser lido
-                novamente sem simulação.
+                {planConfig.emptyPersistenceDescription}
               </p>
             </div>
           </CardContent>

@@ -160,6 +160,15 @@ export const lyraCustomazeEditableSurfaceMap: Record<
         supportsVisibilityToggle: true,
       },
       {
+        key: 'aiPlan',
+        label: 'Plano de IA',
+        description: 'Hero editorial, contexto vivo e empty state da orquestração personalizada.',
+        scope: 'internal-page',
+        supportsChildren: true,
+        supportsReorder: false,
+        supportsVisibilityToggle: true,
+      },
+      {
         key: 'monitoring',
         label: 'Monitoramento',
         description: 'Painel em tempo real, leitura e alertas locais.',
