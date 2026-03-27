@@ -647,6 +647,29 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
             <Card className="border-border/70 bg-white/88 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg">
+                  {config.connect.pageTitle}
+                </CardTitle>
+                <CardDescription>
+                  {config.connect.pageDescription}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <p>{config.connect.cardTitle}</p>
+                <p>{config.connect.idleTitle}</p>
+                <p>{config.connect.connectedAlertTitle}</p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="info">{config.connect.connectButtonLabel}</Badge>
+                  <Badge variant="success">
+                    {config.connect.connectedTitle}
+                  </Badge>
+                  <Badge variant="warning">{config.connect.errorTitle}</Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/70 bg-white/88 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg">
                   {config.profile.pageTitle}
                 </CardTitle>
                 <CardDescription>
@@ -3436,6 +3459,255 @@ export function SiteExperienceBuilder() {
                     }
                   />
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/70 bg-white/84">
+              <CardHeader>
+                <CardTitle className="text-base">Dispositivos</CardTitle>
+                <CardDescription>
+                  Ajuste a linguagem, os estados da conexão Bluetooth e a explicação da compatibilidade do navegador.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Eyebrow da página">
+                    <Input
+                      value={appDraft.connect.pageEyebrow}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'pageEyebrow'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título da página">
+                    <Input
+                      value={appDraft.connect.pageTitle}
+                      onChange={(event) =>
+                        updateDraft(['connect', 'pageTitle'], event.target.value)
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Descrição da página">
+                  <Textarea
+                    value={appDraft.connect.pageDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['connect', 'pageDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Título do card principal">
+                    <Input
+                      value={appDraft.connect.cardTitle}
+                      onChange={(event) =>
+                        updateDraft(['connect', 'cardTitle'], event.target.value)
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Descrição do card principal">
+                    <Input
+                      value={appDraft.connect.cardDescription}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'cardDescription'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Título do estado inicial">
+                    <Input
+                      value={appDraft.connect.idleTitle}
+                      onChange={(event) =>
+                        updateDraft(['connect', 'idleTitle'], event.target.value)
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Descrição do estado inicial">
+                    <Textarea
+                      value={appDraft.connect.idleDescription}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'idleDescription'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Título de incompatibilidade">
+                    <Input
+                      value={appDraft.connect.unsupportedTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'unsupportedTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Descrição de incompatibilidade">
+                    <Textarea
+                      value={appDraft.connect.unsupportedDescription}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'unsupportedDescription'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <FieldBlock label="Botão conectar">
+                    <Input
+                      value={appDraft.connect.connectButtonLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'connectButtonLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título conectando">
+                    <Input
+                      value={appDraft.connect.connectingTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'connectingTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Botão conectando">
+                    <Input
+                      value={appDraft.connect.connectingButtonLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'connectingButtonLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Descrição conectando">
+                  <Textarea
+                    value={appDraft.connect.connectingDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['connect', 'connectingDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Título conectado">
+                    <Input
+                      value={appDraft.connect.connectedTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'connectedTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Descrição conectada">
+                    <Input
+                      value={appDraft.connect.connectedDescription}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'connectedDescription'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <FieldBlock label="Título do alerta conectado">
+                    <Input
+                      value={appDraft.connect.connectedAlertTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'connectedAlertTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Descrição do alerta conectado">
+                    <Textarea
+                      value={appDraft.connect.connectedAlertDescription}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'connectedAlertDescription'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <FieldBlock label="Botão desconectar">
+                    <Input
+                      value={appDraft.connect.disconnectButtonLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'disconnectButtonLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Título do erro">
+                    <Input
+                      value={appDraft.connect.errorTitle}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'errorTitle'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                  <FieldBlock label="Botão tentar novamente">
+                    <Input
+                      value={appDraft.connect.retryButtonLabel}
+                      onChange={(event) =>
+                        updateDraft(
+                          ['connect', 'retryButtonLabel'],
+                          event.target.value
+                        )
+                      }
+                    />
+                  </FieldBlock>
+                </div>
+                <FieldBlock label="Descrição do erro">
+                  <Textarea
+                    value={appDraft.connect.errorDescription}
+                    onChange={(event) =>
+                      updateDraft(
+                        ['connect', 'errorDescription'],
+                        event.target.value
+                      )
+                    }
+                  />
+                </FieldBlock>
               </CardContent>
             </Card>
 

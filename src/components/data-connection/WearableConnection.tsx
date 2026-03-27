@@ -13,11 +13,14 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, CheckCircle, XCircle, Watch, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { db } from '@/integrations/mysql/client';
+import { AppPageConfig } from '@/lib/site-page-config/schema';
+import { scaleRem } from '@/lib/site-page-config/runtime';
 
 type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'error';
 type BluetoothNavigator = Navigator & { bluetooth?: Bluetooth };
 const BLUETOOTH_UNSUPPORTED_MESSAGE =
   'O Web Bluetooth só funciona em navegadores compatíveis baseados em Chromium e em contexto seguro (localhost ou HTTPS).';
+type ConnectConfig = AppPageConfig['connect'];
 
 function calculateRmssd(rrIntervalsMs: number[]) {
   if (rrIntervalsMs.length < 2) {
@@ -36,7 +39,13 @@ function calculateRmssd(rrIntervalsMs: number[]) {
   return Number(Math.sqrt(meanSquare).toFixed(1));
 }
 
-export function WearableConnection() {
+export function WearableConnection({
+  config,
+  typography,
+}: {
+  config: ConnectConfig;
+  typography: AppPageConfig['typography'];
+}) {
   const [status, setStatus] = useState<ConnectionStatus>('idle');
   const [deviceName, setDeviceName] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -197,15 +206,14 @@ export function WearableConnection() {
           <div className="text-center space-y-4">
             <Watch className="h-16 w-16 text-gray-400 mx-auto" />
             <p className="text-muted-foreground">
-              Conecte sua cinta cardíaca ou relógio via Bluetooth para métricas
-              reais.
+              {config.idleDescription}
             </p>
             {bluetoothSupported === false ? (
               <Alert className="border-amber-500/50 bg-amber-50 text-left">
                 <XCircle className="h-4 w-4 text-amber-600" />
-                <AlertTitle>Bluetooth indisponível neste navegador</AlertTitle>
+                <AlertTitle>{config.unsupportedTitle}</AlertTitle>
                 <AlertDescription>
-                  {errorMessage || BLUETOOTH_UNSUPPORTED_MESSAGE}
+                  {errorMessage || config.unsupportedDescription}
                 </AlertDescription>
               </Alert>
             ) : null}
@@ -216,7 +224,7 @@ export function WearableConnection() {
             >
               {bluetoothSupported === false
                 ? 'Abra em um navegador compatível'
-                : 'Conectar Dispositivo Bluetooth'}
+                : config.connectButtonLabel}
             </Button>
           </div>
         );
@@ -224,12 +232,12 @@ export function WearableConnection() {
         return (
           <div className="text-center space-y-4">
             <Loader2 className="h-16 w-16 text-blue-500 mx-auto animate-spin" />
-            <p className="text-lg font-semibold">Aguardando seleção...</p>
+            <p className="text-lg font-semibold">{config.connectingTitle}</p>
             <p className="text-sm text-muted-foreground">
-              Selecione o dispositivo no prompt do navegador.
+              {config.connectingDescription}
             </p>
             <Button disabled className="w-full">
-              Conectando...
+              {config.connectingButtonLabel}
             </Button>
           </div>
         );
@@ -238,17 +246,17 @@ export function WearableConnection() {
           <div className="text-center space-y-4">
             <CheckCircle className="h-16 w-16 text-green-600 mx-auto" />
             <p className="text-lg font-semibold text-green-700">
-              Conectado com Sucesso!
+              {config.connectedTitle}
             </p>
             <p className="text-muted-foreground">
-              Dispositivo:{' '}
+              {config.connectedDescription}:{' '}
               <span className="font-medium text-foreground">{deviceName}</span>
             </p>
             <Alert className="border-green-500/50 bg-green-50">
               <Zap className="h-4 w-4 text-green-600" />
-              <AlertTitle>Recebendo Dados em Tempo Real</AlertTitle>
+              <AlertTitle>{config.connectedAlertTitle}</AlertTitle>
               <AlertDescription>
-                O dashboard de monitoramento refletirá seus batimentos.
+                {config.connectedAlertDescription}
               </AlertDescription>
             </Alert>
             <Button
@@ -256,7 +264,7 @@ export function WearableConnection() {
               variant="destructive"
               className="w-full"
             >
-              Desconectar
+              {config.disconnectButtonLabel}
             </Button>
           </div>
         );
@@ -265,14 +273,13 @@ export function WearableConnection() {
           <div className="text-center space-y-4">
             <XCircle className="h-16 w-16 text-red-600 mx-auto" />
             <p className="text-lg font-semibold text-red-700">
-              Erro de Conexão
+              {config.errorTitle}
             </p>
             <p className="text-muted-foreground">
-              {errorMessage ||
-                'Não foi possível estabelecer a conexão Bluetooth. Verifique se o dispositivo está ligado e pareado.'}
+              {errorMessage || config.errorDescription}
             </p>
             <Button onClick={handleConnect} className="w-full">
-              Tentar Novamente
+              {config.retryButtonLabel}
             </Button>
           </div>
         );
@@ -282,13 +289,22 @@ export function WearableConnection() {
   };
 
   return (
-    <Card className="max-w-lg mx-auto">
+    <Card className="mx-auto max-w-3xl border-border/70 bg-white/88 shadow-sm">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">
-          Conexão Real-Time (Bluetooth)
+        <CardTitle
+          className="text-2xl"
+          style={{
+            fontSize: scaleRem(1.5, typography.pageTitle),
+          }}
+        >
+          {config.cardTitle}
         </CardTitle>
-        <CardDescription>
-          Integre sua cinta de frequência cardíaca BLE ou smartwatch.
+        <CardDescription
+          style={{
+            fontSize: scaleRem(0.95, typography.pageBody),
+          }}
+        >
+          {config.cardDescription}
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6">{renderStatusContent()}</CardContent>

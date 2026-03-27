@@ -250,6 +250,29 @@ const appPageConfigSchema = z.object({
     showIntegrations: z.boolean(),
     showQuickReplies: z.boolean(),
   }),
+  connect: z.object({
+    pageEyebrow: z.string().min(1),
+    pageTitle: z.string().min(1),
+    pageDescription: z.string().min(1),
+    cardTitle: z.string().min(1),
+    cardDescription: z.string().min(1),
+    idleTitle: z.string().min(1),
+    idleDescription: z.string().min(1),
+    unsupportedTitle: z.string().min(1),
+    unsupportedDescription: z.string().min(1),
+    connectButtonLabel: z.string().min(1),
+    connectingTitle: z.string().min(1),
+    connectingDescription: z.string().min(1),
+    connectingButtonLabel: z.string().min(1),
+    connectedTitle: z.string().min(1),
+    connectedDescription: z.string().min(1),
+    connectedAlertTitle: z.string().min(1),
+    connectedAlertDescription: z.string().min(1),
+    disconnectButtonLabel: z.string().min(1),
+    errorTitle: z.string().min(1),
+    errorDescription: z.string().min(1),
+    retryButtonLabel: z.string().min(1),
+  }),
   profile: z.object({
     pageEyebrow: z.string().min(1),
     pageTitle: z.string().min(1),
@@ -956,6 +979,36 @@ const defaultAppPageConfig: AppPageConfig = {
     ],
     showIntegrations: true,
     showQuickReplies: true,
+  },
+  connect: {
+    pageEyebrow: 'conexao de sinais reais',
+    pageTitle: 'Conecte wearables e leituras locais com uma experiência mais clara',
+    pageDescription:
+      'Este módulo organiza a entrada de sinais bluetooth de forma elegante, explicando estado, compatibilidade e próximos passos sem ruído visual.',
+    cardTitle: 'Conexão real por Bluetooth',
+    cardDescription:
+      'Integre sua cinta cardíaca BLE, relógio compatível ou outro wearable apoiado pelo navegador atual.',
+    idleTitle: 'Pronto para conectar seu dispositivo',
+    idleDescription:
+      'Conecte sua cinta cardíaca ou relógio via Bluetooth para destravar métricas reais no monitoramento.',
+    unsupportedTitle: 'Bluetooth indisponível neste navegador',
+    unsupportedDescription:
+      'Use um navegador compatível baseado em Chromium em localhost ou HTTPS para liberar a conexão Web Bluetooth.',
+    connectButtonLabel: 'Conectar dispositivo Bluetooth',
+    connectingTitle: 'Aguardando a escolha do dispositivo',
+    connectingDescription:
+      'Selecione seu wearable no prompt do navegador para iniciar a leitura local.',
+    connectingButtonLabel: 'Conectando...',
+    connectedTitle: 'Conexão estabelecida com sucesso',
+    connectedDescription: 'Dispositivo conectado',
+    connectedAlertTitle: 'Recebendo dados em tempo real',
+    connectedAlertDescription:
+      'Assim que os eventos chegarem, o painel de monitoramento passa a refletir as leituras disponíveis.',
+    disconnectButtonLabel: 'Desconectar dispositivo',
+    errorTitle: 'Erro ao conectar o dispositivo',
+    errorDescription:
+      'Nao foi possível concluir a conexão Bluetooth. Verifique o dispositivo, o pareamento e tente novamente.',
+    retryButtonLabel: 'Tentar novamente',
   },
   profile: {
     pageEyebrow: 'identidade pessoal',

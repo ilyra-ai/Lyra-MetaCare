@@ -7,10 +7,13 @@ import { useAuth } from '@/context/AuthContext';
 import { SplashScreen } from '@/components/SplashScreen';
 import { WearableConnection } from '@/components/data-connection/WearableConnection';
 import { usePlanFeatureAccess } from '@/hooks/use-plan-feature-access';
+import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
+import { scaleRem } from '@/lib/site-page-config/runtime';
 import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
 
 export default function DataConnectionPage() {
   const { session } = useAuth();
+  const { config: appConfig } = usePublicSitePageConfig('app');
   const {
     subscription,
     enabled: wearableEnabled,
@@ -28,16 +31,43 @@ export default function DataConnectionPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50/50 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex min-h-screen bg-[linear-gradient(180deg,hsl(var(--background)),hsl(var(--background))_48%,rgba(255,255,255,0.96))] font-[family-name:var(--font-geist-sans)]">
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
-          <h1 className="text-3xl font-bold mb-8 text-center md:text-left">
-            Conectar Dados de Saúde
-          </h1>
+          <section className="mx-auto flex max-w-6xl flex-col gap-6">
+            <div className="space-y-3">
+              <p
+                className="text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground"
+                style={{
+                  fontSize: scaleRem(0.68, appConfig.typography.navLabel),
+                }}
+              >
+                {appConfig.connect.pageEyebrow}
+              </p>
+              <h1
+                className="text-center font-bold text-foreground md:text-left"
+                style={{
+                  fontSize: scaleRem(2, appConfig.typography.pageTitle),
+                }}
+              >
+                {appConfig.connect.pageTitle}
+              </h1>
+              <p
+                className="max-w-4xl text-center leading-7 text-muted-foreground md:text-left"
+                style={{
+                  fontSize: scaleRem(0.98, appConfig.typography.pageBody),
+                }}
+              >
+                {appConfig.connect.pageDescription}
+              </p>
+            </div>
           {wearableEnabled ? (
-            <WearableConnection />
+              <WearableConnection
+                config={appConfig.connect}
+                typography={appConfig.typography}
+              />
           ) : (
             <PlanUpgradeNotice
               currentPlanKey={subscription?.plan.key ?? 'free'}
@@ -47,6 +77,7 @@ export default function DataConnectionPage() {
               preferredPlanKey="meta"
             />
           )}
+          </section>
         </main>
         <MadeWithIlyra />
       </div>
