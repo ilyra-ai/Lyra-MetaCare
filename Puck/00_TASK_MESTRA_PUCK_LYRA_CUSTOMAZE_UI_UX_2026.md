@@ -89,7 +89,7 @@ git push origin main
 - [x] TASK 03 — Root Configuration
 - [x] TASK 04 — Multi-column Layouts
 - [x] TASK 05 — Categories
-- [ ] TASK 06 — Rich Text Editing
+- [x] TASK 06 — Rich Text Editing
 - [ ] TASK 07 — Dynamic Props
 - [ ] TASK 08 — Dynamic Fields
 - [ ] TASK 09 — External Data Sources
@@ -301,7 +301,7 @@ git push origin main
 - Código da etapa: `TASK 02`
 - Nome da etapa: `Component Configuration`
 - Fonte oficial: [Component Configuration](https://puckeditor.com/docs/integrating-puck/component-configuration)
-- Estado atual: `[ ] não iniciada`
+- Estado atual: `[x] concluída e validada em 2026-03-31`
 
 ## Objetivo estratégico
 
@@ -412,23 +412,23 @@ git push origin main
 
 ## Validação técnica obrigatória
 
-- [ ] Sem erro de TypeScript.
-- [ ] Sem erro de lint.
-- [ ] Sem quebra de formatação.
-- [ ] Sem erro de build quando aplicável.
-- [ ] Sem crash na rota administrativa.
-- [ ] Sem quebra no frontend público.
-- [ ] Sem regressão em autenticação e guardas.
-- [ ] Sem regressão em persistência já existente.
+- [x] Sem erro de TypeScript.
+- [x] Sem erro de lint.
+- [x] Sem quebra de formatação.
+- [x] Sem erro de build quando aplicável.
+- [x] Sem crash na rota administrativa.
+- [x] Sem quebra no frontend público.
+- [x] Sem regressão em autenticação e guardas.
+- [x] Sem regressão em persistência já existente.
 
 ## Validação visual obrigatória
 
-- [ ] Editor abre em tema claro de forma legível.
-- [ ] Canvas não fica quebrado ou desalinhado.
-- [ ] Controles do painel lateral ficam compreensíveis.
-- [ ] Componentes visuais não aparentam protótipo improvisado.
-- [ ] O nível visual permanece coerente com a Lyra.
-- [ ] A superfície continua com aparência premium 2026.
+- [x] Editor abre em tema claro de forma legível.
+- [x] Canvas não fica quebrado ou desalinhado.
+- [x] Controles do painel lateral ficam compreensíveis.
+- [x] Componentes visuais não aparentam protótipo improvisado.
+- [x] O nível visual permanece coerente com a Lyra.
+- [x] A superfície continua com aparência premium 2026.
 
 ## Validação funcional em navegador
 
@@ -441,12 +441,12 @@ git push origin main
 
 ## Evidências obrigatórias desta etapa
 
-- [ ] Trecho de código implementado e revisado.
-- [ ] Checks executados com sucesso.
-- [ ] Rota ou tela validada em navegador.
-- [ ] Estado real da task atualizado.
+- [x] Trecho de código implementado e revisado.
+- [x] Checks executados com sucesso.
+- [x] Rota ou tela validada em navegador.
+- [x] Estado real da task atualizado.
 - [ ] Commit e push realizados.
-- [ ] Descrição honesta do que entrou e do que ainda não entra.
+- [x] Descrição honesta do que entrou e do que ainda não entra.
 
 ## Riscos e causas raiz a observar
 
@@ -460,16 +460,16 @@ git push origin main
 
 ## Checklist final de pronto
 
-- [ ] Escopo da etapa implementado.
-- [ ] Arquivos estruturais criados ou ajustados.
-- [ ] Integração com a Lyra preservada.
-- [ ] Sem segredo hardcoded.
-- [ ] Sem mock funcional.
-- [ ] Sem placeholder funcional.
-- [ ] Validação técnica concluída.
-- [ ] Validação visual concluída.
-- [ ] Validação em navegador concluída.
-- [ ] Task atualizada.
+- [x] Escopo da etapa implementado.
+- [x] Arquivos estruturais criados ou ajustados.
+- [x] Integração com a Lyra preservada.
+- [x] Sem segredo hardcoded.
+- [x] Sem mock funcional.
+- [x] Sem placeholder funcional.
+- [x] Validação técnica concluída.
+- [x] Validação visual concluída.
+- [x] Validação em navegador concluída.
+- [x] Task atualizada.
 - [ ] Commit feito.
 - [ ] Push feito.
 
@@ -1224,6 +1224,35 @@ git push origin main
 
 - Rich text precisa ser útil sem virar fonte de inconsistência visual.
 - Sanitização e limites de estilo serão fundamentais.
+
+## Execução real registrada em 2026-03-31
+
+- Implementação aplicada em `src/lib/puck/config/fields/rich-text.tsx`, `src/lib/puck/render/rich-text-renderer.tsx` e `src/lib/puck/sanitization/rich-text.ts`.
+- Os blocos `LyraBodyTextBlock` e `LyraFaqItemBlock` passaram a usar `richtext` com `contentEditable`, menu customizado e renderização segura.
+- Validação real no navegador:
+  - `PUT /api/admin/puck/documents/landing-home` respondeu `200`.
+  - `POST /api/admin/puck/documents/landing-home` respondeu `200`.
+  - O `iframe` do canvas passou a conter:
+    - `Este texto rico valida a TASK 06 com ênfase real e uma lista editorial.`
+    - `Primeiro item validado`
+    - `Segundo item com realce`
+    - `A resposta do FAQ agora aceita texto rico, listas e formatação real.`
+    - `Publicação e preview renderizam o HTML sanitizado com segurança.`
+  - Após clique no bloco textual dentro do canvas, a barra de rich text expôs controles reais:
+    - `Bold`
+    - `Italic`
+    - `Underline`
+    - `Strikethrough`
+- Gate executado com sucesso:
+  - `pnpm run fix:format`
+  - `pnpm run fix:lint`
+  - `pnpm run check:lint`
+  - `pnpm run check:format`
+  - `pnpm run check:types`
+  - `pnpm run test`
+  - `pnpm run build`
+- Limitação honesta:
+  - Os warnings de `DropZones have been deprecated...` continuam vindo do `@puckeditor/core@0.21.1`, não do código local da Lyra.
 
 ---
 

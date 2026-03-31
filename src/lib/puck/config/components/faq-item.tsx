@@ -6,6 +6,8 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
+import { criarCampoRichTextLyra } from '@/lib/puck/config/fields/rich-text';
+import { LyraRichTextRenderer } from '@/lib/puck/render/rich-text-renderer';
 import type { LyraFaqItemBlockProps } from '@/lib/puck/types';
 
 function LyraFaqItemBlock({
@@ -33,7 +35,10 @@ function LyraFaqItemBlock({
             </div>
           </AccordionTrigger>
           <AccordionContent className="leading-7 text-muted-foreground">
-            {answer}
+            <LyraRichTextRenderer
+              value={answer}
+              className="text-sm leading-7 text-muted-foreground"
+            />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -52,10 +57,11 @@ export const lyraFaqItemBlockConfig = {
       type: 'text',
       label: 'Pergunta',
     },
-    answer: {
-      type: 'textarea',
+    answer: criarCampoRichTextLyra({
       label: 'Resposta',
-    },
+      initialHeight: 200,
+      headingLevels: [3, 4],
+    }),
   },
   defaultProps: {
     eyebrow: 'Pergunta recorrente',
@@ -67,7 +73,7 @@ export const lyraFaqItemBlockConfig = {
     <LyraFaqItemBlock
       eyebrow={String(props.eyebrow ?? '')}
       question={String(props.question ?? '')}
-      answer={String(props.answer ?? '')}
+      answer={(props.answer as LyraFaqItemBlockProps['answer']) ?? ''}
     />
   ),
 } satisfies ComponentConfig<LyraFaqItemBlockProps>;

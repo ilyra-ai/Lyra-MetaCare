@@ -1,4 +1,4 @@
-import type { Config, Data } from '@puckeditor/core';
+import type { Config, Data, RichText } from '@puckeditor/core';
 
 export const lyraPuckDocumentKeys = [
   'landing-home',
@@ -68,7 +68,7 @@ export type LyraHeadingBlockProps = {
 };
 
 export type LyraBodyTextBlockProps = {
-  content: string;
+  content: RichText;
   align: LyraTextAlign;
   size: LyraBodyTextSize;
   tone: LyraBodyTextTone;
@@ -106,7 +106,7 @@ export type LyraFeatureCardBlockProps = {
 
 export type LyraFaqItemBlockProps = {
   question: string;
-  answer: string;
+  answer: RichText;
   eyebrow: string;
 };
 

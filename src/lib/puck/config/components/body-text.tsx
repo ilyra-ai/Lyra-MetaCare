@@ -1,8 +1,10 @@
 import type { ComponentConfig } from '@puckeditor/core';
+import { criarCampoRichTextLyra } from '@/lib/puck/config/fields/rich-text';
 import {
   juntarClasses,
   obterClasseAlinhamento,
 } from '@/lib/puck/config/components/helpers';
+import { LyraRichTextRenderer } from '@/lib/puck/render/rich-text-renderer';
 import type { LyraBodyTextBlockProps } from '@/lib/puck/types';
 
 const toneClasses: Record<LyraBodyTextBlockProps['tone'], string> = {
@@ -30,15 +32,15 @@ function LyraBodyTextBlock({
         obterClasseAlinhamento(align)
       )}
     >
-      <p
+      <div
         className={juntarClasses(
-          'max-w-3xl whitespace-pre-line text-pretty',
+          'max-w-3xl text-pretty',
           sizeClasses[size],
           toneClasses[tone]
         )}
       >
-        {content}
-      </p>
+        <LyraRichTextRenderer value={content} className="text-inherit" />
+      </div>
     </div>
   );
 }
@@ -46,10 +48,11 @@ function LyraBodyTextBlock({
 export const lyraBodyTextBlockConfig = {
   label: 'Texto de apoio',
   fields: {
-    content: {
-      type: 'textarea',
+    content: criarCampoRichTextLyra({
       label: 'Conteúdo',
-    },
+      initialHeight: 240,
+      headingLevels: [2, 3, 4],
+    }),
     align: {
       type: 'radio',
       label: 'Alinhamento',
@@ -87,7 +90,7 @@ export const lyraBodyTextBlockConfig = {
   },
   render: (props: Record<string, unknown>) => (
     <LyraBodyTextBlock
-      content={String(props.content ?? '')}
+      content={(props.content as LyraBodyTextBlockProps['content']) ?? ''}
       align={(props.align as LyraBodyTextBlockProps['align']) ?? 'left'}
       size={(props.size as LyraBodyTextBlockProps['size']) ?? 'md'}
       tone={(props.tone as LyraBodyTextBlockProps['tone']) ?? 'muted'}
