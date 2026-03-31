@@ -161,6 +161,18 @@ pnpm run check:types
 - log de task atualizado;
 - commit e push realizados.
 
+### Evidências coletadas nesta execução
+
+- ambiente validado com `python run_windows.py doctor`, `python run_windows.py dev` e `python run_windows.py health`;
+- pacote `@puckeditor/core` instalado em `package.json` e `pnpm-lock.yaml`;
+- migração real aplicada: `mysql/migrations/007_add_puck_documents.sql`;
+- rota administrativa protegida criada em `src/app/admin/puck/page.tsx`;
+- CSS segmentado do Puck carregado por `src/app/admin/puck/layout.tsx`;
+- preview real usando `Render` em `src/components/admin/puck/PuckPreviewRenderer.tsx`;
+- persistência real confirmada via `GET /api/public/puck/documents/landing-home`;
+- validação em navegador concluída com login admin real e abertura de `http://localhost:3000/admin/puck`;
+- console do navegador sem erros na rota validada.
+
 ---
 
 ## 11. Riscos e causa raiz
@@ -181,11 +193,11 @@ Editor subir, mas o render público não existir, gerando falsa sensação de im
 
 ## 12. Definição de pronto
 
-- [ ] Puck instalado
-- [ ] CSS carregado
-- [ ] Shell do editor criado
-- [ ] Render público criado
-- [ ] Rota administrativa protegida criada
-- [ ] Validação em navegador concluída
-- [ ] Checks concluídos
+- [x] Puck instalado
+- [x] CSS carregado
+- [x] Shell do editor criado
+- [x] Render público criado
+- [x] Rota administrativa protegida criada
+- [x] Validação em navegador concluída
+- [x] Checks concluídos
 - [ ] Commit e push concluídos

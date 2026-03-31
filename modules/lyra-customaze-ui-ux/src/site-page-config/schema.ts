@@ -881,6 +881,13 @@ const defaultAppPageConfig: AppPageConfig = {
         description: 'Gestão do design visual do app, da landing e do login.',
         visible: true,
       },
+      {
+        href: '/admin/puck',
+        label: 'Editor Puck',
+        description:
+          'Primeira base do editor visual drag-and-drop da Lyra com persistência real.',
+        visible: true,
+      },
     ],
   },
   header: {

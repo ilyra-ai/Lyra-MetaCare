@@ -8,6 +8,7 @@ import {
   Gem,
   HeartPulse,
   LayoutDashboard,
+  Layers3,
   Radio,
   Settings2,
   ShieldCheck,
@@ -183,6 +184,16 @@ export const navigationItems: NavigationDefinition[] = [
     sectionKey: 'admin',
     adminOnly: true,
   },
+  {
+    href: '/admin/puck',
+    label: 'Editor Puck',
+    description:
+      'Primeira base do editor visual drag-and-drop da Lyra com persistência real.',
+    icon: Layers3,
+    section: 'Administração',
+    sectionKey: 'admin',
+    adminOnly: true,
+  },
 ];
 
 export const pageMetaByPath = Object.fromEntries(
@@ -228,8 +239,11 @@ function buildConfiguredNavigation(appConfig?: AppPageConfig) {
   const baseItemsByHref = new Map(
     navigationItems.map((item) => [item.href, item] as const)
   );
+  const configuredHrefs = new Set(
+    appConfig.sidebar.items.map((item) => item.href)
+  );
 
-  return appConfig.sidebar.items.map((item) => {
+  const configuredItems = appConfig.sidebar.items.map((item) => {
     const baseItem = baseItemsByHref.get(item.href);
     const sectionKey = baseItem?.sectionKey ?? 'principal';
 
@@ -245,6 +259,16 @@ function buildConfiguredNavigation(appConfig?: AppPageConfig) {
       visible: item.visible,
     } satisfies NavigationDefinition;
   });
+
+  const missingBaseItems = navigationItems
+    .filter((item) => !configuredHrefs.has(item.href))
+    .map((item) => ({
+      ...item,
+      section: getSectionLabel(item.sectionKey, appConfig) ?? item.section,
+      visible: true,
+    }));
+
+  return [...configuredItems, ...missingBaseItems];
 }
 
 export function getVisibleNavigation(

@@ -84,7 +84,7 @@ git push origin main
 
 ## 6. Checklist mestre das 14 etapas
 
-- [ ] TASK 01 — Getting Started
+- [x] TASK 01 — Getting Started
 - [ ] TASK 02 — Component Configuration
 - [ ] TASK 03 — Root Configuration
 - [ ] TASK 04 — Multi-column Layouts
@@ -116,7 +116,7 @@ git push origin main
 - Código da etapa: `TASK 01`
 - Nome da etapa: `Getting Started`
 - Fonte oficial: [Getting Started](https://puckeditor.com/docs/getting-started)
-- Estado atual: `[ ] não iniciada`
+- Estado atual: `[x] concluída`
 
 ## Objetivo estratégico
 
