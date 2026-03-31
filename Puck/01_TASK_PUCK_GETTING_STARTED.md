@@ -172,6 +172,8 @@ pnpm run check:types
 - persistência real confirmada via `GET /api/public/puck/documents/landing-home`;
 - validação em navegador concluída com login admin real e abertura de `http://localhost:3000/admin/puck`;
 - console do navegador sem erros na rota validada.
+- commit desta etapa: `f352f8e`;
+- push concluído para `origin/main`.
 
 ---
 
@@ -200,4 +202,4 @@ Editor subir, mas o render público não existir, gerando falsa sensação de im
 - [x] Rota administrativa protegida criada
 - [x] Validação em navegador concluída
 - [x] Checks concluídos
-- [ ] Commit e push concluídos
+- [x] Commit e push concluídos
