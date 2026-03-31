@@ -69,15 +69,18 @@ const defaultLandingHomeData: LyraPuckData = {
         },
       },
       {
-        type: 'LyraStackContainerBlock',
+        type: 'LyraFixedColumnsBlock',
         props: {
-          id: 'lyra-stack-container-metricas',
-          title: 'Primeiro agrupamento de cards',
+          id: 'lyra-fixed-columns-landing',
+          eyebrow: 'Layout fixo com leitura guiada',
+          title:
+            'Colunas reais para combinar narrativa principal e apoio visual.',
           description:
-            'Use o stack para agrupar blocos lado a lado ou em coluna, preservando espaçamento e leitura visual.',
-          direction: 'horizontal',
-          gap: 'md',
-          surface: 'transparent',
+            'Este bloco nasce com duas zonas independentes e serve como prova real da task 04 dentro da landing pública.',
+          ratio: '2-1',
+          gap: 'lg',
+          verticalAlign: 'stretch',
+          surface: 'surface',
         },
       },
       {
@@ -94,6 +97,22 @@ const defaultLandingHomeData: LyraPuckData = {
         },
       },
       {
+        type: 'LyraFluidGridBlock',
+        props: {
+          id: 'lyra-fluid-grid-landing',
+          eyebrow: 'Grade fluida premium',
+          title:
+            'Mosaico com tiles inline, spans reais e reorganização por grid.',
+          description:
+            'A grade usa slot com suporte nativo a display grid e aceita apenas tiles inline preparados para spans reais.',
+          layoutMode: 'grid',
+          columnsDesktop: '3',
+          columnsTablet: '2',
+          gap: 'md',
+          surface: 'glass',
+        },
+      },
+      {
         type: 'LyraFaqItemBlock',
         props: {
           id: 'lyra-faq-item-editorial',
@@ -104,7 +123,31 @@ const defaultLandingHomeData: LyraPuckData = {
         },
       },
     ],
-    'lyra-stack-container-metricas:content': [
+    'lyra-fixed-columns-landing:leftColumn': [
+      {
+        type: 'LyraHeadingBlock',
+        props: {
+          id: 'lyra-heading-columns-landing',
+          children:
+            'Uma coluna principal para a história e outra para prova de valor.',
+          level: 'h3',
+          align: 'left',
+          tone: 'default',
+        },
+      },
+      {
+        type: 'LyraBodyTextBlock',
+        props: {
+          id: 'lyra-body-columns-landing',
+          content:
+            'As colunas possuem zonas independentes, aceitam drag-and-drop nativo e preservam a hierarquia editorial sem gambiarras estruturais.',
+          align: 'left',
+          size: 'md',
+          tone: 'muted',
+        },
+      },
+    ],
+    'lyra-fixed-columns-landing:rightColumn': [
       {
         type: 'LyraMetricCardBlock',
         props: {
@@ -133,6 +176,50 @@ const defaultLandingHomeData: LyraPuckData = {
           tone: 'cosmic',
           ctaLabel: 'Ver dashboard',
           ctaHref: '/dashboard',
+        },
+      },
+    ],
+    'lyra-fluid-grid-landing:content': [
+      {
+        type: 'LyraGridTileBlock',
+        props: {
+          id: 'lyra-grid-tile-landing-01',
+          eyebrow: 'Tile hero',
+          title: 'Destaque amplo com span horizontal real.',
+          description:
+            'Este item usa inline + dragRef e ocupa duas colunas para demonstrar a remoção do wrapper do Puck.',
+          badgeLabel: 'Span 2x1',
+          tone: 'cosmic',
+          spanCol: '2',
+          spanRow: '1',
+        },
+      },
+      {
+        type: 'LyraGridTileBlock',
+        props: {
+          id: 'lyra-grid-tile-landing-02',
+          eyebrow: 'Tile lateral',
+          title: 'Apoio compacto e modular.',
+          description:
+            'Ideal para tags, reforços de prova social, benefícios rápidos e microcontextos.',
+          badgeLabel: 'Modular',
+          tone: 'teal',
+          spanCol: '1',
+          spanRow: '1',
+        },
+      },
+      {
+        type: 'LyraGridTileBlock',
+        props: {
+          id: 'lyra-grid-tile-landing-03',
+          eyebrow: 'Tile vertical',
+          title: 'Ritmo editorial com ocupação em duas linhas.',
+          description:
+            'O span vertical mostra que o tile inline responde a grid-row sem wrapper extra atrapalhando o layout.',
+          badgeLabel: 'Span 1x2',
+          tone: 'coral',
+          spanCol: '1',
+          spanRow: '2',
         },
       },
     ],
@@ -269,19 +356,44 @@ const defaultAppShellData: LyraPuckData = {
         },
       },
       {
-        type: 'LyraStackContainerBlock',
+        type: 'LyraFixedColumnsBlock',
         props: {
-          id: 'lyra-stack-container-app-shell',
-          title: 'Componentes internos preservados',
+          id: 'lyra-fixed-columns-app-shell',
+          eyebrow: 'Shell com zonas controladas',
+          title: 'Área operacional organizada em duas colunas reais.',
           description:
-            'Mesmo com a raiz da superfície controlando o contexto, os filhos continuam livres para organizar métricas e narrativas internas.',
-          direction: 'horizontal',
+            'O app shell agora também prova a task 04 com colunas fixas independentes para contexto e indicadores operacionais.',
+          ratio: '1-2',
           gap: 'md',
-          surface: 'soft',
+          verticalAlign: 'stretch',
+          surface: 'glass',
         },
       },
     ],
-    'lyra-stack-container-app-shell:content': [
+    'lyra-fixed-columns-app-shell:leftColumn': [
+      {
+        type: 'LyraHeadingBlock',
+        props: {
+          id: 'lyra-heading-block-shell-columns',
+          children: 'Coluna de contexto, regras e narrativa operacional.',
+          level: 'h3',
+          align: 'left',
+          tone: 'teal',
+        },
+      },
+      {
+        type: 'LyraBodyTextBlock',
+        props: {
+          id: 'lyra-body-block-shell-columns',
+          content:
+            'Este lado do shell é útil para contexto, documentação viva, onboarding interno e regras de leitura por papel.',
+          align: 'left',
+          size: 'md',
+          tone: 'muted',
+        },
+      },
+    ],
+    'lyra-fixed-columns-app-shell:rightColumn': [
       {
         type: 'LyraMetricCardBlock',
         props: {

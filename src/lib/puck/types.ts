@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import type { Config, Data } from '@puckeditor/core';
 
 export const lyraPuckDocumentKeys = [
@@ -13,6 +12,11 @@ export const defaultLyraPuckDocumentKey: LyraPuckDocumentKey = 'landing-home';
 
 export type LyraPuckSurfaceKey = 'landing' | 'login' | 'app-shell';
 export type LyraPuckThemeVariant = 'aurora' | 'serene' | 'shell';
+export type LyraPuckSlotItem = {
+  type: string;
+  props: Record<string, unknown>;
+};
+export type LyraPuckSlotItems = LyraPuckSlotItem[];
 
 export type LyraHeroBlockProps = {
   id?: string;
@@ -49,6 +53,12 @@ export type LyraSurfaceVariant = 'glass' | 'surface' | 'cosmic' | 'aurora';
 export type LyraStackDirection = 'vertical' | 'horizontal';
 export type LyraStackGap = 'sm' | 'md' | 'lg' | 'xl';
 export type LyraStackSurface = 'transparent' | 'soft' | 'glass';
+export type LyraColumnsRatio = '1-1' | '2-1' | '1-2';
+export type LyraColumnsVerticalAlign = 'start' | 'center' | 'stretch';
+export type LyraGridMode = 'grid' | 'flex';
+export type LyraGridColumns = '1' | '2' | '3' | '4';
+export type LyraGridTileTone = 'default' | 'cosmic' | 'teal' | 'coral';
+export type LyraGridSpan = '1' | '2' | '3';
 
 export type LyraHeadingBlockProps = {
   children: string;
@@ -106,7 +116,7 @@ export type LyraSectionContainerBlockProps = {
   description: string;
   align: LyraTextAlign;
   surface: LyraSurfaceVariant;
-  content?: ReactNode;
+  content?: LyraPuckSlotItems;
 };
 
 export type LyraStackContainerBlockProps = {
@@ -115,7 +125,41 @@ export type LyraStackContainerBlockProps = {
   direction: LyraStackDirection;
   gap: LyraStackGap;
   surface: LyraStackSurface;
-  content?: ReactNode;
+  content?: LyraPuckSlotItems;
+};
+
+export type LyraFixedColumnsBlockProps = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  ratio: LyraColumnsRatio;
+  gap: LyraStackGap;
+  verticalAlign: LyraColumnsVerticalAlign;
+  surface: LyraSurfaceVariant;
+  leftColumn?: LyraPuckSlotItems;
+  rightColumn?: LyraPuckSlotItems;
+};
+
+export type LyraFluidGridBlockProps = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  layoutMode: LyraGridMode;
+  columnsDesktop: LyraGridColumns;
+  columnsTablet: LyraGridColumns;
+  gap: LyraStackGap;
+  surface: LyraSurfaceVariant;
+  content?: LyraPuckSlotItems;
+};
+
+export type LyraGridTileBlockProps = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  badgeLabel: string;
+  tone: LyraGridTileTone;
+  spanCol: LyraGridSpan;
+  spanRow: LyraGridSpan;
 };
 
 export type LyraPuckRootProps = {
@@ -137,6 +181,9 @@ export type LyraPuckComponentProps = {
   LyraFaqItemBlock: LyraFaqItemBlockProps;
   LyraSectionContainerBlock: LyraSectionContainerBlockProps;
   LyraStackContainerBlock: LyraStackContainerBlockProps;
+  LyraFixedColumnsBlock: LyraFixedColumnsBlockProps;
+  LyraFluidGridBlock: LyraFluidGridBlockProps;
+  LyraGridTileBlock: LyraGridTileBlockProps;
 };
 
 export type LyraPuckData = Data<

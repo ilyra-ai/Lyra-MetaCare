@@ -4,6 +4,9 @@ import { lyraBodyTextBlockConfig } from '@/lib/puck/config/components/body-text'
 import { lyraCTAButtonBlockConfig } from '@/lib/puck/config/components/cta-button';
 import { lyraFaqItemBlockConfig } from '@/lib/puck/config/components/faq-item';
 import { lyraFeatureCardBlockConfig } from '@/lib/puck/config/components/feature-card';
+import { lyraFixedColumnsBlockConfig } from '@/lib/puck/config/components/fixed-columns';
+import { lyraFluidGridBlockConfig } from '@/lib/puck/config/components/fluid-grid';
+import { lyraGridTileBlockConfig } from '@/lib/puck/config/components/grid-tile';
 import { lyraHeadingBlockConfig } from '@/lib/puck/config/components/heading';
 import { lyraHeroBlockConfig } from '@/lib/puck/config/components/hero';
 import { lyraMetricCardBlockConfig } from '@/lib/puck/config/components/metric-card';
@@ -20,4 +23,7 @@ export const lyraPuckComponents = {
   LyraFaqItemBlock: lyraFaqItemBlockConfig,
   LyraSectionContainerBlock: lyraSectionContainerBlockConfig,
   LyraStackContainerBlock: lyraStackContainerBlockConfig,
+  LyraFixedColumnsBlock: lyraFixedColumnsBlockConfig,
+  LyraFluidGridBlock: lyraFluidGridBlockConfig,
+  LyraGridTileBlock: lyraGridTileBlockConfig,
 } satisfies NonNullable<Config['components']>;
