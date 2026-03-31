@@ -85,7 +85,7 @@ git push origin main
 ## 6. Checklist mestre das 14 etapas
 
 - [x] TASK 01 — Getting Started
-- [ ] TASK 02 — Component Configuration
+- [x] TASK 02 — Component Configuration
 - [ ] TASK 03 — Root Configuration
 - [ ] TASK 04 — Multi-column Layouts
 - [ ] TASK 05 — Categories

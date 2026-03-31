@@ -109,13 +109,46 @@ Os blocos desta etapa precisam nascer com padrão visual:
 
 ---
 
-## 10. Definição de pronto
+## 10. Evidências reais desta execução
 
-- [ ] Catálogo inicial criado
-- [ ] Tipagem criada
-- [ ] Fields criados
-- [ ] Render dos componentes criado
-- [ ] Componentes inseríveis no canvas
-- [ ] Validação real concluída
-- [ ] Checks concluídos
+- Inseridor do Puck exibindo os blocos reais:
+  - `Hero Lyra`
+  - `Título editorial`
+  - `Texto de apoio`
+  - `Botão CTA`
+  - `Card de métrica`
+  - `Card de feature`
+  - `Item de FAQ`
+  - `Seção editorial`
+  - `Stack de composição`
+- Validação visual em `http://127.0.0.1:3000/admin/puck` com login administrativo real (`admin@admin.com`).
+- Persistência real validada pelos botões:
+  - `Salvar rascunho`
+  - `Publicar agora`
+- Evidência funcional observada no browser:
+  - `Última atualização` mudou de `2026-03-31 20:11:42` para `2026-03-31 20:11:54` após publicar.
+- Evidência técnica autenticada via `fetch('/api/admin/puck/documents/landing-home')`:
+  - `status: 200`
+  - `documentKey: "landing-home"`
+  - `draftData.root.props.title: "Landing Home validada task 02"`
+  - `publishedData.root.props.title: "Landing Home validada task 02"`
+  - `updatedAt: "2026-03-31 20:11:54"`
+- Checks reais executados e aprovados:
+  - `pnpm run fix:format`
+  - `pnpm run fix:lint`
+  - `pnpm run check:lint`
+  - `pnpm run check:format`
+  - `pnpm run check:types`
+  - `pnpm run test`
+  - `pnpm run build`
+
+## 11. Definição de pronto
+
+- [x] Catálogo inicial criado
+- [x] Tipagem criada
+- [x] Fields criados
+- [x] Render dos componentes criado
+- [x] Componentes inseríveis no canvas
+- [x] Validação real concluída
+- [x] Checks concluídos
 - [ ] Commit e push concluídos
