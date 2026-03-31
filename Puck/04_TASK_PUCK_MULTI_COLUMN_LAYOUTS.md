@@ -43,7 +43,7 @@ git push origin main
 - [x] Validação técnica concluída
 - [x] Validação visual concluída
 - [x] Task mestra atualizada
-- [ ] Commit e push concluídos
+- [x] Commit e push concluídos
 
 ## Implementação executada de forma real
 
@@ -131,6 +131,7 @@ Validação feita em `http://127.0.0.1:3000/admin/puck` com sessão administrati
 
 - `task04-landing-home-validada.png`
 - `task04-app-shell-validada.png`
+- Commit de fechamento técnico: `68885fc`
 
 ## Observação honesta sobre aviso do console
 
