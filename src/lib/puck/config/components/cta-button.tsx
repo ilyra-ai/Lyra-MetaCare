@@ -1,3 +1,4 @@
+import type { ComponentConfig } from '@puckeditor/core';
 import { ArrowUpRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -108,4 +109,4 @@ export const lyraCTAButtonBlockConfig = {
       supportingText={String(props.supportingText ?? '')}
     />
   ),
-};
+} satisfies ComponentConfig<LyraCTAButtonBlockProps>;

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Puck } from '@puckeditor/core';
 import { Eye, Save, Sparkles, Upload } from 'lucide-react';
 import { toast } from 'sonner';
@@ -19,10 +20,18 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useAuth } from '@/context/AuthContext';
 import { useIsAdmin } from '@/hooks/use-is-admin';
-import { lyraPuckConfig } from '@/lib/puck/config/base';
+import { obterConfigPuckLyra } from '@/lib/puck/config/base';
 import { getInitialPuckData } from '@/lib/puck/config/initial-data';
+import { normalizarDadosPuck } from '@/lib/puck/data-utils';
 import {
   defaultLyraPuckDocumentKey,
   LyraPuckData,
@@ -60,6 +69,7 @@ export function PuckEditorShell({
 }: {
   documentKey?: LyraPuckDocumentKey;
 }) {
+  const router = useRouter();
   const { session } = useAuth();
   const isAdmin = useIsAdmin();
   const [loading, setLoading] = useState(true);
@@ -76,6 +86,15 @@ export function PuckEditorShell({
 
   const documentDefinition = useMemo(
     () => lyraPuckDocuments.find((item) => item.key === documentKey),
+    [documentKey]
+  );
+  const configAtual = useMemo(
+    () => obterConfigPuckLyra(documentKey),
+    [documentKey]
+  );
+  const normalizarDadosEditor = useCallback(
+    (nextData: unknown) =>
+      normalizarDadosPuck(nextData, getInitialPuckData(documentKey)),
     [documentKey]
   );
 
@@ -197,6 +216,17 @@ export function PuckEditorShell({
     [documentKey, hydrateFromResponse]
   );
 
+  const handleTrocaDocumento = useCallback(
+    (nextDocumentKey: string) => {
+      if (!session || !isAdmin) {
+        return;
+      }
+
+      router.push(`/admin/puck?documentKey=${nextDocumentKey}`);
+    },
+    [isAdmin, router, session]
+  );
+
   if (session === undefined) {
     return <SplashScreen />;
   }
@@ -234,6 +264,21 @@ export function PuckEditorShell({
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
+                    <Select
+                      value={documentKey}
+                      onValueChange={handleTrocaDocumento}
+                    >
+                      <SelectTrigger className="min-w-[240px] bg-white/90">
+                        <SelectValue placeholder="Escolha a superfície" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {lyraPuckDocuments.map((item) => (
+                          <SelectItem key={item.key} value={item.key}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <Button
                       variant="secondary"
                       onClick={() => void loadDocument()}
@@ -272,6 +317,9 @@ export function PuckEditorShell({
                   <p className="mt-1 text-sm leading-7 text-muted-foreground">
                     {documentDefinition?.description ??
                       'Documento inicial do editor Puck.'}
+                  </p>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Chave estrutural: {documentDefinition?.surfaceKey ?? 'n/d'}
                   </p>
                 </div>
 
@@ -322,14 +370,19 @@ export function PuckEditorShell({
                   <CardContent className="p-0">
                     <div className="min-h-[860px]">
                       <Puck
-                        config={lyraPuckConfig}
+                        config={configAtual}
                         data={draftData}
                         headerTitle="Lyra Customaze UI UX"
                         headerPath={documentKey}
-                        onChange={(nextData) => setDraftData(nextData)}
+                        onChange={(nextData) =>
+                          setDraftData(normalizarDadosEditor(nextData))
+                        }
                         onPublish={(nextData) => {
-                          setDraftData(nextData);
-                          void handlePublish(nextData);
+                          const nextDataNormalizado =
+                            normalizarDadosEditor(nextData);
+
+                          setDraftData(nextDataNormalizado);
+                          void handlePublish(nextDataNormalizado);
                         }}
                         height="860px"
                       />
@@ -343,6 +396,7 @@ export function PuckEditorShell({
                     description="Este painel usa o componente oficial Render com o rascunho em memória do editor."
                     badgeLabel="rascunho atual"
                     data={draftData}
+                    documentKey={documentKey}
                   />
 
                   <PuckPreviewRenderer
@@ -350,6 +404,7 @@ export function PuckEditorShell({
                     description="Este painel usa o mesmo Render, mas aponta para o último documento efetivamente publicado."
                     badgeLabel="último publicado"
                     data={publishedData}
+                    documentKey={documentKey}
                   />
                 </div>
               </>

@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 
 import { executeStatement, queryRows } from '@/lib/mysql/pool';
 import { getInitialPuckData } from '@/lib/puck/config/initial-data';
+import { clonarDadosPuck, normalizarDadosPuck } from '@/lib/puck/data-utils';
 import {
   LyraPuckData,
   LyraPuckDocumentKey,
@@ -17,57 +18,6 @@ type PuckDocumentRow = {
   created_at: string | null;
   updated_at: string | null;
 };
-
-function cloneData(data: LyraPuckData): LyraPuckData {
-  return JSON.parse(JSON.stringify(data)) as LyraPuckData;
-}
-
-function parseStoredValue(
-  value: string | Record<string, unknown> | null
-): Record<string, unknown> | null {
-  if (!value) {
-    return null;
-  }
-
-  if (typeof value === 'string') {
-    try {
-      return JSON.parse(value) as Record<string, unknown>;
-    } catch {
-      return null;
-    }
-  }
-
-  return value;
-}
-
-function normalizePuckData(
-  input: string | Record<string, unknown> | null,
-  fallback: LyraPuckData
-): LyraPuckData {
-  const parsed = parseStoredValue(input);
-
-  if (!parsed) {
-    return cloneData(fallback);
-  }
-
-  const content = Array.isArray(parsed.content)
-    ? (parsed.content as LyraPuckData['content'])
-    : fallback.content;
-  const root =
-    parsed.root && typeof parsed.root === 'object'
-      ? (parsed.root as LyraPuckData['root'])
-      : fallback.root;
-  const zones =
-    parsed.zones && typeof parsed.zones === 'object'
-      ? (parsed.zones as LyraPuckData['zones'])
-      : fallback.zones;
-
-  return {
-    content,
-    root,
-    zones,
-  };
-}
 
 function serializePuckData(data: LyraPuckData) {
   return JSON.stringify(data);
@@ -102,7 +52,7 @@ function buildEmptyPuckDocument(
   return {
     documentKey,
     draftData: initialData,
-    publishedData: cloneData(initialData),
+    publishedData: clonarDadosPuck(initialData),
     createdAt: null,
     updatedAt: null,
     updatedByUserId: null,
@@ -122,8 +72,8 @@ export async function getAdminPuckDocument(
 
   return {
     documentKey,
-    draftData: normalizePuckData(row.draft_data, fallback),
-    publishedData: normalizePuckData(row.published_data, fallback),
+    draftData: normalizarDadosPuck(row.draft_data, fallback),
+    publishedData: normalizarDadosPuck(row.published_data, fallback),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     updatedByUserId: row.updated_by_user_id,
@@ -140,11 +90,11 @@ export async function getPublicPuckDocument(
   }
 
   const fallback = getInitialPuckData(documentKey);
-  const publishedData = normalizePuckData(row.published_data, fallback);
+  const publishedData = normalizarDadosPuck(row.published_data, fallback);
 
   return {
     documentKey,
-    draftData: cloneData(publishedData),
+    draftData: clonarDadosPuck(publishedData),
     publishedData,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -159,9 +109,9 @@ export async function savePuckDraft(options: {
 }) {
   const row = await getPuckDocumentRow(options.documentKey);
   const fallback = getInitialPuckData(options.documentKey);
-  const nextDraft = normalizePuckData(options.draftData as never, fallback);
+  const nextDraft = normalizarDadosPuck(options.draftData, fallback);
   const publishedData = row
-    ? normalizePuckData(row.published_data, fallback)
+    ? normalizarDadosPuck(row.published_data, fallback)
     : fallback;
 
   if (row) {
@@ -208,9 +158,9 @@ export async function publishPuckDocument(options: {
   const row = await getPuckDocumentRow(options.documentKey);
   const fallback = getInitialPuckData(options.documentKey);
   const nextDraft = options.draftData
-    ? normalizePuckData(options.draftData as never, fallback)
+    ? normalizarDadosPuck(options.draftData, fallback)
     : row
-      ? normalizePuckData(row.draft_data, fallback)
+      ? normalizarDadosPuck(row.draft_data, fallback)
       : fallback;
 
   if (row) {

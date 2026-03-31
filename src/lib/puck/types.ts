@@ -1,11 +1,18 @@
 import type { ReactNode } from 'react';
-import type { Data } from '@puckeditor/core';
+import type { Config, Data } from '@puckeditor/core';
 
-export const lyraPuckDocumentKeys = ['landing-home'] as const;
+export const lyraPuckDocumentKeys = [
+  'landing-home',
+  'login-experience',
+  'app-shell',
+] as const;
 
 export type LyraPuckDocumentKey = (typeof lyraPuckDocumentKeys)[number];
 
 export const defaultLyraPuckDocumentKey: LyraPuckDocumentKey = 'landing-home';
+
+export type LyraPuckSurfaceKey = 'landing' | 'login' | 'app-shell';
+export type LyraPuckThemeVariant = 'aurora' | 'serene' | 'shell';
 
 export type LyraHeroBlockProps = {
   id?: string;
@@ -111,7 +118,32 @@ export type LyraStackContainerBlockProps = {
   content?: ReactNode;
 };
 
-export type LyraPuckData = Data;
+export type LyraPuckRootProps = {
+  title: string;
+  surfaceKey: LyraPuckSurfaceKey;
+  surfaceTitle: string;
+  surfaceDescription: string;
+  themeVariant: LyraPuckThemeVariant;
+  visibilityRules: string;
+};
+
+export type LyraPuckComponentProps = {
+  LyraHeroBlock: LyraHeroBlockProps;
+  LyraHeadingBlock: LyraHeadingBlockProps;
+  LyraBodyTextBlock: LyraBodyTextBlockProps;
+  LyraCTAButtonBlock: LyraCTAButtonBlockProps;
+  LyraMetricCardBlock: LyraMetricCardBlockProps;
+  LyraFeatureCardBlock: LyraFeatureCardBlockProps;
+  LyraFaqItemBlock: LyraFaqItemBlockProps;
+  LyraSectionContainerBlock: LyraSectionContainerBlockProps;
+  LyraStackContainerBlock: LyraStackContainerBlockProps;
+};
+
+export type LyraPuckData = Data<
+  Record<string, Record<string, unknown>>,
+  LyraPuckRootProps
+>;
+export type LyraPuckConfig = Config;
 
 export type LyraPuckDocumentMeta = {
   documentKey: LyraPuckDocumentKey;
@@ -130,13 +162,31 @@ export const lyraPuckDocuments: Array<{
   label: string;
   description: string;
   route: string;
+  surfaceKey: LyraPuckSurfaceKey;
 }> = [
   {
     key: 'landing-home',
     label: 'Landing Home',
     description:
-      'Primeiro documento oficial do Puck para a Lyra, usado para validar o editor visual com persistência real.',
-    route: '/admin/puck',
+      'Superfície pública principal da Lyra para narrativa, marketing e aquisição.',
+    route: '/admin/puck?documentKey=landing-home',
+    surfaceKey: 'landing',
+  },
+  {
+    key: 'login-experience',
+    label: 'Experiência de Login',
+    description:
+      'Superfície de autenticação com contexto editorial, confiança e conversão.',
+    route: '/admin/puck?documentKey=login-experience',
+    surfaceKey: 'login',
+  },
+  {
+    key: 'app-shell',
+    label: 'App Shell',
+    description:
+      'Superfície estrutural do app autenticado, com contexto de navegação e leitura operacional.',
+    route: '/admin/puck?documentKey=app-shell',
+    surfaceKey: 'app-shell',
   },
 ];
 

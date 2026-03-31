@@ -1,3 +1,4 @@
+import type { ComponentConfig } from '@puckeditor/core';
 import { ArrowUpRight, Sparkles } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -93,4 +94,4 @@ export const lyraHeroBlockConfig = {
       note={String(props.note ?? '')}
     />
   ),
-};
+} satisfies ComponentConfig<LyraHeroBlockProps>;

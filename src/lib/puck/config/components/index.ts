@@ -1,3 +1,5 @@
+import type { Config } from '@puckeditor/core';
+
 import { lyraBodyTextBlockConfig } from '@/lib/puck/config/components/body-text';
 import { lyraCTAButtonBlockConfig } from '@/lib/puck/config/components/cta-button';
 import { lyraFaqItemBlockConfig } from '@/lib/puck/config/components/faq-item';
@@ -18,4 +20,4 @@ export const lyraPuckComponents = {
   LyraFaqItemBlock: lyraFaqItemBlockConfig,
   LyraSectionContainerBlock: lyraSectionContainerBlockConfig,
   LyraStackContainerBlock: lyraStackContainerBlockConfig,
-};
+} satisfies NonNullable<Config['components']>;

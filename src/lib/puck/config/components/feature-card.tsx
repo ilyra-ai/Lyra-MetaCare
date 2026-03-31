@@ -1,3 +1,4 @@
+import type { ComponentConfig } from '@puckeditor/core';
 import { ArrowUpRight } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -124,4 +125,4 @@ export const lyraFeatureCardBlockConfig = {
       ctaHref={String(props.ctaHref ?? '#')}
     />
   ),
-};
+} satisfies ComponentConfig<LyraFeatureCardBlockProps>;

@@ -34,7 +34,15 @@ const defaultLandingHomeData: LyraPuckData = {
     },
   ],
   root: {
-    props: {},
+    props: {
+      title: 'Landing Home validada task 03',
+      surfaceKey: 'landing',
+      surfaceTitle: 'Landing pública da Lyra',
+      surfaceDescription:
+        'Superfície aberta para descoberta da proposta de valor, narrativa editorial e conversão suave.',
+      themeVariant: 'aurora',
+      visibilityRules: 'Pública\nMarketing\nAquisição',
+    },
   },
   zones: {
     'lyra-section-container-editorial:content': [
@@ -131,8 +139,186 @@ const defaultLandingHomeData: LyraPuckData = {
   },
 };
 
+const defaultLoginExperienceData: LyraPuckData = {
+  content: [
+    {
+      type: 'LyraHeroBlock',
+      props: {
+        id: 'lyra-hero-block-login-experience',
+        eyebrow: 'Acesso seguro e acolhedor',
+        title: 'Entre na sua experiência Lyra com calma, clareza e contexto.',
+        description:
+          'A superfície de login agora possui root próprio para controlar metadados, tom visual e regras de visibilidade no editor.',
+        ctaLabel: 'Entrar agora',
+        ctaHref: '/login',
+        note: 'Root configuration aplicada sobre a experiência de autenticação.',
+      },
+    },
+    {
+      type: 'LyraSectionContainerBlock',
+      props: {
+        id: 'lyra-section-container-login',
+        eyebrow: 'Superfície autenticável',
+        title: 'Contexto estrutural separado dos blocos internos.',
+        description:
+          'O root do login guarda título, descrição da superfície, tema e governança de exibição sem misturar isso ao conteúdo editorial.',
+        align: 'left',
+        surface: 'glass',
+      },
+    },
+  ],
+  root: {
+    props: {
+      title: 'Login Lyra validado task 03',
+      surfaceKey: 'login',
+      surfaceTitle: 'Experiência de login',
+      surfaceDescription:
+        'Superfície de autenticação com contexto acolhedor, linguagem clara e foco em confiança operacional.',
+      themeVariant: 'serene',
+      visibilityRules: 'Pública\nAutenticação\nAcesso controlado',
+    },
+  },
+  zones: {
+    'lyra-section-container-login:content': [
+      {
+        type: 'LyraHeadingBlock',
+        props: {
+          id: 'lyra-heading-block-login',
+          children: 'Uma raiz própria para a jornada de entrada.',
+          level: 'h2',
+          align: 'left',
+          tone: 'teal',
+        },
+      },
+      {
+        type: 'LyraBodyTextBlock',
+        props: {
+          id: 'lyra-body-text-block-login',
+          content:
+            'Nesta etapa, a superfície de login passa a ter identidade estrutural independente, mantendo os componentes internos reutilizáveis.',
+          align: 'left',
+          size: 'md',
+          tone: 'muted',
+        },
+      },
+      {
+        type: 'LyraCTAButtonBlock',
+        props: {
+          id: 'lyra-cta-button-login',
+          label: 'Abrir login real',
+          href: '/login',
+          variant: 'primary',
+          size: 'lg',
+          align: 'left',
+          supportingText:
+            'Use este CTA para validar a superfície pública de autenticação.',
+        },
+      },
+    ],
+  },
+};
+
+const defaultAppShellData: LyraPuckData = {
+  content: [
+    {
+      type: 'LyraSectionContainerBlock',
+      props: {
+        id: 'lyra-section-container-app-shell',
+        eyebrow: 'App shell da Lyra',
+        title: 'A raiz do app shell agora descreve o contexto operacional.',
+        description:
+          'O shell autenticado recebe governança própria, útil para experiências internas, módulos e futuras regras de papel.',
+        align: 'left',
+        surface: 'surface',
+      },
+    },
+  ],
+  root: {
+    props: {
+      title: 'App Shell validado task 03',
+      surfaceKey: 'app-shell',
+      surfaceTitle: 'App shell autenticado',
+      surfaceDescription:
+        'Superfície estrutural do app autenticado, pensada para navegação, contexto de módulo e leitura operacional.',
+      themeVariant: 'shell',
+      visibilityRules:
+        'Privada\nUsuário autenticado\nAdministrador quando necessário',
+    },
+  },
+  zones: {
+    'lyra-section-container-app-shell:content': [
+      {
+        type: 'LyraHeadingBlock',
+        props: {
+          id: 'lyra-heading-block-app-shell',
+          children: 'Navegação, contexto e governança em uma raiz dedicada.',
+          level: 'h2',
+          align: 'left',
+          tone: 'default',
+        },
+      },
+      {
+        type: 'LyraBodyTextBlock',
+        props: {
+          id: 'lyra-body-text-block-app-shell',
+          content:
+            'Esse documento serve para editar e publicar metadados do app autenticado sem misturar a estrutura da superfície com o conteúdo dos blocos internos.',
+          align: 'left',
+          size: 'md',
+          tone: 'muted',
+        },
+      },
+      {
+        type: 'LyraStackContainerBlock',
+        props: {
+          id: 'lyra-stack-container-app-shell',
+          title: 'Componentes internos preservados',
+          description:
+            'Mesmo com a raiz da superfície controlando o contexto, os filhos continuam livres para organizar métricas e narrativas internas.',
+          direction: 'horizontal',
+          gap: 'md',
+          surface: 'soft',
+        },
+      },
+    ],
+    'lyra-stack-container-app-shell:content': [
+      {
+        type: 'LyraMetricCardBlock',
+        props: {
+          id: 'lyra-metric-card-shell',
+          eyebrow: 'Módulos ativos',
+          value: '09',
+          unit: '',
+          description:
+            'Exemplo de leitura operacional dentro do shell autenticado.',
+          trendLabel: 'Estrutura íntegra para novas etapas',
+          trendDirection: 'up',
+          badgeLabel: 'Base viva',
+          icon: 'activity',
+        },
+      },
+      {
+        type: 'LyraFeatureCardBlock',
+        props: {
+          id: 'lyra-feature-card-shell',
+          eyebrow: 'Governança estrutural',
+          title: 'Superfície com root próprio e filhos preservados.',
+          description:
+            'Esse bloco comprova que o root envolve a experiência sem quebrar os componentes já renderizados no canvas.',
+          icon: 'shield',
+          tone: 'teal',
+          ctaLabel: 'Abrir dashboard',
+          ctaHref: '/',
+        },
+      },
+    ],
+  },
+};
+
 const initialDataByDocumentKey: Record<LyraPuckDocumentKey, LyraPuckData> = {
   'landing-home': defaultLandingHomeData,
+  'login-experience': defaultLoginExperienceData,
+  'app-shell': defaultAppShellData,
 };
 
 export function getInitialPuckData(

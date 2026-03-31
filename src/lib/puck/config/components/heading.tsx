@@ -1,3 +1,4 @@
+import type { ComponentConfig } from '@puckeditor/core';
 import {
   juntarClasses,
   obterClasseAlinhamento,
@@ -88,4 +89,4 @@ export const lyraHeadingBlockConfig = {
       {String(props.children ?? '')}
     </LyraHeadingBlock>
   ),
-};
+} satisfies ComponentConfig<LyraHeadingBlockProps>;

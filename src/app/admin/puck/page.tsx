@@ -1,6 +1,23 @@
 import { PuckEditorShell } from '@/components/admin/puck/PuckEditorShell';
-import { defaultLyraPuckDocumentKey } from '@/lib/puck/types';
+import {
+  defaultLyraPuckDocumentKey,
+  isLyraPuckDocumentKey,
+} from '@/lib/puck/types';
 
-export default function AdminPuckPage() {
-  return <PuckEditorShell documentKey={defaultLyraPuckDocumentKey} />;
+export default async function AdminPuckPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ documentKey?: string }>;
+}) {
+  const { documentKey } = await searchParams;
+
+  return (
+    <PuckEditorShell
+      documentKey={
+        documentKey && isLyraPuckDocumentKey(documentKey)
+          ? documentKey
+          : defaultLyraPuckDocumentKey
+      }
+    />
+  );
 }

@@ -1,4 +1,4 @@
-import type { SlotComponent } from '@puckeditor/core';
+import type { ComponentConfig, SlotComponent } from '@puckeditor/core';
 
 import {
   juntarClasses,
@@ -118,4 +118,4 @@ export const lyraStackContainerBlockConfig = {
       content={props.content as SlotComponent | undefined}
     />
   ),
-};
+} satisfies ComponentConfig<LyraStackContainerBlockProps>;

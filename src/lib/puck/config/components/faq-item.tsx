@@ -1,3 +1,4 @@
+import type { ComponentConfig } from '@puckeditor/core';
 import {
   Accordion,
   AccordionContent,
@@ -69,4 +70,4 @@ export const lyraFaqItemBlockConfig = {
       answer={String(props.answer ?? '')}
     />
   ),
-};
+} satisfies ComponentConfig<LyraFaqItemBlockProps>;

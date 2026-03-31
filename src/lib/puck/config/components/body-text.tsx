@@ -1,3 +1,4 @@
+import type { ComponentConfig } from '@puckeditor/core';
 import {
   juntarClasses,
   obterClasseAlinhamento,
@@ -92,4 +93,4 @@ export const lyraBodyTextBlockConfig = {
       tone={(props.tone as LyraBodyTextBlockProps['tone']) ?? 'muted'}
     />
   ),
-};
+} satisfies ComponentConfig<LyraBodyTextBlockProps>;

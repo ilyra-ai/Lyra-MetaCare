@@ -1,7 +1,14 @@
-import type { Config } from '@puckeditor/core';
-
 import { lyraPuckComponents } from '@/lib/puck/config/components';
+import { obterRootConfigLyra } from '@/lib/puck/config/root';
+import type { LyraPuckConfig, LyraPuckDocumentKey } from '@/lib/puck/types';
 
-export const lyraPuckConfig = {
-  components: lyraPuckComponents,
-} satisfies Config;
+export function obterConfigPuckLyra(
+  documentKey: LyraPuckDocumentKey
+): LyraPuckConfig {
+  return {
+    components: lyraPuckComponents,
+    root: obterRootConfigLyra(documentKey),
+  };
+}
+
+export const lyraPuckConfig = obterConfigPuckLyra('landing-home');

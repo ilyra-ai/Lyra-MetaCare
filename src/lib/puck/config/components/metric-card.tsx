@@ -1,3 +1,4 @@
+import type { ComponentConfig } from '@puckeditor/core';
 import { Badge } from '@/components/ui/badge';
 import {
   Card,
@@ -139,4 +140,4 @@ export const lyraMetricCardBlockConfig = {
       icon={(props.icon as LyraMetricCardBlockProps['icon']) ?? 'activity'}
     />
   ),
-};
+} satisfies ComponentConfig<LyraMetricCardBlockProps>;
