@@ -88,7 +88,7 @@ git push origin main
 - [x] TASK 02 — Component Configuration
 - [x] TASK 03 — Root Configuration
 - [x] TASK 04 — Multi-column Layouts
-- [ ] TASK 05 — Categories
+- [x] TASK 05 — Categories
 - [ ] TASK 06 — Rich Text Editing
 - [ ] TASK 07 — Dynamic Props
 - [ ] TASK 08 — Dynamic Fields
