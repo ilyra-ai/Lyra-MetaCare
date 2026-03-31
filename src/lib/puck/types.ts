@@ -8,7 +8,7 @@ export type LyraPuckDocumentKey = (typeof lyraPuckDocumentKeys)[number];
 export const defaultLyraPuckDocumentKey: LyraPuckDocumentKey = 'landing-home';
 
 export type LyraHeroBlockProps = {
-  id: string;
+  id?: string;
   eyebrow: string;
   title: string;
   description: string;
@@ -99,7 +99,7 @@ export type LyraSectionContainerBlockProps = {
   description: string;
   align: LyraTextAlign;
   surface: LyraSurfaceVariant;
-  children?: ReactNode;
+  content?: ReactNode;
 };
 
 export type LyraStackContainerBlockProps = {
@@ -108,7 +108,7 @@ export type LyraStackContainerBlockProps = {
   direction: LyraStackDirection;
   gap: LyraStackGap;
   surface: LyraStackSurface;
-  children?: ReactNode;
+  content?: ReactNode;
 };
 
 export type LyraPuckData = Data;

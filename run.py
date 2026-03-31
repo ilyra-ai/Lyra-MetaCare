@@ -1847,6 +1847,7 @@ def action_setup_env(on_line: Callable[[str], None] | None = None) -> bool:
     """Configura o .env.local com os valores padrão especificados."""
     emit = on_line or (lambda s: None)
     env_mgr.load()
+    docker_port = DOCKER_MYSQL_PORT
 
     emit("[INFO] Configurando .env.local...")
     for key, default in DEFAULT_ENV.items():
@@ -1858,6 +1859,12 @@ def action_setup_env(on_line: Callable[[str], None] | None = None) -> bool:
             emit(f"  [=] {key} (mantido valor existente)")
         else:
             emit(f"  [-] {key} (sem valor padrao)")
+
+    for port_key in ("MYSQL_PORT", "MYSQL_HOST_PORT"):
+        current_port = env_mgr.get(port_key)
+        if current_port != docker_port:
+            env_mgr.upsert(port_key, docker_port)
+            emit(f"  [~] {port_key} ajustado para {docker_port} (sincronizado com Docker)")
 
     env_mgr.ensure_auth_secret()
     emit("[OK] .env.local configurado.")
