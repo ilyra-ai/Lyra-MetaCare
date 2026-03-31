@@ -83,14 +83,61 @@ pnpm run check:format
 - render da superfície muda de verdade;
 - `children` continuam íntegros.
 
+### Evidências reais executadas
+
+- Ambiente validado em `WSL2 Ubuntu 22.04.5 LTS`.
+- Aplicação reiniciada com `python run.py dev`.
+- Causa raiz adicional resolvida no dev:
+  - o loader `@dyad-sh/nextjs-webpack-component-tagger` estava quebrando o `next dev`;
+  - a ativação agora só ocorre com `ENABLE_DYAD_COMPONENT_TAGGER=true`;
+  - após isso, os chunks `_next/static` voltaram a responder `200`.
+- Validação real no navegador via Playwright:
+  - `landing-home` abriu corretamente em `/admin/puck?documentKey=landing-home`;
+  - `login-experience` abriu corretamente em `/admin/puck?documentKey=login-experience`;
+  - `app-shell` abriu corretamente em `/admin/puck?documentKey=app-shell`.
+- Validação real dos campos de root:
+  - `#root_text_title`
+  - `#root_text_surfaceTitle`
+  - `#root_textarea_surfaceDescription`
+  - `#root_textarea_visibilityRules`
+- Publicação real confirmada para `landing-home`:
+  - `title`: `Landing Home validada task 03`
+  - `surfaceTitle`: `Landing pública com raiz validada`
+  - `surfaceDescription`: `Superfície pública da Lyra validada na task 03 com root independente, governança estrutural e render contextual real.`
+  - `updatedAt`: `2026-03-31 20:42:32`
+- Confirmação real via endpoint autenticado:
+  - `GET /api/admin/puck/documents/landing-home`
+  - `status: 200`
+  - `draftData.root.props.title = Landing Home validada task 03`
+  - `publishedData.root.props.title = Landing Home validada task 03`
+  - `draftData.root.props.surfaceTitle = Landing pública com raiz validada`
+  - `publishedData.root.props.surfaceTitle = Landing pública com raiz validada`
+- Confirmação real das demais superfícies:
+  - `login-experience` carregou `surfaceKey = login` e `themeVariant = serene`
+  - `app-shell` carregou `surfaceKey = app-shell` e `themeVariant = shell`
+
+### Gate executado nesta etapa
+
+```bash
+pnpm run fix:format
+pnpm run fix:lint
+pnpm run check:lint
+pnpm run check:format
+pnpm run check:types
+pnpm run test
+pnpm run build
+```
+
+Todos executados com sucesso nesta etapa.
+
 ---
 
 ## 9. Definição de pronto
 
-- [ ] Root criado
-- [ ] Root fields criados
-- [ ] Root render funcional
-- [ ] Superfícies mapeadas
-- [ ] Validação concluída
-- [ ] Checks concluídos
+- [x] Root criado
+- [x] Root fields criados
+- [x] Root render funcional
+- [x] Superfícies mapeadas
+- [x] Validação concluída
+- [x] Checks concluídos
 - [ ] Commit e push concluídos

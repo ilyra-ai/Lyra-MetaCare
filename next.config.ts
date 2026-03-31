@@ -1,5 +1,7 @@
 import type { NextConfig } from 'next';
 
+const habilitarTaggerDyad = process.env.ENABLE_DYAD_COMPONENT_TAGGER === 'true';
+
 const nextConfig: NextConfig = {
   webpack: (config) => {
     config.resolve.alias = {
@@ -20,7 +22,7 @@ const nextConfig: NextConfig = {
       buffer: false,
     };
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' && habilitarTaggerDyad) {
       config.module.rules.push({
         test: /\.(jsx|tsx)$/,
         exclude: /node_modules/,

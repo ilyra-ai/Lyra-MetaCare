@@ -86,7 +86,7 @@ git push origin main
 
 - [x] TASK 01 — Getting Started
 - [x] TASK 02 — Component Configuration
-- [ ] TASK 03 — Root Configuration
+- [x] TASK 03 — Root Configuration
 - [ ] TASK 04 — Multi-column Layouts
 - [ ] TASK 05 — Categories
 - [ ] TASK 06 — Rich Text Editing
