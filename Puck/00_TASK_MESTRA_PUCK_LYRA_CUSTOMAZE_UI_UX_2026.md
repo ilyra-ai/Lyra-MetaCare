@@ -259,7 +259,7 @@ git push origin main
 - [ ] Checks executados com sucesso.
 - [ ] Rota ou tela validada em navegador.
 - [ ] Estado real da task atualizado.
-- [ ] Commit e push realizados.
+- [x] Commit e push realizados.
 - [ ] Descrição honesta do que entrou e do que ainda não entra.
 
 ## Riscos e causas raiz a observar
@@ -284,8 +284,8 @@ git push origin main
 - [ ] Validação visual concluída.
 - [ ] Validação em navegador concluída.
 - [ ] Task atualizada.
-- [ ] Commit feito.
-- [ ] Push feito.
+- [x] Commit feito.
+- [x] Push feito.
 
 ## Notas específicas desta etapa
 

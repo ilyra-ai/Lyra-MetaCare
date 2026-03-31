@@ -43,7 +43,7 @@ git push origin main
 - [x] Validação técnica concluída
 - [x] Validação visual concluída
 - [x] Task mestra atualizada
-- [ ] Commit e push concluídos
+- [x] Commit e push concluídos
 
 ## O que foi implementado de verdade
 
