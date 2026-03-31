@@ -152,4 +152,4 @@ cd /home/ilyra/Lyra-MetaCare && curl -s http://127.0.0.1:3000/api/public/puck/do
 - [x] Validação técnica concluída
 - [x] Validação visual concluída
 - [x] Task mestra atualizada
-- [ ] Commit e push concluídos
+- [x] Commit e push concluídos

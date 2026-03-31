@@ -14,8 +14,10 @@ const defaultLandingHomeData: LyraPuckData = {
         title: 'Editor visual real, claro e pronto para evoluir.',
         description:
           'Este primeiro documento prova a integração do Puck com a Lyra em modo administrativo, com preview renderizado por Render e persistência real em MySQL.',
+        ctaMode: 'manual-url',
         ctaLabel: 'Abrir experiência pública',
         ctaHref: '/login',
+        ctaDocumentKey: 'login-experience',
         note: 'Base inicial do Lyra Customaze UI UX com Puck.',
       },
     },
@@ -236,8 +238,10 @@ const defaultLoginExperienceData: LyraPuckData = {
         title: 'Entre na sua experiência Lyra com calma, clareza e contexto.',
         description:
           'A superfície de login agora possui root próprio para controlar metadados, tom visual e regras de visibilidade no editor.',
+        ctaMode: 'manual-url',
         ctaLabel: 'Entrar agora',
         ctaHref: '/login',
+        ctaDocumentKey: 'login-experience',
         note: 'Root configuration aplicada sobre a experiência de autenticação.',
       },
     },

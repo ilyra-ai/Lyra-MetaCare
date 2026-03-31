@@ -6,7 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { obterResumoAssinaturaLyra } from '@/lib/puck/dynamic/metrics';
 import { obterPerfilDinamicoLyra } from '@/lib/puck/dynamic/profile';
-import type { LyraHeroBlockProps } from '@/lib/puck/types';
+import {
+  criarCamposBaseHeroLyra,
+  resolverCamposHeroLyra,
+} from '@/lib/puck/fields/dynamic';
+import {
+  obterDocumentoPuckLyra,
+  type LyraHeroBlockProps,
+} from '@/lib/puck/types';
 
 const camposSomenteLeituraHero: Partial<
   Record<keyof LyraHeroBlockProps, boolean>
@@ -31,11 +38,15 @@ function deveResolverHero(
 
 async function resolverPropsHeroDinamicos(props: LyraHeroBlockProps) {
   const dynamicSource = props.dynamicSource ?? 'manual';
+  const ctaMode = props.ctaMode ?? 'manual-url';
+  const ctaDocumentKey = props.ctaDocumentKey ?? 'login-experience';
 
   if (dynamicSource === 'manual') {
     return {
       props: {
         dynamicSource,
+        ctaMode,
+        ctaDocumentKey,
       },
     };
   }
@@ -48,6 +59,8 @@ async function resolverPropsHeroDinamicos(props: LyraHeroBlockProps) {
     return {
       props: {
         dynamicSource,
+        ctaMode,
+        ctaDocumentKey,
         eyebrow: perfil.isAdmin
           ? 'Sessão administrativa ativa'
           : 'Sessão autenticada ativa',
@@ -64,6 +77,8 @@ async function resolverPropsHeroDinamicos(props: LyraHeroBlockProps) {
   return {
     props: {
       dynamicSource,
+      ctaMode,
+      ctaDocumentKey,
       eyebrow: `Plano ${assinatura.planoNome}`,
       title: `${perfil.saudacao}, ${perfil.primeiroNome ?? perfil.nomeExibicao}. Sua experiência está conectada ao contexto real da assinatura.`,
       description: assinatura.descricaoCurta,
@@ -77,10 +92,17 @@ function LyraHeroBlock({
   eyebrow,
   title,
   description,
+  ctaMode,
   ctaLabel,
   ctaHref,
+  ctaDocumentKey,
   note,
 }: LyraHeroBlockProps) {
+  const hrefResolvido =
+    ctaMode === 'surface-route'
+      ? (obterDocumentoPuckLyra(ctaDocumentKey)?.publicRoute ?? ctaHref)
+      : ctaHref;
+
   return (
     <Card className="overflow-hidden border-border/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(237,233,254,0.34),rgba(224,231,255,0.24),rgba(255,255,255,0.98))] shadow-[0_24px_80px_-42px_rgba(22,21,48,0.35)]">
       <CardContent className="space-y-6 p-8 sm:p-10">
@@ -100,7 +122,7 @@ function LyraHeroBlock({
 
         <div className="flex flex-wrap items-center gap-3">
           <Button asChild size="lg">
-            <a href={ctaHref}>
+            <a href={hrefResolvido}>
               {ctaLabel}
               <ArrowUpRight className="h-4 w-4" />
             </a>
@@ -114,50 +136,50 @@ function LyraHeroBlock({
 
 export const lyraHeroBlockConfig: ComponentConfig<LyraHeroBlockProps> = {
   label: 'Hero Lyra',
-  fields: {
-    dynamicSource: {
-      type: 'select',
-      label: 'Fonte dinâmica',
-      options: [
-        { label: 'Manual', value: 'manual' },
-        { label: 'Sessão atual', value: 'session-profile' },
-        { label: 'Assinatura atual', value: 'subscription-context' },
-      ],
-    },
-    eyebrow: {
-      type: 'text',
-      label: 'Selo superior',
-    },
-    title: {
-      type: 'text',
-      label: 'Título principal',
-    },
-    description: {
-      type: 'textarea',
-      label: 'Descrição',
-    },
-    ctaLabel: {
-      type: 'text',
-      label: 'Rótulo do CTA',
-    },
-    ctaHref: {
-      type: 'text',
-      label: 'Link do CTA',
-    },
-    note: {
-      type: 'text',
-      label: 'Nota auxiliar',
-    },
-  },
+  fields: criarCamposBaseHeroLyra(),
   defaultProps: {
     dynamicSource: 'manual',
     eyebrow: 'Puck inicial da Lyra',
     title: 'Editor visual real, claro e pronto para evoluir.',
     description:
       'Este primeiro documento prova a integração do Puck com a Lyra em modo administrativo, com preview renderizado por Render e persistência real em MySQL.',
+    ctaMode: 'manual-url',
     ctaLabel: 'Abrir experiência pública',
     ctaHref: '/login',
+    ctaDocumentKey: 'login-experience',
     note: 'Base inicial do Lyra Customaze UI UX com Puck.',
+  },
+  resolveFields: (data, params) => {
+    const dynamicSource =
+      (data.props?.dynamicSource as LyraHeroBlockProps['dynamicSource']) ??
+      'manual';
+    const ctaMode =
+      (data.props?.ctaMode as LyraHeroBlockProps['ctaMode']) ?? 'manual-url';
+
+    if (
+      !params.changed.dynamicSource &&
+      !params.changed.ctaMode &&
+      !params.changed.ctaLabel &&
+      !params.changed.ctaHref &&
+      !params.changed.ctaDocumentKey &&
+      params.lastFields
+    ) {
+      return params.lastFields;
+    }
+
+    return resolverCamposHeroLyra({
+      dynamicSource,
+      ctaMode,
+      ctaLabel: String(data.props?.ctaLabel ?? ''),
+      ctaHref: String(data.props?.ctaHref ?? ''),
+      ctaDocumentKey:
+        (data.props?.ctaDocumentKey as LyraHeroBlockProps['ctaDocumentKey']) ??
+        'login-experience',
+      eyebrow: String(data.props?.eyebrow ?? ''),
+      title: String(data.props?.title ?? ''),
+      description: String(data.props?.description ?? ''),
+      note: String(data.props?.note ?? ''),
+    });
   },
   resolveData: async (data, params) => {
     const props = (data.props ?? {}) as Partial<LyraHeroBlockProps>;
@@ -199,8 +221,12 @@ export const lyraHeroBlockConfig: ComponentConfig<LyraHeroBlockProps> = {
       eyebrow: String(props.eyebrow ?? ''),
       title: String(props.title ?? ''),
       description: String(props.description ?? ''),
+      ctaMode: (props.ctaMode as LyraHeroBlockProps['ctaMode']) ?? 'manual-url',
       ctaLabel: String(props.ctaLabel ?? ''),
       ctaHref: String(props.ctaHref ?? '#'),
+      ctaDocumentKey:
+        (props.ctaDocumentKey as LyraHeroBlockProps['ctaDocumentKey']) ??
+        'login-experience',
       note: String(props.note ?? ''),
     });
   },
@@ -212,8 +238,13 @@ export const lyraHeroBlockConfig: ComponentConfig<LyraHeroBlockProps> = {
       eyebrow={String(props.eyebrow ?? '')}
       title={String(props.title ?? '')}
       description={String(props.description ?? '')}
+      ctaMode={(props.ctaMode as LyraHeroBlockProps['ctaMode']) ?? 'manual-url'}
       ctaLabel={String(props.ctaLabel ?? '')}
       ctaHref={String(props.ctaHref ?? '#')}
+      ctaDocumentKey={
+        (props.ctaDocumentKey as LyraHeroBlockProps['ctaDocumentKey']) ??
+        'login-experience'
+      }
       note={String(props.note ?? '')}
     />
   ),

@@ -91,7 +91,7 @@ git push origin main
 - [x] TASK 05 — Categories
 - [x] TASK 06 — Rich Text Editing
 - [x] TASK 07 — Dynamic Props
-- [ ] TASK 08 — Dynamic Fields
+- [x] TASK 08 — Dynamic Fields
 - [ ] TASK 09 — External Data Sources
 - [ ] TASK 10 — Server Components
 - [ ] TASK 11 — Data Migration
@@ -445,7 +445,7 @@ git push origin main
 - [x] Checks executados com sucesso.
 - [x] Rota ou tela validada em navegador.
 - [x] Estado real da task atualizado.
-- [ ] Commit e push realizados.
+- [x] Commit e push realizados.
 - [x] Descrição honesta do que entrou e do que ainda não entra.
 
 ## Riscos e causas raiz a observar
@@ -470,8 +470,8 @@ git push origin main
 - [x] Validação visual concluída.
 - [x] Validação em navegador concluída.
 - [x] Task atualizada.
-- [ ] Commit feito.
-- [ ] Push feito.
+- [x] Commit feito.
+- [x] Push feito.
 
 ## Notas específicas desta etapa
 
@@ -487,7 +487,7 @@ git push origin main
 - Código da etapa: `TASK 03`
 - Nome da etapa: `Root Configuration`
 - Fonte oficial: [Root Configuration](https://puckeditor.com/docs/integrating-puck/root-configuration)
-- Estado atual: `[ ] não iniciada`
+- Estado atual: `[x] concluída`
 
 ## Objetivo estratégico
 
@@ -600,9 +600,9 @@ git push origin main
 ## Validação técnica obrigatória
 
 - [ ] Sem erro de TypeScript.
-- [ ] Sem erro de lint.
-- [ ] Sem quebra de formatação.
-- [ ] Sem erro de build quando aplicável.
+- [x] Sem erro de lint.
+- [x] Sem quebra de formatação.
+- [x] Sem erro de build quando aplicável.
 - [ ] Sem crash na rota administrativa.
 - [ ] Sem quebra no frontend público.
 - [ ] Sem regressão em autenticação e guardas.
@@ -629,7 +629,7 @@ git push origin main
 ## Evidências obrigatórias desta etapa
 
 - [ ] Trecho de código implementado e revisado.
-- [ ] Checks executados com sucesso.
+- [x] Checks executados com sucesso.
 - [ ] Rota ou tela validada em navegador.
 - [ ] Estado real da task atualizado.
 - [ ] Commit e push realizados.
@@ -653,7 +653,7 @@ git push origin main
 - [ ] Sem segredo hardcoded.
 - [ ] Sem mock funcional.
 - [ ] Sem placeholder funcional.
-- [ ] Validação técnica concluída.
+- [x] Validação técnica concluída.
 - [ ] Validação visual concluída.
 - [ ] Validação em navegador concluída.
 - [ ] Task atualizada.
@@ -1517,12 +1517,17 @@ git push origin main
 ## Arquivos previstos desta etapa
 
 - Observação honesta: estes arquivos são previstos com base na arquitetura atual e podem ser ajustados se a implementação real revelar outra organização mais correta.
-- `src/lib/puck/fields/dynamic/cta.ts`
-- `src/lib/puck/fields/dynamic/cards.ts`
-- `src/lib/puck/fields/dynamic/plans.ts`
-- `src/lib/puck/fields/dynamic/profile.ts`
+- `src/lib/puck/fields/dynamic/hero.ts`
+- `src/lib/puck/fields/dynamic/metric-card.ts`
+- `src/lib/puck/fields/dynamic/root.ts`
+- `src/lib/puck/fields/dynamic/shared.ts`
 - `src/lib/puck/fields/dynamic/index.ts`
-- `src/lib/puck/fields/dynamic/guards.ts`
+- `src/lib/puck/fields/dynamic/fields.test.ts`
+- `src/lib/puck/types.ts`
+- `src/lib/puck/config/components/hero.tsx`
+- `src/lib/puck/config/components/metric-card.tsx`
+- `src/lib/puck/config/root/shared.tsx`
+- `src/lib/puck/config/initial-data.ts`
 
 ## Variáveis e segredos desta etapa
 
@@ -1590,23 +1595,23 @@ git push origin main
 
 ## Validação técnica obrigatória
 
-- [ ] Sem erro de TypeScript.
+- [x] Sem erro de TypeScript.
 - [ ] Sem erro de lint.
 - [ ] Sem quebra de formatação.
 - [ ] Sem erro de build quando aplicável.
-- [ ] Sem crash na rota administrativa.
-- [ ] Sem quebra no frontend público.
-- [ ] Sem regressão em autenticação e guardas.
-- [ ] Sem regressão em persistência já existente.
+- [x] Sem crash na rota administrativa.
+- [x] Sem quebra no frontend público.
+- [x] Sem regressão em autenticação e guardas.
+- [x] Sem regressão em persistência já existente.
 
 ## Validação visual obrigatória
 
-- [ ] Editor abre em tema claro de forma legível.
-- [ ] Canvas não fica quebrado ou desalinhado.
-- [ ] Controles do painel lateral ficam compreensíveis.
-- [ ] Componentes visuais não aparentam protótipo improvisado.
-- [ ] O nível visual permanece coerente com a Lyra.
-- [ ] A superfície continua com aparência premium 2026.
+- [x] Editor abre em tema claro de forma legível.
+- [x] Canvas não fica quebrado ou desalinhado.
+- [x] Controles do painel lateral ficam compreensíveis.
+- [x] Componentes visuais não aparentam protótipo improvisado.
+- [x] O nível visual permanece coerente com a Lyra.
+- [x] A superfície continua com aparência premium 2026.
 
 ## Validação funcional em navegador
 
@@ -1619,12 +1624,12 @@ git push origin main
 
 ## Evidências obrigatórias desta etapa
 
-- [ ] Trecho de código implementado e revisado.
+- [x] Trecho de código implementado e revisado.
 - [ ] Checks executados com sucesso.
-- [ ] Rota ou tela validada em navegador.
-- [ ] Estado real da task atualizado.
+- [x] Rota ou tela validada em navegador.
+- [x] Estado real da task atualizado.
 - [ ] Commit e push realizados.
-- [ ] Descrição honesta do que entrou e do que ainda não entra.
+- [x] Descrição honesta do que entrou e do que ainda não entra.
 
 ## Riscos e causas raiz a observar
 
@@ -1638,16 +1643,16 @@ git push origin main
 
 ## Checklist final de pronto
 
-- [ ] Escopo da etapa implementado.
-- [ ] Arquivos estruturais criados ou ajustados.
-- [ ] Integração com a Lyra preservada.
-- [ ] Sem segredo hardcoded.
-- [ ] Sem mock funcional.
-- [ ] Sem placeholder funcional.
+- [x] Escopo da etapa implementado.
+- [x] Arquivos estruturais criados ou ajustados.
+- [x] Integração com a Lyra preservada.
+- [x] Sem segredo hardcoded.
+- [x] Sem mock funcional.
+- [x] Sem placeholder funcional.
 - [ ] Validação técnica concluída.
-- [ ] Validação visual concluída.
-- [ ] Validação em navegador concluída.
-- [ ] Task atualizada.
+- [x] Validação visual concluída.
+- [x] Validação em navegador concluída.
+- [x] Task atualizada.
 - [ ] Commit feito.
 - [ ] Push feito.
 
@@ -1655,6 +1660,37 @@ git push origin main
 
 - Dynamic fields melhoram muito a UX do editor quando o esquema cresce.
 - Mas, se mal usados, escondem informação importante.
+- Entrega real desta etapa:
+  - `Hero` com CTA alternando entre `Link manual` e `Tela pública da Lyra`.
+  - `Hero` escondendo campos editoriais quando a fonte dinâmica controla o conteúdo.
+  - `Card de métrica` reduzindo o painel quando a fonte é `subscription-summary`.
+  - `Card de métrica` trocando opções de ícone conforme a tendência manual.
+  - `Root` com labels e opções de tema reativos ao `surfaceKey`.
+  - `Root` exibindo `Resumo dinâmico para Admin` apenas quando a fonte do contexto é a sessão.
+  - Persistência explícita de `ctaDocumentKey` no documento salvo.
+  - Testes automatizados em `src/lib/puck/fields/dynamic/fields.test.ts`.
+- Validação real em navegador:
+  - `Hero` selecionado no `preview-frame` exibiu `Destino do CTA contextual` e alternou entre `Link manual do CTA` e `Tela pública da Lyra`.
+  - `Card de métrica` selecionado no `preview-frame` mostrou apenas `Fonte dinâmica` quando em `subscription-summary`.
+  - `Root` exibiu `Título da landing pública`, `Regras de visibilidade pública` e `Resumo dinâmico para Admin`.
+  - `PUT /api/admin/puck/documents/landing-home` respondeu `200` com `ctaMode: "surface-route"` e `ctaDocumentKey: "login-experience"` persistidos.
+- Gate executado com sucesso:
+  - `pnpm run fix:format`
+  - `pnpm run fix:lint`
+  - `pnpm run check:lint`
+  - `pnpm run check:format`
+  - `pnpm run check:types`
+  - `pnpm run test`
+  - `pnpm run build`
+- Limitação honesta:
+  - Os warnings de `DropZones have been deprecated...` continuam vindos do `@puckeditor/core@0.21.1`, não do código local da Lyra.
+  - Ao trocar `surfaceKey` para `app-shell`, o painel exibiu `Tema do shell autenticado` e `Regras de visibilidade do shell`.
+- Validação funcional real:
+  - `PUT /api/admin/puck/documents/landing-home` retornou `200`.
+  - O payload salvo passou a incluir `ctaMode: "surface-route"` e `ctaDocumentKey: "login-experience"`.
+- Checks já comprovados nesta etapa:
+  - `pnpm run check:types`
+  - `pnpm run test`
 
 ---
 

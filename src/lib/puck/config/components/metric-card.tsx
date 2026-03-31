@@ -12,6 +12,10 @@ import {
   obterIconeDecorativo,
 } from '@/lib/puck/config/components/helpers';
 import { obterResumoAssinaturaLyra } from '@/lib/puck/dynamic/metrics';
+import {
+  criarCamposBaseMetricCardLyra,
+  resolverCamposMetricCardLyra,
+} from '@/lib/puck/fields/dynamic';
 import type { LyraMetricCardBlockProps } from '@/lib/puck/types';
 
 const camposSomenteLeituraMetricCard: Partial<
@@ -133,62 +137,7 @@ function LyraMetricCardBlock({
 
 export const lyraMetricCardBlockConfig = {
   label: 'Card de métrica',
-  fields: {
-    dynamicSource: {
-      type: 'select',
-      label: 'Fonte dinâmica',
-      options: [
-        { label: 'Manual', value: 'manual' },
-        { label: 'Resumo da assinatura', value: 'subscription-summary' },
-      ],
-    },
-    eyebrow: {
-      type: 'text',
-      label: 'Sobretítulo',
-    },
-    value: {
-      type: 'text',
-      label: 'Valor principal',
-    },
-    unit: {
-      type: 'text',
-      label: 'Unidade',
-    },
-    description: {
-      type: 'textarea',
-      label: 'Descrição',
-    },
-    trendLabel: {
-      type: 'text',
-      label: 'Texto de tendência',
-    },
-    trendDirection: {
-      type: 'select',
-      label: 'Direção da tendência',
-      options: [
-        { label: 'Alta', value: 'up' },
-        { label: 'Queda', value: 'down' },
-        { label: 'Estável', value: 'neutral' },
-      ],
-    },
-    badgeLabel: {
-      type: 'text',
-      label: 'Badge',
-    },
-    icon: {
-      type: 'select',
-      label: 'Ícone',
-      options: [
-        { label: 'Sparkles', value: 'sparkles' },
-        { label: 'Coração', value: 'heart' },
-        { label: 'CPU', value: 'cpu' },
-        { label: 'Calendário', value: 'calendar' },
-        { label: 'Escudo', value: 'shield' },
-        { label: 'Mensagem', value: 'message' },
-        { label: 'Atividade', value: 'activity' },
-      ],
-    },
-  },
+  fields: criarCamposBaseMetricCardLyra(),
   defaultProps: {
     dynamicSource: 'manual',
     eyebrow: 'Frequência em harmonia',
@@ -200,6 +149,39 @@ export const lyraMetricCardBlockConfig = {
     trendDirection: 'up',
     badgeLabel: 'Pico harmônico',
     icon: 'heart',
+  },
+  resolveFields: (data, params) => {
+    const dynamicSource =
+      (data.props
+        ?.dynamicSource as LyraMetricCardBlockProps['dynamicSource']) ??
+      'manual';
+    const trendDirection =
+      (data.props
+        ?.trendDirection as LyraMetricCardBlockProps['trendDirection']) ??
+      'neutral';
+
+    if (
+      !params.changed.dynamicSource &&
+      !params.changed.trendDirection &&
+      !params.changed.icon &&
+      !params.changed.badgeLabel &&
+      params.lastFields
+    ) {
+      return params.lastFields;
+    }
+
+    return resolverCamposMetricCardLyra({
+      dynamicSource,
+      trendDirection,
+      eyebrow: String(data.props?.eyebrow ?? ''),
+      value: String(data.props?.value ?? ''),
+      unit: String(data.props?.unit ?? ''),
+      description: String(data.props?.description ?? ''),
+      trendLabel: String(data.props?.trendLabel ?? ''),
+      badgeLabel: String(data.props?.badgeLabel ?? ''),
+      icon:
+        (data.props?.icon as LyraMetricCardBlockProps['icon']) ?? 'activity',
+    });
   },
   resolveData: async (data, params) => {
     const props = (data.props ?? {}) as Partial<LyraMetricCardBlockProps>;

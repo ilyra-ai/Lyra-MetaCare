@@ -23,8 +23,10 @@ export type LyraHeroBlockProps = {
   eyebrow: string;
   title: string;
   description: string;
+  ctaMode: LyraHeroCtaMode;
   ctaLabel: string;
   ctaHref: string;
+  ctaDocumentKey: LyraPuckDocumentKey;
   note: string;
 };
 
@@ -41,6 +43,7 @@ export type LyraButtonVariant =
   | 'ghost';
 export type LyraButtonSize = 'sm' | 'default' | 'lg' | 'xl';
 export type LyraTrendDirection = 'up' | 'down' | 'neutral';
+export type LyraHeroCtaMode = 'manual-url' | 'surface-route';
 export type LyraHeroDynamicSource =
   | 'manual'
   | 'session-profile'
@@ -218,6 +221,8 @@ export const lyraPuckDocuments: Array<{
   label: string;
   description: string;
   route: string;
+  publicRoute: string;
+  publicLabel: string;
   surfaceKey: LyraPuckSurfaceKey;
 }> = [
   {
@@ -226,6 +231,8 @@ export const lyraPuckDocuments: Array<{
     description:
       'Superfície pública principal da Lyra para narrativa, marketing e aquisição.',
     route: '/admin/puck?documentKey=landing-home',
+    publicRoute: '/',
+    publicLabel: 'Landing pública',
     surfaceKey: 'landing',
   },
   {
@@ -234,6 +241,8 @@ export const lyraPuckDocuments: Array<{
     description:
       'Superfície de autenticação com contexto editorial, confiança e conversão.',
     route: '/admin/puck?documentKey=login-experience',
+    publicRoute: '/login',
+    publicLabel: 'Tela de login',
     surfaceKey: 'login',
   },
   {
@@ -242,6 +251,8 @@ export const lyraPuckDocuments: Array<{
     description:
       'Superfície estrutural do app autenticado, com contexto de navegação e leitura operacional.',
     route: '/admin/puck?documentKey=app-shell',
+    publicRoute: '/plan',
+    publicLabel: 'Aplicativo autenticado',
     surfaceKey: 'app-shell',
   },
 ];
@@ -250,4 +261,8 @@ export function isLyraPuckDocumentKey(
   value: string
 ): value is LyraPuckDocumentKey {
   return (lyraPuckDocumentKeys as readonly string[]).includes(value);
+}
+
+export function obterDocumentoPuckLyra(documentKey: LyraPuckDocumentKey) {
+  return lyraPuckDocuments.find((item) => item.key === documentKey) ?? null;
 }
