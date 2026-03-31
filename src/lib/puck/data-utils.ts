@@ -73,6 +73,8 @@ export function normalizarDadosPuck(
       ...rootRecord,
       props: {
         title: rootPropsRecord.title ?? fallbackRootProps.title,
+        dynamicSource:
+          rootPropsRecord.dynamicSource ?? fallbackRootProps.dynamicSource,
         surfaceKey: rootPropsRecord.surfaceKey ?? fallbackRootProps.surfaceKey,
         surfaceTitle:
           rootPropsRecord.surfaceTitle ?? fallbackRootProps.surfaceTitle,
@@ -83,6 +85,9 @@ export function normalizarDadosPuck(
           rootPropsRecord.themeVariant ?? fallbackRootProps.themeVariant,
         visibilityRules:
           rootPropsRecord.visibilityRules ?? fallbackRootProps.visibilityRules,
+        resolvedContextSummary:
+          rootPropsRecord.resolvedContextSummary ??
+          fallbackRootProps.resolvedContextSummary,
       },
     },
   };

@@ -30,6 +30,7 @@
 # misc
 .DS_Store
 __pycache__/
+venv/
 *.bak.*
 *.pem
 *.seed

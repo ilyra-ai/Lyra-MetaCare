@@ -32,6 +32,7 @@ import { useIsAdmin } from '@/hooks/use-is-admin';
 import { obterConfigPuckLyra } from '@/lib/puck/config/base';
 import { getInitialPuckData } from '@/lib/puck/config/initial-data';
 import { normalizarDadosPuck } from '@/lib/puck/data-utils';
+import { aplicarResolveAllDataLyra } from '@/lib/puck/dynamic/resolve-data';
 import {
   defaultLyraPuckDocumentKey,
   LyraPuckData,
@@ -97,6 +98,16 @@ export function PuckEditorShell({
       normalizarDadosPuck(nextData, getInitialPuckData(documentKey)),
     [documentKey]
   );
+  const resolverDadosDocumento = useCallback(
+    async (nextData: LyraPuckData) =>
+      normalizarDadosEditor(
+        await aplicarResolveAllDataLyra(
+          normalizarDadosEditor(nextData),
+          configAtual
+        )
+      ),
+    [configAtual, normalizarDadosEditor]
+  );
 
   const hydrateFromResponse = useCallback((payload: AdminPuckResponse) => {
     setDraftData(payload.draftData);
@@ -121,7 +132,16 @@ export function PuckEditorShell({
         );
       }
 
-      hydrateFromResponse(payload);
+      const [draftResolvido, publishedResolvido] = await Promise.all([
+        resolverDadosDocumento(payload.draftData),
+        resolverDadosDocumento(payload.publishedData),
+      ]);
+
+      hydrateFromResponse({
+        ...payload,
+        draftData: draftResolvido,
+        publishedData: publishedResolvido,
+      });
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -131,7 +151,7 @@ export function PuckEditorShell({
     } finally {
       setLoading(false);
     }
-  }, [documentKey, hydrateFromResponse]);
+  }, [documentKey, hydrateFromResponse, resolverDadosDocumento]);
 
   useEffect(() => {
     if (!session || !isAdmin) {
@@ -145,13 +165,14 @@ export function PuckEditorShell({
     setSaving(true);
 
     try {
+      const draftResolvido = await resolverDadosDocumento(draftData);
       const response = await fetch(`/api/admin/puck/documents/${documentKey}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          draftData,
+          draftData: draftResolvido,
         }),
       });
       const payload = (await response.json()) as AdminPuckResponse;
@@ -162,7 +183,15 @@ export function PuckEditorShell({
         );
       }
 
-      hydrateFromResponse(payload);
+      const publishedResolvido = await resolverDadosDocumento(
+        payload.publishedData
+      );
+
+      hydrateFromResponse({
+        ...payload,
+        draftData: draftResolvido,
+        publishedData: publishedResolvido,
+      });
       toast.success('Rascunho do Puck salvo com sucesso.');
     } catch (error) {
       toast.error(
@@ -173,13 +202,14 @@ export function PuckEditorShell({
     } finally {
       setSaving(false);
     }
-  }, [documentKey, draftData, hydrateFromResponse]);
+  }, [documentKey, draftData, hydrateFromResponse, resolverDadosDocumento]);
 
   const handlePublish = useCallback(
     async (nextData: LyraPuckData) => {
       setPublishing(true);
 
       try {
+        const draftResolvido = await resolverDadosDocumento(nextData);
         const response = await fetch(
           `/api/admin/puck/documents/${documentKey}`,
           {
@@ -189,7 +219,7 @@ export function PuckEditorShell({
             },
             body: JSON.stringify({
               action: 'publish',
-              draftData: nextData,
+              draftData: draftResolvido,
             }),
           }
         );
@@ -201,7 +231,11 @@ export function PuckEditorShell({
           );
         }
 
-        hydrateFromResponse(payload);
+        hydrateFromResponse({
+          ...payload,
+          draftData: draftResolvido,
+          publishedData: draftResolvido,
+        });
         toast.success('Documento Puck publicado com sucesso.');
       } catch (error) {
         toast.error(
@@ -213,7 +247,7 @@ export function PuckEditorShell({
         setPublishing(false);
       }
     },
-    [documentKey, hydrateFromResponse]
+    [documentKey, hydrateFromResponse, resolverDadosDocumento]
   );
 
   const handleTrocaDocumento = useCallback(
@@ -376,6 +410,9 @@ export function PuckEditorShell({
                         headerPath={documentKey}
                         onChange={(nextData) =>
                           setDraftData(normalizarDadosEditor(nextData))
+                        }
+                        onAction={(_action, appState) =>
+                          setDraftData(normalizarDadosEditor(appState.data))
                         }
                         onPublish={(nextData) => {
                           const nextDataNormalizado =

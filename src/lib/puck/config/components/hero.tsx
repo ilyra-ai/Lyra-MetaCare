@@ -4,7 +4,74 @@ import { ArrowUpRight, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { obterResumoAssinaturaLyra } from '@/lib/puck/dynamic/metrics';
+import { obterPerfilDinamicoLyra } from '@/lib/puck/dynamic/profile';
 import type { LyraHeroBlockProps } from '@/lib/puck/types';
+
+const camposSomenteLeituraHero: Partial<
+  Record<keyof LyraHeroBlockProps, boolean>
+> = {
+  eyebrow: true,
+  title: true,
+  description: true,
+  note: true,
+};
+
+function deveResolverHero(
+  changed: Partial<Record<keyof LyraHeroBlockProps, boolean>>
+) {
+  return Boolean(
+    changed.dynamicSource ||
+    changed.eyebrow ||
+    changed.title ||
+    changed.description ||
+    changed.note
+  );
+}
+
+async function resolverPropsHeroDinamicos(props: LyraHeroBlockProps) {
+  const dynamicSource = props.dynamicSource ?? 'manual';
+
+  if (dynamicSource === 'manual') {
+    return {
+      props: {
+        dynamicSource,
+      },
+    };
+  }
+
+  const perfil = await obterPerfilDinamicoLyra();
+
+  if (dynamicSource === 'session-profile') {
+    const primeiroNome = perfil.primeiroNome ?? perfil.nomeExibicao;
+
+    return {
+      props: {
+        dynamicSource,
+        eyebrow: perfil.isAdmin
+          ? 'Sessão administrativa ativa'
+          : 'Sessão autenticada ativa',
+        title: `${perfil.saudacao}, ${primeiroNome}. O editor visual da Lyra está pronto para você.`,
+        description: `Você está autenticada como ${perfil.role ?? 'usuária'} e este bloco agora consome os dados reais da sessão atual para alimentar o canvas do Puck sem conteúdo estático.`,
+        note: `Usuária ${perfil.email ?? 'sem e-mail visível'} • iniciais ${perfil.iniciais}`,
+      },
+      readOnly: camposSomenteLeituraHero,
+    };
+  }
+
+  const assinatura = await obterResumoAssinaturaLyra();
+
+  return {
+    props: {
+      dynamicSource,
+      eyebrow: `Plano ${assinatura.planoNome}`,
+      title: `${perfil.saudacao}, ${perfil.primeiroNome ?? perfil.nomeExibicao}. Sua experiência está conectada ao contexto real da assinatura.`,
+      description: assinatura.descricaoCurta,
+      note: `${assinatura.tendenciaRotulo} • badge ${assinatura.badgeLabel}`,
+    },
+    readOnly: camposSomenteLeituraHero,
+  };
+}
 
 function LyraHeroBlock({
   eyebrow,
@@ -45,9 +112,18 @@ function LyraHeroBlock({
   );
 }
 
-export const lyraHeroBlockConfig = {
+export const lyraHeroBlockConfig: ComponentConfig<LyraHeroBlockProps> = {
   label: 'Hero Lyra',
   fields: {
+    dynamicSource: {
+      type: 'select',
+      label: 'Fonte dinâmica',
+      options: [
+        { label: 'Manual', value: 'manual' },
+        { label: 'Sessão atual', value: 'session-profile' },
+        { label: 'Assinatura atual', value: 'subscription-context' },
+      ],
+    },
     eyebrow: {
       type: 'text',
       label: 'Selo superior',
@@ -74,7 +150,7 @@ export const lyraHeroBlockConfig = {
     },
   },
   defaultProps: {
-    id: 'lyra-hero-block',
+    dynamicSource: 'manual',
     eyebrow: 'Puck inicial da Lyra',
     title: 'Editor visual real, claro e pronto para evoluir.',
     description:
@@ -83,9 +159,56 @@ export const lyraHeroBlockConfig = {
     ctaHref: '/login',
     note: 'Base inicial do Lyra Customaze UI UX com Puck.',
   },
+  resolveData: async (data, params) => {
+    const props = (data.props ?? {}) as Partial<LyraHeroBlockProps>;
+    const changed = params.changed as Partial<
+      Record<keyof LyraHeroBlockProps, boolean>
+    >;
+    const dynamicSource =
+      (props.dynamicSource as LyraHeroBlockProps['dynamicSource']) ?? 'manual';
+
+    if (
+      params.trigger !== 'load' &&
+      params.trigger !== 'force' &&
+      !deveResolverHero(changed)
+    ) {
+      return {
+        props: {
+          dynamicSource,
+        },
+        readOnly: dynamicSource === 'manual' ? {} : camposSomenteLeituraHero,
+      };
+    }
+
+    if (
+      params.trigger !== 'load' &&
+      params.trigger !== 'force' &&
+      (params.lastData?.props as Partial<LyraHeroBlockProps> | undefined)
+        ?.dynamicSource === dynamicSource
+    ) {
+      return {
+        props: {
+          dynamicSource,
+        },
+        readOnly: dynamicSource === 'manual' ? {} : camposSomenteLeituraHero,
+      };
+    }
+
+    return resolverPropsHeroDinamicos({
+      dynamicSource,
+      eyebrow: String(props.eyebrow ?? ''),
+      title: String(props.title ?? ''),
+      description: String(props.description ?? ''),
+      ctaLabel: String(props.ctaLabel ?? ''),
+      ctaHref: String(props.ctaHref ?? '#'),
+      note: String(props.note ?? ''),
+    });
+  },
   render: (props: Record<string, unknown>) => (
     <LyraHeroBlock
-      id={String(props.id ?? 'lyra-hero-block')}
+      dynamicSource={
+        (props.dynamicSource as LyraHeroBlockProps['dynamicSource']) ?? 'manual'
+      }
       eyebrow={String(props.eyebrow ?? '')}
       title={String(props.title ?? '')}
       description={String(props.description ?? '')}
@@ -94,4 +217,4 @@ export const lyraHeroBlockConfig = {
       note={String(props.note ?? '')}
     />
   ),
-} satisfies ComponentConfig<LyraHeroBlockProps>;
+};

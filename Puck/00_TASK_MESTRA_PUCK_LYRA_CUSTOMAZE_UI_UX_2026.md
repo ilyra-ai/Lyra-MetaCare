@@ -90,7 +90,7 @@ git push origin main
 - [x] TASK 04 — Multi-column Layouts
 - [x] TASK 05 — Categories
 - [x] TASK 06 — Rich Text Editing
-- [ ] TASK 07 — Dynamic Props
+- [x] TASK 07 — Dynamic Props
 - [ ] TASK 08 — Dynamic Fields
 - [ ] TASK 09 — External Data Sources
 - [ ] TASK 10 — Server Components
@@ -1263,7 +1263,7 @@ git push origin main
 - Código da etapa: `TASK 07`
 - Nome da etapa: `Dynamic Props`
 - Fonte oficial: [Dynamic Props](https://puckeditor.com/docs/integrating-puck/dynamic-props)
-- Estado atual: `[ ] não iniciada`
+- Estado atual: `[x] concluída`
 
 ## Objetivo estratégico
 
@@ -1304,10 +1304,14 @@ git push origin main
 - Observação honesta: estes arquivos são previstos com base na arquitetura atual e podem ser ajustados se a implementação real revelar outra organização mais correta.
 - `src/lib/puck/dynamic/resolve-data.ts`
 - `src/lib/puck/dynamic/metrics.ts`
-- `src/lib/puck/dynamic/astrology.ts`
 - `src/lib/puck/dynamic/profile.ts`
-- `src/lib/puck/dynamic/read-only-fields.ts`
 - `src/lib/puck/dynamic/cache.ts`
+- `src/lib/puck/types.ts`
+- `src/lib/puck/config/components/hero.tsx`
+- `src/lib/puck/config/components/metric-card.tsx`
+- `src/lib/puck/config/root/shared.tsx`
+- `src/components/admin/puck/PuckEditorShell.tsx`
+- `src/lib/puck/data-utils.ts`
 
 ## Variáveis e segredos desta etapa
 
@@ -1375,23 +1379,23 @@ git push origin main
 
 ## Validação técnica obrigatória
 
-- [ ] Sem erro de TypeScript.
-- [ ] Sem erro de lint.
-- [ ] Sem quebra de formatação.
-- [ ] Sem erro de build quando aplicável.
-- [ ] Sem crash na rota administrativa.
-- [ ] Sem quebra no frontend público.
-- [ ] Sem regressão em autenticação e guardas.
-- [ ] Sem regressão em persistência já existente.
+- [x] Sem erro de TypeScript.
+- [x] Sem erro de lint.
+- [x] Sem quebra de formatação.
+- [x] Sem erro de build quando aplicável.
+- [x] Sem crash na rota administrativa.
+- [x] Sem quebra no frontend público.
+- [x] Sem regressão em autenticação e guardas.
+- [x] Sem regressão em persistência já existente.
 
 ## Validação visual obrigatória
 
-- [ ] Editor abre em tema claro de forma legível.
-- [ ] Canvas não fica quebrado ou desalinhado.
-- [ ] Controles do painel lateral ficam compreensíveis.
-- [ ] Componentes visuais não aparentam protótipo improvisado.
-- [ ] O nível visual permanece coerente com a Lyra.
-- [ ] A superfície continua com aparência premium 2026.
+- [x] Editor abre em tema claro de forma legível.
+- [x] Canvas não fica quebrado ou desalinhado.
+- [x] Controles do painel lateral ficam compreensíveis.
+- [x] Componentes visuais não aparentam protótipo improvisado.
+- [x] O nível visual permanece coerente com a Lyra.
+- [x] A superfície continua com aparência premium 2026.
 
 ## Validação funcional em navegador
 
@@ -1404,12 +1408,12 @@ git push origin main
 
 ## Evidências obrigatórias desta etapa
 
-- [ ] Trecho de código implementado e revisado.
-- [ ] Checks executados com sucesso.
-- [ ] Rota ou tela validada em navegador.
-- [ ] Estado real da task atualizado.
+- [x] Trecho de código implementado e revisado.
+- [x] Checks executados com sucesso.
+- [x] Rota ou tela validada em navegador.
+- [x] Estado real da task atualizado.
 - [ ] Commit e push realizados.
-- [ ] Descrição honesta do que entrou e do que ainda não entra.
+- [x] Descrição honesta do que entrou e do que ainda não entra.
 
 ## Riscos e causas raiz a observar
 
@@ -1423,16 +1427,16 @@ git push origin main
 
 ## Checklist final de pronto
 
-- [ ] Escopo da etapa implementado.
-- [ ] Arquivos estruturais criados ou ajustados.
-- [ ] Integração com a Lyra preservada.
-- [ ] Sem segredo hardcoded.
-- [ ] Sem mock funcional.
-- [ ] Sem placeholder funcional.
-- [ ] Validação técnica concluída.
-- [ ] Validação visual concluída.
-- [ ] Validação em navegador concluída.
-- [ ] Task atualizada.
+- [x] Escopo da etapa implementado.
+- [x] Arquivos estruturais criados ou ajustados.
+- [x] Integração com a Lyra preservada.
+- [x] Sem segredo hardcoded.
+- [x] Sem mock funcional.
+- [x] Sem placeholder funcional.
+- [x] Validação técnica concluída.
+- [x] Validação visual concluída.
+- [x] Validação em navegador concluída.
+- [x] Task atualizada.
 - [ ] Commit feito.
 - [ ] Push feito.
 
@@ -1440,6 +1444,30 @@ git push origin main
 
 - Dynamic props devem puxar dados reais sem criar custo excessivo.
 - A documentação do Puck enfatiza evitar recomputação desnecessária.
+- Entrega real desta etapa:
+  - `Hero` com `dynamicSource` baseado em sessão real (`session-profile` e `subscription-context`).
+  - `MetricCard` com `dynamicSource` baseado em assinatura real (`subscription-summary`).
+  - `Root` com `dynamicSource` baseado em contexto de sessão (`session-context`).
+  - Cache curto reutilizável em `src/lib/puck/dynamic/cache.ts`.
+  - Resolvedores reais em `src/lib/puck/dynamic/profile.ts`, `src/lib/puck/dynamic/metrics.ts` e `src/lib/puck/dynamic/resolve-data.ts`.
+  - Aplicação de resolução dinâmica no carregamento, no salvar rascunho e no publicar em `PuckEditorShell`.
+- Correções de causa raiz concluídas:
+  - `normalizarDadosPuck` preserva `dynamicSource` e `resolvedContextSummary` do `root`.
+  - `onAction` sincroniza mudanças de `replaceRoot` para o `draftData` externo.
+  - Instância quebrada do `next dev` foi reiniciada para eliminar `404` de CSS/chunks durante a validação.
+- Evidências verificadas:
+  - `PUT /api/admin/puck/documents/landing-home` retornando `200`.
+  - `POST /api/admin/puck/documents/landing-home` retornando `200`.
+  - `GET /api/public/puck/documents/landing-home` refletindo os dados publicados.
+  - Canvas exibindo `Sessão administrativa ativa`, dados de plano e resumo de contexto real.
+- Gate de qualidade executado com sucesso:
+  - `pnpm run fix:format`
+  - `pnpm run fix:lint`
+  - `pnpm run check:lint`
+  - `pnpm run check:format`
+  - `pnpm run check:types`
+  - `pnpm run test`
+  - `pnpm run build`
 
 ---
 
@@ -1484,7 +1512,7 @@ git push origin main
 ## Dependências internas
 
 - TASK 02 concluída.
-- TASK 07 parcialmente pronta.
+- TASK 07 concluída.
 
 ## Arquivos previstos desta etapa
 

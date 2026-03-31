@@ -3,6 +3,8 @@ import type { RootConfig } from '@puckeditor/core';
 import { Eye, Layers3, Sparkles } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
+import { obterResumoAssinaturaLyra } from '@/lib/puck/dynamic/metrics';
+import { obterPerfilDinamicoLyra } from '@/lib/puck/dynamic/profile';
 import { cn } from '@/lib/utils';
 import type { LyraPuckRootProps, LyraPuckThemeVariant } from '@/lib/puck/types';
 
@@ -16,6 +18,12 @@ type CriarRootConfigParams = {
   themeVariant: LyraPuckThemeVariant;
   visibilityRules: string;
   rotuloBadge: string;
+};
+
+const camposSomenteLeituraRoot: Partial<
+  Record<keyof LyraPuckRootProps, boolean>
+> = {
+  resolvedContextSummary: true,
 };
 
 const classesPorTema: Record<LyraPuckThemeVariant, string> = {
@@ -43,11 +51,13 @@ function obterRegrasVisibilidade(visibilityRules: string) {
 function LyraSurfaceRoot({
   children,
   title,
+  dynamicSource,
   surfaceKey,
   surfaceTitle,
   surfaceDescription,
   themeVariant,
   visibilityRules,
+  resolvedContextSummary,
   rotuloBadge,
 }: LyraPuckRootProps & {
   children?: ReactNode;
@@ -85,6 +95,11 @@ function LyraSurfaceRoot({
             <Eye className="h-3.5 w-3.5" />
             chave: {surfaceKey}
           </div>
+
+          <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-white/75 px-3 py-1.5 text-xs text-muted-foreground">
+            <Sparkles className="h-3.5 w-3.5" />
+            fonte: {dynamicSource ?? 'manual'}
+          </div>
         </div>
 
         <div className="space-y-3">
@@ -98,6 +113,11 @@ function LyraSurfaceRoot({
             <p className="max-w-4xl text-sm leading-7 text-muted-foreground md:text-base">
               {surfaceDescription}
             </p>
+            {resolvedContextSummary ? (
+              <div className="rounded-[22px] border border-primary/15 bg-primary/[0.06] px-4 py-3 text-sm leading-7 text-foreground/85">
+                {resolvedContextSummary}
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -129,6 +149,14 @@ export function criarLyraRootConfig(
         type: 'text',
         label: 'Rótulo interno da superfície',
       },
+      dynamicSource: {
+        type: 'select',
+        label: 'Fonte dinâmica do contexto',
+        options: [
+          { label: 'Manual', value: 'manual' },
+          { label: 'Sessão atual', value: 'session-context' },
+        ],
+      },
       surfaceKey: {
         type: 'radio',
         label: 'Chave da superfície',
@@ -159,36 +187,93 @@ export function criarLyraRootConfig(
         type: 'textarea',
         label: 'Regras de visibilidade',
       },
+      resolvedContextSummary: {
+        type: 'textarea',
+        label: 'Resumo dinâmico resolvido',
+      },
     },
     defaultProps: {
       title: params.tituloPadrao,
+      dynamicSource: 'manual',
       surfaceKey: params.surfaceKey,
       surfaceTitle: params.surfaceTitle,
       surfaceDescription: params.surfaceDescription,
       themeVariant: params.themeVariant,
       visibilityRules: params.visibilityRules,
+      resolvedContextSummary: '',
+    },
+    resolveData: async (data, params) => {
+      const props = (data.props ?? {}) as Partial<LyraPuckRootProps>;
+      const changed = params.changed as Partial<
+        Record<keyof LyraPuckRootProps, boolean>
+      >;
+      const dynamicSource =
+        (props.dynamicSource as LyraPuckRootProps['dynamicSource']) ?? 'manual';
+
+      if (dynamicSource === 'manual') {
+        return {
+          props: {
+            dynamicSource,
+            resolvedContextSummary: '',
+          },
+          readOnly: camposSomenteLeituraRoot,
+        };
+      }
+
+      if (
+        params.trigger !== 'load' &&
+        params.trigger !== 'force' &&
+        !changed.dynamicSource &&
+        !changed.surfaceKey &&
+        !changed.surfaceTitle
+      ) {
+        return {
+          props: {
+            dynamicSource,
+          },
+          readOnly: camposSomenteLeituraRoot,
+        };
+      }
+
+      const [perfil, assinatura] = await Promise.all([
+        obterPerfilDinamicoLyra(),
+        obterResumoAssinaturaLyra(),
+      ]);
+
+      return {
+        props: {
+          dynamicSource,
+          resolvedContextSummary: `Sessão ${perfil.email ?? 'sem e-mail visível'} • perfil ${perfil.role ?? 'não informado'} • plano ${assinatura.planoNome} • ${assinatura.tendenciaRotulo}.`,
+        },
+        readOnly: camposSomenteLeituraRoot,
+      };
     },
     render: (props) => (
       <LyraSurfaceRoot
-        title={String(props.title ?? params.tituloPadrao)}
+        title={String(props?.title ?? params.tituloPadrao)}
+        dynamicSource={
+          (props?.dynamicSource as LyraPuckRootProps['dynamicSource']) ??
+          'manual'
+        }
         surfaceKey={
-          (props.surfaceKey as LyraPuckRootProps['surfaceKey']) ??
+          (props?.surfaceKey as LyraPuckRootProps['surfaceKey']) ??
           params.surfaceKey
         }
-        surfaceTitle={String(props.surfaceTitle ?? params.surfaceTitle)}
+        surfaceTitle={String(props?.surfaceTitle ?? params.surfaceTitle)}
         surfaceDescription={String(
-          props.surfaceDescription ?? params.surfaceDescription
+          props?.surfaceDescription ?? params.surfaceDescription
         )}
         themeVariant={
-          (props.themeVariant as LyraPuckRootProps['themeVariant']) ??
+          (props?.themeVariant as LyraPuckRootProps['themeVariant']) ??
           params.themeVariant
         }
         visibilityRules={String(
-          props.visibilityRules ?? params.visibilityRules
+          props?.visibilityRules ?? params.visibilityRules
         )}
+        resolvedContextSummary={String(props?.resolvedContextSummary ?? '')}
         rotuloBadge={params.rotuloBadge}
       >
-        {props.children}
+        {props?.children}
       </LyraSurfaceRoot>
     ),
   } satisfies RootConfig<LyraPuckRootProps>;

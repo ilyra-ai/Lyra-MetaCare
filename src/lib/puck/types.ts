@@ -19,7 +19,7 @@ export type LyraPuckSlotItem = {
 export type LyraPuckSlotItems = LyraPuckSlotItem[];
 
 export type LyraHeroBlockProps = {
-  id?: string;
+  dynamicSource?: LyraHeroDynamicSource;
   eyebrow: string;
   title: string;
   description: string;
@@ -41,6 +41,12 @@ export type LyraButtonVariant =
   | 'ghost';
 export type LyraButtonSize = 'sm' | 'default' | 'lg' | 'xl';
 export type LyraTrendDirection = 'up' | 'down' | 'neutral';
+export type LyraHeroDynamicSource =
+  | 'manual'
+  | 'session-profile'
+  | 'subscription-context';
+export type LyraMetricDynamicSource = 'manual' | 'subscription-summary';
+export type LyraRootDynamicSource = 'manual' | 'session-context';
 export type LyraDecorativeIcon =
   | 'sparkles'
   | 'heart'
@@ -84,6 +90,7 @@ export type LyraCTAButtonBlockProps = {
 };
 
 export type LyraMetricCardBlockProps = {
+  dynamicSource?: LyraMetricDynamicSource;
   eyebrow: string;
   value: string;
   unit: string;
@@ -164,11 +171,13 @@ export type LyraGridTileBlockProps = {
 
 export type LyraPuckRootProps = {
   title: string;
+  dynamicSource?: LyraRootDynamicSource;
   surfaceKey: LyraPuckSurfaceKey;
   surfaceTitle: string;
   surfaceDescription: string;
   themeVariant: LyraPuckThemeVariant;
   visibilityRules: string;
+  resolvedContextSummary?: string;
 };
 
 export type LyraPuckComponentProps = {

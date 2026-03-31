@@ -11,7 +11,74 @@ import {
   obterApresentacaoTrend,
   obterIconeDecorativo,
 } from '@/lib/puck/config/components/helpers';
+import { obterResumoAssinaturaLyra } from '@/lib/puck/dynamic/metrics';
 import type { LyraMetricCardBlockProps } from '@/lib/puck/types';
+
+const camposSomenteLeituraMetricCard: Partial<
+  Record<keyof LyraMetricCardBlockProps, boolean>
+> = {
+  eyebrow: true,
+  value: true,
+  unit: true,
+  description: true,
+  trendLabel: true,
+  trendDirection: true,
+  badgeLabel: true,
+  icon: true,
+};
+
+function deveResolverMetricCard(
+  changed: Partial<Record<keyof LyraMetricCardBlockProps, boolean>>
+) {
+  return Boolean(
+    changed.dynamicSource ||
+    changed.eyebrow ||
+    changed.value ||
+    changed.unit ||
+    changed.description ||
+    changed.trendLabel ||
+    changed.trendDirection ||
+    changed.badgeLabel ||
+    changed.icon
+  );
+}
+
+async function resolverPropsMetricCardDinamicos(
+  props: LyraMetricCardBlockProps
+) {
+  const dynamicSource = props.dynamicSource ?? 'manual';
+
+  if (dynamicSource === 'manual') {
+    return {
+      props: {
+        dynamicSource,
+      },
+    };
+  }
+
+  const assinatura = await obterResumoAssinaturaLyra();
+  const icon: LyraMetricCardBlockProps['icon'] =
+    assinatura.tendenciaDirecao === 'down'
+      ? 'shield'
+      : assinatura.planoKey === 'care'
+        ? 'sparkles'
+        : 'activity';
+
+  return {
+    props: {
+      dynamicSource,
+      eyebrow: `Plano ${assinatura.planoNome}`,
+      value: String(assinatura.recursosAtivos),
+      unit: 'recursos',
+      description: assinatura.descricaoCurta,
+      trendLabel: assinatura.tendenciaRotulo,
+      trendDirection: assinatura.tendenciaDirecao,
+      badgeLabel: assinatura.badgeLabel,
+      icon,
+    },
+    readOnly: camposSomenteLeituraMetricCard,
+  };
+}
 
 function LyraMetricCardBlock({
   eyebrow,
@@ -67,6 +134,14 @@ function LyraMetricCardBlock({
 export const lyraMetricCardBlockConfig = {
   label: 'Card de métrica',
   fields: {
+    dynamicSource: {
+      type: 'select',
+      label: 'Fonte dinâmica',
+      options: [
+        { label: 'Manual', value: 'manual' },
+        { label: 'Resumo da assinatura', value: 'subscription-summary' },
+      ],
+    },
     eyebrow: {
       type: 'text',
       label: 'Sobretítulo',
@@ -115,6 +190,7 @@ export const lyraMetricCardBlockConfig = {
     },
   },
   defaultProps: {
+    dynamicSource: 'manual',
     eyebrow: 'Frequência em harmonia',
     value: '84',
     unit: 'ms',
@@ -125,8 +201,64 @@ export const lyraMetricCardBlockConfig = {
     badgeLabel: 'Pico harmônico',
     icon: 'heart',
   },
+  resolveData: async (data, params) => {
+    const props = (data.props ?? {}) as Partial<LyraMetricCardBlockProps>;
+    const changed = params.changed as Partial<
+      Record<keyof LyraMetricCardBlockProps, boolean>
+    >;
+    const dynamicSource =
+      (props.dynamicSource as LyraMetricCardBlockProps['dynamicSource']) ??
+      'manual';
+
+    if (
+      params.trigger !== 'load' &&
+      params.trigger !== 'force' &&
+      !deveResolverMetricCard(changed)
+    ) {
+      return {
+        props: {
+          dynamicSource,
+        },
+        readOnly:
+          dynamicSource === 'manual' ? {} : camposSomenteLeituraMetricCard,
+      };
+    }
+
+    if (
+      params.trigger !== 'load' &&
+      params.trigger !== 'force' &&
+      (params.lastData?.props as Partial<LyraMetricCardBlockProps> | undefined)
+        ?.dynamicSource === dynamicSource
+    ) {
+      return {
+        props: {
+          dynamicSource,
+        },
+        readOnly:
+          dynamicSource === 'manual' ? {} : camposSomenteLeituraMetricCard,
+      };
+    }
+
+    return resolverPropsMetricCardDinamicos({
+      dynamicSource,
+      eyebrow: String(props.eyebrow ?? ''),
+      value: String(props.value ?? ''),
+      unit: String(props.unit ?? ''),
+      description: String(props.description ?? ''),
+      trendLabel: String(props.trendLabel ?? ''),
+      trendDirection:
+        (props.trendDirection as LyraMetricCardBlockProps['trendDirection']) ??
+        'neutral',
+      badgeLabel: String(props.badgeLabel ?? ''),
+      icon: (props.icon as LyraMetricCardBlockProps['icon']) ?? 'activity',
+    });
+  },
   render: (props: Record<string, unknown>) => (
     <LyraMetricCardBlock
+      dynamicSource={
+        (props.dynamicSource as LyraMetricCardBlockProps['dynamicSource']) ??
+        'manual'
+      }
       eyebrow={String(props.eyebrow ?? '')}
       value={String(props.value ?? '')}
       unit={String(props.unit ?? '')}
