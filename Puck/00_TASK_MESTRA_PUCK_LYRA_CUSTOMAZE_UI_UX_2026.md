@@ -92,12 +92,12 @@ git push origin main
 - [x] TASK 06 — Rich Text Editing
 - [x] TASK 07 — Dynamic Props
 - [x] TASK 08 — Dynamic Fields
-- [ ] TASK 09 — External Data Sources
-- [ ] TASK 10 — Server Components
-- [ ] TASK 11 — Data Migration
-- [ ] TASK 12 — Viewports
-- [ ] TASK 13 — Feature Toggling
-- [ ] TASK 14 — Overlay Portals
+- [x] TASK 09 — External Data Sources
+- [x] TASK 10 — Server Components
+- [x] TASK 11 — Data Migration
+- [x] TASK 12 — Viewports
+- [x] TASK 13 — Feature Toggling
+- [x] TASK 14 — Overlay Portals
 
 ## 7. Observação importante sobre os comandos
 
