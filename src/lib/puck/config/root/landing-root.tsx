@@ -1,7 +1,7 @@
 import { criarLyraRootConfig } from '@/lib/puck/config/root/shared';
 
 export const lyraLandingRootConfig = criarLyraRootConfig({
-  tituloPadrao: 'Landing Home validada task 03',
+  tituloPadrao: 'Landing Home',
   surfaceKey: 'landing',
   surfaceTitle: 'Landing pública da Lyra',
   surfaceDescription:

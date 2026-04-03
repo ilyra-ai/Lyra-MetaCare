@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { executeStatement, queryRows } from '@/lib/mysql/pool';
 import { getInitialPuckData } from '@/lib/puck/config/initial-data';
 import { clonarDadosPuck, normalizarDadosPuck } from '@/lib/puck/data-utils';
+import { migrarDocumentoPuckLyra } from '@/lib/puck/migrations';
 import {
   LyraPuckData,
   LyraPuckDocumentKey,
@@ -72,8 +73,12 @@ export async function getAdminPuckDocument(
 
   return {
     documentKey,
-    draftData: normalizarDadosPuck(row.draft_data, fallback),
-    publishedData: normalizarDadosPuck(row.published_data, fallback),
+    draftData: migrarDocumentoPuckLyra(
+      normalizarDadosPuck(row.draft_data, fallback)
+    ),
+    publishedData: migrarDocumentoPuckLyra(
+      normalizarDadosPuck(row.published_data, fallback)
+    ),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     updatedByUserId: row.updated_by_user_id,
@@ -90,7 +95,9 @@ export async function getPublicPuckDocument(
   }
 
   const fallback = getInitialPuckData(documentKey);
-  const publishedData = normalizarDadosPuck(row.published_data, fallback);
+  const publishedData = migrarDocumentoPuckLyra(
+    normalizarDadosPuck(row.published_data, fallback)
+  );
 
   return {
     documentKey,

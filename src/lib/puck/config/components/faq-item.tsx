@@ -1,3 +1,5 @@
+'use client';
+
 import type { ComponentConfig } from '@puckeditor/core';
 import {
   Accordion,
@@ -7,6 +9,7 @@ import {
 } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { criarCampoRichTextLyra } from '@/lib/puck/config/fields/rich-text';
+import { useOverlayPortal } from '@/lib/puck/overlay-portals/register';
 import { LyraRichTextRenderer } from '@/lib/puck/render/rich-text-renderer';
 import type { LyraFaqItemBlockProps } from '@/lib/puck/types';
 
@@ -15,6 +18,8 @@ function LyraFaqItemBlock({
   answer,
   eyebrow,
 }: LyraFaqItemBlockProps) {
+  const triggerRef = useOverlayPortal<HTMLDivElement>();
+
   return (
     <div className="w-full">
       <Accordion type="single" collapsible defaultValue="faq-item">
@@ -22,18 +27,20 @@ function LyraFaqItemBlock({
           value="faq-item"
           className="border-border/70 bg-white/90 px-5"
         >
-          <AccordionTrigger className="gap-4 py-5">
-            <div className="flex flex-col items-start gap-3 text-left">
-              {eyebrow ? (
-                <Badge variant="cosmic" className="w-fit">
-                  {eyebrow}
-                </Badge>
-              ) : null}
-              <span className="font-display text-lg font-semibold text-foreground">
-                {question}
-              </span>
-            </div>
-          </AccordionTrigger>
+          <div ref={triggerRef}>
+            <AccordionTrigger className="gap-4 py-5">
+              <div className="flex flex-col items-start gap-3 text-left">
+                {eyebrow ? (
+                  <Badge variant="cosmic" className="w-fit">
+                    {eyebrow}
+                  </Badge>
+                ) : null}
+                <span className="font-display text-lg font-semibold text-foreground">
+                  {question}
+                </span>
+              </div>
+            </AccordionTrigger>
+          </div>
           <AccordionContent className="leading-7 text-muted-foreground">
             <LyraRichTextRenderer
               value={answer}

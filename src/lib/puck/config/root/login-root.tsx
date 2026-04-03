@@ -1,7 +1,7 @@
 import { criarLyraRootConfig } from '@/lib/puck/config/root/shared';
 
 export const lyraLoginRootConfig = criarLyraRootConfig({
-  tituloPadrao: 'Login Lyra validado task 03',
+  tituloPadrao: 'Experiência de Login',
   surfaceKey: 'login',
   surfaceTitle: 'Experiência de login',
   surfaceDescription:

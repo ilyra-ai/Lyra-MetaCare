@@ -33,6 +33,8 @@ import { obterConfigPuckLyra } from '@/lib/puck/config/base';
 import { getInitialPuckData } from '@/lib/puck/config/initial-data';
 import { normalizarDadosPuck } from '@/lib/puck/data-utils';
 import { aplicarResolveAllDataLyra } from '@/lib/puck/dynamic/resolve-data';
+import { obterPermissoesPuckLyra } from '@/lib/puck/permissions/config';
+import { lyraPuckViewports } from '@/lib/puck/viewports/config';
 import {
   defaultLyraPuckDocumentKey,
   LyraPuckData,
@@ -91,6 +93,10 @@ export function PuckEditorShell({
   );
   const configAtual = useMemo(
     () => obterConfigPuckLyra(documentKey),
+    [documentKey]
+  );
+  const permissoesDocumento = useMemo(
+    () => obterPermissoesPuckLyra(documentKey),
     [documentKey]
   );
   const normalizarDadosEditor = useCallback(
@@ -286,14 +292,13 @@ export function PuckEditorShell({
                 <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
                   <div className="max-w-4xl space-y-3">
                     <CardTitle className="text-3xl">
-                      Editor visual base do Puck rodando na Lyra
+                      Lyra Customaze UI UX — Editor Visual
                     </CardTitle>
                     <CardDescription className="text-sm leading-7">
-                      Esta etapa entrega a primeira rota administrativa
-                      protegida, com editor visual real, documento persistido em
-                      MySQL e preview renderizado pelo componente oficial{' '}
-                      <code>Render</code>. Ainda é uma base inicial, mas já é
-                      funcional e verificável.
+                      Editor visual premium da Lyra com suporte a fontes de
+                      dados externas, viewports responsivos, permissões por
+                      papel, migração de dados, componentes de servidor e
+                      portais de overlay. Persistência real em MySQL.
                     </CardDescription>
                   </div>
 
@@ -408,6 +413,8 @@ export function PuckEditorShell({
                         data={draftData}
                         headerTitle="Lyra Customaze UI UX"
                         headerPath={documentKey}
+                        viewports={[...lyraPuckViewports]}
+                        permissions={permissoesDocumento}
                         onChange={(nextData) =>
                           setDraftData(normalizarDadosEditor(nextData))
                         }

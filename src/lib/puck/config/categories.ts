@@ -39,7 +39,7 @@ export function obterCategoriasPuckLyra(
     },
     conversao: {
       title: 'Ação e conversão',
-      components: ['LyraCTAButtonBlock', 'LyraFeatureCardBlock'],
+      components: ['LyraCTAButtonBlock'],
       defaultExpanded: isLanding || isLogin,
     },
     estrutura: {

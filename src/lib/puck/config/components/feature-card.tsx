@@ -15,9 +15,14 @@ import {
   obterClasseTomHeading,
   obterIconeDecorativo,
 } from '@/lib/puck/config/components/helpers';
-import type { LyraFeatureCardBlockProps } from '@/lib/puck/types';
+import { fetchListPlanos } from '@/lib/puck/data-sources/plans';
+import type {
+  LyraExternalPlanData,
+  LyraFeatureCardBlockProps,
+} from '@/lib/puck/types';
 
 function LyraFeatureCardBlock({
+  externalPlan,
   eyebrow,
   title,
   description,
@@ -27,6 +32,10 @@ function LyraFeatureCardBlock({
   ctaHref,
 }: LyraFeatureCardBlockProps) {
   const Icone = obterIconeDecorativo(icon);
+  const seloExibido = externalPlan?.name ?? eyebrow;
+  const descricaoExibida = externalPlan
+    ? externalPlan.tagline
+    : description;
 
   return (
     <Card className="h-full border-border/70 bg-white/92">
@@ -36,10 +45,18 @@ function LyraFeatureCardBlock({
         </div>
         <div className="space-y-3">
           <Badge variant="info" className="w-fit">
-            {eyebrow}
+            {seloExibido}
           </Badge>
+          {externalPlan ? (
+            <Badge variant="cosmic" className="ml-2 w-fit text-xs">
+              {externalPlan.currencyCode}{' '}
+              {externalPlan.monthlyPrice.toFixed(2)}/mês
+            </Badge>
+          ) : null}
           <CardTitle className={obterClasseTomHeading(tone)}>{title}</CardTitle>
-          <CardDescription className="leading-7">{description}</CardDescription>
+          <CardDescription className="leading-7">
+            {descricaoExibida}
+          </CardDescription>
         </div>
       </CardHeader>
       <CardContent />
@@ -60,6 +77,15 @@ function LyraFeatureCardBlock({
 export const lyraFeatureCardBlockConfig = {
   label: 'Card de feature',
   fields: {
+    externalPlan: {
+      type: 'external',
+      label: 'Plano vinculado (fonte externa)',
+      placeholder: 'Selecione um plano do catálogo público...',
+      fetchList: async () => fetchListPlanos(),
+      getItemSummary: (item: LyraExternalPlanData) =>
+        `${item.name} — ${item.tagline}`,
+      mapProp: (item: LyraExternalPlanData) => item,
+    },
     eyebrow: {
       type: 'text',
       label: 'Selo',
@@ -105,6 +131,7 @@ export const lyraFeatureCardBlockConfig = {
     },
   },
   defaultProps: {
+    externalPlan: undefined,
     eyebrow: 'Camada inteligente',
     title: 'IA aplicada com leitura serena e contexto humano.',
     description:
@@ -116,6 +143,10 @@ export const lyraFeatureCardBlockConfig = {
   },
   render: (props: Record<string, unknown>) => (
     <LyraFeatureCardBlock
+      externalPlan={
+        (props.externalPlan as LyraFeatureCardBlockProps['externalPlan']) ??
+        undefined
+      }
       eyebrow={String(props.eyebrow ?? '')}
       title={String(props.title ?? '')}
       description={String(props.description ?? '')}

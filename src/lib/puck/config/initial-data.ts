@@ -37,7 +37,7 @@ const defaultLandingHomeData: LyraPuckData = {
   ],
   root: {
     props: {
-      title: 'Landing Home validada task 03',
+      title: 'Landing Home',
       surfaceKey: 'landing',
       surfaceTitle: 'Landing pública da Lyra',
       surfaceDescription:
@@ -260,7 +260,7 @@ const defaultLoginExperienceData: LyraPuckData = {
   ],
   root: {
     props: {
-      title: 'Login Lyra validado task 03',
+      title: 'Experiência de Login',
       surfaceKey: 'login',
       surfaceTitle: 'Experiência de login',
       surfaceDescription:
@@ -326,7 +326,7 @@ const defaultAppShellData: LyraPuckData = {
   ],
   root: {
     props: {
-      title: 'App Shell validado task 03',
+      title: 'App Shell',
       surfaceKey: 'app-shell',
       surfaceTitle: 'App shell autenticado',
       surfaceDescription:

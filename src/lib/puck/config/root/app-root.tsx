@@ -1,7 +1,7 @@
 import { criarLyraRootConfig } from '@/lib/puck/config/root/shared';
 
 export const lyraAppRootConfig = criarLyraRootConfig({
-  tituloPadrao: 'App Shell validado task 03',
+  tituloPadrao: 'App Shell',
   surfaceKey: 'app-shell',
   surfaceTitle: 'App shell autenticado',
   surfaceDescription:

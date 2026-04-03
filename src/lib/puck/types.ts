@@ -104,7 +104,19 @@ export type LyraMetricCardBlockProps = {
   icon: LyraDecorativeIcon;
 };
 
+export type LyraExternalPlanData = {
+  id: string;
+  key: string;
+  name: string;
+  tagline: string;
+  monthlyPrice: number;
+  annualPrice: number;
+  currencyCode: string;
+  highlightText: string | null;
+};
+
 export type LyraFeatureCardBlockProps = {
+  externalPlan?: LyraExternalPlanData;
   eyebrow: string;
   title: string;
   description: string;
