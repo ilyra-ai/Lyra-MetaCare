@@ -19,38 +19,39 @@ import shutil
 import signal
 import subprocess
 import sys
-import textwrap
-import threading
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
 try:
     from rich.align import Align
-    from rich.columns import Columns
     from rich.console import Console, Group
-    from rich.live import Live
     from rich.markup import escape
     from rich.panel import Panel
     from rich.progress import (
         BarColumn,
-        MofNCompleteColumn,
         Progress,
         SpinnerColumn,
         TaskProgressColumn,
         TextColumn,
         TimeElapsedColumn,
     )
-    from rich.prompt import Confirm, Prompt
-    from rich.rule import Rule
     from rich.table import Table
     from rich.text import Text
     from rich.theme import Theme
 except ImportError:
     print("Dependencia 'rich' nao encontrada. Instalando...")
     subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "rich", "--break-system-packages", "-q"]
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "rich",
+            "--break-system-packages",
+            "-q",
+        ]
     )
     print("Rich instalado. Reiniciando o script...")
     os.execv(sys.executable, [sys.executable, *sys.argv])
@@ -320,7 +321,6 @@ env_mgr = EnvManager()
 class DockerManager:
     """Gerencia instalação, configuração e ciclo de vida do Docker e container MySQL."""
 
-
     @staticmethod
     def purge_native_mysql(on_line: Callable[[str], None] | None = None) -> bool:
         """Remove por completo o MySQL nativo do WSL2 Ubuntu (serviço, pacotes, dados, configs, usuário)."""
@@ -330,22 +330,44 @@ class DockerManager:
 
         # 1. Parar serviço e matar processos
         emit("[INFO] Parando serviço MySQL e matando processos residuais...")
-        run_cmd_live("sudo -n service mysql stop 2>/dev/null || true", on_line=on_line, shell=True)
-        run_cmd_live("sudo -n killall -9 mysqld 2>/dev/null || true", on_line=on_line, shell=True)
-        run_cmd_live("sudo -n killall -9 mysqld_safe 2>/dev/null || true", on_line=on_line, shell=True)
-        run_cmd_live("sudo -n killall -9 mysql 2>/dev/null || true", on_line=on_line, shell=True)
+        run_cmd_live(
+            "sudo -n service mysql stop 2>/dev/null || true",
+            on_line=on_line,
+            shell=True,
+        )
+        run_cmd_live(
+            "sudo -n killall -9 mysqld 2>/dev/null || true", on_line=on_line, shell=True
+        )
+        run_cmd_live(
+            "sudo -n killall -9 mysqld_safe 2>/dev/null || true",
+            on_line=on_line,
+            shell=True,
+        )
+        run_cmd_live(
+            "sudo -n killall -9 mysql 2>/dev/null || true", on_line=on_line, shell=True
+        )
         time.sleep(2)
 
         # 2. Purge de todos os pacotes MySQL/MariaDB
         emit("[INFO] Removendo todos os pacotes MySQL e MariaDB (purge)...")
         packages = [
-            "mysql-server", "mysql-server-*", "mysql-client", "mysql-client-*",
-            "mysql-common", "mysql-server-core-*", "mysql-client-core-*",
-            "libmysqlclient*", "libmysqlclient-dev", "mysql-apt-config",
-            "mysql-community-server", "mysql-community-client",
-            "mariadb-server", "mariadb-client", "mariadb-common",
+            "mysql-server",
+            "mysql-server-*",
+            "mysql-client",
+            "mysql-client-*",
+            "mysql-common",
+            "mysql-server-core-*",
+            "mysql-client-core-*",
+            "libmysqlclient*",
+            "libmysqlclient-dev",
+            "mysql-apt-config",
+            "mysql-community-server",
+            "mysql-community-client",
+            "mariadb-server",
+            "mariadb-client",
+            "mariadb-common",
         ]
-        rc = run_cmd_live(
+        run_cmd_live(
             f"sudo -n env DEBIAN_FRONTEND=noninteractive apt purge -y {' '.join(packages)} 2>/dev/null || true",
             on_line=on_line,
             shell=True,
@@ -353,8 +375,12 @@ class DockerManager:
 
         # 3. Autoremove e autoclean
         emit("[INFO] Removendo dependências órfãs...")
-        run_cmd_live("sudo -n apt autoremove -y 2>/dev/null || true", on_line=on_line, shell=True)
-        run_cmd_live("sudo -n apt autoclean 2>/dev/null || true", on_line=on_line, shell=True)
+        run_cmd_live(
+            "sudo -n apt autoremove -y 2>/dev/null || true", on_line=on_line, shell=True
+        )
+        run_cmd_live(
+            "sudo -n apt autoclean 2>/dev/null || true", on_line=on_line, shell=True
+        )
 
         # 4. Remover diretórios de dados, config, logs e runtime
         emit("[INFO] Removendo diretórios de dados, configuração, logs e runtime...")
@@ -372,12 +398,20 @@ class DockerManager:
             "/var/lib/mysql-keyring",
         ]
         for d in dirs_to_remove:
-            run_cmd_live(f"sudo -n rm -rf {d} 2>/dev/null || true", on_line=on_line, shell=True)
+            run_cmd_live(
+                f"sudo -n rm -rf {d} 2>/dev/null || true", on_line=on_line, shell=True
+            )
 
         # 5. Remover usuário e grupo do sistema
         emit("[INFO] Removendo usuário e grupo 'mysql' do sistema...")
-        run_cmd_live("sudo -n deluser --remove-home mysql 2>/dev/null || true", on_line=on_line, shell=True)
-        run_cmd_live("sudo -n delgroup mysql 2>/dev/null || true", on_line=on_line, shell=True)
+        run_cmd_live(
+            "sudo -n deluser --remove-home mysql 2>/dev/null || true",
+            on_line=on_line,
+            shell=True,
+        )
+        run_cmd_live(
+            "sudo -n delgroup mysql 2>/dev/null || true", on_line=on_line, shell=True
+        )
 
         # 6. Limpar repositórios MySQL adicionais
         emit("[INFO] Removendo repositórios MySQL de terceiros...")
@@ -396,7 +430,9 @@ class DockerManager:
         emit("[INFO] Limpando registros dpkg residuais...")
         dpkg_result = run_cmd(
             "dpkg -l 2>/dev/null | grep -iE 'mysql|mariadb' | awk '{print $2}'",
-            capture=True, check=False, shell=True,
+            capture=True,
+            check=False,
+            shell=True,
         )
         if dpkg_result.returncode == 0 and dpkg_result.stdout.strip():
             residual_pkgs = dpkg_result.stdout.strip().splitlines()
@@ -414,24 +450,32 @@ class DockerManager:
         emit("[INFO] Verificação final (prova de morte)...")
         verify_result = run_cmd(
             "dpkg -l 2>/dev/null | grep -iE 'mysql|mariadb' || true",
-            capture=True, check=False, shell=True,
+            capture=True,
+            check=False,
+            shell=True,
         )
         if verify_result.stdout.strip():
-            emit(f"[WARN] Pacotes residuais ainda encontrados:\n{verify_result.stdout.strip()}")
+            emit(
+                f"[WARN] Pacotes residuais ainda encontrados:\n{verify_result.stdout.strip()}"
+            )
             emit("[WARN] Pode ser necessário remoção manual dos pacotes acima.")
             return False
 
         which_mysqld = shutil.which("mysqld")
         which_mysql = shutil.which("mysql")
         if which_mysqld or which_mysql:
-            emit(f"[WARN] Binários ainda encontrados: mysqld={which_mysqld}, mysql={which_mysql}")
+            emit(
+                f"[WARN] Binários ainda encontrados: mysqld={which_mysqld}, mysql={which_mysql}"
+            )
             return False
 
         port_free = not DockerManager.mysql_port_responding()
         if port_free:
             emit("[OK] Porta 3306 livre.")
         else:
-            emit("[WARN] Porta 3306 ainda ocupada — pode ser o Docker ou outro processo.")
+            emit(
+                "[WARN] Porta 3306 ainda ocupada — pode ser o Docker ou outro processo."
+            )
 
         emit("[OK] MySQL nativo removido por completo do WSL2 Ubuntu.")
         return True
@@ -443,9 +487,7 @@ class DockerManager:
     @staticmethod
     def is_daemon_running() -> bool:
         try:
-            result = run_cmd(
-                ["docker", "info"], capture=True, check=False, timeout=10
-            )
+            result = run_cmd(["docker", "info"], capture=True, check=False, timeout=10)
             return result.returncode == 0
         except Exception:
             return False
@@ -456,9 +498,7 @@ class DockerManager:
         emit = on_line or (lambda s: None)
 
         emit("[INFO] Atualizando pacotes do sistema...")
-        rc = run_cmd_live(
-            ["sudo", "-n", "apt", "update", "-y"], on_line=on_line
-        )
+        rc = run_cmd_live(["sudo", "-n", "apt", "update", "-y"], on_line=on_line)
         if rc != 0:
             emit("[ERRO] Falha ao atualizar pacotes.")
             return False
@@ -466,9 +506,17 @@ class DockerManager:
         emit("[INFO] Instalando pré-requisitos do Docker...")
         rc = run_cmd_live(
             [
-                "sudo", "-n", "apt", "install", "-y",
-                "ca-certificates", "curl", "gnupg", "lsb-release",
-                "apt-transport-https", "software-properties-common",
+                "sudo",
+                "-n",
+                "apt",
+                "install",
+                "-y",
+                "ca-certificates",
+                "curl",
+                "gnupg",
+                "lsb-release",
+                "apt-transport-https",
+                "software-properties-common",
             ],
             on_line=on_line,
         )
@@ -491,10 +539,12 @@ class DockerManager:
             return False
 
         emit("[INFO] Adicionando repositório Docker...")
-        codename_result = run_cmd(
-            ["lsb_release", "-cs"], capture=True, check=False
+        codename_result = run_cmd(["lsb_release", "-cs"], capture=True, check=False)
+        codename = (
+            codename_result.stdout.strip()
+            if codename_result.returncode == 0
+            else "jammy"
         )
-        codename = codename_result.stdout.strip() if codename_result.returncode == 0 else "jammy"
 
         repo_line = (
             f"deb [arch=$(dpkg --print-architecture) "
@@ -513,9 +563,16 @@ class DockerManager:
         emit("[INFO] Instalando Docker Engine, CLI e plugins...")
         rc = run_cmd_live(
             [
-                "sudo", "-n", "apt", "install", "-y",
-                "docker-ce", "docker-ce-cli", "containerd.io",
-                "docker-buildx-plugin", "docker-compose-plugin",
+                "sudo",
+                "-n",
+                "apt",
+                "install",
+                "-y",
+                "docker-ce",
+                "docker-ce-cli",
+                "containerd.io",
+                "docker-buildx-plugin",
+                "docker-compose-plugin",
             ],
             on_line=on_line,
         )
@@ -599,9 +656,7 @@ class DockerManager:
 
         emit("[INFO] Tentando limpeza de dados corrompidos do Docker...")
         run_cmd(["sudo", "-n", "service", "docker", "stop"], check=False)
-        run_cmd(
-            ["sudo", "-n", "rm", "-rf", "/var/run/docker.sock"], check=False
-        )
+        run_cmd(["sudo", "-n", "rm", "-rf", "/var/run/docker.sock"], check=False)
         run_cmd(["sudo", "-n", "service", "docker", "start"], check=False)
         time.sleep(5)
 
@@ -616,7 +671,15 @@ class DockerManager:
     def container_exists() -> bool:
         try:
             result = run_cmd(
-                ["docker", "ps", "-a", "--filter", f"name=^{DOCKER_CONTAINER}$", "--format", "{{.Names}}"],
+                [
+                    "docker",
+                    "ps",
+                    "-a",
+                    "--filter",
+                    f"name=^{DOCKER_CONTAINER}$",
+                    "--format",
+                    "{{.Names}}",
+                ],
                 capture=True,
                 check=False,
                 timeout=10,
@@ -629,7 +692,16 @@ class DockerManager:
     def container_running() -> bool:
         try:
             result = run_cmd(
-                ["docker", "ps", "--filter", f"name=^{DOCKER_CONTAINER}$", "--filter", "status=running", "--format", "{{.Names}}"],
+                [
+                    "docker",
+                    "ps",
+                    "--filter",
+                    f"name=^{DOCKER_CONTAINER}$",
+                    "--filter",
+                    "status=running",
+                    "--format",
+                    "{{.Names}}",
+                ],
                 capture=True,
                 check=False,
                 timeout=10,
@@ -642,7 +714,13 @@ class DockerManager:
     def image_exists() -> bool:
         try:
             result = run_cmd(
-                ["docker", "images", DOCKER_IMAGE, "--format", "{{.Repository}}:{{.Tag}}"],
+                [
+                    "docker",
+                    "images",
+                    DOCKER_IMAGE,
+                    "--format",
+                    "{{.Repository}}:{{.Tag}}",
+                ],
                 capture=True,
                 check=False,
                 timeout=10,
@@ -682,10 +760,16 @@ class DockerManager:
             return False
 
         result = run_cmd(
-            ["docker", "inspect", "--format",
-             "Status: {{.State.Status}} | Health: {{if .State.Health}}{{.State.Health.Status}}{{else}}N/A{{end}} | Porta: {{range $p, $conf := .NetworkSettings.Ports}}{{$p}}->{{if $conf}}{{(index $conf 0).HostPort}}{{else}}N/A{{end}} {{end}}",
-             DOCKER_CONTAINER],
-            capture=True, check=False, timeout=10,
+            [
+                "docker",
+                "inspect",
+                "--format",
+                "Status: {{.State.Status}} | Health: {{if .State.Health}}{{.State.Health.Status}}{{else}}N/A{{end}} | Porta: {{range $p, $conf := .NetworkSettings.Ports}}{{$p}}->{{if $conf}}{{(index $conf 0).HostPort}}{{else}}N/A{{end}} {{end}}",
+                DOCKER_CONTAINER,
+            ],
+            capture=True,
+            check=False,
+            timeout=10,
         )
         if result.returncode == 0:
             emit(f"[INFO] {result.stdout.strip()}")
@@ -707,98 +791,13 @@ class DockerManager:
 
     @staticmethod
     def ensure_mysql_container(on_line: Callable[[str], None] | None = None) -> bool:
-        """Garante que o container MySQL lyra_metacare exista e esteja rodando."""
-        emit = on_line or (lambda s: None)
-
-        env_mgr.load()
-        mysql_root_pw = env_mgr.get("MYSQL_ROOT_PASSWORD", "")
-        mysql_db = env_mgr.get("MYSQL_DATABASE", "lyra_metacare")
-
-        if DockerManager.container_running():
-            emit("[OK] Container MySQL 'lyra_metacare' já está em execução.")
-            if DockerManager.mysql_port_responding():
-                emit("[OK] MySQL respondendo em 127.0.0.1:3306.")
-                return True
-            emit("[WARN] Container rodando mas porta 3306 não responde. Aguardando...")
-            for i in range(1, 31):
-                time.sleep(2)
-                if DockerManager.mysql_port_responding():
-                    emit(f"[OK] MySQL respondeu após {i * 2}s.")
-                    return True
-                emit(f"[INFO] Aguardando MySQL inicializar... ({i * 2}/60s)")
-            emit("[ERRO] MySQL não respondeu dentro do tempo limite.")
-            return False
-
-        if DockerManager.container_exists():
-            emit("[INFO] Container 'lyra_metacare' existe mas está parado. Iniciando...")
-            rc = run_cmd_live(
-                ["docker", "start", DOCKER_CONTAINER], on_line=on_line
-            )
-            if rc != 0:
-                emit("[ERRO] Falha ao iniciar container existente.")
-                return False
-            for i in range(1, 31):
-                time.sleep(2)
-                if DockerManager.mysql_port_responding():
-                    emit(f"[OK] MySQL respondeu após {i * 2}s.")
-                    return True
-                emit(f"[INFO] Aguardando MySQL inicializar... ({i * 2}/60s)")
-            return DockerManager.mysql_port_responding()
-
-        emit("[INFO] Container 'lyra_metacare' não encontrado. Criando...")
-
-        if not DockerManager.image_exists():
-            emit("[INFO] Baixando imagem MySQL 8.0...")
-            rc = run_cmd_live(
-                ["docker", "pull", DOCKER_IMAGE], on_line=on_line
-            )
-            if rc != 0:
-                emit("[ERRO] Falha ao baixar imagem MySQL.")
-                return False
-
-        docker_run_cmd = [
-            "docker", "run", "-d",
-            "--name", DOCKER_CONTAINER,
-            "-p", f"127.0.0.1:{DOCKER_MYSQL_PORT}:3306",
-            "-e", f"MYSQL_DATABASE={mysql_db}",
-            "-e", f"MYSQL_ROOT_PASSWORD={mysql_root_pw}" if mysql_root_pw else "MYSQL_ALLOW_EMPTY_PASSWORD=yes",
-            "--restart", "unless-stopped",
-            "--health-cmd", "mysqladmin ping -h localhost || exit 1",
-            "--health-interval", "10s",
-            "--health-timeout", "5s",
-            "--health-retries", "5",
-            DOCKER_IMAGE,
-            "--default-authentication-plugin=mysql_native_password",
-            "--character-set-server=utf8mb4",
-            "--collation-server=utf8mb4_unicode_ci",
-            "--bind-address=0.0.0.0",
-        ]
-
-        emit("[INFO] Criando e iniciando container MySQL...")
-        rc = run_cmd_live(docker_run_cmd, on_line=on_line)
-        if rc != 0:
-            emit("[ERRO] Falha ao criar container MySQL.")
-            return False
-
-        emit("[INFO] Aguardando MySQL ficar pronto (primeira inicialização pode levar 30-60s)...")
-        for i in range(1, 61):
-            time.sleep(2)
-            if DockerManager.mysql_port_responding():
-                emit(f"[OK] MySQL pronto e respondendo após {i * 2}s.")
-                return True
-            emit(f"[INFO] Aguardando MySQL inicializar... ({i * 2}/120s)")
-
-        emit("[ERRO] MySQL não ficou pronto no tempo esperado.")
-        return False
-
-    @staticmethod
-    def ensure_mysql_container(on_line: Callable[[str], None] | None = None) -> bool:
-
         emit = on_line or (lambda s: None)
         MAX_FULL_RETRIES = 2
 
         for full_attempt in range(1, MAX_FULL_RETRIES + 1):
-            emit(f"[INFO] === CICLO COMPLETO Docker+MySQL (tentativa {full_attempt}/{MAX_FULL_RETRIES}) ===")
+            emit(
+                f"[INFO] === CICLO COMPLETO Docker+MySQL (tentativa {full_attempt}/{MAX_FULL_RETRIES}) ==="
+            )
 
             # ─────────────────────────────────────────────────────────────
             # [3] DOCKER INSTALADO E CONFIGURADO?
@@ -889,11 +888,25 @@ class DockerManager:
 
             if DockerManager.container_exists():
                 inspect_result = run_cmd(
-                    ["docker", "inspect", "--format", "{{.State.Status}}", DOCKER_CONTAINER],
-                    capture=True, check=False, timeout=10,
+                    [
+                        "docker",
+                        "inspect",
+                        "--format",
+                        "{{.State.Status}}",
+                        DOCKER_CONTAINER,
+                    ],
+                    capture=True,
+                    check=False,
+                    timeout=10,
                 )
-                container_state = inspect_result.stdout.strip() if inspect_result.returncode == 0 else "unknown"
-                emit(f"[INFO] Container '{DOCKER_CONTAINER}' encontrado (estado: {container_state}).")
+                container_state = (
+                    inspect_result.stdout.strip()
+                    if inspect_result.returncode == 0
+                    else "unknown"
+                )
+                emit(
+                    f"[INFO] Container '{DOCKER_CONTAINER}' encontrado (estado: {container_state})."
+                )
 
                 if container_state == "running":
                     emit("[OK] Container já em execução.")
@@ -901,21 +914,44 @@ class DockerManager:
 
                 elif container_state == "exited":
                     emit("[INFO] Container parado. Tentando iniciar...")
-                    rc = run_cmd_live(["docker", "start", DOCKER_CONTAINER], on_line=on_line)
+                    rc = run_cmd_live(
+                        ["docker", "start", DOCKER_CONTAINER], on_line=on_line
+                    )
                     if rc == 0:
                         emit("[OK] Container iniciado.")
                         container_ready = True
                     else:
-                        emit("[WARN] Falha ao iniciar container parado — removendo para recriar limpo...")
-                        run_cmd(["docker", "rm", "-f", DOCKER_CONTAINER], check=False, capture=True, timeout=15)
+                        emit(
+                            "[WARN] Falha ao iniciar container parado — removendo para recriar limpo..."
+                        )
+                        run_cmd(
+                            ["docker", "rm", "-f", DOCKER_CONTAINER],
+                            check=False,
+                            capture=True,
+                            timeout=15,
+                        )
 
                 elif container_state in ("created", "dead", "removing", "unknown"):
-                    emit(f"[WARN] Container em estado corrompido '{container_state}' — removendo para recriar...")
-                    run_cmd(["docker", "rm", "-f", DOCKER_CONTAINER], check=False, capture=True, timeout=15)
+                    emit(
+                        f"[WARN] Container em estado corrompido '{container_state}' — removendo para recriar..."
+                    )
+                    run_cmd(
+                        ["docker", "rm", "-f", DOCKER_CONTAINER],
+                        check=False,
+                        capture=True,
+                        timeout=15,
+                    )
 
                 else:
-                    emit(f"[WARN] Estado inesperado '{container_state}' — removendo para recriar...")
-                    run_cmd(["docker", "rm", "-f", DOCKER_CONTAINER], check=False, capture=True, timeout=15)
+                    emit(
+                        f"[WARN] Estado inesperado '{container_state}' — removendo para recriar..."
+                    )
+                    run_cmd(
+                        ["docker", "rm", "-f", DOCKER_CONTAINER],
+                        check=False,
+                        capture=True,
+                        timeout=15,
+                    )
 
             # ─────────────────────────────────────────────────────────────
             # [4] SE CONTAINER NÃO ESTÁ PRONTO → LIBERAR PORTA + CRIAR
@@ -929,7 +965,9 @@ class DockerManager:
                     # Checar se é outro container Docker
                     port_check = run_cmd(
                         ["docker", "ps", "--format", "{{.ID}} {{.Names}} {{.Ports}}"],
-                        capture=True, check=False, timeout=10,
+                        capture=True,
+                        check=False,
+                        timeout=10,
                     )
                     if port_check.returncode == 0:
                         for line in port_check.stdout.strip().splitlines():
@@ -937,14 +975,23 @@ class DockerManager:
                                 parts = line.split()
                                 other_id = parts[0] if parts else "?"
                                 other_name = parts[1] if len(parts) > 1 else "?"
-                                emit(f"[WARN] Container '{other_name}' ({other_id}) usando porta 3306.")
-                                emit(f"[INFO] Parando container conflitante...")
-                                run_cmd(["docker", "stop", other_id], check=False, capture=True, timeout=20)
+                                emit(
+                                    f"[WARN] Container '{other_name}' ({other_id}) usando porta 3306."
+                                )
+                                emit("[INFO] Parando container conflitante...")
+                                run_cmd(
+                                    ["docker", "stop", other_id],
+                                    check=False,
+                                    capture=True,
+                                    timeout=20,
+                                )
                                 time.sleep(2)
 
                     # Checar processo nativo via /proc/net/tcp
                     if DockerManager.mysql_port_responding():
-                        emit("[INFO] Porta ainda ocupada — buscando PID via /proc/net/tcp...")
+                        emit(
+                            "[INFO] Porta ainda ocupada — buscando PID via /proc/net/tcp..."
+                        )
                         try:
                             hex_port = format(int(DOCKER_MYSQL_PORT), "04X")
                             with open("/proc/net/tcp", "r") as f:
@@ -954,41 +1001,66 @@ class DockerManager:
                                         continue
                                     local_addr = fields[1]
                                     # Estado 0A = LISTEN
-                                    if local_addr.endswith(f":{hex_port}") and fields[3] == "0A":
+                                    if (
+                                        local_addr.endswith(f":{hex_port}")
+                                        and fields[3] == "0A"
+                                    ):
                                         inode = fields[9]
                                         import glob
+
                                         for fd_link in glob.glob("/proc/[0-9]*/fd/*"):
                                             try:
                                                 target = os.readlink(fd_link)
                                                 if f"socket:[{inode}]" in target:
                                                     pid = fd_link.split("/")[2]
                                                     try:
-                                                        cmdline = Path(f"/proc/{pid}/cmdline").read_text().replace("\x00", " ").strip()
+                                                        cmdline = (
+                                                            Path(f"/proc/{pid}/cmdline")
+                                                            .read_text()
+                                                            .replace("\x00", " ")
+                                                            .strip()
+                                                        )
                                                     except OSError:
                                                         cmdline = "desconhecido"
-                                                    emit(f"[WARN] PID {pid} ocupa porta 3306: {cmdline}")
-                                                    emit(f"[INFO] Encerrando PID {pid} (SIGTERM)...")
+                                                    emit(
+                                                        f"[WARN] PID {pid} ocupa porta 3306: {cmdline}"
+                                                    )
+                                                    emit(
+                                                        f"[INFO] Encerrando PID {pid} (SIGTERM)..."
+                                                    )
                                                     os.kill(int(pid), signal.SIGTERM)
                                                     time.sleep(3)
                                                     try:
                                                         os.kill(int(pid), 0)
-                                                        emit(f"[WARN] PID {pid} resistiu — SIGKILL...")
-                                                        os.kill(int(pid), signal.SIGKILL)
+                                                        emit(
+                                                            f"[WARN] PID {pid} resistiu — SIGKILL..."
+                                                        )
+                                                        os.kill(
+                                                            int(pid), signal.SIGKILL
+                                                        )
                                                         time.sleep(2)
                                                     except OSError:
-                                                        emit(f"[OK] PID {pid} encerrado.")
+                                                        emit(
+                                                            f"[OK] PID {pid} encerrado."
+                                                        )
                                                     break
                                             except (OSError, ValueError):
                                                 continue
                                         break
                         except (OSError, PermissionError) as exc:
-                            emit(f"[WARN] Sem permissão para inspecionar /proc/net/tcp: {exc}")
+                            emit(
+                                f"[WARN] Sem permissão para inspecionar /proc/net/tcp: {exc}"
+                            )
 
                     # Verificação final da porta
                     time.sleep(1)
                     if DockerManager.mysql_port_responding():
-                        emit("[ERRO] Porta 3306 continua ocupada após todas as tentativas de liberação.")
-                        emit("[ERRO] Ação manual necessária: 'fuser -k 3306/tcp' ou 'kill <PID>'")
+                        emit(
+                            "[ERRO] Porta 3306 continua ocupada após todas as tentativas de liberação."
+                        )
+                        emit(
+                            "[ERRO] Ação manual necessária: 'fuser -k 3306/tcp' ou 'kill <PID>'"
+                        )
                         if full_attempt < MAX_FULL_RETRIES:
                             emit("[INFO] Retentando ciclo completo...")
                             continue
@@ -998,21 +1070,39 @@ class DockerManager:
                 # ── Limpar container residual antes de criar ──
                 if DockerManager.container_exists():
                     emit("[INFO] Removendo container residual...")
-                    run_cmd(["docker", "rm", "-f", DOCKER_CONTAINER], check=False, capture=True, timeout=15)
+                    run_cmd(
+                        ["docker", "rm", "-f", DOCKER_CONTAINER],
+                        check=False,
+                        capture=True,
+                        timeout=15,
+                    )
 
                 # ── Criar container ──
                 emit("[INFO] Criando container MySQL 'lyra_metacare'...")
                 docker_run_cmd = [
-                    "docker", "run", "-d",
-                    "--name", DOCKER_CONTAINER,
-                    "-p", f"127.0.0.1:{DOCKER_MYSQL_PORT}:3306",
-                    "-e", f"MYSQL_DATABASE={mysql_db}",
-                    "-e", f"MYSQL_ROOT_PASSWORD={mysql_root_pw}" if mysql_root_pw else "MYSQL_ALLOW_EMPTY_PASSWORD=yes",
-                    "--restart", "unless-stopped",
-                    "--health-cmd", "mysqladmin ping -h localhost || exit 1",
-                    "--health-interval", "10s",
-                    "--health-timeout", "5s",
-                    "--health-retries", "5",
+                    "docker",
+                    "run",
+                    "-d",
+                    "--name",
+                    DOCKER_CONTAINER,
+                    "-p",
+                    f"127.0.0.1:{DOCKER_MYSQL_PORT}:3306",
+                    "-e",
+                    f"MYSQL_DATABASE={mysql_db}",
+                    "-e",
+                    f"MYSQL_ROOT_PASSWORD={mysql_root_pw}"
+                    if mysql_root_pw
+                    else "MYSQL_ALLOW_EMPTY_PASSWORD=yes",
+                    "--restart",
+                    "unless-stopped",
+                    "--health-cmd",
+                    "mysqladmin ping -h localhost || exit 1",
+                    "--health-interval",
+                    "10s",
+                    "--health-timeout",
+                    "5s",
+                    "--health-retries",
+                    "5",
                     DOCKER_IMAGE,
                     "--default-authentication-plugin=mysql_native_password",
                     "--character-set-server=utf8mb4",
@@ -1049,8 +1139,15 @@ class DockerManager:
                 emit("[ERRO] MySQL não ficou pronto no tempo esperado.")
                 # [4] "caso não esteja voltar no item 3"
                 if full_attempt < MAX_FULL_RETRIES:
-                    emit("[INFO] Removendo container e retentando ciclo completo (volta ao item 3)...")
-                    run_cmd(["docker", "rm", "-f", DOCKER_CONTAINER], check=False, capture=True, timeout=15)
+                    emit(
+                        "[INFO] Removendo container e retentando ciclo completo (volta ao item 3)..."
+                    )
+                    run_cmd(
+                        ["docker", "rm", "-f", DOCKER_CONTAINER],
+                        check=False,
+                        capture=True,
+                        timeout=15,
+                    )
                     continue
                 return False
 
@@ -1075,12 +1172,21 @@ class DockerManager:
 
             if not validations_ok:
                 if full_attempt < MAX_FULL_RETRIES:
-                    emit("[INFO] Validação falhou — retentando ciclo completo (volta ao item 3)...")
-                    run_cmd(["docker", "rm", "-f", DOCKER_CONTAINER], check=False, capture=True, timeout=15)
+                    emit(
+                        "[INFO] Validação falhou — retentando ciclo completo (volta ao item 3)..."
+                    )
+                    run_cmd(
+                        ["docker", "rm", "-f", DOCKER_CONTAINER],
+                        check=False,
+                        capture=True,
+                        timeout=15,
+                    )
                     continue
                 return False
 
-            emit("[OK] Validação final: container rodando, porta 3306 ativa, queries funcionando.")
+            emit(
+                "[OK] Validação final: container rodando, porta 3306 ativa, queries funcionando."
+            )
 
             # ─────────────────────────────────────────────────────────────
             # [5] BANCO DE DADOS, USUARIO, GRANTS
@@ -1134,7 +1240,11 @@ class DockerManager:
             rc_tc, table_count_str = MySQLManager._docker_exec_sql(
                 f"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{mysql_db}'"
             )
-            table_count = int(table_count_str.strip()) if rc_tc == 0 and table_count_str.strip().isdigit() else 0
+            table_count = (
+                int(table_count_str.strip())
+                if rc_tc == 0 and table_count_str.strip().isdigit()
+                else 0
+            )
             emit(f"[INFO] Tabelas encontradas no schema '{mysql_db}': {table_count}")
 
             # Verificar tabela de migrações
@@ -1158,7 +1268,9 @@ class DockerManager:
                 f"SELECT table_name FROM information_schema.tables WHERE table_schema = '{mysql_db}' ORDER BY table_name"
             )
             if rc_tl == 0 and table_list.strip():
-                tables = [t.strip() for t in table_list.strip().splitlines() if t.strip()]
+                tables = [
+                    t.strip() for t in table_list.strip().splitlines() if t.strip()
+                ]
                 emit(f"[INFO] Tabelas existentes: {', '.join(tables[:20])}")
                 if len(tables) > 20:
                     emit(f"[INFO] ... e mais {len(tables) - 20} tabelas.")
@@ -1178,18 +1290,30 @@ class DockerManager:
 
             # Decidir estratégia de migração
             if table_count == 0 and not has_migration_table:
-                emit("[INFO] Banco completamente vazio — executando migração completa (full)...")
+                emit(
+                    "[INFO] Banco completamente vazio — executando migração completa (full)..."
+                )
                 migration_needed = True
             elif has_migration_table and applied_migrations > 0:
-                emit(f"[INFO] Banco possui {table_count} tabelas e {applied_migrations} migrações aplicadas.")
-                emit("[INFO] Executando migração incremental (somente pendentes, sem apagar dados)...")
+                emit(
+                    f"[INFO] Banco possui {table_count} tabelas e {applied_migrations} migrações aplicadas."
+                )
+                emit(
+                    "[INFO] Executando migração incremental (somente pendentes, sem apagar dados)..."
+                )
                 migration_needed = True
             elif table_count > 0 and not has_migration_table:
-                emit(f"[WARN] Banco possui {table_count} tabelas mas SEM tabela de migrações.")
-                emit("[INFO] Executando migração para sincronizar estado (preservando dados)...")
+                emit(
+                    f"[WARN] Banco possui {table_count} tabelas mas SEM tabela de migrações."
+                )
+                emit(
+                    "[INFO] Executando migração para sincronizar estado (preservando dados)..."
+                )
                 migration_needed = True
             else:
-                emit("[INFO] Estado ambíguo — executando migração segura para garantir consistência...")
+                emit(
+                    "[INFO] Estado ambíguo — executando migração segura para garantir consistência..."
+                )
                 migration_needed = True
 
             if migration_needed:
@@ -1198,7 +1322,9 @@ class DockerManager:
                     emit("[WARN] Pulando migração — banco pode estar incompleto.")
                 elif not (ROOT_DIR / "node_modules").exists():
                     emit("[WARN] node_modules ausente — pulando migração.")
-                    emit("[WARN] Execute 'Instalar dependências' e depois 'Aplicar migrações'.")
+                    emit(
+                        "[WARN] Execute 'Instalar dependências' e depois 'Aplicar migrações'."
+                    )
                 else:
                     node_cmd = shutil.which("node")
                     if not node_cmd:
@@ -1214,7 +1340,9 @@ class DockerManager:
                         )
                         if rc_mig != 0:
                             emit(f"[ERRO] Migração retornou código {rc_mig}.")
-                            emit("[WARN] Banco pode estar parcialmente migrado — verifique manualmente.")
+                            emit(
+                                "[WARN] Banco pode estar parcialmente migrado — verifique manualmente."
+                            )
                         else:
                             emit("[OK] Migração concluída com sucesso.")
 
@@ -1223,13 +1351,23 @@ class DockerManager:
                         rc_post, post_count = MySQLManager._docker_exec_sql(
                             f"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{mysql_db}'"
                         )
-                        post_tables = int(post_count.strip()) if rc_post == 0 and post_count.strip().isdigit() else 0
-                        emit(f"[INFO] Tabelas após migração: {post_tables} (antes: {table_count})")
+                        post_tables = (
+                            int(post_count.strip())
+                            if rc_post == 0 and post_count.strip().isdigit()
+                            else 0
+                        )
+                        emit(
+                            f"[INFO] Tabelas após migração: {post_tables} (antes: {table_count})"
+                        )
 
                         if post_tables > table_count:
-                            emit(f"[OK] {post_tables - table_count} novas tabelas criadas pela migração.")
+                            emit(
+                                f"[OK] {post_tables - table_count} novas tabelas criadas pela migração."
+                            )
                         elif post_tables == table_count and table_count > 0:
-                            emit("[OK] Nenhuma tabela nova — banco já estava atualizado.")
+                            emit(
+                                "[OK] Nenhuma tabela nova — banco já estava atualizado."
+                            )
 
                         # Confirmar que nenhum dado foi perdido
                         if table_count > 0:
@@ -1238,23 +1376,42 @@ class DockerManager:
                                 f"WHERE table_schema = '{mysql_db}' ORDER BY table_name"
                             )
                             if rc_final == 0:
-                                final_tables = {t.strip() for t in final_list.strip().splitlines() if t.strip()}
-                                original_tables = {t.strip() for t in table_list.strip().splitlines() if t.strip()} if rc_tl == 0 else set()
+                                final_tables = {
+                                    t.strip()
+                                    for t in final_list.strip().splitlines()
+                                    if t.strip()
+                                }
+                                original_tables = (
+                                    {
+                                        t.strip()
+                                        for t in table_list.strip().splitlines()
+                                        if t.strip()
+                                    }
+                                    if rc_tl == 0
+                                    else set()
+                                )
                                 lost_tables = original_tables - final_tables
                                 if lost_tables:
-                                    emit(f"[ERRO] TABELAS PERDIDAS APÓS MIGRAÇÃO: {', '.join(lost_tables)}")
+                                    emit(
+                                        f"[ERRO] TABELAS PERDIDAS APÓS MIGRAÇÃO: {', '.join(lost_tables)}"
+                                    )
                                     return False
-                                emit("[OK] Nenhuma tabela existente foi removida — dados preservados.")
+                                emit(
+                                    "[OK] Nenhuma tabela existente foi removida — dados preservados."
+                                )
 
             # ─────────────────────────────────────────────────────────────
             # SUCESSO COMPLETO
             # ─────────────────────────────────────────────────────────────
-            emit("[OK] === CICLO COMPLETO: Docker + MySQL + Usuario + Migração — OPERACIONAL ===")
+            emit(
+                "[OK] === CICLO COMPLETO: Docker + MySQL + Usuario + Migração — OPERACIONAL ==="
+            )
             return True
 
         # Esgotou retentativas
         emit(f"[ERRO] Ciclo completo falhou após {MAX_FULL_RETRIES} tentativas.")
         return False
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # GERENCIADOR DE MySQL (USER, GRANTS, MIGRATION, VERIFY)
@@ -1265,11 +1422,17 @@ class MySQLManager:
     """Gerencia operações de banco de dados MySQL via Docker."""
 
     @staticmethod
-    def _docker_exec_sql(sql: str, *, use_db: str = "", as_root: bool = True) -> tuple[int, str]:
+    def _docker_exec_sql(
+        sql: str, *, use_db: str = "", as_root: bool = True
+    ) -> tuple[int, str]:
         """Executa SQL no container MySQL via docker exec."""
         env_mgr.load()
         user = "root" if as_root else env_mgr.get("MYSQL_USER", "lyra")
-        password = env_mgr.get("MYSQL_ROOT_PASSWORD", "") if as_root else env_mgr.get("MYSQL_PASSWORD", "Lyra123#")
+        password = (
+            env_mgr.get("MYSQL_ROOT_PASSWORD", "")
+            if as_root
+            else env_mgr.get("MYSQL_PASSWORD", "Lyra123#")
+        )
 
         cmd = ["docker", "exec", "-i", DOCKER_CONTAINER, "mysql"]
         if user:
@@ -1284,7 +1447,9 @@ class MySQLManager:
         return result.returncode, result.stdout.strip()
 
     @staticmethod
-    def _wait_mysql_ready(on_line: Callable[[str], None] | None = None, max_wait: int = 60) -> bool:
+    def _wait_mysql_ready(
+        on_line: Callable[[str], None] | None = None, max_wait: int = 60
+    ) -> bool:
         """Aguarda MySQL aceitar conexões."""
         emit = on_line or (lambda s: None)
         for i in range(1, max_wait + 1):
@@ -1389,7 +1554,9 @@ class MySQLManager:
             return False
 
         if not (ROOT_DIR / "node_modules").exists():
-            emit("[ERRO] Dependencias do projeto ausentes. Execute 'Instalar dependencias' primeiro.")
+            emit(
+                "[ERRO] Dependencias do projeto ausentes. Execute 'Instalar dependencias' primeiro."
+            )
             return False
 
         env_vars = env_mgr.export_to_env()
@@ -1501,7 +1668,10 @@ class NodeManager:
                 emit("[WARN] pnpm ausente. Tentando ativar via corepack...")
                 if have("corepack"):
                     run_cmd(["corepack", "enable"], check=False)
-                    run_cmd(["corepack", "prepare", "pnpm@latest", "--activate"], check=False)
+                    run_cmd(
+                        ["corepack", "prepare", "pnpm@latest", "--activate"],
+                        check=False,
+                    )
                     emit("[OK] pnpm ativado via corepack.")
                 else:
                     emit("[WARN] corepack indisponivel. Usando npm como fallback.")
@@ -1668,13 +1838,17 @@ class AppManager:
         return True
 
     @staticmethod
-    def _start(mode: str, cmd: list[str], on_line: Callable[[str], None] | None = None) -> bool:
+    def _start(
+        mode: str, cmd: list[str], on_line: Callable[[str], None] | None = None
+    ) -> bool:
         """Inicia a aplicação em background."""
         emit = on_line or (lambda s: None)
         AppManager.stop(on_line=on_line)
 
         if not (ROOT_DIR / "node_modules").exists():
-            emit("[ERRO] Dependencias ausentes. Execute 'Instalar dependencias' primeiro.")
+            emit(
+                "[ERRO] Dependencias ausentes. Execute 'Instalar dependencias' primeiro."
+            )
             return False
 
         env_vars = env_mgr.export_to_env()
@@ -1699,7 +1873,9 @@ class AppManager:
             f"started_at={time.strftime('%Y-%m-%d %H:%M:%S')}\n"
         )
 
-        emit(f"[INFO] Aplicacao iniciada (PID: {proc.pid}). Aguardando resposta HTTP...")
+        emit(
+            f"[INFO] Aplicacao iniciada (PID: {proc.pid}). Aguardando resposta HTTP..."
+        )
         url = f"http://127.0.0.1:{port}"
         for attempt in range(1, 91):
             time.sleep(2)
@@ -1736,7 +1912,10 @@ class AppManager:
         run_cmd_parts = NodeManager.get_run_cmd()
         emit("[INFO] Gerando build de producao...")
         rc = run_cmd_live(
-            [*run_cmd_parts, "run", "build"], cwd=ROOT_DIR, env=env_vars, on_line=on_line
+            [*run_cmd_parts, "run", "build"],
+            cwd=ROOT_DIR,
+            env=env_vars,
+            on_line=on_line,
         )
         if rc != 0:
             emit("[ERRO] Build de producao falhou.")
@@ -1747,17 +1926,23 @@ class AppManager:
     @staticmethod
     def prod_mode(on_line: Callable[[str], None] | None = None) -> bool:
         run_cmd_parts = NodeManager.get_run_cmd()
-        return AppManager._start("prod", [*run_cmd_parts, "run", "start"], on_line=on_line)
+        return AppManager._start(
+            "prod", [*run_cmd_parts, "run", "start"], on_line=on_line
+        )
 
     @staticmethod
     def fast_prod_mode(on_line: Callable[[str], None] | None = None) -> bool:
         emit = on_line or (lambda s: None)
         build_id = ROOT_DIR / ".next" / "BUILD_ID"
         if not build_id.exists():
-            emit("[ERRO] Build inexistente. Execute 'Subir stack completa em producao' primeiro.")
+            emit(
+                "[ERRO] Build inexistente. Execute 'Subir stack completa em producao' primeiro."
+            )
             return False
         run_cmd_parts = NodeManager.get_run_cmd()
-        return AppManager._start("prod", [*run_cmd_parts, "run", "start"], on_line=on_line)
+        return AppManager._start(
+            "prod", [*run_cmd_parts, "run", "start"], on_line=on_line
+        )
 
     @staticmethod
     def status(on_line: Callable[[str], None] | None = None) -> bool:
@@ -1815,7 +2000,15 @@ class AppManager:
 
         if ENV_FILE.exists():
             env_mgr.load()
-            required = ["MYSQL_HOST", "MYSQL_PORT", "MYSQL_DATABASE", "MYSQL_USER", "MYSQL_PASSWORD", "AUTH_SECRET", "PORT"]
+            required = [
+                "MYSQL_HOST",
+                "MYSQL_PORT",
+                "MYSQL_DATABASE",
+                "MYSQL_USER",
+                "MYSQL_PASSWORD",
+                "AUTH_SECRET",
+                "PORT",
+            ]
             missing = [k for k in required if not env_mgr.get(k)]
             if missing:
                 emit(f"[WARN] Variaveis ausentes em .env.local: {', '.join(missing)}")
@@ -1854,7 +2047,9 @@ def action_setup_env(on_line: Callable[[str], None] | None = None) -> bool:
         current = env_mgr.get(key)
         if not current and default:
             env_mgr.upsert(key, default)
-            emit(f"  [+] {key} = {mask_secret(default) if 'PASSWORD' in key or 'SECRET' in key else default}")
+            emit(
+                f"  [+] {key} = {mask_secret(default) if 'PASSWORD' in key or 'SECRET' in key else default}"
+            )
         elif current:
             emit(f"  [=] {key} (mantido valor existente)")
         else:
@@ -1864,7 +2059,9 @@ def action_setup_env(on_line: Callable[[str], None] | None = None) -> bool:
         current_port = env_mgr.get(port_key)
         if current_port != docker_port:
             env_mgr.upsert(port_key, docker_port)
-            emit(f"  [~] {port_key} ajustado para {docker_port} (sincronizado com Docker)")
+            emit(
+                f"  [~] {port_key} ajustado para {docker_port} (sincronizado com Docker)"
+            )
 
     env_mgr.ensure_auth_secret()
     emit("[OK] .env.local configurado.")
@@ -1876,10 +2073,12 @@ def action_show_config(on_line: Callable[[str], None] | None = None) -> bool:
     emit = on_line or (lambda s: None)
     env_mgr.load()
     emit("[INFO] === CONFIGURACAO EFETIVA ===")
-    emit(f"  Ambiente: WSL2 Ubuntu")
+    emit("  Ambiente: WSL2 Ubuntu")
     emit(f"  Gerenciador Node: {NodeManager.detect_package_manager()}")
     emit(f"  App: http://127.0.0.1:{env_mgr.get('PORT', '3000')}")
-    emit(f"  MySQL host: {env_mgr.get('MYSQL_HOST', '127.0.0.1')}:{env_mgr.get('MYSQL_PORT', '3306')}")
+    emit(
+        f"  MySQL host: {env_mgr.get('MYSQL_HOST', '127.0.0.1')}:{env_mgr.get('MYSQL_PORT', '3306')}"
+    )
     emit(f"  MySQL schema: {env_mgr.get('MYSQL_DATABASE', 'lyra_metacare')}")
     emit(f"  MySQL usuario app: {env_mgr.get('MYSQL_USER', 'lyra')}")
     emit(f"  MySQL senha app: {mask_secret(env_mgr.get('MYSQL_PASSWORD'))}")
@@ -1943,7 +2142,9 @@ def action_full_migration(on_line: Callable[[str], None] | None = None) -> bool:
     rc, count_str = MySQLManager._docker_exec_sql(
         f"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{db_name}'"
     )
-    table_count = int(count_str.strip()) if rc == 0 and count_str.strip().isdigit() else 0
+    table_count = (
+        int(count_str.strip()) if rc == 0 and count_str.strip().isdigit() else 0
+    )
 
     rc, migration_exists = MySQLManager._docker_exec_sql(
         f"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{db_name}' AND table_name = '_lyra_schema_migrations'"
@@ -2095,6 +2296,7 @@ def action_help_cli(on_line: Callable[[str], None] | None = None) -> bool:
 # DEFINIÇÃO DE MENUS (SISTEMA EXTENSÍVEL)
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 @dataclass
 class MenuItem:
     icon: str
@@ -2109,55 +2311,205 @@ MENUS: dict[str, dict[str, Any]] = {
     "main": {
         "title": "Menu Principal",
         "items": [
-            MenuItem("🔧", "Preparação e Diagnóstico", "Validações, dependências, configuração e saúde", "submenu", target="environment"),
-            MenuItem("🐳", "Docker e MySQL", "Instalação, container, schema, grants e migrações", "submenu", target="database"),
-            MenuItem("💾", "Backup e Restore", "Backup do banco e restore seguro", "submenu", target="backup"),
-            MenuItem("🚀", "Aplicação Web", "Dev/Prod e controle do processo local", "submenu", target="application"),
-            MenuItem("📋", "Ajuda CLI", "Comandos disponíveis via terminal", "action", action=action_help_cli),
+            MenuItem(
+                "🔧",
+                "Preparação e Diagnóstico",
+                "Validações, dependências, configuração e saúde",
+                "submenu",
+                target="environment",
+            ),
+            MenuItem(
+                "🐳",
+                "Docker e MySQL",
+                "Instalação, container, schema, grants e migrações",
+                "submenu",
+                target="database",
+            ),
+            MenuItem(
+                "💾",
+                "Backup e Restore",
+                "Backup do banco e restore seguro",
+                "submenu",
+                target="backup",
+            ),
+            MenuItem(
+                "🚀",
+                "Aplicação Web",
+                "Dev/Prod e controle do processo local",
+                "submenu",
+                target="application",
+            ),
+            MenuItem(
+                "📋",
+                "Ajuda CLI",
+                "Comandos disponíveis via terminal",
+                "action",
+                action=action_help_cli,
+            ),
             MenuItem("🚪", "Sair", "Encerra a interface interativa", "exit"),
         ],
     },
     "environment": {
         "title": "Preparação e Diagnóstico",
         "items": [
-            MenuItem("🩺", "Validar requisitos", "Checa Node, npm, Git, Docker e ferramentas", "action", action=NodeManager.doctor),
-            MenuItem("📦", "Instalar dependências", "Instala somente se necessário", "action", action=NodeManager.install_deps),
-            MenuItem("⚙️", "Configurar .env.local", "Cria/atualiza com valores padrão", "action", action=action_setup_env),
-            MenuItem("🔍", "Mostrar configuração", "Exibe config ativa com segredos mascarados", "action", action=action_show_config),
-            MenuItem("📊", "Status consolidado", "Resume app, Docker, MySQL e ambiente", "action", action=AppManager.status),
-            MenuItem("💓", "Check de saúde", "Valida ambiente e prontidão operacional", "action", action=AppManager.health),
+            MenuItem(
+                "🩺",
+                "Validar requisitos",
+                "Checa Node, npm, Git, Docker e ferramentas",
+                "action",
+                action=NodeManager.doctor,
+            ),
+            MenuItem(
+                "📦",
+                "Instalar dependências",
+                "Instala somente se necessário",
+                "action",
+                action=NodeManager.install_deps,
+            ),
+            MenuItem(
+                "⚙️",
+                "Configurar .env.local",
+                "Cria/atualiza com valores padrão",
+                "action",
+                action=action_setup_env,
+            ),
+            MenuItem(
+                "🔍",
+                "Mostrar configuração",
+                "Exibe config ativa com segredos mascarados",
+                "action",
+                action=action_show_config,
+            ),
+            MenuItem(
+                "📊",
+                "Status consolidado",
+                "Resume app, Docker, MySQL e ambiente",
+                "action",
+                action=AppManager.status,
+            ),
+            MenuItem(
+                "💓",
+                "Check de saúde",
+                "Valida ambiente e prontidão operacional",
+                "action",
+                action=AppManager.health,
+            ),
             MenuItem("↩️", "Voltar", "Retorna ao menu principal", "back", target="main"),
         ],
     },
     "database": {
         "title": "Docker e MySQL",
         "items": [
-            MenuItem("🐳", "Setup Docker + MySQL", "Instala Docker, cria container e configura tudo", "action", action=action_full_docker_setup),
-            MenuItem("🛑", "Remover por completo MySQL", "Remover o MYSQL por completo", "action", action=DockerManager.purge_native_mysql),
-            MenuItem("🔎", "Inspecionar container", "Verifica imagem, container e porta MySQL", "action", action=DockerManager.inspect_mysql),
-            MenuItem("👤", "Criar usuário e grants", "Cria 'lyra' e configura permissões", "action", action=MySQLManager.ensure_user_and_grants),
-            MenuItem("📐", "Aplicar migrações", "Executa o motor de migração do projeto", "action", action=action_full_migration),
-            MenuItem("✅", "Verificar schema", "Confere banco, tabelas e migrações", "action", action=MySQLManager.verify_database),
-            MenuItem("📜", "Logs do MySQL", "Acompanha logs do container Docker", "action", action=action_mysql_logs),
+            MenuItem(
+                "🐳",
+                "Setup Docker + MySQL",
+                "Instala Docker, cria container e configura tudo",
+                "action",
+                action=action_full_docker_setup,
+            ),
+            MenuItem(
+                "🛑",
+                "Remover por completo MySQL",
+                "Remover o MYSQL por completo",
+                "action",
+                action=DockerManager.purge_native_mysql,
+            ),
+            MenuItem(
+                "🔎",
+                "Inspecionar container",
+                "Verifica imagem, container e porta MySQL",
+                "action",
+                action=DockerManager.inspect_mysql,
+            ),
+            MenuItem(
+                "👤",
+                "Criar usuário e grants",
+                "Cria 'lyra' e configura permissões",
+                "action",
+                action=MySQLManager.ensure_user_and_grants,
+            ),
+            MenuItem(
+                "📐",
+                "Aplicar migrações",
+                "Executa o motor de migração do projeto",
+                "action",
+                action=action_full_migration,
+            ),
+            MenuItem(
+                "✅",
+                "Verificar schema",
+                "Confere banco, tabelas e migrações",
+                "action",
+                action=MySQLManager.verify_database,
+            ),
+            MenuItem(
+                "📜",
+                "Logs do MySQL",
+                "Acompanha logs do container Docker",
+                "action",
+                action=action_mysql_logs,
+            ),
             MenuItem("↩️", "Voltar", "Retorna ao menu principal", "back", target="main"),
         ],
     },
     "backup": {
         "title": "Backup e Restore",
         "items": [
-            MenuItem("💾", "Gerar backup completo", "Dump full do schema do app via Docker", "action", action=MySQLManager.backup_database),
+            MenuItem(
+                "💾",
+                "Gerar backup completo",
+                "Dump full do schema do app via Docker",
+                "action",
+                action=MySQLManager.backup_database,
+            ),
             MenuItem("↩️", "Voltar", "Retorna ao menu principal", "back", target="main"),
         ],
     },
     "application": {
         "title": "Aplicação Web",
         "items": [
-            MenuItem("🟢", "Stack completa DEV", "Deps + Docker + Migração + App dev", "action", action=action_dev_full),
-            MenuItem("🔵", "Stack completa PROD", "Deps + Docker + Migração + Build + App prod", "action", action=action_prod_full),
-            MenuItem("⚡", "Dev rápido", "Usa deps existentes e sobe direto", "action", action=action_dev_fast),
-            MenuItem("⚡", "Prod rápido", "Usa build existente e sobe direto", "action", action=action_prod_fast),
-            MenuItem("🛑", "Encerrar aplicação", "Finaliza processo do app", "action", action=AppManager.stop),
-            MenuItem("⏹️", "Encerrar tudo", "Encerra app (Docker permanece)", "action", action=action_stop_all),
+            MenuItem(
+                "🟢",
+                "Stack completa DEV",
+                "Deps + Docker + Migração + App dev",
+                "action",
+                action=action_dev_full,
+            ),
+            MenuItem(
+                "🔵",
+                "Stack completa PROD",
+                "Deps + Docker + Migração + Build + App prod",
+                "action",
+                action=action_prod_full,
+            ),
+            MenuItem(
+                "⚡",
+                "Dev rápido",
+                "Usa deps existentes e sobe direto",
+                "action",
+                action=action_dev_fast,
+            ),
+            MenuItem(
+                "⚡",
+                "Prod rápido",
+                "Usa build existente e sobe direto",
+                "action",
+                action=action_prod_fast,
+            ),
+            MenuItem(
+                "🛑",
+                "Encerrar aplicação",
+                "Finaliza processo do app",
+                "action",
+                action=AppManager.stop,
+            ),
+            MenuItem(
+                "⏹️",
+                "Encerrar tudo",
+                "Encerra app (Docker permanece)",
+                "action",
+                action=action_stop_all,
+            ),
             MenuItem("↩️", "Voltar", "Retorna ao menu principal", "back", target="main"),
         ],
     },
@@ -2177,7 +2529,9 @@ class TUIEngine:
         self.selected_index = 0
         self.output_lines: list[str] = ["Aguardando uma ação do operador."]
         self.status_kind = "info"
-        self.status_message = "Pronto. Use ↑↓ para navegar, Enter para executar, Q para sair."
+        self.status_message = (
+            "Pronto. Use ↑↓ para navegar, Enter para executar, Q para sair."
+        )
         self.running = True
         self.started_at = time.time()
 
@@ -2357,11 +2711,12 @@ class TUIEngine:
             expand=True,
         )
 
-        task = progress.add_task(f"{item.icon} {item.label}", total=None)
+        progress.add_task(f"{item.icon} {item.label}", total=None)
         progress.start()
 
         success = False
         try:
+
             def emit(line: str) -> None:
                 self._on_line(line)
                 if line.startswith("[OK]"):
@@ -2389,7 +2744,9 @@ class TUIEngine:
             self.status_kind = "ok"
             self.status_message = f"{item.label} concluído com sucesso."
             self._on_line(f"[OK] Concluído: {item.label}")
-            console.print(f"\n  [green bold]✔ {item.label} concluído com sucesso.[/green bold]")
+            console.print(
+                f"\n  [green bold]✔ {item.label} concluído com sucesso.[/green bold]"
+            )
         else:
             self.status_kind = "err"
             self.status_message = f"{item.label} falhou."
@@ -2447,18 +2804,23 @@ class TUIEngine:
             console.clear()
             frame = frames[i % len(frames)]
             lines = os.get_terminal_size().lines
-            cols = os.get_terminal_size().columns
             pad_v = lines // 2 - 2
             for _ in range(pad_v):
                 console.print()
             console.print(
-                Align.center(f"[dim]•[/dim] [bold]LYRA METACARE[/bold] [bold]v{SCRIPT_VERSION}[/bold]")
+                Align.center(
+                    f"[dim]•[/dim] [bold]LYRA METACARE[/bold] [bold]v{SCRIPT_VERSION}[/bold]"
+                )
             )
             console.print(
-                Align.center(f"[bold cyan]Carregando interface operacional local[/bold cyan]")
+                Align.center(
+                    "[bold cyan]Carregando interface operacional local[/bold cyan]"
+                )
             )
             console.print(
-                Align.center(f"[green]{frame}[/green] [dim]preparando TUI com Docker MySQL e app local[/dim]")
+                Align.center(
+                    f"[green]{frame}[/green] [dim]preparando TUI com Docker MySQL e app local[/dim]"
+                )
             )
             time.sleep(0.06)
 
@@ -2570,10 +2932,14 @@ def main() -> None:
     handler = CLI_COMMANDS.get(command)
     if not handler:
         console.print(f"[red]Comando desconhecido: {command}[/red]")
-        console.print("[dim]Use 'python3 run.py help' para ver os comandos disponiveis.[/dim]")
+        console.print(
+            "[dim]Use 'python3 run.py help' para ver os comandos disponiveis.[/dim]"
+        )
         sys.exit(1)
 
-    console.print(f"\n[bold cyan]LYRA METACARE[/bold cyan] v{SCRIPT_VERSION} — {command}\n")
+    console.print(
+        f"\n[bold cyan]LYRA METACARE[/bold cyan] v{SCRIPT_VERSION} — {command}\n"
+    )
     success = handler(on_line=cli_emit)
     sys.exit(0 if success else 1)
 

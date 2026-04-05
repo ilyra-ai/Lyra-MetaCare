@@ -66,7 +66,9 @@ def write_text_file(path: Path, content: str, actions: list[InstallAction]) -> N
         )
         return
 
-    backup_path = path.with_suffix(f"{path.suffix}.bak.{datetime.now().strftime('%Y%m%d%H%M%S')}")
+    backup_path = path.with_suffix(
+        f"{path.suffix}.bak.{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    )
     shutil.copy2(path, backup_path)
     path.write_text(content, encoding="utf-8")
     actions.append(
@@ -87,7 +89,9 @@ def ensure_directory(path: Path, actions: list[InstallAction]) -> None:
 
 
 def relative_ts_import(from_file: Path, to_file: Path) -> str:
-    relative_path = Path(os.path.relpath(to_file.with_suffix(""), from_file.parent)).as_posix()
+    relative_path = Path(
+        os.path.relpath(to_file.with_suffix(""), from_file.parent)
+    ).as_posix()
     if not relative_path.startswith("."):
         relative_path = f"./{relative_path}"
     return relative_path
@@ -100,7 +104,9 @@ def detect_source_root(project_root: Path) -> Path:
     return project_root
 
 
-def validate_supported_project(project_root: Path, package_json: dict[str, Any]) -> None:
+def validate_supported_project(
+    project_root: Path, package_json: dict[str, Any]
+) -> None:
     dependencies = package_json.get("dependencies", {})
     dev_dependencies = package_json.get("devDependencies", {})
     installed_names = set(dependencies) | set(dev_dependencies)

@@ -33,9 +33,7 @@ function LyraFeatureCardBlock({
 }: LyraFeatureCardBlockProps) {
   const Icone = obterIconeDecorativo(icon);
   const seloExibido = externalPlan?.name ?? eyebrow;
-  const descricaoExibida = externalPlan
-    ? externalPlan.tagline
-    : description;
+  const descricaoExibida = externalPlan ? externalPlan.tagline : description;
 
   return (
     <Card className="h-full border-border/70 bg-white/92">
@@ -49,8 +47,8 @@ function LyraFeatureCardBlock({
           </Badge>
           {externalPlan ? (
             <Badge variant="cosmic" className="ml-2 w-fit text-xs">
-              {externalPlan.currencyCode}{' '}
-              {externalPlan.monthlyPrice.toFixed(2)}/mês
+              {externalPlan.currencyCode} {externalPlan.monthlyPrice.toFixed(2)}
+              /mês
             </Badge>
           ) : null}
           <CardTitle className={obterClasseTomHeading(tone)}>{title}</CardTitle>

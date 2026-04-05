@@ -20,9 +20,7 @@ function aplicarTransformNaLista(items: RawItem[]): RawItem[] {
  * criados em versões anteriores do catálogo recebam os campos ausentes.
  */
 export function migrarDocumentoPuckLyra(data: LyraPuckData): LyraPuckData {
-  const content = aplicarTransformNaLista(
-    (data.content ?? []) as RawItem[]
-  );
+  const content = aplicarTransformNaLista((data.content ?? []) as RawItem[]);
 
   const zones: Record<string, RawItem[]> = {};
 
