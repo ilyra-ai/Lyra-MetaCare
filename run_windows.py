@@ -20,7 +20,6 @@ import hashlib
 import json
 import os
 import shutil
-import signal
 import socket
 import subprocess
 import sys
@@ -234,7 +233,11 @@ def package_run_cmd(script: str) -> list[str]:
 
 def compute_install_hash() -> str:
     hasher = hashlib.sha256()
-    for path in [ROOT_DIR / "package.json", ROOT_DIR / "pnpm-lock.yaml", ROOT_DIR / "package-lock.json"]:
+    for path in [
+        ROOT_DIR / "package.json",
+        ROOT_DIR / "pnpm-lock.yaml",
+        ROOT_DIR / "package-lock.json",
+    ]:
         if path.exists():
             hasher.update(path.read_bytes())
     return hasher.hexdigest()
@@ -243,7 +246,11 @@ def compute_install_hash() -> str:
 def ensure_dependencies() -> bool:
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     current_hash = compute_install_hash()
-    saved_hash = INSTALL_HASH_FILE.read_text(encoding="utf-8").strip() if INSTALL_HASH_FILE.exists() else ""
+    saved_hash = (
+        INSTALL_HASH_FILE.read_text(encoding="utf-8").strip()
+        if INSTALL_HASH_FILE.exists()
+        else ""
+    )
 
     if (ROOT_DIR / "node_modules").exists() and saved_hash == current_hash:
         emit_ok("Dependencias ja estao sincronizadas com o lockfile atual.")
@@ -328,7 +335,9 @@ def migrate() -> bool:
         return False
 
     if not (ROOT_DIR / "node_modules").exists():
-        emit_error("node_modules ausente. Execute a instalacao de dependencias primeiro.")
+        emit_error(
+            "node_modules ausente. Execute a instalacao de dependencias primeiro."
+        )
         return False
 
     emit_info("Aplicando migracoes reais do MySQL...")
