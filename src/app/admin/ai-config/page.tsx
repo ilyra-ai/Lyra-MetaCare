@@ -43,13 +43,28 @@ export default function AIConfigPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50/50 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex min-h-screen bg-slate-50 font-[family-name:var(--font-geist-sans)] relative overflow-hidden">
+      {/* Background Decorativo Premium 2026 */}
+      <div className="pointer-events-none absolute left-0 top-0 h-[50vh] w-full bg-gradient-to-b from-teal-50/50 to-transparent z-0"></div>
+      <div className="pointer-events-none absolute right-[-10%] top-[-10%] h-[600px] w-[600px] rounded-full bg-teal-100/30 blur-3xl z-0"></div>
+      <div className="pointer-events-none absolute left-[-10%] bottom-[-10%] h-[500px] w-[500px] rounded-full bg-orange-100/20 blur-3xl z-0"></div>
+
+      {/* A Sidebar no Lyra geralmente não recebe props, vamos assegurar que ela tenha z-index por css global se necessário, mas removemos a prop que não existe */}
       <Sidebar />
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 z-10 relative">
         <Header />
-        <main className="flex-1 p-4 sm:p-6 md:p-8">
-          <h1 className="text-3xl font-bold mb-8">Administração de IA</h1>
-          <AIConfigForm />
+        <main className="flex-1 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto w-full">
+          <div className="mb-10 text-center sm:text-left">
+            <h1 className="text-4xl font-extrabold text-slate-800 tracking-tight">
+              Modelos de IA
+            </h1>
+            <p className="text-slate-500 mt-2 text-lg">
+              Gerencie a configuração central, comportamento e pesos do motor de IA da Lyra.
+            </p>
+          </div>
+          <div className="w-full relative">
+            <AIConfigForm />
+          </div>
         </main>
         <MadeWithIlyra />
       </div>
