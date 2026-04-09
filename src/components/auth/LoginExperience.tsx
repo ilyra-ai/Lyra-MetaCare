@@ -1,38 +1,16 @@
 'use client';
 
-import { CSSProperties, FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import {
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Lock,
-  Mail,
-  Sparkles,
-  User,
-} from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User, ShieldCheck } from 'lucide-react';
 
 import { useAuth } from '@/context/AuthContext';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
-import {
-  getDefaultPageConfig,
-  LoginPageConfig,
-} from '@/lib/site-page-config/schema';
-import { getBuilderIcon, getToneSurfaceClass } from '@/lib/site-page-config/ui';
+import { Checkbox } from '@/components/ui/checkbox';
+import { LoginPageConfig } from '@/lib/site-page-config/schema';
 
 type SubmitMode = 'login' | 'register' | null;
 
@@ -53,9 +31,6 @@ export function LoginExperience({
 }: LoginExperienceProps) {
   const { session, db } = useAuth();
   const router = useRouter();
-  const [config, setConfig] = useState<LoginPageConfig>(
-    overrideConfig ?? getDefaultPageConfig('login')
-  );
 
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -64,73 +39,11 @@ export function LoginExperience({
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [submitMode, setSubmitMode] = useState<SubmitMode>(null);
-  const [showLoginPassword, setShowLoginPassword] = useState(false);
-  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const textStyles = {
-    introTitle: {
-      fontSize: `clamp(${(2.5 * config.typography.introTitle).toFixed(3)}rem, ${(3.35 * config.typography.introTitle).toFixed(3)}rem, ${(4.2 * config.typography.introTitle).toFixed(3)}rem)`,
-    } satisfies CSSProperties,
-    introBody: {
-      fontSize: `clamp(${(0.98 * config.typography.introBody).toFixed(3)}rem, ${(1.03 * config.typography.introBody).toFixed(3)}rem, ${(1.12 * config.typography.introBody).toFixed(3)}rem)`,
-    } satisfies CSSProperties,
-    highlightTitle: {
-      fontSize: `clamp(${(1.02 * config.typography.highlightTitle).toFixed(3)}rem, ${(1.12 * config.typography.highlightTitle).toFixed(3)}rem, ${(1.28 * config.typography.highlightTitle).toFixed(3)}rem)`,
-    } satisfies CSSProperties,
-    highlightBody: {
-      fontSize: `clamp(${(0.92 * config.typography.highlightBody).toFixed(3)}rem, ${(0.98 * config.typography.highlightBody).toFixed(3)}rem, ${(1.04 * config.typography.highlightBody).toFixed(3)}rem)`,
-    } satisfies CSSProperties,
-    authTitle: {
-      fontSize: `clamp(${(1.8 * config.typography.authTitle).toFixed(3)}rem, ${(2.1 * config.typography.authTitle).toFixed(3)}rem, ${(2.5 * config.typography.authTitle).toFixed(3)}rem)`,
-    } satisfies CSSProperties,
-    authBody: {
-      fontSize: `clamp(${(0.92 * config.typography.authBody).toFixed(3)}rem, ${(0.98 * config.typography.authBody).toFixed(3)}rem, ${(1.05 * config.typography.authBody).toFixed(3)}rem)`,
-    } satisfies CSSProperties,
-    fieldLabel: {
-      fontSize: `clamp(${(0.82 * config.typography.fieldLabel).toFixed(3)}rem, ${(0.88 * config.typography.fieldLabel).toFixed(3)}rem, ${(0.96 * config.typography.fieldLabel).toFixed(3)}rem)`,
-    } satisfies CSSProperties,
-    buttonLabel: {
-      fontSize: `clamp(${(0.92 * config.typography.buttonLabel).toFixed(3)}rem, ${(0.98 * config.typography.buttonLabel).toFixed(3)}rem, ${(1.04 * config.typography.buttonLabel).toFixed(3)}rem)`,
-    } satisfies CSSProperties,
-    footerText: {
-      fontSize: `clamp(${(0.92 * config.typography.footerText).toFixed(3)}rem, ${(0.98 * config.typography.footerText).toFixed(3)}rem, ${(1.04 * config.typography.footerText).toFixed(3)}rem)`,
-    } satisfies CSSProperties,
-  };
-
-  useEffect(() => {
-    if (overrideConfig) {
-      setConfig(overrideConfig);
-      return;
-    }
-
-    const controller = new AbortController();
-
-    async function loadConfig() {
-      try {
-        const response = await fetch('/api/public/page-config/login', {
-          cache: 'no-store',
-          signal: controller.signal,
-        });
-        const payload = (await response.json()) as PublicLoginConfigPayload;
-
-        if (!response.ok || !payload.config) {
-          throw new Error(
-            payload.error || 'Falha ao carregar a configuracao do login.'
-          );
-        }
-
-        setConfig(payload.config);
-      } catch {
-        if (controller.signal.aborted) {
-          return;
-        }
-        setConfig(getDefaultPageConfig('login'));
-      }
-    }
-
-    void loadConfig();
-    return () => controller.abort();
-  }, [overrideConfig]);
+  // Toggle between Login and Register views
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
     if (!previewMode && session) {
@@ -142,18 +55,9 @@ export function LoginExperience({
     return null;
   }
 
-  function navigateTo(href: string) {
-    if (previewMode) {
-      return;
-    }
-    router.push(href);
-  }
-
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (previewMode) {
-      return;
-    }
+    if (previewMode) return;
 
     setSubmitMode('login');
 
@@ -165,7 +69,7 @@ export function LoginExperience({
     setSubmitMode(null);
 
     if (error) {
-      toast.error('Nao foi possivel entrar agora.', {
+      toast.error('Não foi possível entrar agora.', {
         description: error.message,
       });
       return;
@@ -177,9 +81,7 @@ export function LoginExperience({
 
   async function handleRegister(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (previewMode) {
-      return;
-    }
+    if (previewMode) return;
 
     setSubmitMode('register');
 
@@ -193,7 +95,7 @@ export function LoginExperience({
     setSubmitMode(null);
 
     if (error) {
-      toast.error('Nao foi possivel criar sua conta agora.', {
+      toast.error('Não foi possível criar sua conta agora.', {
         description: error.message,
       });
       return;
@@ -204,371 +106,227 @@ export function LoginExperience({
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,hsl(var(--background)),#ffffff_48%,#fcfbff_100%)] text-foreground">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="cosmic-orb left-[-8rem] top-[-4rem] h-80 w-80 bg-primary/16" />
-        <div className="cosmic-orb right-[-5rem] top-20 h-72 w-72 bg-cosmic/16" />
-        <div className="cosmic-orb bottom-[-6rem] left-1/3 h-72 w-72 bg-accent/10" />
+    <main className="relative min-h-screen w-full overflow-hidden bg-[#eaf4f4] font-sans flex items-center justify-center">
+      {/* Background Decorativo - Premium 2026 */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        {/* Fundo gradiente Lyra */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#eaf4f4] via-[#f0f8f8] to-[#d6ece9] opacity-80" />
+
+        {/* Nuvens e Elementos Celestes */}
+        <div className="absolute top-10 left-[10%] w-32 h-10 bg-white/40 rounded-full blur-2xl" />
+        <div className="absolute top-40 right-[15%] w-48 h-16 bg-white/30 rounded-full blur-3xl" />
+        <div className="absolute top-20 left-1/3 w-2 h-2 bg-white rounded-full opacity-70 animate-pulse-slow" />
+        <div className="absolute top-32 right-1/4 w-1 h-1 bg-white rounded-full opacity-60 animate-ping" />
+        <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-white rounded-full opacity-40" />
+
+        {/* Montanhas com as cores claras de tendência 2026 e tons da Lyra (Teal) */}
+        <svg className="absolute bottom-0 w-full h-[55vh] min-h-[400px] text-[#bce3de]" preserveAspectRatio="none" viewBox="0 0 1440 400" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 400L0 150L200 50L450 180L700 80L1000 220L1250 100L1440 250L1440 400Z" opacity="0.4" />
+          <path d="M0 400L0 220L250 120L550 250L850 150L1150 280L1440 180L1440 400Z" className="text-[#a1d6cf]" fill="currentColor" opacity="0.6" />
+          <path d="M0 400L0 300L300 180L600 320L950 200L1300 350L1440 280L1440 400Z" className="text-[#84c7be]" fill="currentColor" opacity="0.9" />
+          <path d="M0 400L150 280L450 380L750 280L1050 400L1440 320L1440 400Z" className="text-[#64b8ac]" fill="currentColor" />
+        </svg>
       </div>
 
-      <div className="relative z-10 mx-auto grid min-h-screen max-w-7xl items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1.02fr_0.98fr] lg:px-8 lg:py-10">
-        {config.intro.visible ? (
-          <section className="order-2 lg:order-1">
-            <Card className="overflow-hidden rounded-[36px] border-white/80 bg-white/74 shadow-[0_26px_80px_-42px_rgba(22,21,48,0.3)]">
-              <CardHeader className="pb-5">
-                <Badge className="w-fit rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary shadow-sm">
-                  <Sparkles className="mr-2 h-3.5 w-3.5" />
-                  {config.intro.badgeText}
-                </Badge>
-                <CardTitle
-                  className="max-w-2xl leading-tight"
-                  style={textStyles.introTitle}
-                >
-                  {config.intro.title}
-                  <span className="mt-2 block text-gradient-aurora">
-                    {config.intro.accentTitle}
-                  </span>
-                </CardTitle>
-                <CardDescription
-                  className="max-w-2xl leading-8"
-                  style={textStyles.introBody}
-                >
-                  {config.intro.description}
-                </CardDescription>
-              </CardHeader>
+      {/* Container Principal do Login - Layout baseado na imagem de referência */}
+      <div className="relative z-10 w-full max-w-[440px] px-4 flex flex-col my-12 animate-fade-in-up">
 
-              <CardContent className="grid gap-4 sm:grid-cols-3">
-                {config.intro.highlights.map((item) => {
-                  const ItemIcon = getBuilderIcon(item.icon);
+        {/* Bloco Superior (Glassmorphism + Textos) */}
+        <div className="p-8 pb-10 bg-white/20 backdrop-blur-md border border-white/40 rounded-t-[32px] shadow-glass text-center relative overflow-hidden">
+          {/* Logo / Marca d'água superior esquerda */}
+          <div className="absolute top-6 left-6 flex items-center gap-2 opacity-80">
+            <ShieldCheck className="w-5 h-5 text-teal-800" />
+            <span className="font-display font-semibold text-sm tracking-wide text-teal-900 lowercase">
+              lyra metacare
+            </span>
+          </div>
 
-                  return (
-                    <div
-                      key={item.id}
-                      className="rounded-[28px] border border-border/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,255,255,0.78))] p-5 shadow-sm"
-                    >
-                      <div
-                        className={cn(
-                          'flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br shadow-sm',
-                          getToneSurfaceClass(item.tone)
-                        )}
-                      >
-                        <ItemIcon className="h-5 w-5" />
-                      </div>
-                      <p
-                        className="mt-4 font-display font-semibold text-foreground"
-                        style={textStyles.highlightTitle}
-                      >
-                        {item.title}
-                      </p>
-                      <p
-                        className="mt-2 leading-7 text-muted-foreground"
-                        style={textStyles.highlightBody}
-                      >
-                        {item.description}
-                      </p>
-                    </div>
-                  );
-                })}
-              </CardContent>
+          <div className="mt-8 flex flex-col items-center">
+            <h1 className="font-display text-5xl font-light text-teal-950 mb-2 drop-shadow-sm">
+              Bem-vindo
+            </h1>
+            <h2 className="font-display text-2xl font-bold text-teal-900 mb-6 tracking-tight">
+              ao seu Ecossistema
+            </h2>
+            <p className="text-sm leading-relaxed text-teal-900/80 font-medium px-2 max-w-[320px]">
+              Integração de saúde, inteligência artificial e sabedoria milenar para orquestrar o seu bem-estar diário com precisão e cuidado.
+            </p>
+          </div>
+        </div>
 
-              <CardFooter className="flex-col items-start gap-3 border-t border-border/70 pt-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-                  {config.intro.noteEyebrow}
-                </p>
-                <p
-                  className="max-w-2xl leading-7 text-muted-foreground"
-                  style={textStyles.footerText}
-                >
-                  {config.intro.noteText}
-                </p>
-              </CardFooter>
-            </Card>
-          </section>
-        ) : null}
+        {/* Bloco Inferior (Formulário Branco) */}
+        <div className="bg-white/95 backdrop-blur-xl p-8 rounded-b-[32px] rounded-t-xl -mt-4 shadow-[0_20px_60px_-15px_rgba(49,155,142,0.2)] relative z-20">
 
-        <section
-          className={
-            config.intro.visible
-              ? 'order-1 lg:order-2'
-              : 'order-1 lg:col-span-2'
-          }
-        >
-          <Card className="mx-auto w-full max-w-xl rounded-[36px] border-white/80 bg-[linear-gradient(160deg,rgba(255,255,255,0.92),rgba(255,255,255,0.76))] shadow-[0_30px_90px_-46px_rgba(22,21,48,0.34)]">
-            <CardHeader className="items-center text-center">
-              <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary">
-                {config.auth.badgeText}
-              </Badge>
-              <div className="mt-2 flex h-16 w-16 items-center justify-center rounded-[24px] bg-gradient-teal text-white shadow-teal">
-                <Sparkles className="h-7 w-7" />
+          <h3 className="text-center font-display text-[#539ba4] font-bold tracking-[0.15em] text-sm mb-8 uppercase">
+            {isRegistering ? 'CRIAR NOVA CONTA' : 'LOGIN DO USUÁRIO'}
+          </h3>
+
+          {/* Renderização Condicional: Login ou Register */}
+          {!isRegistering ? (
+            <form onSubmit={handleLogin} className="space-y-5">
+              {/* Username / Email */}
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <User className="h-5 w-5 text-teal-300 group-focus-within:text-teal-500 transition-colors" />
+                </div>
+                <Input
+                  id="login-email"
+                  type="email"
+                  placeholder="Seu e-mail"
+                  required
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  className="pl-12 h-12 bg-[#f4fafa] border-transparent focus:bg-white focus:border-teal-300 rounded-full text-teal-900 placeholder:text-teal-400/70 shadow-sm transition-all"
+                  disabled={previewMode}
+                />
               </div>
-              <p className="mt-4 font-display text-3xl font-bold lowercase text-gradient-hero">
-                {config.auth.brandText}
-              </p>
-              <CardTitle style={textStyles.authTitle}>
-                {config.auth.title}
-              </CardTitle>
-              <CardDescription
-                className="max-w-sm leading-7"
-                style={textStyles.authBody}
+
+              {/* Password */}
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-teal-300 group-focus-within:text-teal-500 transition-colors" />
+                </div>
+                <Input
+                  id="login-password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Sua senha"
+                  required
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  className="pl-12 pr-12 h-12 bg-[#f4fafa] border-transparent focus:bg-white focus:border-teal-300 rounded-full text-teal-900 placeholder:text-teal-400/70 shadow-sm transition-all"
+                  disabled={previewMode}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-teal-400 hover:text-teal-600 transition-colors focus:outline-none"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+
+              {/* Options Row */}
+              <div className="flex items-center justify-between px-2 pt-1 pb-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="remember"
+                    checked={rememberMe}
+                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                    className="border-teal-300 data-[state=checked]:bg-teal-500 rounded-sm"
+                  />
+                  <Label htmlFor="remember" className="text-sm text-teal-600 font-medium cursor-pointer">
+                    Lembrar-me
+                  </Label>
+                </div>
+                <button type="button" className="text-sm text-[#73a3df] hover:text-teal-600 font-medium transition-colors">
+                  Esqueceu a senha?
+                </button>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-center pt-2">
+                <Button
+                  type="submit"
+                  disabled={previewMode || submitMode === 'login'}
+                  className="bg-gradient-to-r from-[#d97272] to-[#de8a8a] hover:from-[#c25f5f] hover:to-[#d97272] text-white rounded-full px-12 h-12 font-bold tracking-widest uppercase text-xs shadow-coral transition-all transform hover:scale-105"
+                >
+                  {submitMode === 'login' ? 'Entrando...' : 'Entrar'}
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleRegister} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="relative group">
+                  <Input
+                    id="reg-firstname"
+                    placeholder="Nome"
+                    required
+                    value={registerFirstName}
+                    onChange={(e) => setRegisterFirstName(e.target.value)}
+                    className="h-12 bg-[#f4fafa] border-transparent focus:bg-white focus:border-teal-300 rounded-2xl text-teal-900 placeholder:text-teal-400/70 shadow-sm"
+                    disabled={previewMode}
+                  />
+                </div>
+                <div className="relative group">
+                  <Input
+                    id="reg-lastname"
+                    placeholder="Sobrenome"
+                    required
+                    value={registerLastName}
+                    onChange={(e) => setRegisterLastName(e.target.value)}
+                    className="h-12 bg-[#f4fafa] border-transparent focus:bg-white focus:border-teal-300 rounded-2xl text-teal-900 placeholder:text-teal-400/70 shadow-sm"
+                    disabled={previewMode}
+                  />
+                </div>
+              </div>
+
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-teal-300 group-focus-within:text-teal-500 transition-colors" />
+                </div>
+                <Input
+                  id="reg-email"
+                  type="email"
+                  placeholder="E-mail"
+                  required
+                  value={registerEmail}
+                  onChange={(e) => setRegisterEmail(e.target.value)}
+                  className="pl-12 h-12 bg-[#f4fafa] border-transparent focus:bg-white focus:border-teal-300 rounded-full text-teal-900 placeholder:text-teal-400/70 shadow-sm"
+                  disabled={previewMode}
+                />
+              </div>
+
+              <div className="relative group pb-2">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-teal-300 group-focus-within:text-teal-500 transition-colors" />
+                </div>
+                <Input
+                  id="reg-password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Crie uma senha"
+                  required
+                  value={registerPassword}
+                  onChange={(e) => setRegisterPassword(e.target.value)}
+                  className="pl-12 pr-12 h-12 bg-[#f4fafa] border-transparent focus:bg-white focus:border-teal-300 rounded-full text-teal-900 placeholder:text-teal-400/70 shadow-sm"
+                  disabled={previewMode}
+                />
+              </div>
+
+              <div className="flex justify-center pt-2">
+                <Button
+                  type="submit"
+                  disabled={previewMode || submitMode === 'register'}
+                  className="bg-gradient-to-r from-[#d97272] to-[#de8a8a] hover:from-[#c25f5f] hover:to-[#d97272] text-white rounded-full px-10 h-12 font-bold tracking-widest uppercase text-xs shadow-coral transition-all transform hover:scale-105 w-full"
+                >
+                  {submitMode === 'register' ? 'Criando...' : 'Cadastrar'}
+                </Button>
+              </div>
+            </form>
+          )}
+
+          {/* Toggle Login/Register */}
+          <div className="mt-8 text-center border-t border-teal-100 pt-6">
+            <p className="text-sm text-teal-600/80">
+              {isRegistering ? 'Já tem uma conta?' : 'Ainda não tem conta?'}
+              <button
+                type="button"
+                onClick={() => setIsRegistering(!isRegistering)}
+                className="ml-2 font-bold text-teal-600 hover:text-teal-800 transition-colors"
               >
-                {config.auth.description}
-              </CardDescription>
-            </CardHeader>
+                {isRegistering ? 'Fazer login' : 'Cadastre-se'}
+              </button>
+            </p>
+          </div>
 
-            <CardContent>
-              <Tabs defaultValue="login" className="space-y-6">
-                <TabsList className="grid h-auto grid-cols-2 rounded-[20px] border border-border/70 bg-white/88 p-1 shadow-sm">
-                  <TabsTrigger value="login" className="rounded-[16px]">
-                    {config.auth.loginTabLabel}
-                  </TabsTrigger>
-                  <TabsTrigger value="register" className="rounded-[16px]">
-                    {config.auth.registerTabLabel}
-                  </TabsTrigger>
-                </TabsList>
+        </div>
 
-                <TabsContent value="login" className="space-y-5">
-                  <form className="space-y-5" onSubmit={handleLogin}>
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="login-email"
-                        style={textStyles.fieldLabel}
-                      >
-                        {config.auth.emailLabel}
-                      </Label>
-                      <div className="relative">
-                        <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                          id="login-email"
-                          type="email"
-                          autoComplete="email"
-                          value={loginEmail}
-                          onChange={(event) =>
-                            setLoginEmail(event.target.value)
-                          }
-                          className="pl-11"
-                          disabled={previewMode}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="login-password"
-                        style={textStyles.fieldLabel}
-                      >
-                        {config.auth.passwordLabel}
-                      </Label>
-                      <div className="relative">
-                        <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                          id="login-password"
-                          type={showLoginPassword ? 'text' : 'password'}
-                          autoComplete="current-password"
-                          value={loginPassword}
-                          onChange={(event) =>
-                            setLoginPassword(event.target.value)
-                          }
-                          className="pl-11 pr-12"
-                          disabled={previewMode}
-                        />
-                        <button
-                          type="button"
-                          aria-label={
-                            showLoginPassword
-                              ? 'Ocultar senha de login'
-                              : 'Mostrar senha de login'
-                          }
-                          onClick={() =>
-                            setShowLoginPassword((current) => !current)
-                          }
-                          disabled={previewMode}
-                          className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-                        >
-                          {showLoginPassword ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      size="lg"
-                      className="w-full"
-                      style={textStyles.buttonLabel}
-                      disabled={
-                        previewMode ||
-                        submitMode === 'login' ||
-                        loginEmail.trim().length === 0 ||
-                        loginPassword.trim().length === 0
-                      }
-                    >
-                      {submitMode === 'login'
-                        ? 'Entrando...'
-                        : config.auth.loginButtonLabel}
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </form>
-                </TabsContent>
-
-                <TabsContent value="register" className="space-y-5">
-                  <form className="space-y-5" onSubmit={handleRegister}>
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="register-first-name"
-                          style={textStyles.fieldLabel}
-                        >
-                          {config.auth.firstNameLabel}
-                        </Label>
-                        <div className="relative">
-                          <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                          <Input
-                            id="register-first-name"
-                            autoComplete="given-name"
-                            value={registerFirstName}
-                            onChange={(event) =>
-                              setRegisterFirstName(event.target.value)
-                            }
-                            className="pl-11"
-                            disabled={previewMode}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="register-last-name"
-                          style={textStyles.fieldLabel}
-                        >
-                          {config.auth.lastNameLabel}
-                        </Label>
-                        <Input
-                          id="register-last-name"
-                          autoComplete="family-name"
-                          value={registerLastName}
-                          onChange={(event) =>
-                            setRegisterLastName(event.target.value)
-                          }
-                          disabled={previewMode}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="register-email"
-                        style={textStyles.fieldLabel}
-                      >
-                        {config.auth.emailLabel}
-                      </Label>
-                      <div className="relative">
-                        <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                          id="register-email"
-                          type="email"
-                          autoComplete="email"
-                          value={registerEmail}
-                          onChange={(event) =>
-                            setRegisterEmail(event.target.value)
-                          }
-                          className="pl-11"
-                          disabled={previewMode}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="register-password"
-                        style={textStyles.fieldLabel}
-                      >
-                        {config.auth.passwordLabel}
-                      </Label>
-                      <div className="relative">
-                        <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                          id="register-password"
-                          type={showRegisterPassword ? 'text' : 'password'}
-                          autoComplete="new-password"
-                          value={registerPassword}
-                          onChange={(event) =>
-                            setRegisterPassword(event.target.value)
-                          }
-                          className="pl-11 pr-12"
-                          disabled={previewMode}
-                        />
-                        <button
-                          type="button"
-                          aria-label={
-                            showRegisterPassword
-                              ? 'Ocultar senha de cadastro'
-                              : 'Mostrar senha de cadastro'
-                          }
-                          onClick={() =>
-                            setShowRegisterPassword((current) => !current)
-                          }
-                          disabled={previewMode}
-                          className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-                        >
-                          {showRegisterPassword ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      size="lg"
-                      variant="accent"
-                      className="w-full"
-                      style={textStyles.buttonLabel}
-                      disabled={
-                        previewMode ||
-                        submitMode === 'register' ||
-                        registerFirstName.trim().length === 0 ||
-                        registerLastName.trim().length === 0 ||
-                        registerEmail.trim().length === 0 ||
-                        registerPassword.trim().length === 0
-                      }
-                    >
-                      {submitMode === 'register'
-                        ? 'Criando sua conta...'
-                        : config.auth.registerButtonLabel}
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-
-            <CardFooter className="flex-col items-start gap-3 border-t border-border/70 pt-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-muted-foreground">
-                {config.auth.footerEyebrow}
-              </p>
-              <p
-                className="leading-7 text-muted-foreground"
-                style={textStyles.footerText}
-              >
-                {config.auth.footerText}
-              </p>
-              <Button
-                variant="ghost"
-                className="px-0"
-                style={textStyles.buttonLabel}
-                onClick={() => navigateTo('/')}
-                disabled={previewMode}
-              >
-                {config.auth.backToLandingLabel}
-              </Button>
-            </CardFooter>
-          </Card>
-        </section>
+        {/* Footer Credit */}
+        <div className="text-center mt-6 text-teal-800/60 font-medium text-xs tracking-wider flex items-center justify-center gap-1">
+          <span>desenvolvido por</span>
+          <ShieldCheck className="w-3 h-3" />
+          <span className="font-bold">Lyra MetaCare</span>
+        </div>
       </div>
     </main>
   );
