@@ -63,101 +63,26 @@ export function Sidebar() {
       style={{ width: `${appConfig.sizing.sidebarWidth}px` }}
     >
       <div className="flex h-full flex-col px-4 py-5">
-        <div className="mb-5 flex items-center justify-between gap-3 rounded-[26px] border border-white/80 bg-white/70 px-4 py-4 shadow-sm">
-          <Link href="/" className="flex min-w-0 items-center gap-3">
-            <div
-              className="flex items-center justify-center rounded-2xl bg-gradient-teal text-white shadow-teal"
-              style={{
-                height: scalePx(48, iconScale),
-                width: scalePx(48, iconScale),
-              }}
-            >
-              <Sparkles
-                className="h-5 w-5"
-                strokeWidth={1.9}
-                style={{
-                  height: scalePx(20, iconScale),
-                  width: scalePx(20, iconScale),
-                }}
-              />
+        <div className="mb-8 flex flex-col items-center justify-center gap-3 py-6 relative">
+          <Link href="/" className="flex flex-col items-center gap-2 group interactive-lift">
+            <div className="flex size-14 items-center justify-center rounded-[24px] bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-[0_8px_24px_rgba(45,212,191,0.4)] ring-4 ring-white/50 backdrop-blur-md transition-all group-hover:scale-105 group-hover:shadow-[0_12px_32px_rgba(45,212,191,0.5)]">
+              <Sparkles className="h-6 w-6 animate-float" strokeWidth={2} />
             </div>
-            <div className="min-w-0">
-              <p
-                className="font-display font-bold lowercase tracking-tight text-gradient-hero"
-                style={{ fontSize: scaleRem(1.25, navLabelScale) }}
-              >
+            <div className="text-center">
+              <p className="font-display text-xl font-bold tracking-tight text-slate-800">
                 {appConfig.sidebar.brandTitle}
               </p>
-              <p
-                className="truncate uppercase tracking-[0.24em] text-muted-foreground"
-                style={{ fontSize: scaleRem(0.75, navLabelScale) }}
-              >
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-teal-600/80">
                 {appConfig.sidebar.brandEyebrow}
               </p>
             </div>
           </Link>
-
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-cosmic-light text-cosmic">
-            <Workflow
-              className="h-[18px] w-[18px]"
-              strokeWidth={1.8}
-              style={{
-                height: scalePx(18, iconScale),
-                width: scalePx(18, iconScale),
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="mb-5 rounded-[26px] border border-white/75 bg-white/70 px-4 py-4 shadow-sm">
-          <div className="flex items-start gap-3">
-            <Avatar className="h-14 w-14 border-2 border-white shadow-sm">
-              <AvatarImage
-                src={profile?.avatar_url || undefined}
-                alt={`Avatar de ${firstName}`}
-              />
-              <AvatarFallback className="bg-gradient-coral font-semibold text-white">
-                {initial}
-              </AvatarFallback>
-            </Avatar>
-
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <p className="truncate text-sm font-semibold text-foreground">
-                  {firstName}
-                </p>
-                <span className="h-2.5 w-2.5 rounded-full bg-success shadow-[0_0_0_4px_rgba(16,185,129,0.14)]" />
-              </div>
-              <p className="truncate text-xs text-muted-foreground">
-                {userEmail || 'Conta autenticada'}
-              </p>
-              {subscription ? (
-                <div className="mt-3">
-                  <PlanBadge planKey={subscription.plan.key} />
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="mt-4 rounded-[20px] bg-gradient-aurora px-4 py-3">
-            <p
-              className="font-semibold uppercase tracking-[0.24em] text-muted-foreground"
-              style={{ fontSize: scaleRem(0.6875, navLabelScale) }}
-            >
-              {appConfig.sidebar.statusEyebrow}
-            </p>
-            <p
-              className="mt-1 font-medium text-foreground"
-              style={{ fontSize: scaleRem(0.875, navLabelScale) }}
-            >
-              {appConfig.sidebar.statusTitle}
-            </p>
-          </div>
+          <div className="absolute -bottom-4 w-full h-[1px] bg-gradient-to-r from-transparent via-border to-transparent opacity-50" />
         </div>
 
         <nav
           aria-label="Navegação principal"
-          className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto pr-1"
+          className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto pr-2 mt-4 custom-scrollbar"
         >
           {Object.entries(sections).map(([section, items]) => (
             <section key={section} className="space-y-2">
@@ -182,35 +107,19 @@ export function Sidebar() {
           ))}
         </nav>
 
-        <div className="mt-5 rounded-[26px] border border-white/75 bg-white/70 p-3 shadow-sm">
-          <Link
-            href="/profile"
-            className="interactive-lift flex items-center gap-3 rounded-[20px] px-3 py-3"
-          >
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-secondary text-foreground">
-              <Settings2
-                className="h-[18px] w-[18px]"
-                strokeWidth={1.8}
-                style={{
-                  height: scalePx(18, iconScale),
-                  width: scalePx(18, iconScale),
-                }}
-              />
+        <div className="mt-auto pt-6 border-t border-slate-200/60 relative">
+          <Link href="/profile" className="flex items-center gap-3 interactive-lift group w-full rounded-2xl hover:bg-slate-50/80 p-2 transition-colors">
+            <Avatar className="h-12 w-12 border-2 border-white shadow-sm transition-transform group-hover:scale-105">
+              <AvatarImage src={profile?.avatar_url || undefined} alt={`Avatar de ${firstName}`} />
+              <AvatarFallback className="bg-gradient-to-br from-slate-200 to-slate-300 text-slate-700 font-medium">
+                {initial}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-slate-800 truncate">{firstName}</p>
+              <p className="text-xs text-slate-500 truncate">{userEmail}</p>
             </div>
-            <div className="min-w-0 flex-1">
-              <p
-                className="font-semibold text-foreground"
-                style={{ fontSize: scaleRem(0.875, navLabelScale) }}
-              >
-                {appConfig.sidebar.preferencesTitle}
-              </p>
-              <p
-                className="truncate text-muted-foreground"
-                style={{ fontSize: scaleRem(0.75, navLabelScale) }}
-              >
-                {appConfig.sidebar.preferencesDescription}
-              </p>
-            </div>
+            <Settings2 className="w-5 h-5 text-slate-400 group-hover:text-teal-600 transition-colors" />
           </Link>
         </div>
       </div>

@@ -22,8 +22,6 @@ export function SidebarLink({
   description,
   className,
   onClick,
-  iconScale = 1,
-  labelScale = 1,
 }: SidebarLinkProps) {
   const pathname = usePathname();
   const isActive = pathname === href;
@@ -34,61 +32,36 @@ export function SidebarLink({
       onClick={onClick}
       aria-current={isActive ? 'page' : undefined}
       className={cn(
-        'nav-pill group relative w-full justify-start overflow-hidden border border-transparent',
-        isActive && 'nav-pill-active',
+        'flex items-center gap-3 w-full px-4 py-3 rounded-[20px] transition-all duration-300 group relative overflow-hidden',
+        isActive
+          ? 'bg-teal-50/50 text-teal-800 shadow-[inset_0_0_0_1px_rgba(20,184,166,0.2)]'
+          : 'text-slate-500 hover:bg-slate-50/50 hover:text-slate-800',
         className
       )}
     >
-      <span
-        className={cn(
-          'flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all duration-200',
-          isActive
-            ? 'bg-primary text-primary-foreground shadow-teal'
-            : 'bg-white/70 text-muted-foreground group-hover:bg-white group-hover:text-foreground'
-        )}
-        style={{
-          height: `calc(2.5rem * ${iconScale})`,
-          width: `calc(2.5rem * ${iconScale})`,
-        }}
-      >
-        <Icon
-          className="h-[18px] w-[18px]"
-          strokeWidth={1.8}
-          style={{
-            height: `calc(1.125rem * ${iconScale})`,
-            width: `calc(1.125rem * ${iconScale})`,
-          }}
-        />
+      {isActive && (
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-gradient-to-b from-teal-400 to-teal-600 rounded-r-full shadow-[0_0_10px_rgba(45,212,191,0.5)]" />
+      )}
+
+      <span className={cn(
+        "flex size-10 shrink-0 items-center justify-center rounded-2xl transition-all duration-300",
+        isActive
+          ? "bg-white text-teal-600 shadow-sm ring-1 ring-slate-100"
+          : "text-slate-400 group-hover:text-slate-600 group-hover:bg-white group-hover:shadow-sm"
+      )}>
+        <Icon className={cn("w-[22px] h-[22px]", isActive ? "animate-pulse-slow" : "")} strokeWidth={isActive ? 2 : 1.5} />
       </span>
 
-      <span className="flex min-w-0 flex-1 flex-col items-start">
-        <span
-          className="truncate text-sm font-semibold"
-          style={{ fontSize: `calc(0.875rem * ${labelScale})` }}
-        >
+      <span className="flex min-w-0 flex-1 flex-col items-start justify-center">
+        <span className={cn("truncate text-sm transition-colors", isActive ? "font-bold text-teal-900" : "font-medium text-slate-600 group-hover:text-slate-900")}>
           {children}
         </span>
-        {description ? (
-          <span
-            className={cn(
-              'truncate text-xs',
-              isActive ? 'text-primary/80' : 'text-muted-foreground'
-            )}
-            style={{ fontSize: `calc(0.75rem * ${labelScale})` }}
-          >
+        {description && (
+          <span className={cn("truncate text-xs transition-colors mt-0.5", isActive ? "text-teal-600/80 font-medium" : "text-slate-400 group-hover:text-slate-500")}>
             {description}
           </span>
-        ) : null}
-      </span>
-
-      <span
-        className={cn(
-          'h-2.5 w-2.5 shrink-0 rounded-full transition-all duration-200',
-          isActive
-            ? 'bg-accent shadow-coral'
-            : 'bg-transparent group-hover:bg-primary/30'
         )}
-      />
+      </span>
     </Link>
   );
 }
