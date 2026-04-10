@@ -87,10 +87,10 @@ DEFAULT_ENV: dict[str, str] = {
     "MYSQL_ADMIN_USER": "root",
     "MYSQL_ADMIN_PASSWORD": "",
     "AUTH_SECRET": "",
-    "ADMIN_BOOTSTRAP_EMAIL": "douglas@ilyra.com.br",
-    "ADMIN_BOOTSTRAP_PASSWORD": "Lyra123#",
-    "ADMIN_BOOTSTRAP_FIRST_NAME": "Douglas",
-    "ADMIN_BOOTSTRAP_LAST_NAME": "Mosken",
+    "ADMIN_BOOTSTRAP_EMAIL": "admin@admin.com",
+    "ADMIN_BOOTSTRAP_PASSWORD": "admin123",
+    "ADMIN_BOOTSTRAP_FIRST_NAME": "Admin",
+    "ADMIN_BOOTSTRAP_LAST_NAME": "Super",
     "PORT": "3000",
 }
 
