@@ -1,4 +1,5 @@
 import type { LyraPuckData, LyraPuckDocumentKey } from '@/lib/puck/types';
+import { lyraPuckDocuments } from '@/lib/puck/types';
 
 function cloneData(data: LyraPuckData): LyraPuckData {
   return JSON.parse(JSON.stringify(data)) as LyraPuckData;
@@ -431,7 +432,26 @@ const defaultAppShellData: LyraPuckData = {
   },
 };
 
+const defaultEmptyDataByDocumentKey = lyraPuckDocuments.reduce((acc, doc) => {
+  acc[doc.key] = {
+    content: [],
+    root: {
+      props: {
+        title: doc.label,
+        surfaceKey: doc.surfaceKey,
+        surfaceTitle: doc.label,
+        surfaceDescription: doc.description,
+        themeVariant: 'serene',
+        visibilityRules: 'Dependente da implementação na rota',
+      },
+    },
+    zones: {},
+  };
+  return acc;
+}, {} as Record<LyraPuckDocumentKey, LyraPuckData>);
+
 const initialDataByDocumentKey: Record<LyraPuckDocumentKey, LyraPuckData> = {
+  ...defaultEmptyDataByDocumentKey,
   'landing-home': defaultLandingHomeData,
   'login-experience': defaultLoginExperienceData,
   'app-shell': defaultAppShellData,
