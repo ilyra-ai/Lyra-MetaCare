@@ -529,14 +529,13 @@ Crie o seu arquivo `.env.local` na raiz e insira a magia:
 
 > **Observação de Ouro 🔐:** Nunca faça commit de chaves reais. Sempre utilize `.env.local` para segredos locais e mantenha as credenciais de produção fora do repositório.
 
-Exemplo real para múltiplos administradores locais:
+Exemplo real de configuração do Super Administrador (já injetado na raiz do run.py):
 
 ```env
-ADMIN_BOOTSTRAP_EMAIL=admin@coragem.pet
+ADMIN_BOOTSTRAP_EMAIL=admin@admin.com
 ADMIN_BOOTSTRAP_PASSWORD=admin123
 ADMIN_BOOTSTRAP_FIRST_NAME=Admin
-ADMIN_BOOTSTRAP_LAST_NAME=Coragem
-ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS=[{"email":"admin@admin.com","password":"admin123","firstName":"Admin","lastName":"Principal"}]
+ADMIN_BOOTSTRAP_LAST_NAME=Super
 ```
 
 ### 🚀 Decolando em Modo Desenvolvimento

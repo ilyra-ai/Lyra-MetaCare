@@ -57,10 +57,3 @@ npm run check:format
 npm run check:types
 
 - Entregar relatório final com status e correções.
-
-FAZER O COMMIT E PUSH PARA O REPOSITORIO DO GITHUB
-
-- No final de cada item de cada tarefa você tem que fazer o commit e push para o main principal do projeto, isso é OBRIGATÓRIO
-  usando as credencias temporárias abaixo:
-  usuario: ilyra-ai
-  token: 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
