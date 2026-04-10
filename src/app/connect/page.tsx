@@ -10,6 +10,7 @@ import { usePlanFeatureAccess } from '@/hooks/use-plan-feature-access';
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { scaleRem } from '@/lib/site-page-config/runtime';
 import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
+import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 
 export default function DataConnectionPage() {
   const { session } = useAuth();
@@ -35,6 +36,7 @@ export default function DataConnectionPage() {
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />
+        <PuckClientRenderer documentKey="connect" className="w-full flex-shrink-0" />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           <section className="mx-auto flex max-w-6xl flex-col gap-6">
             <div className="space-y-3">

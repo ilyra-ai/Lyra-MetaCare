@@ -9,6 +9,7 @@ import { useIsAdmin } from '@/hooks/use-is-admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
 import { AdminDashboardContent } from '@/components/admin/AdminDashboardContent';
+import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 
 export default function AdminDashboardPage() {
   const { session } = useAuth();
@@ -41,6 +42,7 @@ export default function AdminDashboardPage() {
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />
+        <PuckClientRenderer documentKey="admin-dashboard" className="w-full flex-shrink-0" />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           <h1 className="text-3xl font-bold mb-8">Visão Geral</h1>
           <AdminDashboardContent />

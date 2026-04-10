@@ -9,6 +9,7 @@ import { useIsAdmin } from '@/hooks/use-is-admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
 import { AdminReportsContent } from '@/components/admin/AdminReportsContent';
+import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 
 export default function AdminReportsPage() {
   const { session } = useAuth();
@@ -41,6 +42,7 @@ export default function AdminReportsPage() {
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />
+        <PuckClientRenderer documentKey="admin-reports" className="w-full flex-shrink-0" />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           <h1 className="text-3xl font-bold mb-8">Relatórios e Exportação</h1>
           <AdminReportsContent />

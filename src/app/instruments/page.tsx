@@ -1,5 +1,6 @@
 import { createServerDatabaseClient } from '@/integrations/mysql/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 
 export default async function InstrumentsPage() {
   const database = await createServerDatabaseClient();
@@ -10,6 +11,7 @@ export default async function InstrumentsPage() {
 
   return (
     <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-950">
+        <PuckClientRenderer documentKey="instruments" className="w-full flex-shrink-0" />
       <Card className="max-w-3xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl">

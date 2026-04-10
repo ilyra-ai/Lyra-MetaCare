@@ -9,6 +9,7 @@ import { useIsAdmin } from '@/hooks/use-is-admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
 import { UserManagementContent } from '@/components/admin/UserManagementContent';
+import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 
 export default function AdminUsersPage() {
   const { session } = useAuth();
@@ -41,6 +42,7 @@ export default function AdminUsersPage() {
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />
+        <PuckClientRenderer documentKey="admin-users" className="w-full flex-shrink-0" />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           <UserManagementContent />
         </main>

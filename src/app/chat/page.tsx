@@ -8,6 +8,7 @@ import { SplashScreen } from '@/components/SplashScreen';
 import { ChatAssistantContent } from '@/components/chat/ChatAssistantContent';
 import { usePlanFeatureAccess } from '@/hooks/use-plan-feature-access';
 import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
+import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 
 export default function ChatPage() {
   const { session } = useAuth();
@@ -30,6 +31,7 @@ export default function ChatPage() {
       <Sidebar />
       <div className="flex flex-col flex-1 min-w-0">
         <Header />
+        <PuckClientRenderer documentKey="chat" className="w-full flex-shrink-0" />
         <main className="flex flex-1 items-stretch justify-center p-4 animate-in fade-in duration-500 md:p-6">
           <div className="h-full w-full max-w-[96rem]">
             {chatEnabled ? (

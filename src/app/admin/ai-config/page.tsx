@@ -9,6 +9,7 @@ import { AIConfigForm } from '@/components/admin/AIConfigForm';
 import { useIsAdmin } from '@/hooks/use-is-admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
+import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 
 export default function AIConfigPage() {
   const { session } = useAuth();
@@ -53,6 +54,7 @@ export default function AIConfigPage() {
       <Sidebar />
       <div className="flex flex-col flex-1 z-10 relative">
         <Header />
+        <PuckClientRenderer documentKey="admin-ai-config" className="w-full flex-shrink-0" />
         <main className="flex-1 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto w-full">
           <div className="mb-10 text-center sm:text-left">
             <h1 className="text-4xl font-extrabold text-slate-800 tracking-tight">

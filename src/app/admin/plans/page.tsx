@@ -7,6 +7,7 @@ import { SplashScreen } from '@/components/SplashScreen';
 import { useAuth } from '@/context/AuthContext';
 import { useIsAdmin } from '@/hooks/use-is-admin';
 import { AdminPlanMatrixContent } from '@/components/admin/AdminPlanMatrixContent';
+import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 
 export default function AdminPlansPage() {
   const { session } = useAuth();
@@ -26,6 +27,7 @@ export default function AdminPlansPage() {
         <Sidebar />
         <div className="flex flex-1 flex-col">
           <Header />
+        <PuckClientRenderer documentKey="admin-plans" className="w-full flex-shrink-0" />
           <main className="flex flex-1 items-center justify-center p-6 md:p-10">
             <div className="max-w-xl rounded-3xl border bg-white/80 p-8 text-center shadow-xl backdrop-blur dark:bg-slate-950/70">
               <h1 className="text-2xl font-semibold tracking-tight">
