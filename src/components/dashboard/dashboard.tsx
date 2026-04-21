@@ -30,6 +30,7 @@ import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
 import { AITipsCard } from './AITipsCard';
 import { MetricGrid } from './MetricGrid';
 import { VedicDashboard } from './VedicDashboard';
+import { AssessmentCard } from './AssessmentCard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -738,6 +739,10 @@ export function Dashboard() {
           </CardHeader>
         </Card>
       )}
+
+      <section className="flex flex-col gap-5">
+        <AssessmentCard />
+      </section>
 
       <VedicDashboard featureEnabled={dashboardEnabled} />
     </div>
