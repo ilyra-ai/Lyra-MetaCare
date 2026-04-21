@@ -1,6 +1,8 @@
-# 🌌✨ Lyra MetaCare
+<div align="center">
 
-**Seu Bem-Estar Orquestrado: Onde a Sabedoria Ancestral Encontra a Inteligência Artificial** 🧬🪐
+# 🕉️✨ Lyra MetaCare — Plataforma Integrativa de Bem-Estar Quântico-Védico
+
+**A Fusão Revolucionária da Sabedoria Milenar Védica com Medicina Moderna e Física Quântica** 🧬🪐⚛️
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react)](https://react.dev/)
@@ -10,9 +12,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Status: Beta Funcional](https://img.shields.io/badge/Status-Beta_Poderoso-FF6B6B?style=for-the-badge)](#)
 
-_Uma aplicação web revolucionária desenhada para empoderar você, acompanhando sua jornada de longevidade, métricas de saúde, rotinas, consultas, e oferecendo um assistente de IA genial que conhece até as estrelas!_ ✨
+_Uma plataforma web revolucionária desenhada para empoderar você, acompanhando sua jornada de longevidade, métricas de saúde, rotinas e autoconhecimento, oferecendo um assistente de IA genial que integra a precisão da biologia com a magnitude das estrelas!_ ✨
 
-[**Explore a Magia**](#-1-a-essência-transformadora) • [**Visão UI/UX**](#-preview-da-interface-a-estética-2026) • [**A Arquitetura**](#-2-arquitetura-do-sistema-a-fundação-do-nosso-universo) • [**Seu Guia Rápido**](#-3-o-seu-guia-estelar-manual-do-usuário)
+[**Explore a Magia**](#-1-manifesto-e-filosofia) • [**A Inovação (Features)**](#-3-funcionalidades-e-inovações-exclusivas) • [**A Arquitetura**](#-4-arquitetura-do-sistema-a-fundação-do-nosso-universo) • [**Seu Guia Rápido**](#-5-o-seu-guia-estelar-manual-do-usuário)
+
+> 🔬 **Atenção: Não somos uma clínica médica.** Somos uma plataforma holística de **cuidado, saúde e bem-estar** que inova com uma metodologia proprietária e inédita: a fusão profunda da **Astrologia Védica (Jyotish)**, **Ayurveda**, **Vedas e Vedanta** com a **Medicina Moderna Baseada em Evidências** e **Física Quântica**.
 
 </div>
 
@@ -20,638 +24,153 @@ _Uma aplicação web revolucionária desenhada para empoderar você, acompanhand
 
 ## 🖼️ Preview da Interface: A Estética 2026
 
-Para que você possa sentir o poder do nosso design de ponta antes mesmo de rodar o projeto completo, nós codificamos uma **Visão UI/UX de Alta Fidelidade (Standalone)**. Ela simula o nosso _Bento Grid_, o majestoso _Glassmorphism_ avançado e a harmonia das cores **Lyra Teal** e **Warm Coral**.
+Nós valorizamos o **Bento Grid**, o majestoso **Glassmorphism avançado** e a harmonia das cores **Lyra Teal** e **Warm Coral**, proporcionando uma experiência de usuário (UX) premium, fluida, imersiva e de vanguarda tecnológica.
 
 <img src="https://github.com/ilyra-ai/Lyra-MetaCare/blob/main/public/assets/mockup.png" width="500" height="300">
 
-<details>
-<summary><b>✨ Clique aqui para expandir e ver o código do protótipo UI 2026 (HTML/CSS Standalone)</b></summary>
+---
 
-```html
-<!DOCTYPE html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lyra MetaCare - UI Preview 2026</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              'lyra-teal': '#144d56',
-              'lyra-teal-dark': '#0f2027',
-              'lyra-teal-light': '#203a43',
-              'warm-coral': '#FF7F50',
-              'warm-coral-light': '#FF9F7A',
-            },
-            fontFamily: {
-              sans: ['Inter', 'system-ui', 'sans-serif'],
-            },
-            animation: {
-              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              float: 'float 6s ease-in-out infinite',
-            },
-            keyframes: {
-              float: {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-10px)' },
-              },
-            },
-          },
-        },
-      };
-    </script>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+## 🕉️ 1. Manifesto e Filosofia
 
-      body {
-        font-family: 'Inter', sans-serif;
-        background: linear-gradient(
-          135deg,
-          #0f2027 0%,
-          #203a43 50%,
-          #144d56 100%
-        );
-        color: #f8fafc;
-        min-height: 100vh;
-        margin: 0;
-        overflow-x: hidden;
-      }
+### 🌌 O Que é o Lyra MetaCare?
 
-      /* Glassmorphism Classes */
-      .glass {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-      }
+O **Lyra MetaCare** é uma plataforma de bem-estar integrativo que cria uma ponte perfeita entre os sistemas ancestrais de conhecimento humano e a tecnologia de ponta do século XXI. Nascemos da convicção inabalável de que a saúde verdadeira só emerge quando **corpo, mente, espírito e cosmos** operam em profunda harmonia.
 
-      .glass-card {
-        background: linear-gradient(
-          145deg,
-          rgba(255, 255, 255, 0.05) 0%,
-          rgba(255, 255, 255, 0.01) 100%
-        );
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 1.5rem;
-        box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
-        transition:
-          transform 0.3s ease,
-          box-shadow 0.3s ease;
-      }
+Nós oferecemos saúde preventiva *verdadeiramente personalizada*, assertiva e profundamente empoderadora.
 
-      .glass-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 50px -10px rgba(0, 0, 0, 0.6);
-        border: 1px solid rgba(255, 127, 80, 0.3); /* Warm coral subtle glow on hover */
-      }
+### 🧬 Os 5 Pilares Fundacionais
 
-      /* Text Gradients */
-      .text-gradient {
-        background: linear-gradient(to right, #f8fafc, #cbd5e1);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-
-      .text-gradient-accent {
-        background: linear-gradient(135deg, #ff7f50, #ff9f7a);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 127, 80, 0.5);
-      }
-    </style>
-  </head>
-  <body class="antialiased relative">
-    <!-- Background Ambient Glows -->
-    <div
-      class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
-    >
-      <div
-        class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-warm-coral rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-pulse-slow"
-      ></div>
-      <div
-        class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-teal-400 rounded-full mix-blend-screen filter blur-[150px] opacity-10 animate-pulse-slow"
-        style="animation-delay: 2s;"
-      ></div>
-    </div>
-
-    <!-- App Layout Container -->
-    <div class="flex h-screen w-full max-w-[1600px] mx-auto p-4 md:p-6 gap-6">
-      <!-- Sidebar Navigation (Glass) -->
-      <aside
-        class="hidden md:flex flex-col w-64 h-full glass rounded-[2rem] p-6 relative overflow-hidden"
-      >
-        <!-- Logo area -->
-        <div class="flex items-center gap-3 mb-12">
-          <div
-            class="w-10 h-10 rounded-full bg-gradient-to-br from-warm-coral to-red-500 flex items-center justify-center shadow-lg shadow-warm-coral/30"
-          >
-            <i data-lucide="sparkles" class="text-white w-5 h-5"></i>
-          </div>
-          <span class="text-xl font-bold tracking-wider lowercase">lyra</span>
-        </div>
-
-        <!-- Nav Links -->
-        <nav class="flex-1 space-y-2">
-          <a
-            href="#"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl bg-warm-coral/10 text-warm-coral font-medium border border-warm-coral/20"
-          >
-            <i data-lucide="layout-grid" class="w-5 h-5"></i> Dashboard
-          </a>
-          <a
-            href="#"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
-          >
-            <i data-lucide="activity" class="w-5 h-5"></i> Vitais (HealthKit)
-          </a>
-          <a
-            href="#"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
-          >
-            <i data-lucide="moon" class="w-5 h-5"></i> Trânsito Astral
-          </a>
-          <a
-            href="#"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
-          >
-            <i data-lucide="brain" class="w-5 h-5"></i> IA Longevidade
-          </a>
-          <a
-            href="#"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
-          >
-            <i data-lucide="calendar" class="w-5 h-5"></i> Consultas
-          </a>
-        </nav>
-
-        <!-- User Mini Profile -->
-        <div
-          class="mt-auto pt-6 border-t border-white/10 flex items-center gap-3"
-        >
-          <img
-            src="https://i.pravatar.cc/150?img=32"
-            alt="User"
-            class="w-10 h-10 rounded-full border-2 border-white/20"
-          />
-          <div>
-            <p class="text-sm font-medium">Você</p>
-            <p class="text-xs text-slate-400">Plano Sincronizado</p>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Main Content Area -->
-      <main class="flex-1 h-full flex flex-col gap-6 overflow-y-auto pr-2 pb-6">
-        <!-- Header -->
-        <header class="flex justify-between items-center px-2 pt-2">
-          <div>
-            <h1 class="text-3xl font-bold text-gradient">
-              Seu Bem-Estar Orquestrado 🧬
-            </h1>
-            <p class="text-slate-400 mt-1">
-              Sincronia perfeita entre seus dados biológicos e os astros hoje.
-            </p>
-          </div>
-          <div class="flex items-center gap-4">
-            <button
-              class="p-2 rounded-full glass hover:bg-white/10 transition-colors"
-            >
-              <i data-lucide="bell" class="w-5 h-5 text-slate-300"></i>
-            </button>
-            <button
-              class="px-5 py-2.5 rounded-full bg-warm-coral hover:bg-warm-coral-light text-white font-medium shadow-lg shadow-warm-coral/20 transition-all flex items-center gap-2"
-            >
-              <i data-lucide="message-circle" class="w-4 h-4"></i> Chat IA
-              (Local)
-            </button>
-          </div>
-        </header>
-
-        <!-- Bento Grid System -->
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
-          <!-- Hero Metric: HRV (Spans 2 cols) -->
-          <div
-            class="glass-card col-span-1 md:col-span-2 p-6 flex flex-col justify-between min-h-[220px]"
-          >
-            <div class="flex justify-between items-start">
-              <div>
-                <h2
-                  class="text-lg font-semibold text-slate-200 flex items-center gap-2"
-                >
-                  <i
-                    data-lucide="heart-pulse"
-                    class="w-5 h-5 text-warm-coral"
-                  ></i>
-                  Frequência Cardíaca (HRV)
-                </h2>
-                <p class="text-sm text-slate-400 mt-1">
-                  Sincronizado via Apple HealthKit há 2 min
-                </p>
-              </div>
-              <span
-                class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold border border-emerald-500/30"
-                >Pico Harmônico</span
-              >
-            </div>
-
-            <div class="flex items-end gap-6 mt-4">
-              <div class="text-5xl font-bold text-gradient-accent">
-                72 <span class="text-2xl text-slate-400 font-medium">ms</span>
-              </div>
-
-              <!-- Simulated Chart Line -->
-              <div class="flex-1 h-12 flex items-end gap-1 opacity-80">
-                <div class="w-full h-[30%] bg-warm-coral/40 rounded-t-sm"></div>
-                <div class="w-full h-[50%] bg-warm-coral/50 rounded-t-sm"></div>
-                <div class="w-full h-[40%] bg-warm-coral/40 rounded-t-sm"></div>
-                <div class="w-full h-[70%] bg-warm-coral/70 rounded-t-sm"></div>
-                <div
-                  class="w-full h-[100%] bg-warm-coral rounded-t-sm relative shadow-[0_0_15px_rgba(255,127,80,0.5)]"
-                ></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Vedic Astrology Wheel (Spans 1 col) -->
-          <div class="glass-card col-span-1 p-6 relative overflow-hidden group">
-            <!-- Rotating subtle background -->
-            <div
-              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border border-white/5 rounded-full animate-[spin_60s_linear_infinite]"
-            ></div>
-            <div
-              class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border border-white/10 rounded-full border-dashed animate-[spin_40s_linear_infinite_reverse]"
-            ></div>
-
-            <h2
-              class="text-lg font-semibold text-slate-200 relative z-10 flex items-center gap-2"
-            >
-              <i data-lucide="moon-star" class="w-5 h-5 text-teal-300"></i>
-              Astro Atual
-            </h2>
-
-            <div
-              class="mt-6 flex flex-col items-center justify-center relative z-10"
-            >
-              <div class="text-4xl mb-2 animate-float">♉</div>
-              <p class="font-medium text-white text-lg">Lua em Touro</p>
-              <p class="text-xs text-center text-teal-200 mt-2">
-                Energia de aterramento. Excelente dia para recuperação muscular
-                e refeições nutritivas.
-              </p>
-            </div>
-          </div>
-
-          <!-- Sleep Score (Spans 1 col) -->
-          <div class="glass-card col-span-1 p-6 flex flex-col justify-between">
-            <h2
-              class="text-lg font-semibold text-slate-200 flex items-center gap-2"
-            >
-              <i data-lucide="bed" class="w-5 h-5 text-indigo-400"></i> Sono
-              Profundo
-            </h2>
-            <div class="mt-4">
-              <div class="flex justify-between items-end mb-2">
-                <span class="text-3xl font-bold">7h 42m</span>
-                <span class="text-sm text-slate-400">Meta: 8h</span>
-              </div>
-              <!-- Progress Bar -->
-              <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  class="h-full bg-gradient-to-r from-indigo-500 to-teal-400 rounded-full"
-                  style="width: 90%;"
-                ></div>
-              </div>
-              <p class="text-xs text-slate-400 mt-4">
-                Fase REM perfeita atingida durante a madrugada.
-              </p>
-            </div>
-          </div>
-
-          <!-- AI On-Device Insight (Spans full width or large area) -->
-          <div
-            class="glass-card col-span-1 md:col-span-3 lg:col-span-4 p-1 flex relative overflow-hidden mt-2"
-          >
-            <!-- Magic border glow effect -->
-            <div
-              class="absolute inset-0 bg-gradient-to-r from-warm-coral via-teal-400 to-warm-coral opacity-20 blur-xl"
-            ></div>
-
-            <div
-              class="relative w-full h-full bg-[#0f2027]/80 backdrop-blur-3xl rounded-[1.4rem] p-6 flex flex-col md:flex-row gap-6 items-center"
-            >
-              <div
-                class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0"
-              >
-                <i data-lucide="cpu" class="w-8 h-8 text-warm-coral"></i>
-              </div>
-              <div class="flex-1">
-                <div class="flex items-center gap-2 mb-1">
-                  <span
-                    class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white"
-                    >Insight Privado IA</span
-                  >
-                  <span class="text-xs text-slate-400"
-                    >Processado no seu dispositivo (Neural Engine)</span
-                  >
-                </div>
-                <h3 class="text-xl font-semibold text-white mb-2">
-                  Seu Protocolo de Treino para Hoje
-                </h3>
-                <p class="text-slate-300 text-sm leading-relaxed">
-                  Baseado na sua recuperação cardíaca (HRV) alta e no trânsito
-                  terrestre da lua, seu corpo está
-                  <strong>pronto para hipertrofia intensa</strong>. Sugiro
-                  concentrar os treinos de força entre as
-                  <span class="text-warm-coral font-semibold"
-                    >14:30h e 15:15h</span
-                  >
-                  para máxima eficiência metabólica.
-                </p>
-              </div>
-              <button
-                class="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium border border-white/10 transition-colors whitespace-nowrap"
-              >
-                Ver Plano Completo
-              </button>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-
-    <script>
-      // Initialize Icons
-      lucide.createIcons();
-    </script>
-  </body>
-</html>
-```
-
-</details>
-*(Basta baixar/clonar e abrir o arquivo `.html` direto no seu navegador Chrome/Safari para interagir com o layout deslumbrante!)*
+| Pilar | Tradição / Ciência | Aplicação no MetaCare |
+|:---:|:---|:---|
+| 🕉️ | **Astrologia Védica (Jyotish)** | Cálculo sideral real com Lahiri Ayanamsha, Nakshatras, Tithis, Pakshas e trânsitos lunares que influenciam ritmos biológicos e psicológicos. |
+| 🌿 | **Ayurveda** | Doshas dinâmicos (Vata/Pitta/Kapha) calculados a partir de biomarcadores reais do dia a dia — não apenas questionários estáticos. |
+| 📜 | **Vedas & Vedanta** | Princípios de autoconsciência, propósito (Dharma) e avaliação do equilíbrio dos Pancha Koshas (as 5 camadas do ser). |
+| 🏥 | **Medicina Moderna** | 60+ biomarcadores integrados reais: HRV, SpO₂, glicose contínua (CGM), VO₂max, pressão arterial, sono polifásico profundo e REM. |
+| ⚛️ | **Física Quântica** | Índice de Coerência Quântica — a convergência matemática avançada entre seus estados biológicos e os ciclos macrocósmicos. |
 
 ---
 
-## 🧭 1. A Essência Transformadora: O Que Nos Move? ❤️‍🔥
+## 🔥 2. O Que Nos Diferencia (Diferenciais Viciantes)
 
-A alma da **Lyra MetaCare** reside na união sagrada entre a **sabedoria milenar** e a **tecnologia de ponta**. Nós construímos este super-app para oferecer a você uma saúde preventiva _verdadeiramente personalizada_, assertiva e profundamente empoderadora.
-
-Imagine um **ecossistema sincronizado em tempo real** pulsando no seu bolso, onde a precisão cirúrgica da **Inteligência Artificial local (on-device)** 🧠 encontra a profundidade cósmica da **Astrologia Védica** 🕉️. Aqui, não rastreamos apenas números frios; nós **orquestramos o seu bem-estar holístico** em um único e belo lugar.
-
-### 🌟 Os Pilares Magnéticos do Nosso Ecossistema:
-
-- 🧘🏽‍♀️ **Sincronia Holística em Tempo Real:** Sinta o poder de ter um "condutor" pessoal invisível! O app capta e integra seus dados vitais contemporâneos (seu 💤 sono profundo, ritmo do ❤️ coração, 🩸 glicose e muito mais) diretamente com os poderosos ciclos da astrologia védica. Essa fusão magistral permite que nossa IA _on-device_ ofereça _insights proativos_ que respeitam profundamente sua biologia única e a sua jornada cósmica – garantindo total privacidade (seus dados não saem do seu dispositivo!) e latência absolutamente zero.
-- 💠 **Identidade Visual e Simbolismo Poderoso:**
-  - 💫 **Símbolo:** Nossa marca unifica a gloriosa constelação de Lira 🌟 com os ícones universais de saúde (o coração amoroso ou a cruz protetora), evocando a sua verdadeira "estrela-guia". O design é uma obra de arte: um **"minimalismo geométrico fluido"** que respira, representando o movimento constante da sua vida e a perfeição absoluta da precisão dos astros.
-  - ✍️ **Logotipo:** Usamos uma tipografia _sans-serif em caixa-baixa_ para abraçar você logo no primeiro olhar. Queremos reforçar uma comunicação amigável, humana, empática e acessível. Nós somos o seu guia compassivo no caminho do bem-estar.
-- 🎨 **Psicologia das Cores Que Transformam:**
-  - 🌊 **Lyra Teal (Primária):** Feche os olhos e sinta a calma restauradora. Essa cor divina simboliza a mágica convergência entre o futurismo tecnológico brilhante e a naturalidade profunda e orgânica da sua saúde.
-  - 🌅 **Warm Coral (Secundária):** Sinta o calor pulsar! Esta cor vibrante injeta o calor humano, a paixão, a energia radiante e o entusiasmo necessários para que você se engaje emocionalmente (e se vicie de forma positiva!) no seu autocuidado diário.
-- 🎻 **O Conceito Encantador da "Orquestração":** _Seu Bem-Estar Orquestrado_ não é apenas um slogan bonito; é o nosso mantra de vida. Ele sintetiza a harmonia perfeita entre os seus pilares biológicos da saúde e os grandiosos ciclos astrológicos, funcionando como uma organização incrivelmente inteligente e profundamente sua.
-- 🚀 **Diretrizes e Inovação Sem Limites:** Nosso guia de marca estabelece regras intocáveis para manter a consistência visual deslumbrante (áreas de proteção sagradas e proibição absoluta de distorções), enquanto nos incentiva a voar cada vez mais alto, usando IA generativa para expandir a presença da nossa marca. Tudo isso, claro, sempre coroado com o insubstituível e afetuoso refinamento humano final.
+- 🧘 **Doshas Dinâmicos em Tempo Real** — Seu perfil ayurvédico muda conforme seus biomarcadores (HRV, Sono, Glicose) mudam, não é um rótulo estático para a vida toda.
+- 🌙 **Astrologia Védica Computacional Real** — Cálculos siderais absolutos com `astronomy-engine` (sem simulações, astrologia verdadeira baseada em efemérides).
+- ⚛️ **Índice de Coerência Quântica** — Métrica exclusiva que quantifica cientificamente o alinhamento entre seu estado biológico vibracional e os ciclos cósmicos do momento.
+- 🔮 **Chakra Alignment Score** — Mapeamento dinâmico dos 7 chakras com base em biomarcadores mensuráveis (ex: HRV e Vata para o Anahata/Coração).
+- 🌊 **Índice Pránico (Energia Vital)** — Calculado matematicamente a partir de sua resiliência cardíaca (HRV), capacidade respiratória, SpO₂ e influência da fase lunar atual.
+- 🧠 **IA On-Device com Consciência Cósmica** — Um assistente LLM (Language Model) que cruza magicamente seus dados fisiológicos com o céu védico em tempo real, fornecendo insights privados e inigualáveis.
+- 🎯 **Avaliação Quântica Subjetiva (WHO-5 & NPS)** — Medição constante de bem-estar psíquico e aderência ao tratamento preventivo.
 
 ---
 
-## 🏗️ 2. Arquitetura do Sistema: A Fundação do Nosso Universo 🛠️
+## 🚀 3. Funcionalidades e Inovações Exclusivas
 
-Para suportar algo tão grandioso e veloz, estruturamos uma base técnica de classe mundial. Segurança, velocidade e escalabilidade são o nosso DNA.
+O Lyra MetaCare oferece um arsenal de módulos para o cuidado pessoal, operando sem simuladores, hardcodes ou placeholders. Tudo é processado de forma 100% real.
+
+### 🌟 Dashboard Védico-Biológico (Bento Grid)
+- **Métricas de Prontidão e Longevidade**: Pontuação diária baseada no seu descanso e vitalidade.
+- **Card Astrológico em Tempo Real**: Visualização da Lua, Nakshatra, Tithi e o impacto exato do céu no seu sono, estresse e energia biológica hoje.
+- **Métricas Vitais**: Monitoramento de 60+ biomarcadores, como Glicose, HRV (ms), Frequência Cardíaca de Repouso, SpO₂, Sono Profundo, Sono REM, etc.
+
+### 🤖 Chat IA: O Orquestrador Inteligente
+O Chat processa intenções usando linguagem natural para conectar seu perfil cósmico aos seus dados biológicos:
+- "Por que meu HRV está tão baixo hoje?" -> A IA correlaciona com o seu sono curto e o trânsito planetário vigente.
+- "O que devo comer hoje?" -> A IA prescreve de acordo com sua variação de glicose e o seu dosha atual dominante.
+
+### 📈 Avaliação de Usuários, KPIs e Métricas (Novidade!)
+Nós medimos o que importa para a evolução real do ser:
+- **KPI de Aderência e Consistência (Streak)**: Gamificação do autocuidado diário (hidratação, meditação, sono).
+- **Avaliação Diária de Humor (Mood Score)**: Rastreamento emocional para entender variações ao longo do mês (correlacionado com a lua).
+- **Net Promoter Score (NPS) Integrado**: Feedback orgânico e métricas de satisfação da jornada de saúde.
+
+---
+
+## 🏗️ 4. Arquitetura do Sistema: A Fundação do Nosso Universo 🛠️
+
+Para suportar a grandiosidade e complexidade da fusão Védica-Quântica, estruturamos uma base técnica de classe mundial Ph.D., desenhada para **Zero Latency** e **Segurança Máxima**.
 
 ### 🏛️ Modelo Arquitetural
 
-- 🖥️ **Front-end Monolítico Modular:** Vibrante, escalável e ultra-rápido usando o moderno **Next.js App Router**.
-- 🗄️ **Backend Aplicacional com Banco Próprio:** Autenticação, CRUD, storage e funções de IA executando em rotas locais do **Next.js** sobre **MySQL 8**.
-- 👁️ **Observabilidade Total:** Implementamos o **Sentry** (client, server e edge) para garantir que possamos caçar bugs antes mesmo que eles pisquem na sua tela.
+- 🖥️ **Front-end Monolítico Modular:** Vibrante, escalável e ultra-rápido usando o moderno **Next.js 15 App Router** com **React 19**.
+- 🗄️ **Backend Aplicacional com Banco Próprio:** Autenticação, CRUD, storage e funções de IA executando em rotas locais do **Next.js** sobre **MySQL 8.0+**.
+- 👁️ **Observabilidade Total:** **Sentry** integrado.
+- 🎨 **CMS Integrado (Puck):** Gestão visual completa das páginas de conteúdo sem tocar no código.
 
 ### 🧱 Stack Tecnológica Detalhada
 
-| Camada Mágica 🌟               | Tecnologia Confirmada e Incrível 🛠️                                                                   |
-| :----------------------------- | :---------------------------------------------------------------------------------------------------- |
-| 🌐 **Aplicação Web**           | **Next.js 15, React 19, TypeScript** (Performance imbatível e tipagem estrita!)                       |
-| 🎨 **Beleza Visual (UI)**      | **Tailwind CSS, Radix UI, shadcn/ui, Lucide** (Acessibilidade de fábrica com design de cair o queixo) |
-| 📝 **Interação & Validação**   | **React Hook Form + Zod** (Segurança cirúrgica e fluidez extrema em cada input)                       |
-| 🔐 **Cofre & Identidade**      | **JWT local, cookies HTTP-only, bcryptjs e rotas `/api/auth/*`** (Identidade blindada ponta a ponta)  |
-| 📊 **Vida aos Seus Dados**     | **Recharts, Tremor, react-big-calendar** (Os números frios se transformam em gráficos vibrantes)      |
-| 🧪 **O Laboratório (Testes)**  | **Vitest** (Nossa garantia de que a mágica nunca quebra em atualizações)                              |
-| 🕵️‍♂️ **Olhos de Águia**          | **Sentry (`@sentry/nextjs`)** (A telemetria silenciosa e protetora)                                   |
-| ⚡ **Cérebro de Orquestração** | **Route Handlers do Next.js + motores locais de IA** (Lógica analítica e planos personalizados)       |
-
-### 📐 O Fluxo Mágico (A Dança dos Dados)
-
-```mermaid
-flowchart TD
-    A([💖 Você, o Usuário]) --> B{Login Local com JWT}
-    B -- "Nova Estrela?" --> C[🚀 O Despertar: Onboarding Empoderador]
-    B -- "Já nos conhece!" --> D[🏡 Seu Centro de Comando: Home / Dashboard]
-    C --> D
-    D --> E[📊 Leitura de Métricas Vitais e Perfil Estelar]
-    D --> F[📅 Agendamentos Suaves de Consultas]
-    D --> G[🔮 Plano de IA: Seu Mapa do Tesouro]
-    D --> H[🤖 Chat IA: Seu Guia Sábio e Compassivo]
-
-    G --> I((⚡ Route Handler: generate-ai-plan))
-    H --> J((⚡ Route Handler: ask-ai-assistant))
-
-    D --> K{É um Guardião (Admin)?}
-    K -- "Sim, com grandes poderes!" --> L[⚙️ Rotas /admin/* (Governança Total)]
-```
-
-_Nota técnica: Todo o sistema possui escopo de leitura e escrita por usuário na camada de API, autenticação por cookie HTTP-only assinado e controle de acesso baseado em papéis (`admin` e `patient`). Seus dados não se misturam._
+| Camada Mágica 🌟 | Tecnologia Confirmada 🛠️ |
+|:---|:---|
+| 🌐 **Aplicação Web** | **Next.js 15, React 19, TypeScript** (Performance impecável, tipagem forte Ph.D.) |
+| 🎨 **Beleza Visual (UI/UX)** | **Tailwind CSS, Radix UI, shadcn/ui, Lucide** (Estética Glassmorphism 2026, premium e limpa) |
+| 📝 **Interação & CMS** | **React Hook Form + Zod** para inputs, **Puck Editor** para CMS visual drag-and-drop |
+| 🔐 **Cofre & Identidade** | **Autenticação robusta (JWT, bcryptjs)** + RBAC (Admin, Patient) |
+| 📊 **Análise de Dados** | **Recharts, Tremor** (Gráficos imersivos para as 60+ métricas) |
+| 🌌 **Motor Astrológico** | **astronomy-engine** (Cálculo matemático astronômico real no Node) |
+| 💰 **Billing / Assinaturas** | **Stripe** para gestão de planos premium. |
 
 ---
 
-## 👤 3. O Seu Guia Estelar: Manual Rápido do Usuário 📖✨
+## 👤 5. O Seu Guia Estelar: Manual Rápido do Usuário 📖✨
 
-Pronto para compilar e dar o primeiro passo na sua jornada como desenvolvedor neste universo?
+Siga os passos abaixo para instanciar seu Universo localmente. Tudo opera de forma autônoma e real.
 
 ### 🛠️ Suas Ferramentas (Pré-requisitos)
+- 🟢 **Node.js** instalado na sua máquina (v20+).
+- 📦 **pnpm** (Obrigatório para respeitar o `pnpm-lock.yaml`).
+- 🐳 **Docker** e **Docker Compose** (Para subir o MySQL de forma blindada).
 
-- 🟢 **Node.js** instalado na sua máquina.
-- 📦 **pnpm** (Altamente recomendado e respeitado pelo nosso `pnpm-lock.yaml`).
-- 🐳 **Docker** e **Docker Compose** para subir o MySQL local com saúde e volume persistente.
-- 🗄️ Um ambiente MySQL acessível via `.env.local`.
-
-### 🪄 Instalação (Um Passe de Mágica)
-
-Clone o repositório e rode:
-
+### 🪄 1. Clonagem e Instalação
 ```bash
+git clone https://github.com/ilyra-ai/Lyra-MetaCare.git
+cd Lyra-MetaCare
 pnpm install
 ```
 
-### 🌍 As Chaves do Universo (Variáveis de Ambiente)
-
-Crie o seu arquivo `.env.local` na raiz e insira a magia:
-
-**Para o App Web e API local:**
-| Variável | O Poder Que Ela Traz ⚡ |
-|:---|:---|
-| `MYSQL_HOST` | Endereço do servidor MySQL. |
-| `MYSQL_PORT` | Porta interna do MySQL acessada pela aplicação. |
-| `MYSQL_USER` | Usuário de acesso ao banco. |
-| `MYSQL_PASSWORD` | Senha do usuário do banco. |
-| `MYSQL_DATABASE` | Schema principal da aplicação. |
-| `AUTH_SECRET` | Segredo criptográfico usado para assinar a sessão local. |
-| `ADMIN_BOOTSTRAP_EMAIL` | Email do administrador local garantido automaticamente após as migrações. |
-| `ADMIN_BOOTSTRAP_PASSWORD` | Senha do administrador local garantido automaticamente após as migrações. |
-| `ADMIN_BOOTSTRAP_FIRST_NAME` | Nome exibido no perfil do administrador local. |
-| `ADMIN_BOOTSTRAP_LAST_NAME` | Sobrenome exibido no perfil do administrador local. |
-| `ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS` | Array JSON opcional com administradores extras para bootstrap automático. Cada item deve informar `email`, `password`, `firstName` e `lastName`. |
-| `NEXT_PUBLIC_SENTRY_DSN` | Ativa o monitoramento constante e protetor (opcional em dev). |
-
-**Para infraestrutura e IA local:**
-| Secret Oculta 🤫 | O Propósito Supremo 🔮 |
-|:---|:---|
-| `MYSQL_HOST_PORT` | Porta publicada pelo container MySQL na máquina local. |
-| `OPENAI_API_KEY` | A centelha de genialidade para as respostas reais e humanas do assistente! |
-
-> **Observação de Ouro 🔐:** Nunca faça commit de chaves reais. Sempre utilize `.env.local` para segredos locais e mantenha as credenciais de produção fora do repositório.
-
-Exemplo real de configuração do Super Administrador (já injetado na raiz do run.py):
-
-```env
-ADMIN_BOOTSTRAP_EMAIL=admin@admin.com
-ADMIN_BOOTSTRAP_PASSWORD=admin123
-ADMIN_BOOTSTRAP_FIRST_NAME=Admin
-ADMIN_BOOTSTRAP_LAST_NAME=Super
+### 🌍 2. As Chaves do Universo (.env)
+Copie o arquivo `.env.example` para `.env.local` e `.env` e configure suas variáveis.
+```bash
+cp Install/.env.example .env.local
+cp Install/.env.example .env
 ```
+O sistema criará automaticamente seu **Super Admin** utilizando as credenciais definidas em `ADMIN_BOOTSTRAP_EMAIL` e `ADMIN_BOOTSTRAP_PASSWORD` dentro do `.env`.
 
-### 🚀 Decolando em Modo Desenvolvimento
-
-Antes de subir o app, inicialize o banco com as migrações SQL reais:
-
+### 🚀 3. Levantando o Banco de Dados e Migrações (100% Automatizado)
+Nós usamos scripts robustos para provisionar o banco MySQL e aplicar toda a estrutura de tabelas reais.
 ```bash
 npm run db:start
 ```
+*Isso fará o Docker subir o container e, em seguida, rodará o script de migração `scripts/mysql-migrate.mjs`, criando o schema e inserindo o super administrador.*
 
-Depois inicie a aplicação:
-
+### 🌌 4. Iniciando o Ecossistema MetaCare
 ```bash
 pnpm dev
 ```
-
-Abra o portal na sua máquina interdimensional acessando: [**http://localhost:3000**](http://localhost:3000).
-
-Se você adicionar uma nova migração depois que o banco já estiver em execução, reaplique manualmente:
-
-```bash
-npm run db:migrate
-```
-
-### ✅ Garantindo a Perfeição (Testes)
-
-Nós amamos estabilidade. Antes de subir uma nova estrela, verifique se tudo brilha:
-
-```bash
-pnpm test
-```
-
-### 🏭 Construindo a Máquina para o Mundo (Produção)
-
-```bash
-pnpm build
-pnpm start
-```
+Abra o portal em: **http://localhost:3000**
 
 ---
 
-## 🎨 4. Uma Experiência de Usuário (UI/UX) Que Vicia Positivamente 😍📱
+## 🛡️ 6. A Fortaleza Indestrutível: Segurança e Qualidade ⚡🔒
 
-Nós não desenhamos apenas telas; nós **esculpimos experiências**. A Lyra MetaCare foi projetada meticulosamente com as maiores tendências de 2024/2026: muito Glassmorphism suave, Bento Grids que abraçam as informações e animações que parecem respirar com você.
+Tratamos o código e os dados como sagrados. Mantemos a excelência de engenharia de nível PhD:
 
-### 🛤️ Sua Jornada Fluida
-
-1. **A Porta de Entrada**: Um login indolor e rápido (via redes sociais ou email mágico) na rota `/login`.
-2. **O Despertar**: Um fluxo de onboarding imersivo que coleta suas informações com carinho e te insere no ecossistema sem atritos.
-3. **O Centro do seu Universo**: O _Dashboard_, com navegação cristalina via sidebar e header responsivos.
-4. **Módulos Profundos**: Áreas focadas para _Perfil_, _Metas_, _Monitoramento Diário_, _Chat Inteligente_, _Planos IA_, e _Agenda de Consultas_.
-5. **A Torre de Controle**: Páginas administrativas isoladas e seguras (`/admin/*`) exclusivas para a governança dos deuses (Admins).
-
-### 💖 A Beleza Nos Detalhes
-
-- **Acolhimento Visual:** Uma gloriosa tela de carregamento (Splash screen) que elimina qualquer "pisco" (flicker) grosseiro e te acolhe suavemente no estado da aplicação.
-- **Componentes Premium:** Estruturas elegantes com _cards de vidro_ translúcidos (`backdrop-blur`), bordas amplas e arredondadas (`1rem` de raio), e _sombras glass_ únicas, proporcionando uma sensação tátil de alta tecnologia.
-- **Celebre Cada Vitória! 🥳:** Feedbacks instantâneos via pequenos "toasts" elegantes e animadíssimos (`sonner`) que estouram na tela a cada métrica preenchida ou consulta salva!
-
-### 🚦 Estados da Interface que Conversam com Você
-
-- **⏳ Carregando**: Ninguém gosta de tela em branco. Nossos _Skeletons_ pulsantes (`pulse-slow`) fazem a transição parecer mágica.
-- **🚨 Ups, Erro**: Toasts vermelhos, discretos porém firmes, avisam quando algo precisa da sua atenção, sem culpar o usuário.
-- **✅ Sucesso Absoluto**: Confirmações verdes e felizes aparecem quando tudo dá certo!
-- **🛑 Acesso Negado**: Você tentou entrar onde não deve? Um card gentil explicará que a área é restrita, sem mensagens hostis.
+- **Strict Type Checking**: Todo o projeto TS passa sem erros no compilador (`tsc --noEmit`).
+- **Clean Code & Linting**: A padronização é garantida via `eslint` e `prettier` (`npm run fix:lint`).
+- **Isolamento de Dados Pessoais**: Dados sensíveis biométricos são lidos estritamente sob RLS (Row Level Security na lógica de acesso) baseada no ID do usuário logado.
 
 ---
 
-## ⚙️ 5. O Cérebro Por Trás da Magia (Para os Mestres de Dados) 🧙‍♂️📊
+## 🗺️ 7. O Horizonte Infinito: Próximos Passos (Roadmap) 🌠🔭
 
-A inteligência da Lyra MetaCare é altamente configurável e paramétrica.
-
-### 🎛️ Os Controles da Nave (Configurações da IA via Painel Admin)
-
-Os administradores podem moldar o comportamento exato da IA configurando a tabela `ai_config` diretamente na tela:
-
-- `mission` 🎯 (A diretriz mestre de comportamento).
-- `key_objectives` 🏆 (Os alvos de melhoria do usuário).
-- `weight_hrv`, `weight_sleep`, `weight_activity`, `weight_nutrition` ⚖️ (Pesos dinâmicos para a orquestração do seu score único).
-- `model_name` 🤖 (Facilidade para chavear entre GPT-4o, Claude 3, etc., via contrato).
-
----
-
-## 🛡️ 6. A Fortaleza Indestrutível: Segurança e Performance ⚡🔒
-
-Nós levamos a sua paz de espírito – e a velocidade da sua experiência – incrivelmente a sério!
-
-### 💪 Nossos Escudos de Defesa de Dados
-
-- **Validação de Aço**: A biblioteca `Zod` analisa e sanitiza impecavelmente todos os formulários. Lixo não entra, lixo não sai.
-- **Muralhas de Dados Pessoais**: Toda leitura e escrita passa por escopo de usuário na camada `/api/data/*`, com isolamento de registros e bloqueio explícito para operações não autorizadas.
-- **Guardiões dos Portões (RBAC)**: Controle de acesso por papéis (`admin` e `patient`) aplicado nas rotas de autenticação, CRUD, storage e painéis administrativos.
-
-### 🏎️ Performance Que Desafia a Luz
-
-- **Sem Gargalos na Rede**: Nossas telas fazem consultas ao banco de dados utilizando paralelismo brutal via `Promise.all()`. O tempo de carregamento cai instantaneamente pela metade!
-- **Inteligência Cirúrgica de Carga**: O padrão de busca para dados pesados usa paginação com `count`, `limit`, `range` e filtros SQL seguros na camada MySQL, reduzindo payload e mantendo as consultas objetivas.
-
----
-
-## 🗺️ 7. O Horizonte Infinito: Nosso Roadmap 🌠🔭
-
-Nossa jornada está apenas começando e as estrelas são o limite. O que já está no nosso radar de inovação:
-
-1. 🤝 **Contrato Universal IA-UI:** Consolidar o pacto versionado de _request/response_ entre a interface e as rotas de IA, pavimentando o caminho para uso agnóstico de modelos fundacionais.
-2. 🛡️ **Expandir a Armadura de Testes:** Aumentar massivamente a cobertura de _End-to-End_ (E2E) e testes automatizados nas rotas analíticas e de geração de plano.
-3. 📜 **O Grande Livro de Feitiços (Runbook):** Escrever a enciclopédia operacional definitiva para provisionamentos, deploys _zero-downtime_ e estratégias infalíveis de rollback majestoso.
-
----
+Nós implementamos o core do projeto e não vamos parar.
+1. 🧘 **Motor Avançado de Ayurveda**: Implementação total dos questionários dinâmicos que cruzam com HRV para gerar o `Dosha Score`.
+2. ⚛️ **Calculadora de Coerência Quântica**: Dashboard exclusivo fundindo a sobreposição de estados cerebrais com as efemérides.
+3. 📈 **Painel Analítico de Saúde Subjetiva**: Expansão do WHO-5 e métricas prânicas.
 
 <div align="center">
 
-### 🌟 Venha Orquestrar o Seu Bem-Estar com a Gente! 🌟
+### 🌟 Venha Orquestrar o Seu Bem-Estar Quântico! 🌟
 
-**Lyra MetaCare** não é apenas código. É um manifesto revolucionário de longevidade, amor próprio profundo e inteligência tecnológica sem limites. O universo, e a sua melhor versão, te esperam! 🚀✨💖
+**Lyra MetaCare** não é apenas código. É um manifesto revolucionário de longevidade, reconexão com a natureza essencial, sabedoria dos Vedas e poder computacional absoluto. 
 
-_Feito com suor, dados e pó de estrelas._
+_Feito com extrema precisão, dados profundos e pó de estrelas. Namastê._ 🕉️✨💖
 
 </div>
