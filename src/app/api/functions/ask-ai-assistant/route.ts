@@ -12,7 +12,7 @@ export const runtime = 'nodejs';
 export async function POST(request: Request) {
   try {
     const session = await requireServerSession();
-    const { query } = (await request.json()) as { query: string };
+    const { query, userApiKey } = (await request.json()) as { query: string; userApiKey?: string };
     if (!query?.trim()) {
       return NextResponse.json(
         { error: 'Pergunta obrigatória.' },
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       [session.user.id]
     );
 
-    const response = generateLocalAssistantReply(query, {
+    const fallbackResponse = generateLocalAssistantReply(query, {
       profile: profile
         ? {
             first_name: profile.first_name,
@@ -58,12 +58,53 @@ export async function POST(request: Request) {
       astrology: getAstrologicalContext(new Date(), profile ?? undefined),
     });
 
+    let finalResponse = fallbackResponse;
+
+    // Se o usuário providenciou a chave on-device (BYOK - Bring Your Own Key)
+    if (userApiKey && userApiKey.trim() !== '') {
+      try {
+        const aiModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+        const systemPrompt = `Você é o Lyra MetaCare, um assistente médico integrativo (PhD). 
+Abaixo está a análise determinística Védica-Quântica sobre os biomarcadores reais do usuário:
+---
+${fallbackResponse}
+---
+Use esta análise como base para responder à pergunta do usuário de forma humana, empática e clinicamente embasada. Responda APENAS com a sua resposta direta.`;
+
+        const geminiRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${aiModel}:generateContent?key=${userApiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [
+                { role: 'user', parts: [{ text: systemPrompt }] },
+                { role: 'user', parts: [{ text: query }] }
+              ],
+              generationConfig: { temperature: 0.3 }
+            }),
+          }
+        );
+
+        if (geminiRes.ok) {
+          const geminiData = await geminiRes.json();
+          const llmText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (llmText) {
+            finalResponse = llmText;
+          }
+        }
+      } catch (err) {
+        console.error('Falha na integração LLM transparente (BYOK):', err);
+        // Fallback natural para a engine determinística
+      }
+    }
+
     await consumeUsageQuota({
       session,
       featureKey: 'ai_chat_messages',
     });
 
-    return NextResponse.json({ response });
+    return NextResponse.json({ response: finalResponse });
   } catch (error) {
     return NextResponse.json(
       {

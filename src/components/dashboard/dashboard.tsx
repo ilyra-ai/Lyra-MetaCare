@@ -31,6 +31,7 @@ import { AITipsCard } from './AITipsCard';
 import { MetricGrid } from './MetricGrid';
 import { VedicDashboard } from './VedicDashboard';
 import { AssessmentCard } from './AssessmentCard';
+import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -356,6 +357,10 @@ export function Dashboard() {
 
   return (
     <div className="flex flex-col gap-6">
+      <div className="w-full relative z-20">
+        <PuckClientRenderer documentKey="dashboard" />
+      </div>
+
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <Card className="relative overflow-hidden border-primary/15 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.15)_0%,hsl(var(--card))_42%,hsl(var(--card))_100%)] md:col-span-2">
           <div className="orchestrated-orb -left-14 top-0 h-32 w-32 bg-primary/70" />

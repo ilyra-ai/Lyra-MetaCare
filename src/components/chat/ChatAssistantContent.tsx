@@ -14,6 +14,7 @@ import {
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Card,
   CardContent,
@@ -101,8 +102,21 @@ export function ChatAssistantContent() {
   const [isTyping, setIsTyping] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isNearBottom, setIsNearBottom] = useState(true);
+  const [userApiKey, setUserApiKey] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setUserApiKey(localStorage.getItem('lyra_byok_api_key') || '');
+  }, []);
+
+  const handleSaveApiKey = (val: string) => {
+    setUserApiKey(val);
+    localStorage.setItem('lyra_byok_api_key', val);
+    if (val) {
+      toast.success('Chave de API (BYOK) configurada com sucesso on-device.');
+    }
+  };
 
   useEffect(() => {
     setMessages((current) => {
@@ -180,7 +194,7 @@ export function ChatAssistantContent() {
       const { data, error } = await db.functions.invoke<{ response: string }>(
         'ask-ai-assistant',
         {
-          body: { query: text },
+          body: { query: text, userApiKey },
         }
       );
 
@@ -296,6 +310,21 @@ export function ChatAssistantContent() {
                         </div>
                       );
                     })}
+                  </div>
+                  <div className="border-t border-border/60 bg-muted/10 px-5 py-4">
+                    <p className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+                      <Sparkles className="size-4 text-primary" /> BYOK (Privacidade On-Device)
+                    </p>
+                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                      Insira sua chave do modelo LLM para processamento privado. A chave fica apenas no seu navegador.
+                    </p>
+                    <Input 
+                      type="password" 
+                      placeholder="sk-..." 
+                      value={userApiKey} 
+                      onChange={(e) => handleSaveApiKey(e.target.value)}
+                      className="h-8 text-xs bg-white"
+                    />
                   </div>
                 </PopoverContent>
               </Popover>
