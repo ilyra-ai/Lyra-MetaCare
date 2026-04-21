@@ -45,7 +45,7 @@ export function useBluetoothVitals(): BluetoothVitals {
     setHeartRate(hr);
 
     if (rrPresent) {
-      const newIntervals = [];
+      const newIntervals: number[] = [];
       while (index < value.byteLength) {
         // RR interval in 1/1024 seconds
         const rr = (value.getUint16(index, true) * 1000) / 1024;
@@ -62,14 +62,15 @@ export function useBluetoothVitals(): BluetoothVitals {
   }, []);
 
   const connect = async () => {
-    if (!navigator.bluetooth) {
+    const nav = navigator as any;
+    if (!nav.bluetooth) {
       toast.error('Web Bluetooth não é suportado neste navegador. Use Chrome, Edge ou Opera.');
       return;
     }
 
     try {
       setIsConnecting(true);
-      const btDevice = await navigator.bluetooth.requestDevice({
+      const btDevice = await nav.bluetooth.requestDevice({
         filters: [{ services: ['heart_rate'] }],
       });
 

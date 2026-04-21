@@ -54,8 +54,8 @@ export function obterCategoriasPuckLyra(
     },
     dados: {
       title: 'Métricas e mosaicos',
-      components: ['LyraMetricCardBlock', 'LyraGridTileBlock'],
-      defaultExpanded: isAppShell,
+      components: ['LyraMetricCardBlock', 'LyraGridTileBlock', 'VedicDashboardBlock'],
+      defaultExpanded: true,
     },
     other: {
       title: 'Outros blocos',

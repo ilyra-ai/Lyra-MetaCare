@@ -1,5 +1,6 @@
 export interface HealthDataMetrics {
   heartRate: number | null;
+  hrv_ms?: number | null;
   sleepDurationMinutes: number | null;
   bloodGlucoseMgDl: number | null;
   weightKg: number | null;
@@ -65,6 +66,7 @@ export function getHealthRuntimeAvailability(): HealthRuntimeAvailability {
 export async function fetchRealTimeVitals(): Promise<HealthDataMetrics> {
   const metrics: HealthDataMetrics = {
     heartRate: null,
+    hrv_ms: null,
     sleepDurationMinutes: null,
     bloodGlucoseMgDl: null,
     weightKg: null,

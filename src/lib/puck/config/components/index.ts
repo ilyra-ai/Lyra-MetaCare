@@ -12,6 +12,7 @@ import { lyraHeroBlockConfig } from '@/lib/puck/config/components/hero';
 import { lyraMetricCardBlockConfig } from '@/lib/puck/config/components/metric-card';
 import { lyraSectionContainerBlockConfig } from '@/lib/puck/config/components/section-container';
 import { lyraStackContainerBlockConfig } from '@/lib/puck/config/components/stack-container';
+import { VedicDashboardBlock } from '@/lib/puck/config/components/VedicDashboardBlock';
 
 export const lyraPuckComponents = {
   LyraHeroBlock: lyraHeroBlockConfig,
@@ -26,4 +27,5 @@ export const lyraPuckComponents = {
   LyraFixedColumnsBlock: lyraFixedColumnsBlockConfig,
   LyraFluidGridBlock: lyraFluidGridBlockConfig,
   LyraGridTileBlock: lyraGridTileBlockConfig,
+  VedicDashboardBlock: VedicDashboardBlock as any,
 } satisfies NonNullable<Config['components']>;

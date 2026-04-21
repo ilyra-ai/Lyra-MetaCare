@@ -16,6 +16,8 @@ import {
   Sparkles,
   TimerReset,
   Waves,
+  Bluetooth,
+  BluetoothConnected,
 } from 'lucide-react';
 
 import { useDailyMetrics } from '@/hooks/use-daily-metrics';
@@ -209,8 +211,16 @@ export function Dashboard() {
   const { config: appConfig } = usePublicSitePageConfig('app');
   const { data: subscription, loading: subscriptionLoading } =
     useAccountSubscription();
-  const { astrology, isSyncing, syncError, vitals, triggerManualSync } =
-    useHealthOrchestrator();
+  const { 
+    astrology, 
+    isSyncing, 
+    syncError, 
+    vitals, 
+    triggerManualSync, 
+    bluetoothConnect, 
+    bluetoothDisconnect, 
+    isBluetoothConnected 
+  } = useHealthOrchestrator();
 
   const dashboardEnabled = isPlanFeatureEnabled(
     subscription,
@@ -392,14 +402,24 @@ export function Dashboard() {
                 </div>
               </div>
 
-              <Button
-                variant="secondary"
-                onClick={() => void handleSyncNow()}
-                disabled={isSyncing}
-              >
-                <TimerReset />
-                {appConfig.dashboard.syncButtonLabel}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className={cn(isBluetoothConnected && "border-primary text-primary")}
+                  onClick={() => isBluetoothConnected ? bluetoothDisconnect() : bluetoothConnect()}
+                >
+                  {isBluetoothConnected ? <BluetoothConnected className="mr-2" /> : <Bluetooth className="mr-2" />}
+                  {isBluetoothConnected ? 'BLE Ativo' : 'Parear Cinta'}
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => void handleSyncNow()}
+                  disabled={isSyncing}
+                >
+                  <TimerReset />
+                  <span className="sr-only">Atualizar Saúde</span>
+                </Button>
+              </div>
             </div>
           </CardHeader>
 
