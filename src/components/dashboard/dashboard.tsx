@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils';
 import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
 import { AITipsCard } from './AITipsCard';
 import { MetricGrid } from './MetricGrid';
+import { VedicDashboard } from './VedicDashboard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -737,6 +738,8 @@ export function Dashboard() {
           </CardHeader>
         </Card>
       )}
+
+      <VedicDashboard featureEnabled={dashboardEnabled} />
     </div>
   );
 }
