@@ -16,6 +16,7 @@ import {
   AstrologicalData,
 } from '../lib/astrology/engine';
 import { db } from '../integrations/mysql/client';
+import { useBluetoothVitals } from '../hooks/use-bluetooth-vitals';
 
 interface HealthOrchestratorState {
   vitals: HealthDataMetrics | null;
@@ -23,6 +24,9 @@ interface HealthOrchestratorState {
   isSyncing: boolean;
   syncError: string | null;
   triggerManualSync: () => Promise<void>;
+  bluetoothConnect: () => Promise<void>;
+  bluetoothDisconnect: () => void;
+  isBluetoothConnected: boolean;
 }
 
 const HealthOrchestratorContext = createContext<
@@ -46,6 +50,14 @@ export const HealthOrchestratorProvider: React.FC<{
   const [astrology, setAstrology] = useState<AstrologicalData | null>(null);
   const [isSyncing, setIsSyncing] = useState(true);
   const [syncError, setSyncError] = useState<string | null>(null);
+  
+  const { heartRate, hrv, connected, connect, disconnect } = useBluetoothVitals();
+
+  useEffect(() => {
+    if (heartRate !== null) {
+      setVitals(prev => prev ? { ...prev, heartRate, hrv_ms: hrv ?? prev.hrv_ms } : null);
+    }
+  }, [heartRate, hrv]);
 
   const performSync = useCallback(async () => {
     setIsSyncing(true);
@@ -120,6 +132,9 @@ export const HealthOrchestratorProvider: React.FC<{
         isSyncing,
         syncError,
         triggerManualSync: performSync,
+        bluetoothConnect: connect,
+        bluetoothDisconnect: disconnect,
+        isBluetoothConnected: connected,
       }}
     >
       {children}
