@@ -8,25 +8,27 @@
 [![React](https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-Estilo_Fluido-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Stripe](https://img.shields.io/badge/Stripe-Billing-635BFF?style=for-the-badge&logo=stripe)](https://stripe.com/)
+[![Sentry](https://img.shields.io/badge/Sentry-Observability-362D59?style=for-the-badge&logo=sentry)](https://sentry.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Status: Beta Funcional](https://img.shields.io/badge/Status-Beta_Poderoso-FF6B6B?style=for-the-badge)](#)
+[![Status](https://img.shields.io/badge/Status-Beta_Funcional-FF6B6B?style=for-the-badge)](#)
 
-_Uma plataforma web revolucionária desenhada para empoderar você, acompanhando sua jornada de longevidade, métricas de saúde, rotinas e autoconhecimento, oferecendo um assistente de IA genial que integra a precisão da biologia com a magnitude das estrelas!_ ✨
+> 🔬 **Atenção: NÃO somos uma clínica médica.** Somos uma plataforma holística de **cuidado, saúde e bem-estar** que inova com uma metodologia proprietária: a fusão profunda da **Astrologia Védica (Jyotish)**, **Ayurveda**, **Vedas & Vedanta** com a **Medicina Moderna Baseada em Evidências** e **Física Quântica Aplicada**.
 
-[**Explore a Magia**](#-1-manifesto-e-filosofia) • [**A Inovação (Features)**](#-3-funcionalidades-e-inovações-exclusivas) • [**A Arquitetura**](#-4-arquitetura-do-sistema-a-fundação-do-nosso-universo) • [**Seu Guia Rápido**](#-5-o-seu-guia-estelar-manual-do-usuário)
-
-> 🔬 **Atenção: Não somos uma clínica médica.** Somos uma plataforma holística de **cuidado, saúde e bem-estar** que inova com uma metodologia proprietária e inédita: a fusão profunda da **Astrologia Védica (Jyotish)**, **Ayurveda**, **Vedas e Vedanta** com a **Medicina Moderna Baseada em Evidências** e **Física Quântica**.
+[**🕉️ Filosofia**](#-1-manifesto-e-filosofia) · [**🔥 Diferenciais**](#-2-o-que-nos-diferencia) · [**🚀 Features**](#-3-funcionalidades-e-inovações-exclusivas) · [**🏗️ Arquitetura**](#%EF%B8%8F-4-arquitetura-do-sistema) · [**📖 Guia**](#-5-guia-de-instalação-e-uso) · [**🛡️ Segurança**](#%EF%B8%8F-6-segurança-e-qualidade) · [**🗺️ Roadmap**](#%EF%B8%8F-7-roadmap)
 
 </div>
 
 ---
 
-## 🖼️ Preview da Interface: A Estética 2026
+## 🖼️ Preview da Interface: Estética 2026
 
-Nós valorizamos o **Bento Grid**, o majestoso **Glassmorphism avançado** e a harmonia das cores **Lyra Teal** e **Warm Coral**, proporcionando uma experiência de usuário (UX) premium, fluida, imersiva e de vanguarda tecnológica.
+Design em **Bento Grid** com **Glassmorphism avançado**, paleta **Lyra Teal** + **Warm Coral**, tipografia premium com Inter e micro-animações imersivas.
 
-<img src="https://github.com/ilyra-ai/Lyra-MetaCare/blob/main/public/assets/mockup.png" width="500" height="300">
+<p align="center">
+  <img src="https://github.com/ilyra-ai/Lyra-MetaCare/blob/main/public/assets/mockup.png" width="600">
+</p>
 
 ---
 
@@ -34,143 +36,308 @@ Nós valorizamos o **Bento Grid**, o majestoso **Glassmorphism avançado** e a h
 
 ### 🌌 O Que é o Lyra MetaCare?
 
-O **Lyra MetaCare** é uma plataforma de bem-estar integrativo que cria uma ponte perfeita entre os sistemas ancestrais de conhecimento humano e a tecnologia de ponta do século XXI. Nascemos da convicção inabalável de que a saúde verdadeira só emerge quando **corpo, mente, espírito e cosmos** operam em profunda harmonia.
+O **Lyra MetaCare** é uma plataforma de **bem-estar integrativo** que cria uma ponte entre os sistemas ancestrais de conhecimento humano e a tecnologia de ponta do século XXI. A saúde verdadeira só emerge quando **corpo, mente, espírito e cosmos** operam em harmonia profunda.
 
-Nós oferecemos saúde preventiva *verdadeiramente personalizada*, assertiva e profundamente empoderadora.
+Imagine um **ecossistema sincronizado em tempo real** onde a precisão cirúrgica da **Inteligência Artificial** 🧠 encontra a profundidade cósmica da **Astrologia Védica** 🕉️ e a sabedoria milenar do **Ayurveda** 🌿. Aqui, não rastreamos apenas números frios; nós **orquestramos o seu bem-estar holístico**.
 
-### 🧬 Os 5 Pilares Fundacionais
+### 🧬 A Metodologia MetaCare (Os 5 Pilares Fundacionais)
 
-| Pilar | Tradição / Ciência | Aplicação no MetaCare |
-|:---:|:---|:---|
-| 🕉️ | **Astrologia Védica (Jyotish)** | Cálculo sideral real com Lahiri Ayanamsha, Nakshatras, Tithis, Pakshas e trânsitos lunares que influenciam ritmos biológicos e psicológicos. |
-| 🌿 | **Ayurveda** | Doshas dinâmicos (Vata/Pitta/Kapha) calculados a partir de biomarcadores reais do dia a dia — não apenas questionários estáticos. |
-| 📜 | **Vedas & Vedanta** | Princípios de autoconsciência, propósito (Dharma) e avaliação do equilíbrio dos Pancha Koshas (as 5 camadas do ser). |
-| 🏥 | **Medicina Moderna** | 60+ biomarcadores integrados reais: HRV, SpO₂, glicose contínua (CGM), VO₂max, pressão arterial, sono polifásico profundo e REM. |
-| ⚛️ | **Física Quântica** | Índice de Coerência Quântica — a convergência matemática avançada entre seus estados biológicos e os ciclos macrocósmicos. |
+| # | Pilar | Tradição / Ciência | Aplicação Real no MetaCare |
+|:-:|:---:|:---|:---|
+| 1 | 🕉️ | **Astrologia Védica (Jyotish)** | Cálculo sideral real com Lahiri Ayanamsha via `astronomy-engine`. Nakshatras (27 constelações lunares), Tithis (30 fases), Pakshas (Shukla/Krishna) e trânsitos lunares que influenciam ritmos biológicos e psicológicos. |
+| 2 | 🌿 | **Ayurveda** | Doshas dinâmicos (Vata/Pitta/Kapha) calculados a partir de biomarcadores reais do dia — HRV, temperatura, sono, digestão — não questionários estáticos. |
+| 3 | 📜 | **Vedas & Vedanta** | Princípios de autoconsciência, propósito (Dharma) e equilíbrio dos Pancha Koshas (as 5 camadas do ser humano). |
+| 4 | 🏥 | **Medicina Moderna** | 60+ biomarcadores científicos integrados: HRV (rMSSD), SpO₂, glicose contínua (CGM), VO₂max, pressão arterial, sono polifásico (REM/profundo/leve), recuperação cardíaca (HRR). |
+| 5 | ⚛️ | **Física Quântica** | Índice de Coerência Quântica — convergência matemática entre estados biológicos e ciclos cósmicos. Princípio de ressonância e campo unificado aplicado ao bem-estar. |
+
+### 🎨 Identidade Visual e Simbolismo
+
+- 💫 **Símbolo:** Unificação da constelação de Lira 🌟 com ícones de saúde — "minimalismo geométrico fluido" que respira.
+- ✍️ **Logotipo:** Tipografia sans-serif em caixa-baixa — comunicação amigável, humana e empática.
+- 🌊 **Lyra Teal (Primária):** Convergência entre futurismo tecnológico e naturalidade orgânica da saúde.
+- 🌅 **Warm Coral (Secundária):** Calor humano, paixão e energia radiante para engajamento positivo no autocuidado.
+- 🎻 **Conceito "Orquestração":** _Seu Bem-Estar Orquestrado_ — harmonia entre pilares biológicos e ciclos astrológicos.
 
 ---
 
-## 🔥 2. O Que Nos Diferencia (Diferenciais Viciantes)
+## 🔥 2. O Que Nos Diferencia
 
-- 🧘 **Doshas Dinâmicos em Tempo Real** — Seu perfil ayurvédico muda conforme seus biomarcadores (HRV, Sono, Glicose) mudam, não é um rótulo estático para a vida toda.
-- 🌙 **Astrologia Védica Computacional Real** — Cálculos siderais absolutos com `astronomy-engine` (sem simulações, astrologia verdadeira baseada em efemérides).
-- ⚛️ **Índice de Coerência Quântica** — Métrica exclusiva que quantifica cientificamente o alinhamento entre seu estado biológico vibracional e os ciclos cósmicos do momento.
-- 🔮 **Chakra Alignment Score** — Mapeamento dinâmico dos 7 chakras com base em biomarcadores mensuráveis (ex: HRV e Vata para o Anahata/Coração).
-- 🌊 **Índice Pránico (Energia Vital)** — Calculado matematicamente a partir de sua resiliência cardíaca (HRV), capacidade respiratória, SpO₂ e influência da fase lunar atual.
-- 🧠 **IA On-Device com Consciência Cósmica** — Um assistente LLM (Language Model) que cruza magicamente seus dados fisiológicos com o céu védico em tempo real, fornecendo insights privados e inigualáveis.
-- 🎯 **Avaliação Quântica Subjetiva (WHO-5 & NPS)** — Medição constante de bem-estar psíquico e aderência ao tratamento preventivo.
+| Inovação | Descrição |
+|:---|:---|
+| 🧘 **Doshas Dinâmicos em Tempo Real** | Seu perfil ayurvédico muda conforme seus biomarcadores mudam — não é um rótulo fixo para a vida toda. |
+| 🌙 **Astrologia Védica Computacional Real** | Cálculos siderais com `astronomy-engine` usando efemérides reais, não tabelas genéricas de internet. |
+| ⚛️ **Índice de Coerência Quântica** | Métrica exclusiva que quantifica o alinhamento entre seu estado biológico vibracional e os ciclos cósmicos. |
+| 🔮 **Chakra Alignment Score** | Mapeamento dinâmico dos 7 chakras com base em biomarcadores mensuráveis (HRV → Anahata, SpO₂ → Vishuddha). |
+| 🌊 **Índice Pránico (Energia Vital)** | Calculado a partir de HRV, capacidade respiratória, SpO₂ e fase lunar. |
+| 🧠 **IA On-Device com Consciência Cósmica** | Assistente que cruza dados fisiológicos com o céu védico em tempo real. |
+| 📊 **60+ Métricas Científicas** | Do sono REM à variabilidade glicêmica (CV), da recuperação cardíaca ao estresse autonômico (EDA). |
+| 🎯 **KPIs de Transformação** | Aderência, consistência (streaks), NPS de bem-estar, WHO-5 e avaliação diária de humor. |
 
 ---
 
 ## 🚀 3. Funcionalidades e Inovações Exclusivas
 
-O Lyra MetaCare oferece um arsenal de módulos para o cuidado pessoal, operando sem simuladores, hardcodes ou placeholders. Tudo é processado de forma 100% real.
+### 📊 3.1. Dashboard Védico-Biológico (Bento Grid Premium)
+- **Card de Pulso Harmônico:** HRV em tempo real com gráfico de tendência semanal e status de prontidão.
+- **Card Astrológico:** Lua sideral, Nakshatra, Tithi, Paksha e impacto direto no sono/energia/estresse.
+- **Card de Sono:** Duração total, sono profundo, sono REM, eficiência e regularidade (SRI).
+- **Insight IA Privado:** Recomendação diária processada localmente com contexto astro-biológico.
+- **Mini-Cards:** Passos, Hidratação, Meditação, Glicose — com deltas percentuais comparativos.
+- **Gráfico Semanal de Prontidão:** Evolução dos 7 últimos dias com score composto.
 
-### 🌟 Dashboard Védico-Biológico (Bento Grid)
-- **Métricas de Prontidão e Longevidade**: Pontuação diária baseada no seu descanso e vitalidade.
-- **Card Astrológico em Tempo Real**: Visualização da Lua, Nakshatra, Tithi e o impacto exato do céu no seu sono, estresse e energia biológica hoje.
-- **Métricas Vitais**: Monitoramento de 60+ biomarcadores, como Glicose, HRV (ms), Frequência Cardíaca de Repouso, SpO₂, Sono Profundo, Sono REM, etc.
+### 🧬 3.2. Pilares de Métricas (60+ Biomarcadores)
 
-### 🤖 Chat IA: O Orquestrador Inteligente
-O Chat processa intenções usando linguagem natural para conectar seu perfil cósmico aos seus dados biológicos:
-- "Por que meu HRV está tão baixo hoje?" -> A IA correlaciona com o seu sono curto e o trânsito planetário vigente.
-- "O que devo comer hoje?" -> A IA prescreve de acordo com sua variação de glicose e o seu dosha atual dominante.
+| Pilar | Métricas Incluídas |
+|:---|:---|
+| 💚 **Recuperação e Resiliência** | HRV (rMSSD), Prontidão, FC repouso, Recuperação FC (HRR), Temperatura, SpO₂ noturna |
+| 🏃 **Cardio e Atividade Física** | VO₂max, Minutos moderados/vigorosos, Passos, Carga EPOC, Strain diário, Sedentarismo |
+| 🌙 **Sono e Cronobiologia** | Duração, Eficiência, Regularidade SRI, Social Jetlag, Sono REM, Sono profundo |
+| 🩸 **Metabolismo e Glicose (CGM)** | Tempo em faixa, Variabilidade CV, GMI (A1c estimada), Pico pós-prandial, TBR, iAUC |
+| 🍎 **Nutrição e Composição** | WHtR, Proteína g/kg, Fibras, Janela alimentar, Na:K, Hidratação mL/kg |
+| 🧠 **Saúde Mental e Foco** | Tempo de reação PVT, Lapsos, Score cognitivo, Estresse HRV, EDA tônica, FA, Humor, Meditação |
+| 💪 **Saúde Geral** | Pressão arterial, Peso, Hidratação total, Calorias treino, Calorias totais |
 
-### 📈 Avaliação de Usuários, KPIs e Métricas (Novidade!)
-Nós medimos o que importa para a evolução real do ser:
-- **KPI de Aderência e Consistência (Streak)**: Gamificação do autocuidado diário (hidratação, meditação, sono).
-- **Avaliação Diária de Humor (Mood Score)**: Rastreamento emocional para entender variações ao longo do mês (correlacionado com a lua).
-- **Net Promoter Score (NPS) Integrado**: Feedback orgânico e métricas de satisfação da jornada de saúde.
+### 🤖 3.3. Chat IA — O Orquestrador Inteligente
+Motor de NLP determinístico local que cruza perfil cósmico com dados biológicos:
+- Detecta intenções: sono, glicose, HRV, exercício, astrologia, resumo geral, consultas.
+- Correlaciona dados fisiológicos com trânsitos planetários védicos.
+- Gera respostas contextualizadas com base em metas pessoais do usuário.
+
+### 📋 3.4. Plano de Bem-Estar IA
+Geração automática de protocolo diário com 3 pilares:
+- 🍎 **Nutrição:** Prescrição alimentar baseada em glicose, fase lunar e dosha.
+- 🏋️ **Movimento:** Calibração de intensidade baseada em HRV, prontidão e energia cósmica.
+- 🌙 **Sono:** Rotina noturna alinhada ao estado fisiológico e ao ciclo lunar vigente.
+
+### 📈 3.5. KPIs, Métricas de Avaliação e Gamificação
+- **Streak de Consistência:** Dias consecutivos com métricas preenchidas.
+- **Mood Score Diário (1-5):** Rastreamento emocional correlacionado com a lua.
+- **Score de Longevidade (0-10):** Calculado via motor IA com pesos configuráveis.
+- **Score de Prontidão (0-100):** Capacidade de adaptação ao estresse do dia.
+- **NPS Integrado:** Feedback orgânico sobre a jornada de bem-estar.
+
+### 💰 3.6. Sistema de Assinaturas e Planos
+- Planos gerenciados via **Stripe** com billing mensal/anual.
+- Controle de features por entitlements (`dashboard_access`, `ai_scores`, `ai_tips_feed`).
+- Gerenciamento completo no painel admin.
+
+### ⚙️ 3.7. Painel Administrativo Completo
+- Gestão de usuários, planos, dados de saúde e relatórios.
+- Configuração dinâmica da IA: missão, objetivos, pesos das métricas, modelo LLM.
+- CMS visual integrado com **Puck Editor** para páginas de conteúdo.
 
 ---
 
-## 🏗️ 4. Arquitetura do Sistema: A Fundação do Nosso Universo 🛠️
-
-Para suportar a grandiosidade e complexidade da fusão Védica-Quântica, estruturamos uma base técnica de classe mundial Ph.D., desenhada para **Zero Latency** e **Segurança Máxima**.
+## 🏗️ 4. Arquitetura do Sistema
 
 ### 🏛️ Modelo Arquitetural
+- 🖥️ **Front-end Monolítico Modular:** Next.js 15 App Router + React 19.
+- 🗄️ **Backend:** Route Handlers do Next.js sobre MySQL 8.0+ com migrações versionadas.
+- 👁️ **Observabilidade:** Sentry integrado (client, server, edge).
+- 🎨 **CMS:** Puck Editor para gestão visual drag-and-drop de conteúdo.
 
-- 🖥️ **Front-end Monolítico Modular:** Vibrante, escalável e ultra-rápido usando o moderno **Next.js 15 App Router** com **React 19**.
-- 🗄️ **Backend Aplicacional com Banco Próprio:** Autenticação, CRUD, storage e funções de IA executando em rotas locais do **Next.js** sobre **MySQL 8.0+**.
-- 👁️ **Observabilidade Total:** **Sentry** integrado.
-- 🎨 **CMS Integrado (Puck):** Gestão visual completa das páginas de conteúdo sem tocar no código.
+### 🧱 Stack Tecnológica
 
-### 🧱 Stack Tecnológica Detalhada
-
-| Camada Mágica 🌟 | Tecnologia Confirmada 🛠️ |
+| Camada 🌟 | Tecnologia 🛠️ |
 |:---|:---|
-| 🌐 **Aplicação Web** | **Next.js 15, React 19, TypeScript** (Performance impecável, tipagem forte Ph.D.) |
-| 🎨 **Beleza Visual (UI/UX)** | **Tailwind CSS, Radix UI, shadcn/ui, Lucide** (Estética Glassmorphism 2026, premium e limpa) |
-| 📝 **Interação & CMS** | **React Hook Form + Zod** para inputs, **Puck Editor** para CMS visual drag-and-drop |
-| 🔐 **Cofre & Identidade** | **Autenticação robusta (JWT, bcryptjs)** + RBAC (Admin, Patient) |
-| 📊 **Análise de Dados** | **Recharts, Tremor** (Gráficos imersivos para as 60+ métricas) |
-| 🌌 **Motor Astrológico** | **astronomy-engine** (Cálculo matemático astronômico real no Node) |
-| 💰 **Billing / Assinaturas** | **Stripe** para gestão de planos premium. |
+| 🌐 **Aplicação** | Next.js 15, React 19, TypeScript 5 |
+| 🎨 **UI/UX** | Tailwind CSS, Radix UI, shadcn/ui, Lucide Icons |
+| 📝 **Forms & Validação** | React Hook Form + Zod |
+| 🔐 **Autenticação** | JWT local, cookies HTTP-only, bcryptjs, RBAC (admin/patient) |
+| 📊 **Visualização** | Recharts, Tremor, react-big-calendar |
+| 🌌 **Motor Astrológico** | astronomy-engine (cálculos astronômicos reais) |
+| 🧠 **Motor IA** | Score Engine + Chat Engine + Plan Engine (local, determinístico) |
+| 💰 **Billing** | Stripe (assinaturas, webhooks, checkout) |
+| 🗄️ **Banco de Dados** | MySQL 8.0 via mysql2/promise |
+| 🐳 **Infraestrutura** | Docker Compose (MySQL containerizado) |
+| 🧪 **Testes** | Vitest |
+| 👁️ **Monitoramento** | Sentry (@sentry/nextjs) |
+
+### 📐 Fluxo de Dados (Mermaid)
+
+```mermaid
+flowchart TD
+    A([💖 Usuário]) --> B{Login JWT}
+    B -- "Novo?" --> C[🚀 Onboarding Empoderador]
+    B -- "Retorno" --> D[🏡 Dashboard Védico-Biológico]
+    C --> D
+    D --> E[📊 60+ Métricas Vitais + Perfil Estelar]
+    D --> F[📅 Agendamento de Consultas]
+    D --> G[🔮 Plano IA: Nutrição + Movimento + Sono]
+    D --> H[🤖 Chat IA: Assistente Cósmico-Biológico]
+    G --> I((⚡ Route Handler: generate-ai-plan))
+    H --> J((⚡ Route Handler: ask-ai-assistant))
+    D --> K{Admin?}
+    K -- "Sim" --> L[⚙️ Painel Admin: Usuários, IA, Planos, CMS]
+```
 
 ---
 
-## 👤 5. O Seu Guia Estelar: Manual Rápido do Usuário 📖✨
+## 📖 5. Guia de Instalação e Uso
 
-Siga os passos abaixo para instanciar seu Universo localmente. Tudo opera de forma autônoma e real.
+### 🛠️ Pré-requisitos
+| Ferramenta | Versão Mínima |
+|:---|:---|
+| 🟢 Node.js | v20+ |
+| 📦 pnpm | Último estável |
+| 🐳 Docker + Docker Compose | Último estável |
+| 🗄️ MySQL | 8.0+ (via Docker) |
 
-### 🛠️ Suas Ferramentas (Pré-requisitos)
-- 🟢 **Node.js** instalado na sua máquina (v20+).
-- 📦 **pnpm** (Obrigatório para respeitar o `pnpm-lock.yaml`).
-- 🐳 **Docker** e **Docker Compose** (Para subir o MySQL de forma blindada).
-
-### 🪄 1. Clonagem e Instalação
+### 🪄 Passo 1: Clonagem e Instalação
 ```bash
 git clone https://github.com/ilyra-ai/Lyra-MetaCare.git
 cd Lyra-MetaCare
 pnpm install
 ```
 
-### 🌍 2. As Chaves do Universo (.env)
-Copie o arquivo `.env.example` para `.env.local` e `.env` e configure suas variáveis.
-```bash
-cp Install/.env.example .env.local
-cp Install/.env.example .env
-```
-O sistema criará automaticamente seu **Super Admin** utilizando as credenciais definidas em `ADMIN_BOOTSTRAP_EMAIL` e `ADMIN_BOOTSTRAP_PASSWORD` dentro do `.env`.
+### 🌍 Passo 2: Variáveis de Ambiente
 
-### 🚀 3. Levantando o Banco de Dados e Migrações (100% Automatizado)
-Nós usamos scripts robustos para provisionar o banco MySQL e aplicar toda a estrutura de tabelas reais.
+Crie o arquivo `.env.local` na raiz do projeto com as seguintes variáveis:
+
+**Variáveis do Aplicativo:**
+
+| Variável | Descrição |
+|:---|:---|
+| `MYSQL_HOST` | Endereço do servidor MySQL |
+| `MYSQL_PORT` | Porta interna do MySQL |
+| `MYSQL_USER` | Usuário de acesso ao banco |
+| `MYSQL_PASSWORD` | Senha do banco |
+| `MYSQL_DATABASE` | Schema principal da aplicação |
+| `AUTH_SECRET` | Segredo criptográfico para assinar sessões JWT |
+
+**Variáveis de Bootstrap Admin:**
+
+| Variável | Descrição |
+|:---|:---|
+| `ADMIN_BOOTSTRAP_EMAIL` | Email do administrador auto-criado nas migrações |
+| `ADMIN_BOOTSTRAP_PASSWORD` | Senha do administrador (mínimo 8 caracteres) |
+| `ADMIN_BOOTSTRAP_FIRST_NAME` | Nome exibido no perfil admin |
+| `ADMIN_BOOTSTRAP_LAST_NAME` | Sobrenome exibido no perfil admin |
+| `ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS` | Array JSON opcional com admins extras |
+
+**Variáveis de Infraestrutura e IA:**
+
+| Variável | Descrição |
+|:---|:---|
+| `MYSQL_HOST_PORT` | Porta publicada pelo container MySQL na máquina local |
+| `OPENAI_API_KEY` | Chave de API para respostas avançadas do assistente IA |
+| `NEXT_PUBLIC_SENTRY_DSN` | DSN do Sentry para monitoramento (opcional em dev) |
+
+> 🔐 **Importante:** Nunca faça commit de chaves reais. Sempre utilize `.env.local` para segredos.
+
+### 🚀 Passo 3: Banco de Dados e Migrações
 ```bash
 npm run db:start
 ```
-*Isso fará o Docker subir o container e, em seguida, rodará o script de migração `scripts/mysql-migrate.mjs`, criando o schema e inserindo o super administrador.*
+Este comando: (1) sobe o container MySQL via Docker, (2) executa `scripts/mysql-migrate.mjs` aplicando todas as migrações SQL ordenadas, (3) injeta automaticamente o super administrador.
 
-### 🌌 4. Iniciando o Ecossistema MetaCare
+### 🌌 Passo 4: Iniciar o Servidor
 ```bash
 pnpm dev
 ```
-Abra o portal em: **http://localhost:3000**
+Acesse: **http://localhost:3000**
+
+### ✅ Passo 5: Testes
+```bash
+pnpm test
+```
+
+### 🏭 Passo 6: Build de Produção
+```bash
+pnpm build && pnpm start
+```
 
 ---
 
-## 🛡️ 6. A Fortaleza Indestrutível: Segurança e Qualidade ⚡🔒
+## 🛡️ 6. Segurança e Qualidade
 
-Tratamos o código e os dados como sagrados. Mantemos a excelência de engenharia de nível PhD:
+### 🔒 Segurança de Dados
+- **Validação com Zod:** Todos os inputs são sanitizados antes de tocar no banco.
+- **Isolamento por Usuário:** Leitura e escrita filtradas pelo `user_id` do JWT em todas as rotas `/api/data/*`.
+- **RBAC Real:** Controle de acesso por papéis (`admin` e `patient`) aplicado em rotas de autenticação, CRUD, storage e painéis.
+- **Cookies HTTP-only:** Tokens JWT nunca expostos ao JavaScript do cliente.
+- **Bcrypt com Salt:** Senhas hashadas com `bcryptjs` (10 rounds).
 
-- **Strict Type Checking**: Todo o projeto TS passa sem erros no compilador (`tsc --noEmit`).
-- **Clean Code & Linting**: A padronização é garantida via `eslint` e `prettier` (`npm run fix:lint`).
-- **Isolamento de Dados Pessoais**: Dados sensíveis biométricos são lidos estritamente sob RLS (Row Level Security na lógica de acesso) baseada no ID do usuário logado.
+### 🏎️ Performance
+- **Paralelismo:** Consultas ao banco via `Promise.all()` para eliminar gargalos.
+- **Paginação SQL:** Padrão com `count`, `limit`, `range` e filtros seguros para payloads controlados.
+- **Skeleton Loading:** Estados de carregamento pulsantes para zero flash de conteúdo.
+
+### 🧪 Qualidade de Código
+```bash
+npm run fix:format    # Corrigir formatação (Prettier)
+npm run fix:lint      # Corrigir lint (ESLint)
+npm run check:lint    # Verificar lint
+npm run check:format  # Verificar formatação
+npm run check:types   # Verificar tipagem TypeScript (tsc --noEmit)
+```
 
 ---
 
-## 🗺️ 7. O Horizonte Infinito: Próximos Passos (Roadmap) 🌠🔭
+## 🎨 7. Experiência de Usuário (UI/UX)
 
-Nós implementamos o core do projeto e não vamos parar.
-1. 🧘 **Motor Avançado de Ayurveda**: Implementação total dos questionários dinâmicos que cruzam com HRV para gerar o `Dosha Score`.
-2. ⚛️ **Calculadora de Coerência Quântica**: Dashboard exclusivo fundindo a sobreposição de estados cerebrais com as efemérides.
-3. 📈 **Painel Analítico de Saúde Subjetiva**: Expansão do WHO-5 e métricas prânicas.
+### 🛤️ Jornada do Usuário
+1. **🔐 Login:** Autenticação rápida na rota `/login`.
+2. **🚀 Onboarding:** Fluxo imersivo de coleta de informações pessoais e metas.
+3. **🏡 Dashboard:** Centro de comando com Bento Grid, sidebar e header responsivos.
+4. **📊 Módulos Profundos:** Perfil, Metas, Monitoramento Diário, Chat IA, Planos IA, Consultas.
+5. **⚙️ Admin:** Páginas exclusivas (`/admin/*`) para governança completa.
+
+### 💎 Detalhes Premium
+- **Splash Screen:** Tela de carregamento suave que elimina flicker.
+- **Glassmorphism:** Cards translúcidos com `backdrop-blur`, bordas arredondadas (1rem+) e sombras glass.
+- **Toast Notifications:** Feedbacks via `sonner` — animados e elegantes.
+- **Estados Inteligentes:** Skeletons pulsantes (loading), toasts de erro/sucesso, cards de acesso negado.
+
+---
+
+## 🗺️ 8. Roadmap 🌠
+
+| Fase | Descrição | Status |
+|:---:|:---|:---:|
+| ✅ | Dashboard Védico-Biológico com 60+ métricas | Completo |
+| ✅ | Motor Astrológico Real (Lahiri, Nakshatras, Tithis) | Completo |
+| ✅ | Motor IA: Score de Longevidade + Prontidão | Completo |
+| ✅ | Chat IA Determinístico com NLP Local | Completo |
+| ✅ | Plano de Bem-Estar IA (Nutrição/Movimento/Sono) | Completo |
+| ✅ | Sistema de Assinaturas com Stripe | Completo |
+| ✅ | Painel Admin com CMS Puck | Completo |
+| 🔄 | Motor Avançado de Doshas Ayurvédicos Dinâmicos | Em desenvolvimento |
+| 🔄 | Índice de Coerência Quântica (Dashboard exclusivo) | Em desenvolvimento |
+| 🔄 | Chakra Alignment Score baseado em biomarcadores | Em desenvolvimento |
+| 🔄 | Índice Pránico (Energia Vital) | Em desenvolvimento |
+| 🔜 | Painel Analítico WHO-5 e NPS integrado | Planejado |
+| 🔜 | Contrato Universal IA-UI versionado | Planejado |
+| 🔜 | Cobertura E2E com Playwright | Planejado |
+
+---
+
+## 📄 9. Licença
+
+Este projeto está licenciado sob a **Licença MIT** — veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+---
+
+## 🤝 10. Contribuição
+
+1. Faça um fork do repositório.
+2. Crie sua branch de feature: `git checkout -b feature/minha-feature`.
+3. Commit suas mudanças: `git commit -m 'feat: minha feature'`.
+4. Push para a branch: `git push origin feature/minha-feature`.
+5. Abra um Pull Request.
+
+> Siga os padrões de código (`npm run check:lint && npm run check:types`) antes de submeter.
+
+---
 
 <div align="center">
 
-### 🌟 Venha Orquestrar o Seu Bem-Estar Quântico! 🌟
+### 🕉️ Venha Orquestrar o Seu Bem-Estar Quântico-Védico! ✨
 
-**Lyra MetaCare** não é apenas código. É um manifesto revolucionário de longevidade, reconexão com a natureza essencial, sabedoria dos Vedas e poder computacional absoluto. 
+**Lyra MetaCare** não é apenas código. É um manifesto de **longevidade**, **reconexão com a sabedoria ancestral dos Vedas**, **precisão científica moderna** e **poder computacional quântico**. O universo, e a sua melhor versão, te esperam. 🚀💖
 
-_Feito com extrema precisão, dados profundos e pó de estrelas. Namastê._ 🕉️✨💖
+_Feito com rigor científico, dados profundos e pó de estrelas. Namastê._ 🕉️✨
+
+**© 2024-2026 ilyra-ai — Todos os direitos reservados.**
 
 </div>
