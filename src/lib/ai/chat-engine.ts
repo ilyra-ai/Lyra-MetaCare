@@ -1,4 +1,9 @@
 import { AstrologicalData } from '@/lib/astrology/engine';
+import { calculateDynamicDosha } from '@/lib/ayurveda/dosha-engine';
+import { calculateQuantumCoherence } from '@/lib/quantum/coherence-engine';
+import { calculateChakraAlignment } from '@/lib/chakra/alignment-engine';
+import { calculatePranicIndex } from '@/lib/prana/prana-engine';
+import { calculateKoshas } from '@/lib/vedanta/kosha-engine';
 
 interface ChatContext {
   profile: {
@@ -36,6 +41,40 @@ export function generateLocalAssistantReply(
 
   const metrics = context.latestMetric;
   const astro = context.astrology;
+
+  const snap = {
+    hrv_ms: metrics?.hrv_ms ?? null,
+    resting_heart_rate: null,
+    body_temperature_celsius: null,
+    sleep_duration_minutes: metrics?.sleep_duration_minutes ?? null,
+    deep_sleep_minutes: null,
+    rem_sleep_minutes: null,
+    active_minutes: null,
+    sedentary_hours: null,
+    blood_glucose_mgdl: metrics?.blood_glucose_mgdl ?? null,
+    weight_kg: null,
+    stress_score: null,
+    water_liters: null,
+    respiratory_rate: null,
+    mood_score: null,
+    spo2_average: null,
+    sleep_regularity_index: null,
+    cognitive_test_score: null,
+    reaction_time_pvt_ms: null,
+    meditation_minutes: null,
+    hrv_stress_index: null,
+    dietary_fiber_grams: null,
+    hydration_ml_per_kg: null,
+    eating_window_hours: null,
+    steps: metrics?.steps ?? null,
+    vo2_max: null,
+  };
+
+  const dosha = calculateDynamicDosha(snap, astro);
+  const icq = calculateQuantumCoherence(snap, astro);
+  const chakras = calculateChakraAlignment(snap);
+  const prana = calculatePranicIndex(snap, astro);
+  const koshas = calculateKoshas(snap, astro);
 
   const responses: string[] = [];
 
@@ -84,6 +123,10 @@ export function generateLocalAssistantReply(
 
     responses.push(
       `- Ciclo Astrológico: A Lua está em ${astro.moonSign} sob o Nakshatra ${astro.nakshatra} (${astro.tithi}). Isso significa que sua energia geral está ${astro.impactOnHealth.energy.toLowerCase()}.`
+    );
+
+    responses.push(
+      `- Insights Védico-Quânticos: Dosha dominante (${dosha.dominant}), Coerência Quântica (${icq.index}/100 - ${icq.level}), e Índice Prânico (${prana.index}/100).`
     );
   }
 
@@ -154,6 +197,15 @@ export function generateLocalAssistantReply(
     responses.push(`- Energia: ${astro.impactOnHealth.energy}`);
     responses.push(`- Estresse: ${astro.impactOnHealth.stress}`);
     responses.push(`- Sono: ${astro.impactOnHealth.sleep}`);
+
+    responses.push(
+      `Com base nestes astros, seu corpo reflete os seguintes perfis Védico-Quânticos:
+- Dosha: ${dosha.dominant} (${dosha.prakritiLabel})
+- ICQ: ${icq.index}/100 (${icq.level})
+- Alinhamento de Chakras: ${chakras.overallScore}/100 (${chakras.overallLabel})
+- Energia Vital (Prana): ${prana.index}/100 (${prana.level})
+- Pancha Koshas (Vedanta): ${koshas.overallScore}/100 (${koshas.overallStatus} - ${koshas.dharmaAlignment})`
+    );
   }
 
   // 9. Agendamentos

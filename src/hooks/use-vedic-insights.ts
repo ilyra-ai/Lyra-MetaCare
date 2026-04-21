@@ -32,6 +32,10 @@ import {
   calculatePranicIndex,
   type PranicIndexResult,
 } from '@/lib/prana/prana-engine';
+import {
+  calculateKoshas,
+  type KoshaResult,
+} from '@/lib/vedanta/kosha-engine';
 
 /** Resultado consolidado de todos os insights védicos. */
 export interface VedicInsights {
@@ -39,7 +43,8 @@ export interface VedicInsights {
   coherence: QuantumCoherenceResult;
   chakras: ChakraAlignmentResult;
   prana: PranicIndexResult;
-  history: Array<{ date: string; icq: number; prana: number }>;
+  koshas: KoshaResult;
+  history: Array<{ date: string; icq: number; prana: number; kosha: number }>;
   loading: boolean;
 }
 
@@ -195,19 +200,41 @@ export function useVedicInsights(enabled = true): VedicInsights {
     return calculatePranicIndex(snapshot, astrology);
   }, [snapshot, astrology]);
 
+  const koshas = useMemo(() => {
+    if (!snapshot) {
+      return calculateKoshas({
+        steps: null,
+        vo2_max: null,
+        dietary_fiber_grams: null,
+        water_liters: null,
+        hrv_ms: null,
+        respiratory_rate: null,
+        stress_score: null,
+        mood_score: null,
+        sleep_duration_minutes: null,
+        deep_sleep_minutes: null,
+        cognitive_test_score: null,
+        meditation_minutes: null,
+      });
+    }
+    return calculateKoshas(snapshot, astrology);
+  }, [snapshot, astrology]);
+
   const history = useMemo(() => {
     return [...metrics].reverse().map((m) => {
       const snap = buildMetricSnapshot(m);
-      if (!snap) return { date: m.date, icq: 0, prana: 0 };
+      if (!snap) return { date: m.date, icq: 0, prana: 0, kosha: 0 };
       const coh = calculateQuantumCoherence(snap, astrology);
       const pran = calculatePranicIndex(snap, astrology);
+      const ksh = calculateKoshas(snap, astrology);
       return {
         date: new Intl.DateTimeFormat('pt-BR', { weekday: 'short' }).format(new Date(`${m.date}T12:00:00`)).replace('.', ''),
         icq: coh.index,
         prana: pran.index,
+        kosha: ksh.overallScore,
       };
     });
   }, [metrics, astrology]);
 
-  return { dosha, coherence, chakras, prana, history, loading };
+  return { dosha, coherence, chakras, prana, koshas, history, loading };
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { getHttpErrorStatus } from '@/lib/http-error';
-import { executeQuery } from '@/lib/mysql/pool';
+import { executeStatement } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 import { AssessmentType, calculateWHO5Score, classifyNPS } from '@/lib/kpi/assessment-engine';
 
@@ -40,9 +40,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Tipo de avaliação desconhecido.' }, { status: 400 });
     }
 
-    await executeQuery(
+    await executeStatement(
       `
       INSERT INTO user_assessments (
+        id,
         user_id,
         assessment_type,
         score_value,
@@ -50,9 +51,10 @@ export async function POST(request: Request) {
         notes,
         created_at,
         updated_at
-      ) VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+      ) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
       `,
       [
+        crypto.randomUUID(),
         session.user.id,
         type,
         scoreValue,

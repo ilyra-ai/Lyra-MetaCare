@@ -6,6 +6,7 @@
  * Componente visual premium que renderiza os 4 motores védicos-quânticos:
  * - Dosha Ayurvédico Dinâmico
  * - Índice de Coerência Quântica
+ * - Pancha Koshas (Vedanta)
  * - Alinhamento de Chakras
  * - Índice Pránico (Energia Vital)
  */
@@ -20,6 +21,7 @@ import {
   Sun,
   Wind,
   Zap,
+  Layers,
 } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -95,7 +97,7 @@ interface VedicDashboardProps {
 export function VedicDashboard({
   featureEnabled = true,
 }: VedicDashboardProps) {
-  const { dosha, coherence, chakras, prana, history, loading } =
+  const { dosha, coherence, chakras, prana, koshas, history, loading } =
     useVedicInsights(featureEnabled);
 
   if (loading) return <LoadingVedicDashboard />;
@@ -146,6 +148,7 @@ export function VedicDashboard({
                 />
                 <Area type="monotone" name="ICQ" dataKey="icq" stroke="hsl(var(--cosmic))" strokeWidth={2} fillOpacity={1} fill="url(#colorIcq)" />
                 <Area type="monotone" name="Prana" dataKey="prana" stroke="hsl(var(--success))" strokeWidth={2} fillOpacity={1} fill="url(#colorPrana)" />
+                <Area type="monotone" name="Kosha" dataKey="kosha" stroke="#8b5cf6" strokeWidth={2} fillOpacity={0} />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -268,6 +271,56 @@ export function VedicDashboard({
                 <Sparkles className="h-3.5 w-3.5 text-cosmic" />
                 {coherence.recommendation}
               </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card Pancha Koshas (Vedanta) */}
+        <Card className="overflow-hidden border-border/70 xl:col-span-2">
+          <CardHeader className="gap-4 pb-3">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col gap-2">
+                <Badge variant="outline" className="text-purple-600 border-purple-200 bg-purple-50">Vedanta & Dharma</Badge>
+                <CardTitle className="text-xl">
+                  Pancha Koshas: {koshas.overallScore}/100
+                </CardTitle>
+                <CardDescription>{koshas.overallStatus}</CardDescription>
+              </div>
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-purple-500/12 text-purple-600 shadow-sm">
+                <Layers className="h-6 w-6" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <div className="rounded-2xl border border-border/60 bg-muted/20 p-3">
+              <p className="text-sm font-medium text-foreground leading-relaxed">
+                {koshas.dharmaAlignment}
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              {koshas.koshas.map((k) => (
+                <div
+                  key={k.name}
+                  className="flex flex-col gap-2 rounded-xl border border-border/60 bg-white/60 p-3 transition-transform hover:-translate-y-0.5"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-bold text-foreground">{k.name}</p>
+                      <p className="text-[10px] text-muted-foreground">{k.sanskrit}</p>
+                    </div>
+                    <span className="font-mono text-sm font-bold text-purple-600">
+                      {k.score}
+                    </span>
+                  </div>
+                  <Progress value={k.score} className="h-1.5 [&>div]:bg-purple-500" />
+                  <p className="text-[10px] uppercase font-semibold text-muted-foreground mt-1">
+                    {k.translation} - <span className="text-foreground">{k.status}</span>
+                  </p>
+                  <p className="text-[10px] leading-snug text-muted-foreground mt-0.5 line-clamp-2">
+                    {k.insight}
+                  </p>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
