@@ -22,6 +22,7 @@ export const lyraPuckDocumentKeys = [
   'admin-content',
   'admin-ai-config',
   'admin-page-builder',
+  'dashboard',
 ] as const;
 
 export type LyraPuckDocumentKey = (typeof lyraPuckDocumentKeys)[number];
@@ -319,6 +320,15 @@ export const lyraPuckDocuments: Array<{
     route: '/admin/puck?documentKey=monitoring',
     publicRoute: '/monitoring',
     publicLabel: 'Página de Métricas',
+    surfaceKey: 'patient-portal',
+  },
+  {
+    key: 'dashboard',
+    label: 'Dashboard Védico e Quântico',
+    description: 'Espaço principal para análise integral do paciente com Lyra MetaCare.',
+    route: '/admin/puck?documentKey=dashboard',
+    publicRoute: '/dashboard',
+    publicLabel: 'Página de Dashboard Principal',
     surfaceKey: 'patient-portal',
   },
   {
