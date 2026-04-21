@@ -9,7 +9,9 @@ export type TableName =
   | 'ai_plans'
   | 'appointments'
   | 'professionals'
-  | 'instruments';
+  | 'instruments'
+  | 'user_assessments'
+  | 'user_streaks';
 
 export type QueryFilter =
   | { type: 'eq'; column: string; value: unknown }
@@ -206,6 +208,34 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
   instruments: {
     columns: ['id', 'name'],
     publicRead: true,
+  },
+  user_assessments: {
+    columns: [
+      'id',
+      'user_id',
+      'assessment_type',
+      'score_value',
+      'raw_responses',
+      'notes',
+      'created_at',
+      'updated_at',
+    ],
+    userScopedBy: 'user_id',
+    adminReadAll: true,
+  },
+  user_streaks: {
+    columns: [
+      'id',
+      'user_id',
+      'streak_type',
+      'current_streak',
+      'longest_streak',
+      'last_activity_date',
+      'created_at',
+      'updated_at',
+    ],
+    userScopedBy: 'user_id',
+    adminReadAll: true,
   },
 };
 

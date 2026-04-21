@@ -29,6 +29,8 @@ const JSON_COLUMNS: Record<TableName, string[]> = {
   appointments: [],
   professionals: [],
   instruments: [],
+  user_assessments: ['raw_responses'],
+  user_streaks: [],
 };
 
 const BOOLEAN_COLUMNS: Record<TableName, string[]> = {
@@ -43,6 +45,8 @@ const BOOLEAN_COLUMNS: Record<TableName, string[]> = {
   appointments: [],
   professionals: [],
   instruments: [],
+  user_assessments: [],
+  user_streaks: [],
 };
 
 const DATE_COLUMNS: Record<TableName, string[]> = {
@@ -57,6 +61,8 @@ const DATE_COLUMNS: Record<TableName, string[]> = {
   appointments: [],
   professionals: [],
   instruments: [],
+  user_assessments: [],
+  user_streaks: ['last_activity_date'],
 };
 
 const TIME_COLUMNS: Record<TableName, string[]> = {
@@ -71,6 +77,8 @@ const TIME_COLUMNS: Record<TableName, string[]> = {
   appointments: [],
   professionals: [],
   instruments: [],
+  user_assessments: [],
+  user_streaks: [],
 };
 
 const DATETIME_COLUMNS: Record<TableName, string[]> = {
@@ -85,6 +93,8 @@ const DATETIME_COLUMNS: Record<TableName, string[]> = {
   appointments: ['appointment_time', 'created_at', 'updated_at'],
   professionals: ['created_at', 'updated_at'],
   instruments: [],
+  user_assessments: ['created_at', 'updated_at'],
+  user_streaks: ['created_at', 'updated_at'],
 };
 
 type ColumnFilter = Exclude<QueryFilter, { type: 'or' }>;

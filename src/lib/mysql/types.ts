@@ -178,6 +178,24 @@ export interface InstrumentRow {
   name: string;
 }
 
+export interface UserAssessmentRow extends AuditedRow {
+  id: string;
+  user_id: string;
+  assessment_type: 'who5' | 'nps' | 'mood' | 'adherence';
+  score_value: number;
+  raw_responses: QueryRecord | null;
+  notes: string | null;
+}
+
+export interface UserStreakRow extends AuditedRow {
+  id: string;
+  user_id: string;
+  streak_type: string;
+  current_streak: number;
+  longest_streak: number;
+  last_activity_date: DateString;
+}
+
 export interface TableRowMap {
   profiles: ProfileRow;
   daily_metrics: DailyMetricRow;
@@ -190,6 +208,8 @@ export interface TableRowMap {
   appointments: AppointmentRow;
   professionals: ProfessionalRow;
   instruments: InstrumentRow;
+  user_assessments: UserAssessmentRow;
+  user_streaks: UserStreakRow;
 }
 
 export type TableRow<K extends TableName> = TableRowMap[K];
