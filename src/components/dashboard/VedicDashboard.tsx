@@ -21,6 +21,7 @@ import {
   Wind,
   Zap,
 } from 'lucide-react';
+import { Area, AreaChart, CartesianGrid, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 import { useVedicInsights } from '@/hooks/use-vedic-insights';
 import { Badge } from '@/components/ui/badge';
@@ -94,7 +95,7 @@ interface VedicDashboardProps {
 export function VedicDashboard({
   featureEnabled = true,
 }: VedicDashboardProps) {
-  const { dosha, coherence, chakras, prana, loading } =
+  const { dosha, coherence, chakras, prana, history, loading } =
     useVedicInsights(featureEnabled);
 
   if (loading) return <LoadingVedicDashboard />;
@@ -115,6 +116,41 @@ export function VedicDashboard({
           com astrologia védica, ayurveda e princípios quânticos.
         </p>
       </div>
+
+      {history && history.length > 0 && (
+        <Card className="border-border/60 bg-white/40 backdrop-blur-md mb-4 p-4">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Sparkles className="size-4 text-primary" /> Tendência Quântica-Védica (7 Dias)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="h-48 w-full p-0 mt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={history} margin={{ top: 5, right: 10, left: 10, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorIcq" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--cosmic))" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="hsl(var(--cosmic))" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorPrana" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
+                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} dy={10} />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '12px', border: '1px solid hsl(var(--border))', backgroundColor: 'rgba(255,255,255,0.9)', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} 
+                  itemStyle={{ fontSize: '12px', fontWeight: 600 }}
+                  labelStyle={{ fontSize: '10px', color: 'hsl(var(--muted-foreground))', marginBottom: '4px' }}
+                />
+                <Area type="monotone" name="ICQ" dataKey="icq" stroke="hsl(var(--cosmic))" strokeWidth={2} fillOpacity={1} fill="url(#colorIcq)" />
+                <Area type="monotone" name="Prana" dataKey="prana" stroke="hsl(var(--success))" strokeWidth={2} fillOpacity={1} fill="url(#colorPrana)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-5 xl:grid-cols-2">
         {/* Card Dosha Ayurvédico */}

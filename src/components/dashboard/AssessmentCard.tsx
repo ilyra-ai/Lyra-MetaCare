@@ -54,9 +54,15 @@ export function AssessmentCard() {
     }
     setIsSubmitting(true);
     try {
-      // API call to save user_assessments would go here
-      // fetch('/api/data/user_assessments', ...)
-      await new Promise((r) => setTimeout(r, 600)); // Simulando latência real de rede (banco local)
+      const res = await fetch('/api/data/user-assessments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'mood',
+          payload: { moodValue }
+        })
+      });
+      if (!res.ok) throw new Error('Falha na API');
       
       setCompleted((prev) => ({ ...prev, mood: true }));
       toast.success('Estado emocional registrado com sucesso!');
@@ -76,8 +82,15 @@ export function AssessmentCard() {
     setIsSubmitting(true);
     try {
       const score = Object.values(who5Answers).reduce((acc, val) => acc + Number(val), 0);
-      // API call to save user_assessments (WHO-5)
-      await new Promise((r) => setTimeout(r, 800));
+      const res = await fetch('/api/data/user-assessments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'who5',
+          payload: { answers: who5Answers }
+        })
+      });
+      if (!res.ok) throw new Error('Falha na API');
       
       setCompleted((prev) => ({ ...prev, who5: true }));
       toast.success('Índice WHO-5 calculado e salvo com excelência!');
@@ -96,8 +109,15 @@ export function AssessmentCard() {
     }
     setIsSubmitting(true);
     try {
-      // API call to save user_assessments (NPS)
-      await new Promise((r) => setTimeout(r, 800));
+      const res = await fetch('/api/data/user-assessments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'nps',
+          payload: { score: npsScore, notes: npsNotes }
+        })
+      });
+      if (!res.ok) throw new Error('Falha na API');
       
       setCompleted((prev) => ({ ...prev, nps: true }));
       toast.success('Seu feedback é o combustível da nossa inovação. Obrigado!');

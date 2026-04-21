@@ -39,6 +39,7 @@ export interface VedicInsights {
   coherence: QuantumCoherenceResult;
   chakras: ChakraAlignmentResult;
   prana: PranicIndexResult;
+  history: Array<{ date: string; icq: number; prana: number }>;
   loading: boolean;
 }
 
@@ -86,7 +87,7 @@ function buildMetricSnapshot(metric: DailyMetric | null) {
  */
 export function useVedicInsights(enabled = true): VedicInsights {
   const { astrology } = useHealthOrchestrator();
-  const { todayMetrics, loading } = useDailyMetrics(7, enabled);
+  const { metrics, todayMetrics, loading } = useDailyMetrics(7, enabled);
 
   const snapshot = useMemo(
     () => buildMetricSnapshot(todayMetrics),
@@ -194,5 +195,19 @@ export function useVedicInsights(enabled = true): VedicInsights {
     return calculatePranicIndex(snapshot, astrology);
   }, [snapshot, astrology]);
 
-  return { dosha, coherence, chakras, prana, loading };
+  const history = useMemo(() => {
+    return [...metrics].reverse().map((m) => {
+      const snap = buildMetricSnapshot(m);
+      if (!snap) return { date: m.date, icq: 0, prana: 0 };
+      const coh = calculateQuantumCoherence(snap, astrology);
+      const pran = calculatePranicIndex(snap, astrology);
+      return {
+        date: new Intl.DateTimeFormat('pt-BR', { weekday: 'short' }).format(new Date(`${m.date}T12:00:00`)).replace('.', ''),
+        icq: coh.index,
+        prana: pran.index,
+      };
+    });
+  }, [metrics, astrology]);
+
+  return { dosha, coherence, chakras, prana, history, loading };
 }

@@ -12,8 +12,6 @@ import {
   HealthDataMetrics,
   getHealthRuntimeAvailability,
 } from '../lib/health/healthConnect';
-import {
-  getAstrologicalContext,
   AstrologicalData,
 } from '../lib/astrology/engine';
 import { db } from '../integrations/mysql/client';
@@ -52,9 +50,14 @@ export const HealthOrchestratorProvider: React.FC<{
     setIsSyncing(true);
     setSyncError(null);
     try {
-      // 1. Astrometria é calculada instantaneamente no dispositivo (sem dependência externa)
-      const currentAstro = getAstrologicalContext(new Date());
-      setAstrology(currentAstro);
+      // 1. Astrometria é sincronizada através da API real de efemérides
+      const resAstro = await fetch('/api/astrology/ephemeris');
+      if (resAstro.ok) {
+        const astroData = await resAstro.json();
+        setAstrology(astroData.data);
+      } else {
+        throw new Error('Falha na API de Efemérides');
+      }
 
       const availability = getHealthRuntimeAvailability();
       if (!availability.hasSupportedRuntime) {
