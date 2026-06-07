@@ -1,3 +1,89 @@
-git add codemagic.yaml
-git commit -m 'Add first workflow'
-git push
+workflows:
+  lyra-metacare-web-ci:
+    name: Lyra MetaCare - Web CI
+    max_build_duration: 60
+    instance_type: linux_x2
+
+    environment:
+      ubuntu: 24.04
+      node: lts
+      vars:
+        PNPM_STORE_PATH: "$HOME/.pnpm-store"
+        NEXT_TELEMETRY_DISABLED: "1"
+        CI: "true"
+
+    cache:
+      cache_paths:
+        - "$PNPM_STORE_PATH"
+        - "$CM_BUILD_DIR/node_modules"
+        - "$CM_BUILD_DIR/.next/cache"
+
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+        - pattern: "*"
+          include: true
+          source: true
+      cancel_previous_builds: true
+
+    scripts:
+      - name: Show environment
+        script: |
+          echo "Node version:"
+          node --version
+
+          echo "Corepack version:"
+          corepack --version || true
+
+          echo "Working directory:"
+          pwd
+
+          echo "Repository files:"
+          ls -la
+
+      - name: Enable pnpm
+        script: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+          pnpm --version
+          pnpm config set store-dir "$PNPM_STORE_PATH"
+
+      - name: Install dependencies
+        script: |
+          pnpm install --frozen-lockfile
+
+      - name: Check formatting
+        script: |
+          pnpm run check:format
+
+      - name: Check lint
+        script: |
+          pnpm run check:lint
+
+      - name: Check TypeScript
+        script: |
+          pnpm run check:types
+
+      - name: Run tests
+        script: |
+          pnpm run test -- --passWithNoTests
+
+      - name: Build Next.js app
+        script: |
+          pnpm run build
+
+    artifacts:
+      - .next/**
+
+    publishing:
+      email:
+        recipients:
+          - douglas.mosken@gmail.com
+        notify:
+          success: true
+          failure: true
