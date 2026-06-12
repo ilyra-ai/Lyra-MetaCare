@@ -120,44 +120,66 @@ export function LoginExperience({
         <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-white rounded-full opacity-40" />
 
         {/* Montanhas com as cores claras de tendência 2026 e tons da Lyra (Teal) */}
-        <svg className="absolute bottom-0 w-full h-[55vh] min-h-[400px] text-[#bce3de]" preserveAspectRatio="none" viewBox="0 0 1440 400" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 400L0 150L200 50L450 180L700 80L1000 220L1250 100L1440 250L1440 400Z" opacity="0.4" />
-          <path d="M0 400L0 220L250 120L550 250L850 150L1150 280L1440 180L1440 400Z" className="text-[#a1d6cf]" fill="currentColor" opacity="0.6" />
-          <path d="M0 400L0 300L300 180L600 320L950 200L1300 350L1440 280L1440 400Z" className="text-[#84c7be]" fill="currentColor" opacity="0.9" />
-          <path d="M0 400L150 280L450 380L750 280L1050 400L1440 320L1440 400Z" className="text-[#64b8ac]" fill="currentColor" />
+        <svg
+          className="absolute bottom-0 w-full h-[55vh] min-h-[400px] text-[#bce3de]"
+          preserveAspectRatio="none"
+          viewBox="0 0 1440 400"
+          fill="currentColor"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M0 400L0 150L200 50L450 180L700 80L1000 220L1250 100L1440 250L1440 400Z"
+            opacity="0.4"
+          />
+          <path
+            d="M0 400L0 220L250 120L550 250L850 150L1150 280L1440 180L1440 400Z"
+            className="text-[#a1d6cf]"
+            fill="currentColor"
+            opacity="0.6"
+          />
+          <path
+            d="M0 400L0 300L300 180L600 320L950 200L1300 350L1440 280L1440 400Z"
+            className="text-[#84c7be]"
+            fill="currentColor"
+            opacity="0.9"
+          />
+          <path
+            d="M0 400L150 280L450 380L750 280L1050 400L1440 320L1440 400Z"
+            className="text-[#64b8ac]"
+            fill="currentColor"
+          />
         </svg>
       </div>
 
       {/* Container Principal do Login - Layout baseado na imagem de referência */}
       <div className="relative z-10 w-full max-w-[440px] px-4 flex flex-col my-12 animate-fade-in-up">
-
         {/* Bloco Superior (Glassmorphism + Textos) */}
         <div className="p-8 pb-10 bg-white/20 backdrop-blur-md border border-white/40 rounded-t-[32px] shadow-glass text-center relative overflow-hidden">
           {/* Logo / Marca d'água superior esquerda */}
           <div className="absolute top-6 left-6 flex items-center gap-2 opacity-80">
-            <ShieldCheck className="w-5 h-5 text-teal-800" />
-            <span className="font-display font-semibold text-sm tracking-wide text-teal-900 lowercase">
+            <ShieldCheck className="w-5 h-5 text-primary" />
+            <span className="font-display font-semibold text-sm tracking-wide text-foreground lowercase">
               lyra metacare
             </span>
           </div>
 
           <div className="mt-8 flex flex-col items-center">
-            <h1 className="font-display text-5xl font-light text-teal-950 mb-2 drop-shadow-sm">
+            <h1 className="font-display text-5xl font-light text-foreground mb-2 drop-shadow-sm">
               Bem-vindo
             </h1>
-            <h2 className="font-display text-2xl font-bold text-teal-900 mb-6 tracking-tight">
+            <h2 className="font-display text-2xl font-bold text-foreground mb-6 tracking-tight">
               ao seu Ecossistema
             </h2>
-            <p className="text-sm leading-relaxed text-teal-900/80 font-medium px-2 max-w-[320px]">
-              Integração de saúde, inteligência artificial e sabedoria milenar para orquestrar o seu bem-estar diário com precisão e cuidado.
+            <p className="text-sm leading-relaxed text-foreground/75 font-medium px-2 max-w-[320px]">
+              Integração de saúde, inteligência artificial e sabedoria milenar
+              para orquestrar o seu bem-estar diário com precisão e cuidado.
             </p>
           </div>
         </div>
 
         {/* Bloco Inferior (Formulário Branco) */}
         <div className="bg-white/95 backdrop-blur-xl p-8 rounded-b-[32px] rounded-t-xl -mt-4 shadow-[0_20px_60px_-15px_rgba(49,155,142,0.2)] relative z-20">
-
-          <h3 className="text-center font-display text-[#539ba4] font-bold tracking-[0.15em] text-sm mb-8 uppercase">
+          <h3 className="text-center font-display text-primary font-bold tracking-[0.15em] text-sm mb-8 uppercase">
             {isRegistering ? 'CRIAR NOVA CONTA' : 'LOGIN DO USUÁRIO'}
           </h3>
 
@@ -167,7 +189,7 @@ export function LoginExperience({
               {/* Username / Email */}
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-teal-300 group-focus-within:text-teal-500 transition-colors" />
+                  <User className="h-5 w-5 text-primary/45 group-focus-within:text-primary transition-colors" />
                 </div>
                 <Input
                   id="login-email"
@@ -176,7 +198,7 @@ export function LoginExperience({
                   required
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
-                  className="pl-12 h-12 bg-[#f4fafa] border-transparent focus:bg-white focus:border-teal-300 rounded-full text-teal-900 placeholder:text-teal-400/70 shadow-sm transition-all"
+                  className="pl-12 h-12 bg-secondary/80 border-transparent focus:bg-white focus:border-primary/40 rounded-full text-foreground placeholder:text-muted-foreground/70 shadow-sm transition-all"
                   disabled={previewMode}
                 />
               </div>
@@ -184,24 +206,28 @@ export function LoginExperience({
               {/* Password */}
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-teal-300 group-focus-within:text-teal-500 transition-colors" />
+                  <Lock className="h-5 w-5 text-primary/45 group-focus-within:text-primary transition-colors" />
                 </div>
                 <Input
                   id="login-password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="Sua senha"
                   required
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
-                  className="pl-12 pr-12 h-12 bg-[#f4fafa] border-transparent focus:bg-white focus:border-teal-300 rounded-full text-teal-900 placeholder:text-teal-400/70 shadow-sm transition-all"
+                  className="pl-12 pr-12 h-12 bg-secondary/80 border-transparent focus:bg-white focus:border-primary/40 rounded-full text-foreground placeholder:text-muted-foreground/70 shadow-sm transition-all"
                   disabled={previewMode}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-teal-400 hover:text-teal-600 transition-colors focus:outline-none"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-primary/50 hover:text-primary transition-colors focus:outline-none"
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
 
@@ -211,16 +237,18 @@ export function LoginExperience({
                   <Checkbox
                     id="remember"
                     checked={rememberMe}
-                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                    className="border-teal-300 data-[state=checked]:bg-teal-500 rounded-sm"
+                    onCheckedChange={(checked) =>
+                      setRememberMe(checked as boolean)
+                    }
+                    className="border-primary/40 data-[state=checked]:bg-primary rounded-sm"
                   />
-                  <Label htmlFor="remember" className="text-sm text-teal-600 font-medium cursor-pointer">
+                  <Label
+                    htmlFor="remember"
+                    className="text-sm text-primary font-medium cursor-pointer"
+                  >
                     Lembrar-me
                   </Label>
                 </div>
-                <button type="button" className="text-sm text-[#73a3df] hover:text-teal-600 font-medium transition-colors">
-                  Esqueceu a senha?
-                </button>
               </div>
 
               {/* Submit Button */}
@@ -228,7 +256,7 @@ export function LoginExperience({
                 <Button
                   type="submit"
                   disabled={previewMode || submitMode === 'login'}
-                  className="bg-gradient-to-r from-[#d97272] to-[#de8a8a] hover:from-[#c25f5f] hover:to-[#d97272] text-white rounded-full px-12 h-12 font-bold tracking-widest uppercase text-xs shadow-coral transition-all transform hover:scale-105"
+                  className="bg-gradient-coral hover:brightness-105 text-white rounded-full px-12 h-12 font-bold tracking-widest uppercase text-xs shadow-coral transition-all transform hover:scale-105"
                 >
                   {submitMode === 'login' ? 'Entrando...' : 'Entrar'}
                 </Button>
@@ -244,7 +272,7 @@ export function LoginExperience({
                     required
                     value={registerFirstName}
                     onChange={(e) => setRegisterFirstName(e.target.value)}
-                    className="h-12 bg-[#f4fafa] border-transparent focus:bg-white focus:border-teal-300 rounded-2xl text-teal-900 placeholder:text-teal-400/70 shadow-sm"
+                    className="h-12 bg-secondary/80 border-transparent focus:bg-white focus:border-primary/40 rounded-2xl text-foreground placeholder:text-muted-foreground/70 shadow-sm"
                     disabled={previewMode}
                   />
                 </div>
@@ -255,7 +283,7 @@ export function LoginExperience({
                     required
                     value={registerLastName}
                     onChange={(e) => setRegisterLastName(e.target.value)}
-                    className="h-12 bg-[#f4fafa] border-transparent focus:bg-white focus:border-teal-300 rounded-2xl text-teal-900 placeholder:text-teal-400/70 shadow-sm"
+                    className="h-12 bg-secondary/80 border-transparent focus:bg-white focus:border-primary/40 rounded-2xl text-foreground placeholder:text-muted-foreground/70 shadow-sm"
                     disabled={previewMode}
                   />
                 </div>
@@ -263,7 +291,7 @@ export function LoginExperience({
 
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-teal-300 group-focus-within:text-teal-500 transition-colors" />
+                  <Mail className="h-5 w-5 text-primary/45 group-focus-within:text-primary transition-colors" />
                 </div>
                 <Input
                   id="reg-email"
@@ -272,23 +300,23 @@ export function LoginExperience({
                   required
                   value={registerEmail}
                   onChange={(e) => setRegisterEmail(e.target.value)}
-                  className="pl-12 h-12 bg-[#f4fafa] border-transparent focus:bg-white focus:border-teal-300 rounded-full text-teal-900 placeholder:text-teal-400/70 shadow-sm"
+                  className="pl-12 h-12 bg-secondary/80 border-transparent focus:bg-white focus:border-primary/40 rounded-full text-foreground placeholder:text-muted-foreground/70 shadow-sm"
                   disabled={previewMode}
                 />
               </div>
 
               <div className="relative group pb-2">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-teal-300 group-focus-within:text-teal-500 transition-colors" />
+                  <Lock className="h-5 w-5 text-primary/45 group-focus-within:text-primary transition-colors" />
                 </div>
                 <Input
                   id="reg-password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="Crie uma senha"
                   required
                   value={registerPassword}
                   onChange={(e) => setRegisterPassword(e.target.value)}
-                  className="pl-12 pr-12 h-12 bg-[#f4fafa] border-transparent focus:bg-white focus:border-teal-300 rounded-full text-teal-900 placeholder:text-teal-400/70 shadow-sm"
+                  className="pl-12 pr-12 h-12 bg-secondary/80 border-transparent focus:bg-white focus:border-primary/40 rounded-full text-foreground placeholder:text-muted-foreground/70 shadow-sm"
                   disabled={previewMode}
                 />
               </div>
@@ -306,23 +334,22 @@ export function LoginExperience({
           )}
 
           {/* Toggle Login/Register */}
-          <div className="mt-8 text-center border-t border-teal-100 pt-6">
-            <p className="text-sm text-teal-600/80">
+          <div className="mt-8 text-center border-t border-border pt-6">
+            <p className="text-sm text-muted-foreground">
               {isRegistering ? 'Já tem uma conta?' : 'Ainda não tem conta?'}
               <button
                 type="button"
                 onClick={() => setIsRegistering(!isRegistering)}
-                className="ml-2 font-bold text-teal-600 hover:text-teal-800 transition-colors"
+                className="ml-2 font-bold text-primary hover:text-primary/80 transition-colors"
               >
                 {isRegistering ? 'Fazer login' : 'Cadastre-se'}
               </button>
             </p>
           </div>
-
         </div>
 
         {/* Footer Credit */}
-        <div className="text-center mt-6 text-teal-800/60 font-medium text-xs tracking-wider flex items-center justify-center gap-1">
+        <div className="text-center mt-6 text-muted-foreground font-medium text-xs tracking-wider flex items-center justify-center gap-1">
           <span>desenvolvido por</span>
           <ShieldCheck className="w-3 h-3" />
           <span className="font-bold">Lyra MetaCare</span>

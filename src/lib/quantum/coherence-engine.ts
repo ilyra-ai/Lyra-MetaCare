@@ -153,9 +153,7 @@ function calculateCosmicAlignment(
  * Profundidade de Consciência: mede a qualidade do sono profundo,
  * meditação e estabilidade emocional — os "campos sutis" do ser.
  */
-function calculateConsciousnessDepth(
-  metrics: CoherenceMetricSnapshot
-): number {
+function calculateConsciousnessDepth(metrics: CoherenceMetricSnapshot): number {
   const deepSleep = safeNum(metrics.deep_sleep_minutes, 80);
   const rem = safeNum(metrics.rem_sleep_minutes, 80);
   const meditation = safeNum(metrics.meditation_minutes, 0);
@@ -190,9 +188,7 @@ function calculateConsciousnessDepth(
  * Coerência Rítmica: mede a regularidade dos ritmos circadianos
  * e a estabilidade respiratória.
  */
-function calculateRhythmicCoherence(
-  metrics: CoherenceMetricSnapshot
-): number {
+function calculateRhythmicCoherence(metrics: CoherenceMetricSnapshot): number {
   const sri = safeNum(metrics.sleep_regularity_index, 60);
   const respiratory = safeNum(metrics.respiratory_rate, 16);
   const stress = safeNum(metrics.stress_score, 50);
@@ -231,7 +227,8 @@ function buildCoherenceInsight(
   const weakLabels: Record<string, string> = {
     bioResonance: 'ressonância biológica (HRV, FC, SpO₂)',
     cosmicAlignment: 'alinhamento com os ciclos cósmicos',
-    consciousnessDepth: 'profundidade de consciência (sono profundo, meditação)',
+    consciousnessDepth:
+      'profundidade de consciência (sono profundo, meditação)',
     rhythmicCoherence: 'coerência rítmica (regularidade circadiana)',
   };
 

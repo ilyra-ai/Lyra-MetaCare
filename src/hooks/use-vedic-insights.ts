@@ -32,10 +32,7 @@ import {
   calculatePranicIndex,
   type PranicIndexResult,
 } from '@/lib/prana/prana-engine';
-import {
-  calculateKoshas,
-  type KoshaResult,
-} from '@/lib/vedanta/kosha-engine';
+import { calculateKoshas, type KoshaResult } from '@/lib/vedanta/kosha-engine';
 
 /** Resultado consolidado de todos os insights védicos. */
 export interface VedicInsights {
@@ -228,7 +225,9 @@ export function useVedicInsights(enabled = true): VedicInsights {
       const pran = calculatePranicIndex(snap, astrology);
       const ksh = calculateKoshas(snap, astrology);
       return {
-        date: new Intl.DateTimeFormat('pt-BR', { weekday: 'short' }).format(new Date(`${m.date}T12:00:00`)).replace('.', ''),
+        date: new Intl.DateTimeFormat('pt-BR', { weekday: 'short' })
+          .format(new Date(`${m.date}T12:00:00`))
+          .replace('.', ''),
         icq: coh.index,
         prana: pran.index,
         kosha: ksh.overallScore,

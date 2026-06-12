@@ -23,13 +23,16 @@ export default function AdminPlansPage() {
 
   if (!isAdmin) {
     return (
-      <div className="flex min-h-screen bg-gray-50/50 font-[family-name:var(--font-geist-sans)]">
+      <div className="page-shell flex min-h-screen">
         <Sidebar />
         <div className="flex flex-1 flex-col">
           <Header />
-        <PuckClientRenderer documentKey="admin-plans" className="w-full flex-shrink-0" />
+          <PuckClientRenderer
+            documentKey="admin-plans"
+            className="w-full flex-shrink-0"
+          />
           <main className="flex flex-1 items-center justify-center p-6 md:p-10">
-            <div className="max-w-xl rounded-3xl border bg-white/80 p-8 text-center shadow-xl backdrop-blur dark:bg-slate-950/70">
+            <div className="max-w-xl rounded-3xl border border-border/70 bg-card/85 p-8 text-center shadow-xl backdrop-blur">
               <h1 className="text-2xl font-semibold tracking-tight">
                 Acesso restrito
               </h1>
@@ -45,7 +48,7 @@ export default function AdminPlansPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50/50 font-[family-name:var(--font-geist-sans)]">
+    <div className="page-shell flex min-h-screen">
       <Sidebar />
       <div className="flex flex-1 flex-col">
         <Header />

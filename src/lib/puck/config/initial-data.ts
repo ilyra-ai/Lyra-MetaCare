@@ -432,23 +432,26 @@ const defaultAppShellData: LyraPuckData = {
   },
 };
 
-const defaultEmptyDataByDocumentKey = lyraPuckDocuments.reduce((acc, doc) => {
-  acc[doc.key] = {
-    content: [],
-    root: {
-      props: {
-        title: doc.label,
-        surfaceKey: doc.surfaceKey,
-        surfaceTitle: doc.label,
-        surfaceDescription: doc.description,
-        themeVariant: 'serene',
-        visibilityRules: 'Dependente da implementação na rota',
+const defaultEmptyDataByDocumentKey = lyraPuckDocuments.reduce(
+  (acc, doc) => {
+    acc[doc.key] = {
+      content: [],
+      root: {
+        props: {
+          title: doc.label,
+          surfaceKey: doc.surfaceKey,
+          surfaceTitle: doc.label,
+          surfaceDescription: doc.description,
+          themeVariant: 'serene',
+          visibilityRules: 'Dependente da implementação na rota',
+        },
       },
-    },
-    zones: {},
-  };
-  return acc;
-}, {} as Record<LyraPuckDocumentKey, LyraPuckData>);
+      zones: {},
+    };
+    return acc;
+  },
+  {} as Record<LyraPuckDocumentKey, LyraPuckData>
+);
 
 const initialDataByDocumentKey: Record<LyraPuckDocumentKey, LyraPuckData> = {
   ...defaultEmptyDataByDocumentKey,

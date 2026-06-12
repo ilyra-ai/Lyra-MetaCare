@@ -29,7 +29,13 @@ export type LyraPuckDocumentKey = (typeof lyraPuckDocumentKeys)[number];
 
 export const defaultLyraPuckDocumentKey: LyraPuckDocumentKey = 'landing-home';
 
-export type LyraPuckSurfaceKey = 'landing' | 'login' | 'app-shell' | 'admin-panel' | 'patient-portal' | 'billing';
+export type LyraPuckSurfaceKey =
+  | 'landing'
+  | 'login'
+  | 'app-shell'
+  | 'admin-panel'
+  | 'patient-portal'
+  | 'billing';
 export type LyraPuckThemeVariant = 'aurora' | 'serene' | 'shell';
 export type LyraPuckSlotItem = {
   type: string;
@@ -289,7 +295,8 @@ export const lyraPuckDocuments: Array<{
   {
     key: 'onboarding',
     label: 'Onboarding & Intake',
-    description: 'Interface de primeiros passos e aquisição de dados do usuário recém-registrado.',
+    description:
+      'Interface de primeiros passos e aquisição de dados do usuário recém-registrado.',
     route: '/admin/puck?documentKey=onboarding',
     publicRoute: '/onboarding',
     publicLabel: 'Tela de Onboarding',
@@ -307,7 +314,8 @@ export const lyraPuckDocuments: Array<{
   {
     key: 'appointments',
     label: 'Agenda e Consultas',
-    description: 'Painel visual de check-ins clínicos, agendamentos e calendário do longo-prazo.',
+    description:
+      'Painel visual de check-ins clínicos, agendamentos e calendário do longo-prazo.',
     route: '/admin/puck?documentKey=appointments',
     publicRoute: '/appointments',
     publicLabel: 'Página de Agenda',
@@ -316,7 +324,8 @@ export const lyraPuckDocuments: Array<{
   {
     key: 'monitoring',
     label: 'Monitoramento (Dashboards)',
-    description: 'Visitas analíticas com rastreio de biometria e painéis sensoriais de evolução.',
+    description:
+      'Visitas analíticas com rastreio de biometria e painéis sensoriais de evolução.',
     route: '/admin/puck?documentKey=monitoring',
     publicRoute: '/monitoring',
     publicLabel: 'Página de Métricas',
@@ -325,7 +334,8 @@ export const lyraPuckDocuments: Array<{
   {
     key: 'dashboard',
     label: 'Dashboard Védico e Quântico',
-    description: 'Espaço principal para análise integral do paciente com Lyra MetaCare.',
+    description:
+      'Espaço principal para análise integral do paciente com Lyra MetaCare.',
     route: '/admin/puck?documentKey=dashboard',
     publicRoute: '/dashboard',
     publicLabel: 'Página de Dashboard Principal',
@@ -334,7 +344,8 @@ export const lyraPuckDocuments: Array<{
   {
     key: 'chat',
     label: 'Assistente Clínico (Chat)',
-    description: 'Visual principal de inteligência imersiva e assistente de IA conversacional.',
+    description:
+      'Visual principal de inteligência imersiva e assistente de IA conversacional.',
     route: '/admin/puck?documentKey=chat',
     publicRoute: '/chat',
     publicLabel: 'Assistente de Chat',
@@ -388,7 +399,8 @@ export const lyraPuckDocuments: Array<{
   {
     key: 'admin-dashboard',
     label: 'Admin: Dashboard Matriz',
-    description: 'O cockpit gerencial com relatórios cruciais da corporação no Backoffice.',
+    description:
+      'O cockpit gerencial com relatórios cruciais da corporação no Backoffice.',
     route: '/admin/puck?documentKey=admin-dashboard',
     publicRoute: '/admin/dashboard',
     publicLabel: 'Dashboard B2B',
@@ -397,7 +409,8 @@ export const lyraPuckDocuments: Array<{
   {
     key: 'admin-users',
     label: 'Admin: Gestão Clínica de Usuários',
-    description: 'Interface gerencial para os fluxos da base de clientes em massa.',
+    description:
+      'Interface gerencial para os fluxos da base de clientes em massa.',
     route: '/admin/puck?documentKey=admin-users',
     publicRoute: '/admin/users',
     publicLabel: 'Gerenciador Humano B2B',
@@ -406,7 +419,8 @@ export const lyraPuckDocuments: Array<{
   {
     key: 'admin-plans',
     label: 'Admin: Planos e Comércio',
-    description: 'Construtor de catálogos e gestão de pagamentos por assinatura.',
+    description:
+      'Construtor de catálogos e gestão de pagamentos por assinatura.',
     route: '/admin/puck?documentKey=admin-plans',
     publicRoute: '/admin/plans',
     publicLabel: 'Commerce Engine',
@@ -415,7 +429,8 @@ export const lyraPuckDocuments: Array<{
   {
     key: 'admin-reports',
     label: 'Admin: Inteligência de Relatórios',
-    description: 'Modelagem dos logs e saídas contábeis ou de sucesso do sistema.',
+    description:
+      'Modelagem dos logs e saídas contábeis ou de sucesso do sistema.',
     route: '/admin/puck?documentKey=admin-reports',
     publicRoute: '/admin/reports',
     publicLabel: 'Governança Auditorial',
@@ -433,7 +448,8 @@ export const lyraPuckDocuments: Array<{
   {
     key: 'admin-content',
     label: 'Admin: CMS e Políticas',
-    description: 'Página voltada ao carregamento legal e informacional institucional.',
+    description:
+      'Página voltada ao carregamento legal e informacional institucional.',
     route: '/admin/puck?documentKey=admin-content',
     publicRoute: '/admin/content',
     publicLabel: 'CMS Base Legal',
@@ -442,7 +458,8 @@ export const lyraPuckDocuments: Array<{
   {
     key: 'admin-ai-config',
     label: 'Admin: Motores de IA',
-    description: 'Afinamento sensível nas equações neurais e parâmetros base da IA local.',
+    description:
+      'Afinamento sensível nas equações neurais e parâmetros base da IA local.',
     route: '/admin/puck?documentKey=admin-ai-config',
     publicRoute: '/admin/ai-config',
     publicLabel: 'Motor de Engenheiros',

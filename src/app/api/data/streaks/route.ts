@@ -17,7 +17,12 @@ export async function GET(request: Request) {
     return NextResponse.json({ success: true, streaks, adherence });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Falha ao buscar consistência.' },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Falha ao buscar consistência.',
+      },
       { status: getHttpErrorStatus(error) }
     );
   }
@@ -31,7 +36,10 @@ export async function POST(request: Request) {
     const { activityTypes } = body as { activityTypes: string[] };
 
     if (!Array.isArray(activityTypes) || activityTypes.length === 0) {
-      return NextResponse.json({ error: 'Nenhuma atividade reportada para o streak.' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Nenhuma atividade reportada para o streak.' },
+        { status: 400 }
+      );
     }
 
     const today = new Date();
@@ -44,10 +52,19 @@ export async function POST(request: Request) {
     const updatedStreaks = await getUserStreaks(userId);
     const adherence = calculateAdherenceScore(updatedStreaks);
 
-    return NextResponse.json({ success: true, streaks: updatedStreaks, adherence });
+    return NextResponse.json({
+      success: true,
+      streaks: updatedStreaks,
+      adherence,
+    });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Falha ao computar consistência diária.' },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Falha ao computar consistência diária.',
+      },
       { status: getHttpErrorStatus(error) }
     );
   }

@@ -1,6 +1,11 @@
 import { AstrologicalData } from '../astrology/engine';
 
-export type KoshaName = 'Annamaya' | 'Pranamaya' | 'Manomaya' | 'Vijnanamaya' | 'Anandamaya';
+export type KoshaName =
+  | 'Annamaya'
+  | 'Pranamaya'
+  | 'Manomaya'
+  | 'Vijnanamaya'
+  | 'Anandamaya';
 
 export interface Kosha {
   name: KoshaName;
@@ -39,15 +44,25 @@ export function calculateKoshas(
 ): KoshaResult {
   // 1. Annamaya Kosha (Corpo Físico/Alimento)
   let annamayaScore = 50;
-  if (metrics.steps) annamayaScore += metrics.steps > 8000 ? 20 : (metrics.steps > 4000 ? 10 : -10);
-  if (metrics.dietary_fiber_grams) annamayaScore += metrics.dietary_fiber_grams > 25 ? 15 : 5;
+  if (metrics.steps)
+    annamayaScore +=
+      metrics.steps > 8000 ? 20 : metrics.steps > 4000 ? 10 : -10;
+  if (metrics.dietary_fiber_grams)
+    annamayaScore += metrics.dietary_fiber_grams > 25 ? 15 : 5;
   if (metrics.water_liters) annamayaScore += metrics.water_liters > 2 ? 15 : 0;
   annamayaScore = Math.min(100, Math.max(0, annamayaScore));
 
   // 2. Pranamaya Kosha (Corpo Energético/Vital)
   let pranamayaScore = 50;
-  if (metrics.hrv_ms) pranamayaScore += metrics.hrv_ms > 50 ? 20 : (metrics.hrv_ms > 30 ? 10 : -15);
-  if (metrics.respiratory_rate) pranamayaScore += metrics.respiratory_rate < 15 ? 15 : (metrics.respiratory_rate > 20 ? -10 : 5);
+  if (metrics.hrv_ms)
+    pranamayaScore += metrics.hrv_ms > 50 ? 20 : metrics.hrv_ms > 30 ? 10 : -15;
+  if (metrics.respiratory_rate)
+    pranamayaScore +=
+      metrics.respiratory_rate < 15
+        ? 15
+        : metrics.respiratory_rate > 20
+          ? -10
+          : 5;
   if (metrics.vo2_max) pranamayaScore += metrics.vo2_max > 40 ? 15 : 0;
   pranamayaScore = Math.min(100, Math.max(0, pranamayaScore));
 
@@ -55,19 +70,34 @@ export function calculateKoshas(
   let manomayaScore = 50;
   if (metrics.stress_score) manomayaScore -= (metrics.stress_score - 50) * 0.4;
   if (metrics.mood_score) manomayaScore += (metrics.mood_score - 3) * 10;
-  if (metrics.sleep_duration_minutes) manomayaScore += metrics.sleep_duration_minutes > 420 ? 15 : -10;
+  if (metrics.sleep_duration_minutes)
+    manomayaScore += metrics.sleep_duration_minutes > 420 ? 15 : -10;
   manomayaScore = Math.min(100, Math.max(0, manomayaScore));
 
   // 4. Vijnanamaya Kosha (Corpo Intelectual/Sabedoria)
   let vijnanamayaScore = 50;
-  if (metrics.cognitive_test_score) vijnanamayaScore += (metrics.cognitive_test_score - 70) * 0.5;
-  if (metrics.meditation_minutes) vijnanamayaScore += metrics.meditation_minutes > 15 ? 25 : (metrics.meditation_minutes > 5 ? 10 : -5);
+  if (metrics.cognitive_test_score)
+    vijnanamayaScore += (metrics.cognitive_test_score - 70) * 0.5;
+  if (metrics.meditation_minutes)
+    vijnanamayaScore +=
+      metrics.meditation_minutes > 15
+        ? 25
+        : metrics.meditation_minutes > 5
+          ? 10
+          : -5;
   vijnanamayaScore = Math.min(100, Math.max(0, vijnanamayaScore));
 
   // 5. Anandamaya Kosha (Corpo de Bem-Aventurança/Causal)
   let anandamayaScore = 50;
-  if (metrics.deep_sleep_minutes) anandamayaScore += metrics.deep_sleep_minutes > 60 ? 20 : -10;
-  if (metrics.meditation_minutes) anandamayaScore += metrics.meditation_minutes > 30 ? 20 : (metrics.meditation_minutes > 10 ? 10 : 0);
+  if (metrics.deep_sleep_minutes)
+    anandamayaScore += metrics.deep_sleep_minutes > 60 ? 20 : -10;
+  if (metrics.meditation_minutes)
+    anandamayaScore +=
+      metrics.meditation_minutes > 30
+        ? 20
+        : metrics.meditation_minutes > 10
+          ? 10
+          : 0;
   if (astro && astro.impactOnHealth.energy === 'Alta') anandamayaScore += 10;
   anandamayaScore = Math.min(100, Math.max(0, anandamayaScore));
 
@@ -78,7 +108,7 @@ export function calculateKoshas(
       translation: 'Corpo Físico',
       score: Math.round(annamayaScore),
       status: getKoshaStatus(annamayaScore),
-      insight: getAnnamayaInsight(annamayaScore)
+      insight: getAnnamayaInsight(annamayaScore),
     },
     {
       name: 'Pranamaya',
@@ -86,7 +116,7 @@ export function calculateKoshas(
       translation: 'Corpo Energético',
       score: Math.round(pranamayaScore),
       status: getKoshaStatus(pranamayaScore),
-      insight: getPranamayaInsight(pranamayaScore)
+      insight: getPranamayaInsight(pranamayaScore),
     },
     {
       name: 'Manomaya',
@@ -94,7 +124,7 @@ export function calculateKoshas(
       translation: 'Corpo Mental',
       score: Math.round(manomayaScore),
       status: getKoshaStatus(manomayaScore),
-      insight: getManomayaInsight(manomayaScore)
+      insight: getManomayaInsight(manomayaScore),
     },
     {
       name: 'Vijnanamaya',
@@ -102,7 +132,7 @@ export function calculateKoshas(
       translation: 'Corpo de Sabedoria',
       score: Math.round(vijnanamayaScore),
       status: getKoshaStatus(vijnanamayaScore),
-      insight: getVijnanamayaInsight(vijnanamayaScore)
+      insight: getVijnanamayaInsight(vijnanamayaScore),
     },
     {
       name: 'Anandamaya',
@@ -110,26 +140,35 @@ export function calculateKoshas(
       translation: 'Corpo de Bem-Aventurança',
       score: Math.round(anandamayaScore),
       status: getKoshaStatus(anandamayaScore),
-      insight: getAnandamayaInsight(anandamayaScore)
-    }
+      insight: getAnandamayaInsight(anandamayaScore),
+    },
   ];
 
   const overallScore = Math.round(
-    (annamayaScore + pranamayaScore + manomayaScore + vijnanamayaScore + anandamayaScore) / 5
+    (annamayaScore +
+      pranamayaScore +
+      manomayaScore +
+      vijnanamayaScore +
+      anandamayaScore) /
+      5
   );
 
   let overallStatus = 'Fragmentado';
-  let dharmaAlignment = 'Desconexão temporal com o propósito. Ação necessária no plano físico e vital.';
+  let dharmaAlignment =
+    'Desconexão temporal com o propósito. Ação necessária no plano físico e vital.';
 
   if (overallScore >= 85) {
     overallStatus = 'Iluminado';
-    dharmaAlignment = 'Sincronia absoluta com o Dharma. O Ser irradia consciência unificada em todas as 5 dimensões.';
+    dharmaAlignment =
+      'Sincronia absoluta com o Dharma. O Ser irradia consciência unificada em todas as 5 dimensões.';
   } else if (overallScore >= 70) {
     overallStatus = 'Harmônico';
-    dharmaAlignment = 'Forte percepção do Dharma. O fluxo vital apoia o florescimento da sabedoria interior.';
+    dharmaAlignment =
+      'Forte percepção do Dharma. O fluxo vital apoia o florescimento da sabedoria interior.';
   } else if (overallScore >= 50) {
     overallStatus = 'Em Transição';
-    dharmaAlignment = 'Dharma em latência. Flutuações mentais estão ofuscando o contato com o corpo causal.';
+    dharmaAlignment =
+      'Dharma em latência. Flutuações mentais estão ofuscando o contato com o corpo causal.';
   }
 
   return { koshas, overallScore, overallStatus, dharmaAlignment };
@@ -143,26 +182,31 @@ function getKoshaStatus(score: number): Kosha['status'] {
 }
 
 function getAnnamayaInsight(score: number) {
-  if (score >= 70) return 'Seu veículo físico está nutrido e estruturalmente sólido.';
+  if (score >= 70)
+    return 'Seu veículo físico está nutrido e estruturalmente sólido.';
   return 'Atenção à hidratação, nutrição e movimento diário. O físico clama por suporte.';
 }
 
 function getPranamayaInsight(score: number) {
-  if (score >= 70) return 'A circulação do Prana e a respiração (Vayus) operam com excelente capacidade.';
+  if (score >= 70)
+    return 'A circulação do Prana e a respiração (Vayus) operam com excelente capacidade.';
   return 'Sua energia vital está estagnada. Práticas de Pranayama são indicadas imediatamente.';
 }
 
 function getManomayaInsight(score: number) {
-  if (score >= 70) return 'Clareza emocional e estabilidade diante dos estressores diários.';
+  if (score >= 70)
+    return 'Clareza emocional e estabilidade diante dos estressores diários.';
   return 'Carga alostática alta. A mente está turva pelas emoções. Priorize descanso sensorial.';
 }
 
 function getVijnanamayaInsight(score: number) {
-  if (score >= 70) return 'Discernimento aguçado. A intuição e o intelecto trabalham em harmonia.';
+  if (score >= 70)
+    return 'Discernimento aguçado. A intuição e o intelecto trabalham em harmonia.';
   return 'O intelecto está desconectado da sabedoria inata. Meditação e estudo meditativo são sugeridos.';
 }
 
 function getAnandamayaInsight(score: number) {
-  if (score >= 70) return 'Contato direto com a alegria incondicional (Ananda) e o repouso profundo.';
+  if (score >= 70)
+    return 'Contato direto com a alegria incondicional (Ananda) e o repouso profundo.';
   return 'A camada mais sutil do Ser está inacessível. O sono profundo e o soltar do ego necessitam de cultivo.';
 }

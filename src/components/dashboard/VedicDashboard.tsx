@@ -23,7 +23,14 @@ import {
   Zap,
   Layers,
 } from 'lucide-react';
-import { Area, AreaChart, CartesianGrid, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  XAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 import { useVedicInsights } from '@/hooks/use-vedic-insights';
 import { Badge } from '@/components/ui/badge';
@@ -43,25 +50,25 @@ const DOSHA_CONFIG = {
     icon: Wind,
     label: 'Vata',
     subtitle: 'Ar + Éter',
-    gradient: 'from-sky-500/15 to-indigo-500/8',
-    textColor: 'text-sky-600',
-    bgColor: 'bg-sky-500/12',
+    gradient: 'from-info/15 to-cosmic/10',
+    textColor: 'text-info',
+    bgColor: 'bg-info/10',
   },
   pitta: {
     icon: Flame,
     label: 'Pitta',
     subtitle: 'Fogo + Água',
-    gradient: 'from-orange-500/15 to-red-500/8',
-    textColor: 'text-orange-600',
-    bgColor: 'bg-orange-500/12',
+    gradient: 'from-accent/15 to-warning/10',
+    textColor: 'text-accent',
+    bgColor: 'bg-accent/10',
   },
   kapha: {
     icon: Leaf,
     label: 'Kapha',
     subtitle: 'Terra + Água',
-    gradient: 'from-emerald-500/15 to-teal-500/8',
-    textColor: 'text-emerald-600',
-    bgColor: 'bg-emerald-500/12',
+    gradient: 'from-success/15 to-primary/10',
+    textColor: 'text-success',
+    bgColor: 'bg-success/10',
   },
 };
 
@@ -94,9 +101,7 @@ interface VedicDashboardProps {
   featureEnabled?: boolean;
 }
 
-export function VedicDashboard({
-  featureEnabled = true,
-}: VedicDashboardProps) {
+export function VedicDashboard({ featureEnabled = true }: VedicDashboardProps) {
   const { dosha, coherence, chakras, prana, koshas, history, loading } =
     useVedicInsights(featureEnabled);
 
@@ -114,8 +119,8 @@ export function VedicDashboard({
           🕉️ Insights Védicos-Quânticos
         </h2>
         <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
-          Análise integrativa em tempo real — fusão de biomarcadores fisiológicos
-          com astrologia védica, ayurveda e princípios quânticos.
+          Análise integrativa em tempo real — fusão de biomarcadores
+          fisiológicos com astrologia védica, ayurveda e princípios quânticos.
         </p>
       </div>
 
@@ -123,32 +128,95 @@ export function VedicDashboard({
         <Card className="border-border/60 bg-white/40 backdrop-blur-md mb-4 p-4">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <Sparkles className="size-4 text-primary" /> Tendência Quântica-Védica (7 Dias)
+              <Sparkles className="size-4 text-primary" /> Tendência
+              Quântica-Védica (7 Dias)
             </CardTitle>
           </CardHeader>
           <CardContent className="h-48 w-full p-0 mt-4">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={history} margin={{ top: 5, right: 10, left: 10, bottom: 0 }}>
+              <AreaChart
+                data={history}
+                margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
+              >
                 <defs>
                   <linearGradient id="colorIcq" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--cosmic))" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="hsl(var(--cosmic))" stopOpacity={0}/>
+                    <stop
+                      offset="5%"
+                      stopColor="hsl(var(--cosmic))"
+                      stopOpacity={0.3}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="hsl(var(--cosmic))"
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                   <linearGradient id="colorPrana" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0}/>
+                    <stop
+                      offset="5%"
+                      stopColor="hsl(var(--success))"
+                      stopOpacity={0.3}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="hsl(var(--success))"
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
-                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} dy={10} />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: '1px solid hsl(var(--border))', backgroundColor: 'rgba(255,255,255,0.9)', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} 
-                  itemStyle={{ fontSize: '12px', fontWeight: 600 }}
-                  labelStyle={{ fontSize: '10px', color: 'hsl(var(--muted-foreground))', marginBottom: '4px' }}
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="hsl(var(--border))"
+                  opacity={0.5}
                 />
-                <Area type="monotone" name="ICQ" dataKey="icq" stroke="hsl(var(--cosmic))" strokeWidth={2} fillOpacity={1} fill="url(#colorIcq)" />
-                <Area type="monotone" name="Prana" dataKey="prana" stroke="hsl(var(--success))" strokeWidth={2} fillOpacity={1} fill="url(#colorPrana)" />
-                <Area type="monotone" name="Kosha" dataKey="kosha" stroke="#8b5cf6" strokeWidth={2} fillOpacity={0} />
+                <XAxis
+                  dataKey="date"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  dy={10}
+                />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: '12px',
+                    border: '1px solid hsl(var(--border))',
+                    backgroundColor: 'rgba(255,255,255,0.9)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                  }}
+                  itemStyle={{ fontSize: '12px', fontWeight: 600 }}
+                  labelStyle={{
+                    fontSize: '10px',
+                    color: 'hsl(var(--muted-foreground))',
+                    marginBottom: '4px',
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  name="ICQ"
+                  dataKey="icq"
+                  stroke="hsl(var(--cosmic))"
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#colorIcq)"
+                />
+                <Area
+                  type="monotone"
+                  name="Prana"
+                  dataKey="prana"
+                  stroke="hsl(var(--success))"
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#colorPrana)"
+                />
+                <Area
+                  type="monotone"
+                  name="Kosha"
+                  dataKey="kosha"
+                  stroke="#8b5cf6"
+                  strokeWidth={2}
+                  fillOpacity={0}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -280,13 +348,18 @@ export function VedicDashboard({
           <CardHeader className="gap-4 pb-3">
             <div className="flex items-start justify-between gap-4">
               <div className="flex flex-col gap-2">
-                <Badge variant="outline" className="text-purple-600 border-purple-200 bg-purple-50">Vedanta & Dharma</Badge>
+                <Badge
+                  variant="outline"
+                  className="text-cosmic border-cosmic/25 bg-cosmic-light"
+                >
+                  Vedanta & Dharma
+                </Badge>
                 <CardTitle className="text-xl">
                   Pancha Koshas: {koshas.overallScore}/100
                 </CardTitle>
                 <CardDescription>{koshas.overallStatus}</CardDescription>
               </div>
-              <div className="flex size-12 items-center justify-center rounded-2xl bg-purple-500/12 text-purple-600 shadow-sm">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-cosmic/10 text-cosmic shadow-sm">
                 <Layers className="h-6 w-6" />
               </div>
             </div>
@@ -305,16 +378,24 @@ export function VedicDashboard({
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-bold text-foreground">{k.name}</p>
-                      <p className="text-[10px] text-muted-foreground">{k.sanskrit}</p>
+                      <p className="text-xs font-bold text-foreground">
+                        {k.name}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {k.sanskrit}
+                      </p>
                     </div>
-                    <span className="font-mono text-sm font-bold text-purple-600">
+                    <span className="font-mono text-sm font-bold text-cosmic">
                       {k.score}
                     </span>
                   </div>
-                  <Progress value={k.score} className="h-1.5 [&>div]:bg-purple-500" />
+                  <Progress
+                    value={k.score}
+                    className="h-1.5 [&>div]:bg-cosmic"
+                  />
                   <p className="text-[10px] uppercase font-semibold text-muted-foreground mt-1">
-                    {k.translation} - <span className="text-foreground">{k.status}</span>
+                    {k.translation} -{' '}
+                    <span className="text-foreground">{k.status}</span>
                   </p>
                   <p className="text-[10px] leading-snug text-muted-foreground mt-0.5 line-clamp-2">
                     {k.insight}
@@ -336,7 +417,7 @@ export function VedicDashboard({
                 </CardTitle>
                 <CardDescription>{chakras.overallLabel}</CardDescription>
               </div>
-              <div className="flex size-12 items-center justify-center rounded-2xl bg-purple-500/12 text-purple-600 shadow-sm">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-cosmic/10 text-cosmic shadow-sm">
                 <Sun className="h-6 w-6" />
               </div>
             </div>

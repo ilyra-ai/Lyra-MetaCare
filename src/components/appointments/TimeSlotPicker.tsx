@@ -52,7 +52,11 @@ export function TimeSlotPicker({
             variant={isSelected ? 'default' : 'outline'}
             disabled={isPast || isBooked}
             onClick={() => onTimeSelect(slot)}
-            className={isSelected ? 'bg-blue-600 hover:bg-blue-700' : ''}
+            className={
+              isSelected
+                ? 'bg-gradient-teal text-white shadow-teal hover:brightness-105'
+                : ''
+            }
           >
             {format(slot, 'HH:mm')}
           </Button>

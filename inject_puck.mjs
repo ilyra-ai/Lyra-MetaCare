@@ -23,33 +23,46 @@ const pages = [
 
 for (const p of pages) {
   if (!fs.existsSync(p.file)) {
-      console.warn('File not found:', p.file);
-      continue;
+    console.warn('File not found:', p.file);
+    continue;
   }
   let content = fs.readFileSync(p.file, 'utf8');
   if (content.includes('PuckClientRenderer')) continue;
 
-  const importStatement = "import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';\n";
+  const importStatement =
+    "import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';\n";
   const lastImportIndex = content.lastIndexOf('import ');
   const nextLineIndex = content.indexOf('\n', lastImportIndex) + 1;
-  content = content.slice(0, nextLineIndex) + importStatement + content.slice(nextLineIndex);
+  content =
+    content.slice(0, nextLineIndex) +
+    importStatement +
+    content.slice(nextLineIndex);
 
   if (content.includes('<Header />')) {
-      content = content.replace('<Header />', `<Header />\n        <PuckClientRenderer documentKey="${p.key}" className="w-full flex-shrink-0" />`);
+    content = content.replace(
+      '<Header />',
+      `<Header />\n        <PuckClientRenderer documentKey="${p.key}" className="w-full flex-shrink-0" />`
+    );
   } else if (content.includes('<main')) {
-     const mainMatch = content.match(/<main[^>]*>/);
-     if (mainMatch) {
-         content = content.replace(mainMatch[0], `${mainMatch[0]}\n        <PuckClientRenderer documentKey="${p.key}" className="w-full flex-shrink-0" />`);
-     }
+    const mainMatch = content.match(/<main[^>]*>/);
+    if (mainMatch) {
+      content = content.replace(
+        mainMatch[0],
+        `${mainMatch[0]}\n        <PuckClientRenderer documentKey="${p.key}" className="w-full flex-shrink-0" />`
+      );
+    }
   } else {
-     const returnRegex = /return\s*\(\s*(<div[^>]*>|<React.Fragment>|<>)/;
-     const returnMatch = content.match(returnRegex);
-     if (returnMatch) {
-        content = content.replace(returnMatch[0], `${returnMatch[0]}\n        <PuckClientRenderer documentKey="${p.key}" className="w-full flex-shrink-0" />`);
-     }
+    const returnRegex = /return\s*\(\s*(<div[^>]*>|<React.Fragment>|<>)/;
+    const returnMatch = content.match(returnRegex);
+    if (returnMatch) {
+      content = content.replace(
+        returnMatch[0],
+        `${returnMatch[0]}\n        <PuckClientRenderer documentKey="${p.key}" className="w-full flex-shrink-0" />`
+      );
+    }
   }
 
   fs.writeFileSync(p.file, content, 'utf8');
   console.log(`Injected PuckClientRenderer into ${p.key} (${p.file})`);
 }
-console.log("Process completed!");
+console.log('Process completed!');

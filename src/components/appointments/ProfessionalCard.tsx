@@ -37,18 +37,18 @@ export function ProfessionalCard({
   return (
     <Card
       className={cn(
-        'cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-blue-500/50',
-        isSelected && 'border-blue-600 ring-2 ring-blue-500/50 shadow-xl'
+        'cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-primary/40',
+        isSelected && 'border-primary ring-2 ring-primary/40 shadow-teal'
       )}
       onClick={() => onSelect(professional)}
     >
       <CardHeader className="flex flex-row items-center gap-4 pb-2">
-        <Avatar className="h-16 w-16 border-2 border-blue-200">
+        <Avatar className="h-16 w-16 border-2 border-primary/20">
           <AvatarImage
             src={professional.avatar_url || undefined}
             alt={professional.name}
           />
-          <AvatarFallback className="text-2xl bg-blue-50 text-blue-700">
+          <AvatarFallback className="text-2xl bg-primary/10 text-primary">
             {initial}
           </AvatarFallback>
         </Avatar>
@@ -59,7 +59,7 @@ export function ProfessionalCard({
         {professional.rating && (
           <Badge
             variant="secondary"
-            className="flex items-center gap-1 bg-yellow-100 text-yellow-800 border-yellow-300"
+            className="flex items-center gap-1 border-golden/30 bg-golden-light text-golden"
           >
             <Star className="h-3 w-3 fill-current" />
             {professional.rating.toFixed(1)}

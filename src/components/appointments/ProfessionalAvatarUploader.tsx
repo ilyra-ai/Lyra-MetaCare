@@ -91,12 +91,12 @@ export function ProfessionalAvatarUploader({
         className="relative group cursor-pointer"
         onClick={() => fileInputRef.current?.click()}
       >
-        <Avatar className="h-24 w-24 border-2 border-gray-200">
+        <Avatar className="h-24 w-24 border-2 border-primary/20">
           <AvatarImage
             src={currentAvatarUrl || undefined}
             alt={professionalName}
           />
-          <AvatarFallback className="text-3xl bg-gray-100 text-gray-500">
+          <AvatarFallback className="text-3xl bg-primary/10 text-primary">
             {uploading ? <Loader2 className="h-6 w-6 animate-spin" /> : initial}
           </AvatarFallback>
         </Avatar>

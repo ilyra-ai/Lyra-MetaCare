@@ -41,7 +41,10 @@ export default function MonitoringPage() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header />
-        <PuckClientRenderer documentKey="monitoring" className="w-full flex-shrink-0" />
+        <PuckClientRenderer
+          documentKey="monitoring"
+          className="w-full flex-shrink-0"
+        />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           <div className="mb-8 flex flex-col gap-2">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">

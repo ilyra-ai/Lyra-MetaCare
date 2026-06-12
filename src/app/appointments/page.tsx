@@ -24,7 +24,10 @@ export default function AppointmentsPage() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header />
-        <PuckClientRenderer documentKey="appointments" className="w-full flex-shrink-0" />
+        <PuckClientRenderer
+          documentKey="appointments"
+          className="w-full flex-shrink-0"
+        />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           <AppointmentsContent />
         </main>

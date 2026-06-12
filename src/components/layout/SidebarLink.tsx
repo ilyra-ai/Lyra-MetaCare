@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { scalePx, scaleRem } from '@/lib/site-page-config/runtime';
 
 type SidebarLinkProps = {
   href: string;
@@ -22,6 +23,8 @@ export function SidebarLink({
   description,
   className,
   onClick,
+  iconScale = 1,
+  labelScale = 1,
 }: SidebarLinkProps) {
   const pathname = usePathname();
   const isActive = pathname === href;
@@ -32,32 +35,57 @@ export function SidebarLink({
       onClick={onClick}
       aria-current={isActive ? 'page' : undefined}
       className={cn(
-        'flex items-center gap-3 w-full px-4 py-3 rounded-[20px] transition-all duration-300 group relative overflow-hidden',
+        'group relative flex w-full items-center gap-3 overflow-hidden rounded-[20px] px-4 py-3 transition-all duration-300',
         isActive
-          ? 'bg-teal-50/50 text-teal-800 shadow-[inset_0_0_0_1px_rgba(20,184,166,0.2)]'
-          : 'text-slate-500 hover:bg-slate-50/50 hover:text-slate-800',
+          ? 'bg-gradient-to-r from-primary/10 via-primary/5 to-cosmic/10 text-primary shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.18)]'
+          : 'text-muted-foreground hover:bg-sidebar-accent/70 hover:text-foreground',
         className
       )}
     >
       {isActive && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-gradient-to-b from-teal-400 to-teal-600 rounded-r-full shadow-[0_0_10px_rgba(45,212,191,0.5)]" />
+        <span className="absolute left-0 top-1/2 h-8 w-1.5 -translate-y-1/2 rounded-r-full bg-gradient-teal shadow-teal" />
       )}
 
-      <span className={cn(
-        "flex size-10 shrink-0 items-center justify-center rounded-2xl transition-all duration-300",
-        isActive
-          ? "bg-white text-teal-600 shadow-sm ring-1 ring-slate-100"
-          : "text-slate-400 group-hover:text-slate-600 group-hover:bg-white group-hover:shadow-sm"
-      )}>
-        <Icon className={cn("w-[22px] h-[22px]", isActive ? "animate-pulse-slow" : "")} strokeWidth={isActive ? 2 : 1.5} />
+      <span
+        className={cn(
+          'flex size-10 shrink-0 items-center justify-center rounded-2xl transition-all duration-300',
+          isActive
+            ? 'bg-card text-primary shadow-sm ring-1 ring-primary/15'
+            : 'text-muted-foreground group-hover:bg-card group-hover:text-foreground group-hover:shadow-sm'
+        )}
+      >
+        <Icon
+          className={cn(isActive ? 'animate-pulse-slow' : '')}
+          strokeWidth={isActive ? 2 : 1.5}
+          style={{
+            height: scalePx(22, iconScale),
+            width: scalePx(22, iconScale),
+          }}
+        />
       </span>
 
       <span className="flex min-w-0 flex-1 flex-col items-start justify-center">
-        <span className={cn("truncate text-sm transition-colors", isActive ? "font-bold text-teal-900" : "font-medium text-slate-600 group-hover:text-slate-900")}>
+        <span
+          className={cn(
+            'truncate transition-colors',
+            isActive
+              ? 'font-bold text-primary'
+              : 'font-medium text-foreground/70 group-hover:text-foreground'
+          )}
+          style={{ fontSize: scaleRem(0.875, labelScale) }}
+        >
           {children}
         </span>
         {description && (
-          <span className={cn("truncate text-xs transition-colors mt-0.5", isActive ? "text-teal-600/80 font-medium" : "text-slate-400 group-hover:text-slate-500")}>
+          <span
+            className={cn(
+              'mt-0.5 truncate transition-colors',
+              isActive
+                ? 'font-medium text-primary/75'
+                : 'text-muted-foreground/80 group-hover:text-muted-foreground'
+            )}
+            style={{ fontSize: scaleRem(0.75, labelScale) }}
+          >
             {description}
           </span>
         )}

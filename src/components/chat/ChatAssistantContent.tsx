@@ -175,18 +175,7 @@ export function ChatAssistantContent() {
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSendMessage = async (text: string) => {
-    if (!text.trim()) {
-      return;
-    }
-
-    const newUserMessage: Message = {
-      id: Date.now(),
-      text,
-      sender: 'user',
-    };
-
-    setMessages((prev) => [...prev, newUserMessage]);
+  const askAssistant = async (query: string) => {
     setIsTyping(true);
     setIsNearBottom(true);
 
@@ -194,7 +183,7 @@ export function ChatAssistantContent() {
       const { data, error } = await db.functions.invoke<{ response: string }>(
         'ask-ai-assistant',
         {
-          body: { query: text, userApiKey },
+          body: { query, userApiKey },
         }
       );
 
@@ -226,6 +215,41 @@ export function ChatAssistantContent() {
     } finally {
       setIsTyping(false);
     }
+  };
+
+  const handleSendMessage = async (text: string) => {
+    if (!text.trim()) {
+      return;
+    }
+
+    const newUserMessage: Message = {
+      id: Date.now(),
+      text,
+      sender: 'user',
+    };
+
+    setMessages((prev) => [...prev, newUserMessage]);
+    await askAssistant(text);
+  };
+
+  const handleRegenerate = async (aiMessageId: number) => {
+    const messageIndex = messages.findIndex((m) => m.id === aiMessageId);
+    if (messageIndex < 0) {
+      return;
+    }
+
+    const previousUserMessage = messages
+      .slice(0, messageIndex)
+      .reverse()
+      .find((m) => m.sender === 'user');
+
+    if (!previousUserMessage) {
+      toast.error('Não há pergunta anterior para regenerar esta resposta.');
+      return;
+    }
+
+    setMessages((prev) => prev.filter((m) => m.id !== aiMessageId));
+    await askAssistant(previousUserMessage.text);
   };
 
   return (
@@ -313,15 +337,17 @@ export function ChatAssistantContent() {
                   </div>
                   <div className="border-t border-border/60 bg-muted/10 px-5 py-4">
                     <p className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
-                      <Sparkles className="size-4 text-primary" /> BYOK (Privacidade On-Device)
+                      <Sparkles className="size-4 text-primary" /> BYOK
+                      (Privacidade On-Device)
                     </p>
                     <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                      Insira sua chave do modelo LLM para processamento privado. A chave fica apenas no seu navegador.
+                      Insira sua chave do modelo LLM para processamento privado.
+                      A chave fica apenas no seu navegador.
                     </p>
-                    <Input 
-                      type="password" 
-                      placeholder="sk-..." 
-                      value={userApiKey} 
+                    <Input
+                      type="password"
+                      placeholder="sk-..."
+                      value={userApiKey}
                       onChange={(e) => handleSaveApiKey(e.target.value)}
                       className="h-8 text-xs bg-white"
                     />
@@ -398,6 +424,11 @@ export function ChatAssistantContent() {
                   <ChatBubble
                     message={msg.text}
                     isUser={msg.sender === 'user'}
+                    onRegenerate={
+                      msg.sender === 'ai' && index > 0
+                        ? () => void handleRegenerate(msg.id)
+                        : undefined
+                    }
                   />
                 </div>
               ))}

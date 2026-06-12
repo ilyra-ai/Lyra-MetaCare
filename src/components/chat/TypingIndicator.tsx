@@ -2,10 +2,14 @@
 
 export function TypingIndicator() {
   return (
-    <div className="flex items-center space-x-1 p-3">
-      <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-      <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-      <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce"></div>
+    <div
+      className="inline-flex items-center gap-1.5 rounded-full border border-cosmic/15 bg-card/90 px-4 py-2.5 shadow-sm backdrop-blur-sm"
+      role="status"
+      aria-label="Lyra está digitando"
+    >
+      <div className="h-2 w-2 animate-bounce rounded-full bg-cosmic [animation-delay:-0.3s]"></div>
+      <div className="h-2 w-2 animate-bounce rounded-full bg-accent [animation-delay:-0.15s]"></div>
+      <div className="h-2 w-2 animate-bounce rounded-full bg-primary"></div>
     </div>
   );
 }

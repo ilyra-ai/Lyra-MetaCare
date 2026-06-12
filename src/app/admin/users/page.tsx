@@ -21,10 +21,10 @@ export default function AdminUsersPage() {
 
   if (!session || !isAdmin) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50/50 p-4">
-        <Card className="w-full max-w-md text-center border-red-500/50">
+      <div className="page-shell flex min-h-screen items-center justify-center p-4">
+        <Card className="w-full max-w-md text-center border-destructive/40">
           <CardHeader>
-            <AlertTriangle className="h-10 w-10 text-red-600 mx-auto mb-2" />
+            <AlertTriangle className="h-10 w-10 text-destructive mx-auto mb-2" />
             <CardTitle>Acesso Negado</CardTitle>
           </CardHeader>
           <CardContent>
@@ -38,11 +38,14 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50/50">
+    <div className="page-shell flex min-h-screen">
       <Sidebar />
       <div className="flex flex-col flex-1">
         <Header />
-        <PuckClientRenderer documentKey="admin-users" className="w-full flex-shrink-0" />
+        <PuckClientRenderer
+          documentKey="admin-users"
+          className="w-full flex-shrink-0"
+        />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           <UserManagementContent />
         </main>

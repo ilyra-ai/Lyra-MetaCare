@@ -59,11 +59,11 @@ export function AssessmentCard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'mood',
-          payload: { moodValue }
-        })
+          payload: { moodValue },
+        }),
       });
       if (!res.ok) throw new Error('Falha na API');
-      
+
       setCompleted((prev) => ({ ...prev, mood: true }));
       toast.success('Estado emocional registrado com sucesso!');
       setActiveTab('who5');
@@ -81,17 +81,20 @@ export function AssessmentCard() {
     }
     setIsSubmitting(true);
     try {
-      const score = Object.values(who5Answers).reduce((acc, val) => acc + Number(val), 0);
+      const score = Object.values(who5Answers).reduce(
+        (acc, val) => acc + Number(val),
+        0
+      );
       const res = await fetch('/api/data/user-assessments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'who5',
-          payload: { answers: who5Answers }
-        })
+          payload: { answers: who5Answers },
+        }),
       });
       if (!res.ok) throw new Error('Falha na API');
-      
+
       setCompleted((prev) => ({ ...prev, who5: true }));
       toast.success('Índice WHO-5 calculado e salvo com excelência!');
       setActiveTab('nps');
@@ -114,13 +117,15 @@ export function AssessmentCard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'nps',
-          payload: { score: npsScore, notes: npsNotes }
-        })
+          payload: { score: npsScore, notes: npsNotes },
+        }),
       });
       if (!res.ok) throw new Error('Falha na API');
-      
+
       setCompleted((prev) => ({ ...prev, nps: true }));
-      toast.success('Seu feedback é o combustível da nossa inovação. Obrigado!');
+      toast.success(
+        'Seu feedback é o combustível da nossa inovação. Obrigado!'
+      );
     } catch (err) {
       toast.error('Erro ao enviar feedback.');
     } finally {
@@ -137,9 +142,12 @@ export function AssessmentCard() {
           <div className="flex size-16 items-center justify-center rounded-full bg-success/20 text-success">
             <CheckCircle2 className="size-8" />
           </div>
-          <h3 className="text-xl font-bold text-foreground">Avaliações Concluídas!</h3>
+          <h3 className="text-xl font-bold text-foreground">
+            Avaliações Concluídas!
+          </h3>
           <p className="text-sm text-muted-foreground max-w-md">
-            Sua coerência biológica e espiritual agradece. Seus dados refinam nossos algoritmos cósmicos de inteligência artificial.
+            Sua coerência biológica e espiritual agradece. Seus dados refinam
+            nossos algoritmos cósmicos de inteligência artificial.
           </p>
         </CardContent>
       </Card>
@@ -210,13 +218,19 @@ export function AssessmentCard() {
                 { val: '5', emoji: '🤩', label: 'Radiante' },
               ].map((m) => (
                 <div key={m.val}>
-                  <RadioGroupItem value={m.val} id={`mood-${m.val}`} className="peer sr-only" />
+                  <RadioGroupItem
+                    value={m.val}
+                    id={`mood-${m.val}`}
+                    className="peer sr-only"
+                  />
                   <Label
                     htmlFor={`mood-${m.val}`}
                     className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-transparent bg-muted/50 p-3 hover:bg-muted peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 cursor-pointer transition-all"
                   >
                     <span className="text-2xl">{m.emoji}</span>
-                    <span className="text-[10px] font-medium uppercase tracking-wider">{m.label}</span>
+                    <span className="text-[10px] font-medium uppercase tracking-wider">
+                      {m.label}
+                    </span>
                   </Label>
                 </div>
               ))}
@@ -235,13 +249,18 @@ export function AssessmentCard() {
               { id: 2, text: 'Me senti calmo e relaxado?' },
               { id: 3, text: 'Me senti ativo e com energia?' },
               { id: 4, text: 'Acordei me sentindo renovado?' },
-              { id: 5, text: 'O meu dia a dia esteve preenchido por coisas que me interessam?' },
+              {
+                id: 5,
+                text: 'O meu dia a dia esteve preenchido por coisas que me interessam?',
+              },
             ].map((q) => (
               <div key={q.id} className="flex flex-col gap-2">
                 <Label className="text-sm font-medium">{q.text}</Label>
                 <RadioGroup
                   value={who5Answers[q.id]}
-                  onValueChange={(val) => setWho5Answers((prev) => ({ ...prev, [q.id]: val }))}
+                  onValueChange={(val) =>
+                    setWho5Answers((prev) => ({ ...prev, [q.id]: val }))
+                  }
                   className="flex flex-wrap gap-2"
                 >
                   {[
@@ -277,7 +296,8 @@ export function AssessmentCard() {
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 flex flex-col gap-5">
             <div className="flex flex-col gap-2">
               <Label className="text-sm font-semibold">
-                Qual a probabilidade de você recomendar a nossa jornada Quântica-Védica a um amigo?
+                Qual a probabilidade de você recomendar a nossa jornada
+                Quântica-Védica a um amigo?
               </Label>
               <div className="flex justify-between w-full mt-2">
                 {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
@@ -286,10 +306,10 @@ export function AssessmentCard() {
                     type="button"
                     onClick={() => setNpsScore(num)}
                     className={cn(
-                      "flex size-8 items-center justify-center rounded-md border text-sm font-medium transition-all hover:bg-primary/10 hover:border-primary/50",
-                      npsScore === num 
-                        ? "bg-primary text-primary-foreground border-primary scale-110 shadow-sm" 
-                        : "bg-background border-border/60 text-foreground/80"
+                      'flex size-8 items-center justify-center rounded-md border text-sm font-medium transition-all hover:bg-primary/10 hover:border-primary/50',
+                      npsScore === num
+                        ? 'bg-primary text-primary-foreground border-primary scale-110 shadow-sm'
+                        : 'bg-background border-border/60 text-foreground/80'
                     )}
                   >
                     {num}
@@ -297,16 +317,22 @@ export function AssessmentCard() {
                 ))}
               </div>
               <div className="flex justify-between mt-1 px-1">
-                <span className="text-[10px] text-muted-foreground font-medium uppercase">0 - Nada provável</span>
-                <span className="text-[10px] text-muted-foreground font-medium uppercase">10 - Muito provável</span>
+                <span className="text-[10px] text-muted-foreground font-medium uppercase">
+                  0 - Nada provável
+                </span>
+                <span className="text-[10px] text-muted-foreground font-medium uppercase">
+                  10 - Muito provável
+                </span>
               </div>
             </div>
-            
+
             <div className="flex flex-col gap-2 mt-2">
-              <Label htmlFor="nps-notes" className="text-sm font-medium">O que motivou a sua nota? (Opcional)</Label>
-              <Textarea 
-                id="nps-notes" 
-                placeholder="Seu feedback ilumina nosso caminho..." 
+              <Label htmlFor="nps-notes" className="text-sm font-medium">
+                O que motivou a sua nota? (Opcional)
+              </Label>
+              <Textarea
+                id="nps-notes"
+                placeholder="Seu feedback ilumina nosso caminho..."
                 className="resize-none h-20"
                 value={npsNotes}
                 onChange={(e) => setNpsNotes(e.target.value)}

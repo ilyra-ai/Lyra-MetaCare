@@ -93,7 +93,7 @@ export function AdminReportsContent() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border">
+          <div className="flex items-center justify-between rounded-[18px] border border-border/70 bg-secondary/60 p-4">
             <div>
               <h4 className="font-semibold">Exportar Todos os Usuários</h4>
               <p className="text-sm text-muted-foreground">

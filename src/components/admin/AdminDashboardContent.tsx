@@ -138,21 +138,21 @@ export function AdminDashboardContent() {
           title="Total de Usuários"
           value={stats?.totalUsers.toString() || '0'}
           description="Usuários cadastrados na plataforma."
-          color="text-blue-500"
+          color="text-info"
         />
         <StatCard
           icon={UserPlus}
           title="Novos Usuários (7d)"
           value={stats?.newUsersLast7Days.toString() || '0'}
           description="Cadastros na última semana."
-          color="text-green-500"
+          color="text-success"
         />
         <StatCard
           icon={CheckCircle}
           title="Taxa de Onboarding"
           value={`${stats?.onboardingCompletionRate.toFixed(1) || '0'}%`}
           description="Usuários que completaram o perfil."
-          color="text-violet-500"
+          color="text-cosmic"
         />
       </div>
       <Card>

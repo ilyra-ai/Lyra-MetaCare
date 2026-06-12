@@ -204,11 +204,11 @@ export function WearableConnection({
       case 'idle':
         return (
           <div className="text-center space-y-4">
-            <Watch className="h-16 w-16 text-gray-400 mx-auto" />
+            <Watch className="h-16 w-16 text-muted-foreground mx-auto" />
             <p className="text-muted-foreground">{config.idleDescription}</p>
             {bluetoothSupported === false ? (
-              <Alert className="border-amber-500/50 bg-amber-50 text-left">
-                <XCircle className="h-4 w-4 text-amber-600" />
+              <Alert className="border-warning/50 bg-warning-light text-left">
+                <XCircle className="h-4 w-4 text-warning" />
                 <AlertTitle>{config.unsupportedTitle}</AlertTitle>
                 <AlertDescription>
                   {errorMessage || config.unsupportedDescription}
@@ -229,7 +229,7 @@ export function WearableConnection({
       case 'connecting':
         return (
           <div className="text-center space-y-4">
-            <Loader2 className="h-16 w-16 text-blue-500 mx-auto animate-spin" />
+            <Loader2 className="h-16 w-16 text-info mx-auto animate-spin" />
             <p className="text-lg font-semibold">{config.connectingTitle}</p>
             <p className="text-sm text-muted-foreground">
               {config.connectingDescription}
@@ -242,16 +242,16 @@ export function WearableConnection({
       case 'connected':
         return (
           <div className="text-center space-y-4">
-            <CheckCircle className="h-16 w-16 text-green-600 mx-auto" />
-            <p className="text-lg font-semibold text-green-700">
+            <CheckCircle className="h-16 w-16 text-success mx-auto" />
+            <p className="text-lg font-semibold text-success">
               {config.connectedTitle}
             </p>
             <p className="text-muted-foreground">
               {config.connectedDescription}:{' '}
               <span className="font-medium text-foreground">{deviceName}</span>
             </p>
-            <Alert className="border-green-500/50 bg-green-50">
-              <Zap className="h-4 w-4 text-green-600" />
+            <Alert className="border-success/50 bg-success-light">
+              <Zap className="h-4 w-4 text-success" />
               <AlertTitle>{config.connectedAlertTitle}</AlertTitle>
               <AlertDescription>
                 {config.connectedAlertDescription}
@@ -269,8 +269,8 @@ export function WearableConnection({
       case 'error':
         return (
           <div className="text-center space-y-4">
-            <XCircle className="h-16 w-16 text-red-600 mx-auto" />
-            <p className="text-lg font-semibold text-red-700">
+            <XCircle className="h-16 w-16 text-destructive mx-auto" />
+            <p className="text-lg font-semibold text-destructive">
               {config.errorTitle}
             </p>
             <p className="text-muted-foreground">

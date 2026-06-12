@@ -10,8 +10,11 @@ export default async function InstrumentsPage() {
     .select();
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-950">
-        <PuckClientRenderer documentKey="instruments" className="w-full flex-shrink-0" />
+    <div className="page-shell min-h-screen p-8">
+      <PuckClientRenderer
+        documentKey="instruments"
+        className="w-full flex-shrink-0"
+      />
       <Card className="max-w-3xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl">
@@ -24,11 +27,11 @@ export default async function InstrumentsPage() {
             server-side:
           </p>
           {error ? (
-            <div className="text-red-500">
+            <div className="text-destructive">
               Erro ao buscar instrumentos: {error?.message}
             </div>
           ) : (
-            <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto text-sm">
+            <pre className="overflow-x-auto rounded-[18px] border border-border/70 bg-muted/60 p-4 text-sm text-foreground">
               {JSON.stringify(instruments, null, 2)}
             </pre>
           )}

@@ -97,13 +97,14 @@ export function calculateAdherenceScore(streaks: UserStreak[]): {
   for (const streak of streaks) {
     const weight = weights[streak.streak_type] || 1.0;
     maxPossible += weight * 30; // Considerando 30 dias como máximo de peso
-    
+
     // Cap in 30 days for score calculation purposes
     const effectiveStreak = Math.min(streak.current_streak, 30);
     totalScore += effectiveStreak * weight;
   }
 
-  const score = Math.round(Math.min(100, (totalScore / maxPossible) * 100)) || 0;
+  const score =
+    Math.round(Math.min(100, (totalScore / maxPossible) * 100)) || 0;
 
   let level: 'baixa' | 'média' | 'alta' | 'consistente';
   if (score < 30) level = 'baixa';

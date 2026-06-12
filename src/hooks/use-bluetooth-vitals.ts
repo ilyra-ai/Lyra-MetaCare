@@ -64,7 +64,9 @@ export function useBluetoothVitals(): BluetoothVitals {
   const connect = async () => {
     const nav = navigator as any;
     if (!nav.bluetooth) {
-      toast.error('Web Bluetooth não é suportado neste navegador. Use Chrome, Edge ou Opera.');
+      toast.error(
+        'Web Bluetooth não é suportado neste navegador. Use Chrome, Edge ou Opera.'
+      );
       return;
     }
 
@@ -79,16 +81,26 @@ export function useBluetoothVitals(): BluetoothVitals {
       btDevice.addEventListener('gattserverdisconnected', disconnect);
       const server = await btDevice.gatt.connect();
       const service = await server.getPrimaryService('heart_rate');
-      const characteristic = await service.getCharacteristic('heart_rate_measurement');
-      
+      const characteristic = await service.getCharacteristic(
+        'heart_rate_measurement'
+      );
+
       await characteristic.startNotifications();
-      characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged);
+      characteristic.addEventListener(
+        'characteristicvaluechanged',
+        handleCharacteristicValueChanged
+      );
 
       setDevice(btDevice);
       setConnected(true);
-      toast.success(`Conectado ao dispositivo: ${btDevice.name || 'Monitor Cardíaco'}`);
+      toast.success(
+        `Conectado ao dispositivo: ${btDevice.name || 'Monitor Cardíaco'}`
+      );
     } catch (err) {
-      toast.error('Falha ao conectar: ' + (err instanceof Error ? err.message : 'Erro desconhecido'));
+      toast.error(
+        'Falha ao conectar: ' +
+          (err instanceof Error ? err.message : 'Erro desconhecido')
+      );
       console.error(err);
     } finally {
       setIsConnecting(false);

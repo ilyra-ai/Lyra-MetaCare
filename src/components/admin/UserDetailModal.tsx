@@ -82,7 +82,7 @@ const DetailItem = ({
   label: string;
   value: React.ReactNode;
 }) => (
-  <div className="flex items-start gap-3 rounded-2xl border bg-white/80 p-4 backdrop-blur dark:bg-slate-950/50">
+  <div className="flex items-start gap-3 rounded-2xl border border-border/70 bg-card/80 p-4 backdrop-blur">
     <Icon className="mt-1 h-4 w-4 text-muted-foreground" />
     <div className="space-y-1">
       <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
@@ -207,8 +207,8 @@ export function UserDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl overflow-hidden border-0 p-0 shadow-2xl ring-1 ring-slate-200/70 dark:ring-slate-800/80">
-        <div className="bg-[radial-gradient(circle_at_top_left,_rgba(20,184,166,0.14),_transparent_32%),radial-gradient(circle_at_top_right,_rgba(37,99,235,0.14),_transparent_30%),linear-gradient(180deg,_rgba(255,255,255,0.94),_rgba(248,250,252,0.92))] p-8 dark:bg-[radial-gradient(circle_at_top_left,_rgba(20,184,166,0.18),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(37,99,235,0.16),_transparent_28%),linear-gradient(180deg,_rgba(2,6,23,0.96),_rgba(15,23,42,0.98))]">
+      <DialogContent className="max-w-5xl overflow-hidden border-0 p-0 shadow-2xl ring-1 ring-border/70">
+        <div className="bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.14),transparent_32%),radial-gradient(circle_at_top_right,hsl(var(--cosmic)/0.14),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.94),rgba(249,248,252,0.92))] p-8">
           <DialogHeader className="space-y-6">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex items-center gap-4">
@@ -229,7 +229,7 @@ export function UserDetailModal({
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {user.onboardingCompleted ? (
-                      <Badge className="bg-green-600">
+                      <Badge className="bg-success text-success-foreground">
                         Onboarding Completo
                       </Badge>
                     ) : (
@@ -247,7 +247,7 @@ export function UserDetailModal({
                 </div>
               </div>
 
-              <div className="min-w-[280px] rounded-3xl border bg-white/80 p-5 shadow-xl backdrop-blur dark:bg-slate-950/60">
+              <div className="min-w-[280px] rounded-3xl border border-border/70 bg-card/85 p-5 shadow-xl backdrop-blur">
                 <div className="mb-4 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
                   <ShieldCheck className="h-4 w-4" />
                   Gestão premium da assinatura
@@ -322,9 +322,9 @@ export function UserDetailModal({
             </div>
           </DialogHeader>
 
-          <div className="grid gap-6 border-t border-slate-200/70 pt-8 dark:border-slate-800/80 lg:grid-cols-[1.2fr_0.9fr]">
+          <div className="grid gap-6 border-t border-border/70 pt-8 lg:grid-cols-[1.2fr_0.9fr]">
             <div className="space-y-6">
-              <Card className="border-0 shadow-xl ring-1 ring-slate-200/70 dark:ring-slate-800/80">
+              <Card className="border-0 shadow-xl ring-1 ring-border/70">
                 <CardHeader>
                   <CardTitle>Perfil e contexto</CardTitle>
                   <CardDescription>
@@ -389,7 +389,7 @@ export function UserDetailModal({
             </div>
 
             <div className="space-y-6">
-              <Card className="border-0 shadow-xl ring-1 ring-slate-200/70 dark:ring-slate-800/80">
+              <Card className="border-0 shadow-xl ring-1 ring-border/70">
                 <CardHeader>
                   <CardTitle>Assinatura vigente</CardTitle>
                   <CardDescription>
@@ -405,7 +405,7 @@ export function UserDetailModal({
                     </div>
                   ) : assignment ? (
                     <>
-                      <div className="rounded-2xl border bg-white/80 p-4 backdrop-blur dark:bg-slate-950/50">
+                      <div className="rounded-2xl border border-border/70 bg-card/80 p-4 backdrop-blur">
                         <div className="mb-3 flex items-center justify-between gap-3">
                           <div className="space-y-2">
                             <PlanBadge
@@ -453,7 +453,7 @@ export function UserDetailModal({
                         </div>
                       </div>
 
-                      <div className="rounded-2xl border bg-white/80 p-4 backdrop-blur dark:bg-slate-950/50">
+                      <div className="rounded-2xl border border-border/70 bg-card/80 p-4 backdrop-blur">
                         <p className="mb-3 text-sm font-semibold">
                           Capacidades habilitadas
                         </p>
@@ -472,7 +472,7 @@ export function UserDetailModal({
                       </div>
                     </>
                   ) : (
-                    <div className="rounded-2xl border bg-white/80 p-4 text-sm text-muted-foreground backdrop-blur dark:bg-slate-950/50">
+                    <div className="rounded-2xl border border-border/70 bg-card/80 p-4 text-sm text-muted-foreground backdrop-blur">
                       Não foi possível carregar a assinatura atual deste
                       usuário.
                     </div>

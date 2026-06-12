@@ -305,7 +305,7 @@ export function UserManagementContent() {
                           {user.onboardingCompleted ? (
                             <Badge
                               variant="default"
-                              className="bg-green-600 hover:bg-green-700"
+                              className="bg-success text-success-foreground hover:brightness-95"
                             >
                               Completo
                             </Badge>
@@ -348,7 +348,7 @@ export function UserManagementContent() {
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
-                              className="text-red-600"
+                              className="text-destructive focus:text-destructive"
                               onSelect={() => {
                                 setUserToDelete(user);
                                 setIsDeleteAlertOpen(true);

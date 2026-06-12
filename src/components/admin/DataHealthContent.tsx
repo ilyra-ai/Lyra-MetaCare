@@ -169,9 +169,9 @@ export function DataHealthContent() {
   }, [db]);
 
   const getFillRateBadge = (rate: number) => {
-    if (rate > 80) return 'bg-green-600';
-    if (rate > 50) return 'bg-yellow-500';
-    return 'bg-red-600';
+    if (rate > 80) return 'bg-success';
+    if (rate > 50) return 'bg-warning';
+    return 'bg-destructive';
   };
 
   if (loading) {
@@ -294,7 +294,7 @@ export function DataHealthContent() {
               </ul>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center p-8">
-                <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
+                <CheckCircle className="h-12 w-12 text-success mb-4" />
                 <p className="font-semibold">Excelente!</p>
                 <p className="text-sm text-muted-foreground">
                   Nenhum usuário inativo encontrado.

@@ -244,7 +244,7 @@ export function AdminContentManagement() {
                                 <Edit className="mr-2 h-4 w-4" /> Editar
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                className="text-red-600"
+                                className="text-destructive focus:text-destructive"
                                 onSelect={() => {
                                   setItemToDelete({
                                     id: habit.id,
@@ -323,7 +323,7 @@ export function AdminContentManagement() {
                                 <Edit className="mr-2 h-4 w-4" /> Editar
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                className="text-red-600"
+                                className="text-destructive focus:text-destructive"
                                 onSelect={() => {
                                   setItemToDelete({
                                     id: tip.id,

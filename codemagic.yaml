@@ -8,15 +8,15 @@ workflows:
       ubuntu: 24.04
       node: lts
       vars:
-        PNPM_STORE_PATH: "$HOME/.pnpm-store"
-        NEXT_TELEMETRY_DISABLED: "1"
-        CI: "true"
+        PNPM_STORE_PATH: '$HOME/.pnpm-store'
+        NEXT_TELEMETRY_DISABLED: '1'
+        CI: 'true'
 
     cache:
       cache_paths:
-        - "$PNPM_STORE_PATH"
-        - "$CM_BUILD_DIR/node_modules"
-        - "$CM_BUILD_DIR/.next/cache"
+        - '$PNPM_STORE_PATH'
+        - '$CM_BUILD_DIR/node_modules'
+        - '$CM_BUILD_DIR/.next/cache'
 
     triggering:
       events:
@@ -26,7 +26,7 @@ workflows:
         - pattern: main
           include: true
           source: true
-        - pattern: "*"
+        - pattern: '*'
           include: true
           source: true
       cancel_previous_builds: true

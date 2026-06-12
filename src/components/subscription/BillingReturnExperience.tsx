@@ -49,9 +49,8 @@ function getExperienceCopy(mode: 'success' | 'cancel') {
       alertDescription:
         'Se a assinatura ainda não mudou nesta tela, atualize em alguns segundos. O provisioning depende do webhook assinado chegar e ser persistido no MySQL.',
       icon: CheckCircle2,
-      tone: 'border-emerald-200 bg-emerald-50/80 text-emerald-950 dark:border-emerald-900/80 dark:bg-emerald-950/30 dark:text-emerald-100',
-      alertVariant:
-        'border-emerald-200 bg-emerald-50/80 dark:border-emerald-900/80 dark:bg-emerald-950/30',
+      tone: 'border-success/30 bg-success-light/80 text-success',
+      alertVariant: 'border-success/30 bg-success-light/70',
     };
   }
 
@@ -64,9 +63,8 @@ function getExperienceCopy(mode: 'success' | 'cancel') {
     alertDescription:
       'O catálogo comercial continua disponível na sua conta. Se o ambiente Stripe estiver configurado, você pode reiniciar a assinatura imediatamente.',
     icon: TriangleAlert,
-    tone: 'border-amber-200 bg-amber-50/80 text-amber-950 dark:border-amber-900/80 dark:bg-amber-950/30 dark:text-amber-100',
-    alertVariant:
-      'border-amber-200 bg-amber-50/80 dark:border-amber-900/80 dark:bg-amber-950/30',
+    tone: 'border-warning/30 bg-warning-light/80 text-warning',
+    alertVariant: 'border-warning/30 bg-warning-light/70',
   };
 }
 
@@ -128,16 +126,16 @@ export function BillingReturnExperience({
     subscription?.source !== 'stripe';
 
   return (
-    <div className="flex min-h-screen bg-gray-50/50 font-[family-name:var(--font-geist-sans)]">
+    <div className="page-shell flex min-h-screen">
       <Sidebar />
       <div className="flex flex-1 flex-col">
         <Header />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           <div className="mx-auto grid w-full max-w-7xl gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
             <div className="space-y-6">
-              <Card className="overflow-hidden border-0 shadow-2xl ring-1 ring-slate-200/70 dark:ring-slate-800/80">
-                <div className="h-2 w-full bg-gradient-to-r from-teal-500 via-sky-500 to-orange-500" />
-                <CardHeader className="space-y-4 bg-[radial-gradient(circle_at_top_left,_rgba(20,184,166,0.12),_transparent_45%),radial-gradient(circle_at_top_right,_rgba(249,115,22,0.12),_transparent_40%)]">
+              <Card className="overflow-hidden border-0 shadow-xl ring-1 ring-border/70">
+                <div className="h-2 w-full bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--cosmic)),hsl(var(--accent)))]" />
+                <CardHeader className="space-y-4 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.12),transparent_45%),radial-gradient(circle_at_top_right,hsl(var(--accent)/0.12),transparent_40%)]">
                   <Badge
                     variant="secondary"
                     className="w-fit rounded-full px-3 py-1 text-xs uppercase tracking-[0.2em]"
@@ -168,7 +166,7 @@ export function BillingReturnExperience({
                   </Alert>
 
                   {checkoutSessionId ? (
-                    <Card className="border-dashed bg-white/80 dark:bg-slate-950/50">
+                    <Card className="border-dashed bg-card/80">
                       <CardHeader className="pb-3">
                         <CardTitle className="text-base">
                           Referência do checkout
@@ -179,7 +177,7 @@ export function BillingReturnExperience({
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <code className="break-all rounded-xl bg-slate-950 px-3 py-2 text-xs text-white dark:bg-slate-100 dark:text-slate-950">
+                        <code className="break-all rounded-xl bg-foreground px-3 py-2 text-xs text-background">
                           {checkoutSessionId}
                         </code>
                       </CardContent>
@@ -187,7 +185,7 @@ export function BillingReturnExperience({
                   ) : null}
 
                   {stripePending ? (
-                    <Alert className="border-sky-200 bg-sky-50/80 dark:border-sky-900/80 dark:bg-sky-950/30">
+                    <Alert className="border-info/30 bg-info-light/80">
                       <CreditCard className="h-4 w-4" />
                       <AlertTitle>Sincronização pendente</AlertTitle>
                       <AlertDescription>
@@ -200,7 +198,7 @@ export function BillingReturnExperience({
                   ) : null}
 
                   {mode === 'cancel' ? (
-                    <div className="rounded-3xl border bg-white/80 p-5 backdrop-blur dark:bg-slate-950/50">
+                    <div className="rounded-3xl border border-border/70 bg-card/80 p-5 backdrop-blur">
                       <div className="space-y-2">
                         <p className="text-sm font-semibold">
                           Retomar assinatura

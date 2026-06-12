@@ -248,7 +248,7 @@ export function AdminPlanMatrixContent() {
   if (loading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="flex items-center gap-3 rounded-full bg-white/70 px-6 py-3 shadow-xl ring-1 ring-slate-200/70 backdrop-blur dark:bg-slate-950/60 dark:ring-slate-800">
+        <div className="flex items-center gap-3 rounded-full bg-card/75 px-6 py-3 shadow-xl ring-1 ring-border/70 backdrop-blur">
           <Loader2 className="h-5 w-5 animate-spin text-primary" />
           <span className="text-sm font-medium text-muted-foreground">
             Carregando matriz real de capacidades...
@@ -260,14 +260,14 @@ export function AdminPlanMatrixContent() {
 
   return (
     <div className="space-y-8">
-      <Card className="overflow-hidden border-0 shadow-2xl ring-1 ring-slate-200/70 dark:ring-slate-800/80">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(20,184,166,0.14),_transparent_35%),radial-gradient(circle_at_top_right,_rgba(37,99,235,0.14),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(249,115,22,0.16),_transparent_32%)]" />
+      <Card className="overflow-hidden border-0 shadow-2xl ring-1 ring-border/70">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.14),transparent_35%),radial-gradient(circle_at_top_right,hsl(var(--cosmic)/0.14),transparent_32%),radial-gradient(circle_at_bottom_right,hsl(var(--accent)/0.16),transparent_32%)]" />
         <CardHeader className="relative">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="space-y-3">
               <Badge
                 variant="outline"
-                className="border-slate-300/80 bg-white/70 text-slate-700 backdrop-blur dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-200"
+                className="border-border/80 bg-card/75 text-foreground backdrop-blur"
               >
                 <ShieldCheck className="mr-1.5 h-3.5 w-3.5" />
                 Administração premium de planos
@@ -284,7 +284,7 @@ export function AdminPlanMatrixContent() {
             <Button
               variant="outline"
               onClick={loadMatrix}
-              className="rounded-full bg-white/80 backdrop-blur dark:bg-slate-950/60"
+              className="rounded-full bg-card/85 backdrop-blur"
             >
               <RefreshCw className="mr-2 h-4 w-4" />
               Recarregar matriz
@@ -297,7 +297,7 @@ export function AdminPlanMatrixContent() {
         {plans.map((plan) => (
           <Card
             key={plan.key}
-            className="overflow-hidden border-0 shadow-xl ring-1 ring-slate-200/70 dark:ring-slate-800/80"
+            className="overflow-hidden border-0 shadow-xl ring-1 ring-border/70"
           >
             <div
               className="h-2 w-full"
@@ -525,7 +525,7 @@ export function AdminPlanMatrixContent() {
         ))}
       </div>
 
-      <Card className="overflow-hidden border-0 shadow-xl ring-1 ring-slate-200/70 dark:ring-slate-800/80">
+      <Card className="overflow-hidden border-0 shadow-xl ring-1 ring-border/70">
         <CardHeader>
           <CardTitle>Matriz editável de entitlements</CardTitle>
           <CardDescription>
@@ -580,7 +580,7 @@ export function AdminPlanMatrixContent() {
 
                     return (
                       <TableCell key={plan.key} className="align-top">
-                        <div className="space-y-4 rounded-2xl border bg-slate-50/70 p-4 dark:bg-slate-950/40">
+                        <div className="space-y-4 rounded-2xl border border-border/70 bg-secondary/60 p-4">
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm font-medium">Habilitado</p>
@@ -603,7 +603,7 @@ export function AdminPlanMatrixContent() {
 
                           {planFeature.featureType === 'quota' ? (
                             <div className="space-y-3">
-                              <div className="flex items-center justify-between rounded-xl border bg-white/80 p-3 dark:bg-slate-950/60">
+                              <div className="flex items-center justify-between rounded-xl border border-border/70 bg-card/85 p-3">
                                 <div>
                                   <p className="text-sm font-medium">
                                     Ilimitado

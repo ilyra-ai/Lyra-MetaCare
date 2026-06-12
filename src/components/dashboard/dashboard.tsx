@@ -211,15 +211,15 @@ export function Dashboard() {
   const { config: appConfig } = usePublicSitePageConfig('app');
   const { data: subscription, loading: subscriptionLoading } =
     useAccountSubscription();
-  const { 
-    astrology, 
-    isSyncing, 
-    syncError, 
-    vitals, 
-    triggerManualSync, 
-    bluetoothConnect, 
-    bluetoothDisconnect, 
-    isBluetoothConnected 
+  const {
+    astrology,
+    isSyncing,
+    syncError,
+    vitals,
+    triggerManualSync,
+    bluetoothConnect,
+    bluetoothDisconnect,
+    isBluetoothConnected,
   } = useHealthOrchestrator();
 
   const dashboardEnabled = isPlanFeatureEnabled(
@@ -405,10 +405,20 @@ export function Dashboard() {
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className={cn(isBluetoothConnected && "border-primary text-primary")}
-                  onClick={() => isBluetoothConnected ? bluetoothDisconnect() : bluetoothConnect()}
+                  className={cn(
+                    isBluetoothConnected && 'border-primary text-primary'
+                  )}
+                  onClick={() =>
+                    isBluetoothConnected
+                      ? bluetoothDisconnect()
+                      : bluetoothConnect()
+                  }
                 >
-                  {isBluetoothConnected ? <BluetoothConnected className="mr-2" /> : <Bluetooth className="mr-2" />}
+                  {isBluetoothConnected ? (
+                    <BluetoothConnected className="mr-2" />
+                  ) : (
+                    <Bluetooth className="mr-2" />
+                  )}
                   {isBluetoothConnected ? 'BLE Ativo' : 'Parear Cinta'}
                 </Button>
                 <Button

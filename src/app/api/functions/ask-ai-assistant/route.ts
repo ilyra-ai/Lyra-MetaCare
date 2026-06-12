@@ -12,7 +12,10 @@ export const runtime = 'nodejs';
 export async function POST(request: Request) {
   try {
     const session = await requireServerSession();
-    const { query, userApiKey } = (await request.json()) as { query: string; userApiKey?: string };
+    const { query, userApiKey } = (await request.json()) as {
+      query: string;
+      userApiKey?: string;
+    };
     if (!query?.trim()) {
       return NextResponse.json(
         { error: 'Pergunta obrigatória.' },
@@ -79,9 +82,9 @@ Use esta análise como base para responder à pergunta do usuário de forma huma
             body: JSON.stringify({
               contents: [
                 { role: 'user', parts: [{ text: systemPrompt }] },
-                { role: 'user', parts: [{ text: query }] }
+                { role: 'user', parts: [{ text: query }] },
               ],
-              generationConfig: { temperature: 0.3 }
+              generationConfig: { temperature: 0.3 },
             }),
           }
         );

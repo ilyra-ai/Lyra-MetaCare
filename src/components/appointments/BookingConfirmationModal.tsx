@@ -63,7 +63,7 @@ export function BookingConfirmationModal({
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="flex items-center gap-3">
-            <User className="h-5 w-5 text-blue-600" />
+            <User className="h-5 w-5 text-primary" />
             <div>
               <p className="font-semibold">{professional.name}</p>
               <p className="text-sm text-muted-foreground">
@@ -72,11 +72,11 @@ export function BookingConfirmationModal({
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Calendar className="h-5 w-5 text-blue-600" />
+            <Calendar className="h-5 w-5 text-primary" />
             <p className="font-medium capitalize">{formattedDate}</p>
           </div>
           <div className="flex items-center gap-3">
-            <Clock className="h-5 w-5 text-blue-600" />
+            <Clock className="h-5 w-5 text-primary" />
             <p className="font-medium">{formattedTime}</p>
           </div>
         </div>
@@ -91,7 +91,7 @@ export function BookingConfirmationModal({
           <Button
             onClick={handleConfirm}
             disabled={isConfirming}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-gradient-teal text-white shadow-teal hover:brightness-105"
           >
             {isConfirming ? (
               <>

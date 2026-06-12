@@ -103,11 +103,20 @@ function calcPranaVayu(m: PranicMetricSnapshot): VayuScore {
 
   const s = clamp(score);
   let insight: string;
-  if (s >= 75) insight = 'Prana Vayu forte — boa captação de energia vital pela respiração.';
-  else if (s >= 50) insight = 'Prana Vayu moderado — pranayama pode amplificar a absorção.';
+  if (s >= 75)
+    insight =
+      'Prana Vayu forte — boa captação de energia vital pela respiração.';
+  else if (s >= 50)
+    insight = 'Prana Vayu moderado — pranayama pode amplificar a absorção.';
   else insight = 'Prana Vayu fraco — priorize respiração consciente e ar puro.';
 
-  return { name: 'Prana', label: 'Prana Vayu', domain: 'Respiração e absorção', score: s, insight };
+  return {
+    name: 'Prana',
+    label: 'Prana Vayu',
+    domain: 'Respiração e absorção',
+    score: s,
+    insight,
+  };
 }
 
 /**
@@ -137,11 +146,20 @@ function calcApanaVayu(m: PranicMetricSnapshot): VayuScore {
 
   const s = clamp(score);
   let insight: string;
-  if (s >= 75) insight = 'Apana Vayu forte — eliminação e desintoxicação funcionais.';
-  else if (s >= 50) insight = 'Apana Vayu moderado — aumente fibras e hidratação fracionada.';
-  else insight = 'Apana Vayu fraco — priorize água, fibras e alimentos integrais.';
+  if (s >= 75)
+    insight = 'Apana Vayu forte — eliminação e desintoxicação funcionais.';
+  else if (s >= 50)
+    insight = 'Apana Vayu moderado — aumente fibras e hidratação fracionada.';
+  else
+    insight = 'Apana Vayu fraco — priorize água, fibras e alimentos integrais.';
 
-  return { name: 'Apana', label: 'Apana Vayu', domain: 'Eliminação e desintoxicação', score: s, insight };
+  return {
+    name: 'Apana',
+    label: 'Apana Vayu',
+    domain: 'Eliminação e desintoxicação',
+    score: s,
+    insight,
+  };
 }
 
 /**
@@ -170,11 +188,22 @@ function calcSamanaVayu(m: PranicMetricSnapshot): VayuScore {
 
   const s = clamp(score);
   let insight: string;
-  if (s >= 75) insight = 'Samana Vayu forte — Agni digestivo aceso e metabolismo estável.';
-  else if (s >= 50) insight = 'Samana Vayu moderado — considere jejum intermitente leve para fortalecer.';
-  else insight = 'Samana Vayu fraco — simplifique refeições e use especiarias digestivas.';
+  if (s >= 75)
+    insight = 'Samana Vayu forte — Agni digestivo aceso e metabolismo estável.';
+  else if (s >= 50)
+    insight =
+      'Samana Vayu moderado — considere jejum intermitente leve para fortalecer.';
+  else
+    insight =
+      'Samana Vayu fraco — simplifique refeições e use especiarias digestivas.';
 
-  return { name: 'Samana', label: 'Samana Vayu', domain: 'Digestão e metabolismo', score: s, insight };
+  return {
+    name: 'Samana',
+    label: 'Samana Vayu',
+    domain: 'Digestão e metabolismo',
+    score: s,
+    insight,
+  };
 }
 
 /**
@@ -204,11 +233,23 @@ function calcUdanaVayu(m: PranicMetricSnapshot): VayuScore {
 
   const s = clamp(score);
   let insight: string;
-  if (s >= 75) insight = 'Udana Vayu forte — expressão clara, criatividade e cognição afiada.';
-  else if (s >= 50) insight = 'Udana Vayu moderado — pratique leitura, canto ou ensino para fortalecer.';
-  else insight = 'Udana Vayu fraco — silêncio regenerativo e atividades criativas são recomendados.';
+  if (s >= 75)
+    insight =
+      'Udana Vayu forte — expressão clara, criatividade e cognição afiada.';
+  else if (s >= 50)
+    insight =
+      'Udana Vayu moderado — pratique leitura, canto ou ensino para fortalecer.';
+  else
+    insight =
+      'Udana Vayu fraco — silêncio regenerativo e atividades criativas são recomendados.';
 
-  return { name: 'Udana', label: 'Udana Vayu', domain: 'Expressão e cognição', score: s, insight };
+  return {
+    name: 'Udana',
+    label: 'Udana Vayu',
+    domain: 'Expressão e cognição',
+    score: s,
+    insight,
+  };
 }
 
 /**
@@ -246,11 +287,23 @@ function calcVyanaVayu(m: PranicMetricSnapshot): VayuScore {
 
   const s = clamp(score);
   let insight: string;
-  if (s >= 75) insight = 'Vyana Vayu forte — circulação de energia vital excelente em todo o corpo.';
-  else if (s >= 50) insight = 'Vyana Vayu moderado — aumente movimento e exercícios cardiovasculares.';
-  else insight = 'Vyana Vayu fraco — priorize caminhadas, alongamento e massagem (Abhyanga).';
+  if (s >= 75)
+    insight =
+      'Vyana Vayu forte — circulação de energia vital excelente em todo o corpo.';
+  else if (s >= 50)
+    insight =
+      'Vyana Vayu moderado — aumente movimento e exercícios cardiovasculares.';
+  else
+    insight =
+      'Vyana Vayu fraco — priorize caminhadas, alongamento e massagem (Abhyanga).';
 
-  return { name: 'Vyana', label: 'Vyana Vayu', domain: 'Circulação e movimento', score: s, insight };
+  return {
+    name: 'Vyana',
+    label: 'Vyana Vayu',
+    domain: 'Circulação e movimento',
+    score: s,
+    insight,
+  };
 }
 
 /**
@@ -288,7 +341,7 @@ export function calculatePranicIndex(
   ];
 
   // Pesos: Prana (25%), Vyana (22%), Samana (20%), Apana (18%), Udana (15%)
-  const weights = [0.25, 0.18, 0.20, 0.15, 0.22];
+  const weights = [0.25, 0.18, 0.2, 0.15, 0.22];
   let weightedSum = 0;
   for (let i = 0; i < vayus.length; i++) {
     weightedSum += vayus[i].score * weights[i];
@@ -311,10 +364,14 @@ export function calculatePranicIndex(
   else level = 'radiante';
 
   const descriptions: Record<string, string> = {
-    desvitalizado: 'Sua energia vital (Prana) está significativamente baixa. Os canais energéticos (Nadis) precisam de atenção urgente através de respiração, hidratação e descanso.',
-    'em recuperação': 'Seu Prana está em processo de recuperação. Alguns Vayus já mostram sinais de vitalidade mas outros precisam de suporte.',
-    vital: 'Boa vitalidade pránica. Seus 5 Vayus estão fluindo de forma adequada, sustentando as funções vitais com eficiência.',
-    radiante: 'Estado excepcional de energia vital. Todos os 5 Vayus estão ativos e em harmonia. Seu Prana irradia força e clareza.',
+    desvitalizado:
+      'Sua energia vital (Prana) está significativamente baixa. Os canais energéticos (Nadis) precisam de atenção urgente através de respiração, hidratação e descanso.',
+    'em recuperação':
+      'Seu Prana está em processo de recuperação. Alguns Vayus já mostram sinais de vitalidade mas outros precisam de suporte.',
+    vital:
+      'Boa vitalidade pránica. Seus 5 Vayus estão fluindo de forma adequada, sustentando as funções vitais com eficiência.',
+    radiante:
+      'Estado excepcional de energia vital. Todos os 5 Vayus estão ativos e em harmonia. Seu Prana irradia força e clareza.',
   };
 
   // A recomendação foca no Vayu mais fraco

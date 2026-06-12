@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import React from 'react';
-import { Settings2, Sparkles, Workflow } from 'lucide-react';
+import { Settings2, Sparkles } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useIsAdmin } from '@/hooks/use-is-admin';
 import { useAccountSubscription } from '@/hooks/use-account-subscription';
@@ -63,26 +63,42 @@ export function Sidebar() {
       style={{ width: `${appConfig.sizing.sidebarWidth}px` }}
     >
       <div className="flex h-full flex-col px-4 py-5">
-        <div className="mb-8 flex flex-col items-center justify-center gap-3 py-6 relative">
-          <Link href="/" className="flex flex-col items-center gap-2 group interactive-lift">
-            <div className="flex size-14 items-center justify-center rounded-[24px] bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-[0_8px_24px_rgba(45,212,191,0.4)] ring-4 ring-white/50 backdrop-blur-md transition-all group-hover:scale-105 group-hover:shadow-[0_12px_32px_rgba(45,212,191,0.5)]">
-              <Sparkles className="h-6 w-6 animate-float" strokeWidth={2} />
+        <div className="relative mb-8 flex flex-col items-center justify-center gap-3 py-6">
+          <Link
+            href="/"
+            className="group interactive-lift flex flex-col items-center gap-2"
+          >
+            <div className="flex size-14 items-center justify-center rounded-[24px] bg-gradient-teal text-white shadow-teal ring-4 ring-white/50 backdrop-blur-md transition-all group-hover:scale-105 group-hover:shadow-cosmic">
+              <Sparkles
+                className="animate-float"
+                strokeWidth={2}
+                style={{
+                  height: scalePx(24, iconScale),
+                  width: scalePx(24, iconScale),
+                }}
+              />
             </div>
             <div className="text-center">
-              <p className="font-display text-xl font-bold tracking-tight text-slate-800">
+              <p
+                className="font-display font-bold tracking-tight text-foreground"
+                style={{ fontSize: scaleRem(1.25, navLabelScale) }}
+              >
                 {appConfig.sidebar.brandTitle}
               </p>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-teal-600/80">
+              <p
+                className="font-semibold uppercase tracking-[0.2em] text-primary/80"
+                style={{ fontSize: scaleRem(0.625, navLabelScale) }}
+              >
                 {appConfig.sidebar.brandEyebrow}
               </p>
             </div>
           </Link>
-          <div className="absolute -bottom-4 w-full h-[1px] bg-gradient-to-r from-transparent via-border to-transparent opacity-50" />
+          <div className="soft-divider absolute -bottom-4 opacity-60" />
         </div>
 
         <nav
           aria-label="Navegação principal"
-          className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto pr-2 mt-4 custom-scrollbar"
+          className="mt-4 flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto pr-2"
         >
           {Object.entries(sections).map(([section, items]) => (
             <section key={section} className="space-y-2">
@@ -107,19 +123,34 @@ export function Sidebar() {
           ))}
         </nav>
 
-        <div className="mt-auto pt-6 border-t border-slate-200/60 relative">
-          <Link href="/profile" className="flex items-center gap-3 interactive-lift group w-full rounded-2xl hover:bg-slate-50/80 p-2 transition-colors">
+        <div className="relative mt-auto border-t border-sidebar-border/70 pt-6">
+          {subscription ? (
+            <div className="mb-3 flex justify-center">
+              <PlanBadge planKey={subscription.plan.key} />
+            </div>
+          ) : null}
+          <Link
+            href="/profile"
+            className="interactive-lift group flex w-full items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-sidebar-accent/70"
+          >
             <Avatar className="h-12 w-12 border-2 border-white shadow-sm transition-transform group-hover:scale-105">
-              <AvatarImage src={profile?.avatar_url || undefined} alt={`Avatar de ${firstName}`} />
-              <AvatarFallback className="bg-gradient-to-br from-slate-200 to-slate-300 text-slate-700 font-medium">
+              <AvatarImage
+                src={profile?.avatar_url || undefined}
+                alt={`Avatar de ${firstName}`}
+              />
+              <AvatarFallback className="bg-gradient-teal font-medium text-white">
                 {initial}
               </AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-800 truncate">{firstName}</p>
-              <p className="text-xs text-slate-500 truncate">{userEmail}</p>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-foreground">
+                {firstName}
+              </p>
+              <p className="truncate text-xs text-muted-foreground">
+                {userEmail}
+              </p>
             </div>
-            <Settings2 className="w-5 h-5 text-slate-400 group-hover:text-teal-600 transition-colors" />
+            <Settings2 className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-primary" />
           </Link>
         </div>
       </div>

@@ -140,7 +140,7 @@ export function HabitList() {
     <Card className="h-full">
       <CardHeader>
         <CardTitle className="flex items-center">
-          <ListChecks className="h-5 w-5 mr-2 text-green-600" />
+          <ListChecks className="h-5 w-5 mr-2 text-success" />
           Hábitos de Longevidade
         </CardTitle>
         <CardDescription>
@@ -170,7 +170,7 @@ export function HabitList() {
           <div className="space-y-3">
             {habits.map((habit, index) => (
               <React.Fragment key={habit.id}>
-                <div className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors">
+                <div className="flex items-center justify-between rounded-[18px] p-2.5 transition-colors hover:bg-secondary/70">
                   <div className="flex flex-col">
                     <p className="font-medium">{habit.name}</p>
                     <span className="text-xs text-muted-foreground">

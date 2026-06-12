@@ -122,7 +122,7 @@ export function generateLocalWellnessPlan(payload: PlanPayload) {
       nutrition: {
         title: 'Nutrição',
         icon: 'Utensils',
-        color: 'text-teal-600',
+        color: 'text-primary',
         description:
           'Intervenções alimentares de baixo atrito e alto impacto metabólico.',
         items: nutritionItems,
@@ -130,7 +130,7 @@ export function generateLocalWellnessPlan(payload: PlanPayload) {
       exercise: {
         title: 'Movimento',
         icon: 'Dumbbell',
-        color: 'text-rose-600',
+        color: 'text-accent',
         description:
           'Prescrição de movimento guiada por recuperação e prontidão.',
         items: exerciseItems,
@@ -138,7 +138,7 @@ export function generateLocalWellnessPlan(payload: PlanPayload) {
       sleep: {
         title: 'Sono',
         icon: 'Moon',
-        color: 'text-indigo-600',
+        color: 'text-cosmic',
         description:
           'Recuperação noturna alinhada ao estado fisiológico e ao céu atual.',
         items: sleepItems,

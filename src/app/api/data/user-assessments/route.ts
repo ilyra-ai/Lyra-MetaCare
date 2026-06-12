@@ -3,14 +3,18 @@ import { NextResponse } from 'next/server';
 import { getHttpErrorStatus } from '@/lib/http-error';
 import { executeStatement } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
-import { AssessmentType, calculateWHO5Score, classifyNPS } from '@/lib/kpi/assessment-engine';
+import {
+  AssessmentType,
+  calculateWHO5Score,
+  classifyNPS,
+} from '@/lib/kpi/assessment-engine';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
   try {
     const session = await requireServerSession();
-    
+
     const body = await request.json();
     const { type, payload } = body as {
       type: AssessmentType;
@@ -18,7 +22,10 @@ export async function POST(request: Request) {
     };
 
     if (!type || !payload) {
-      return NextResponse.json({ error: 'Payload ou tipo inválido.' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Payload ou tipo inválido.' },
+        { status: 400 }
+      );
     }
 
     let scoreValue = 0;
@@ -37,7 +44,10 @@ export async function POST(request: Request) {
       const classification = classifyNPS(scoreValue);
       rawResponses = JSON.stringify({ ...payload, classification });
     } else {
-      return NextResponse.json({ error: 'Tipo de avaliação desconhecido.' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Tipo de avaliação desconhecido.' },
+        { status: 400 }
+      );
     }
 
     await executeStatement(
@@ -59,14 +69,19 @@ export async function POST(request: Request) {
         type,
         scoreValue,
         rawResponses,
-        notes
+        notes,
       ]
     );
 
     return NextResponse.json({ success: true, scoreValue, notes });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Falha ao salvar a avaliação.' },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Falha ao salvar a avaliação.',
+      },
       { status: getHttpErrorStatus(error) }
     );
   }

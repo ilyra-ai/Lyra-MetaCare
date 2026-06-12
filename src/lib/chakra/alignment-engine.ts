@@ -232,57 +232,159 @@ const CHAKRA_INSIGHTS: Record<
 > = {
   Muladhara: {
     bloqueado: {
-      insight: 'Sensação de instabilidade, insegurança ou desconexão com o corpo físico.',
-      practice: 'Caminhe descalço na terra, pratique agachamentos e aumente o sono profundo.',
+      insight:
+        'Sensação de instabilidade, insegurança ou desconexão com o corpo físico.',
+      practice:
+        'Caminhe descalço na terra, pratique agachamentos e aumente o sono profundo.',
     },
     subativo: {
       insight: 'Aterramento parcial. O corpo busca mais estabilidade e rotina.',
-      practice: 'Mantenha horários fixos de sono e inclua alimentos raiz (beterraba, cenoura).',
+      practice:
+        'Mantenha horários fixos de sono e inclua alimentos raiz (beterraba, cenoura).',
     },
     equilibrado: {
-      insight: 'Base sólida e segura. Boa conexão com o corpo e senso de pertencimento.',
-      practice: 'Mantenha a rotina atual. Gratidão e presença sustentam o equilíbrio.',
+      insight:
+        'Base sólida e segura. Boa conexão com o corpo e senso de pertencimento.',
+      practice:
+        'Mantenha a rotina atual. Gratidão e presença sustentam o equilíbrio.',
     },
     hiperativo: {
-      insight: 'Rigidez excessiva ou apego material. Flexibilidade é necessária.',
-      practice: 'Pratique yoga fluido e exercícios de mobilidade para soltar tensões.',
+      insight:
+        'Rigidez excessiva ou apego material. Flexibilidade é necessária.',
+      practice:
+        'Pratique yoga fluido e exercícios de mobilidade para soltar tensões.',
     },
   },
   Svadhisthana: {
-    bloqueado: { insight: 'Bloqueio criativo e emocional. Dificuldade de fluidez.', practice: 'Hidrate-se abundantemente, dance livremente e conecte-se com água (banho longo, natação).' },
-    subativo: { insight: 'Emoções contidas. Pouca expressão criativa.', practice: 'Aumente a hidratação e permita-se atividades artísticas ou lúdicas.' },
-    equilibrado: { insight: 'Fluxo emocional saudável. Criatividade e prazer em equilíbrio.', practice: 'Continue nutrindo relações e atividades que trazem alegria genuína.' },
-    hiperativo: { insight: 'Emocionalidade excessiva ou compulsividade.', practice: 'Meditação focada e respiração abdominal para modular as emoções.' },
+    bloqueado: {
+      insight: 'Bloqueio criativo e emocional. Dificuldade de fluidez.',
+      practice:
+        'Hidrate-se abundantemente, dance livremente e conecte-se com água (banho longo, natação).',
+    },
+    subativo: {
+      insight: 'Emoções contidas. Pouca expressão criativa.',
+      practice:
+        'Aumente a hidratação e permita-se atividades artísticas ou lúdicas.',
+    },
+    equilibrado: {
+      insight: 'Fluxo emocional saudável. Criatividade e prazer em equilíbrio.',
+      practice:
+        'Continue nutrindo relações e atividades que trazem alegria genuína.',
+    },
+    hiperativo: {
+      insight: 'Emocionalidade excessiva ou compulsividade.',
+      practice:
+        'Meditação focada e respiração abdominal para modular as emoções.',
+    },
   },
   Manipura: {
-    bloqueado: { insight: 'Digestão lenta, baixa autoestima e falta de iniciativa.', practice: 'Gengibre quente em jejum, exercícios core e especiarias para acender o Agni.' },
-    subativo: { insight: 'Poder pessoal em desenvolvimento. Agni digestivo moderado.', practice: 'Aumente atividade física e inclua especiarias amarelas (cúrcuma, gengibre).' },
-    equilibrado: { insight: 'Fogo digestivo forte, boa autoconfiança e metabolismo ativo.', practice: 'Mantenha alimentação rica em fibras e atividade física regular.' },
-    hiperativo: { insight: 'Excesso de controle, irritabilidade ou inflamação.', practice: 'Reduza alimentos ácidos e picantes. Pratique respiração refrescante (Shitali).' },
+    bloqueado: {
+      insight: 'Digestão lenta, baixa autoestima e falta de iniciativa.',
+      practice:
+        'Gengibre quente em jejum, exercícios core e especiarias para acender o Agni.',
+    },
+    subativo: {
+      insight: 'Poder pessoal em desenvolvimento. Agni digestivo moderado.',
+      practice:
+        'Aumente atividade física e inclua especiarias amarelas (cúrcuma, gengibre).',
+    },
+    equilibrado: {
+      insight: 'Fogo digestivo forte, boa autoconfiança e metabolismo ativo.',
+      practice:
+        'Mantenha alimentação rica em fibras e atividade física regular.',
+    },
+    hiperativo: {
+      insight: 'Excesso de controle, irritabilidade ou inflamação.',
+      practice:
+        'Reduza alimentos ácidos e picantes. Pratique respiração refrescante (Shitali).',
+    },
   },
   Anahata: {
-    bloqueado: { insight: 'Coração fechado. Dificuldade de conexão emocional e compaixão.', practice: 'Pranayama de coerência cardíaca (5s inspiração, 5s expiração) e atos de gentileza.' },
-    subativo: { insight: 'Coração se abrindo. HRV pode melhorar com práticas de compaixão.', practice: 'Meditação de amor-bondade (Metta) e exercícios aeróbicos leves.' },
-    equilibrado: { insight: 'Coerência cardíaca excelente. Compaixão e amor incondicional fluem.', practice: 'Sustente com gratidão diária e conexões afetivas genuínas.' },
-    hiperativo: { insight: 'Excesso de doação ou codependência emocional.', practice: 'Estabeleça limites saudáveis e pratique autocompaixão antes de cuidar dos outros.' },
+    bloqueado: {
+      insight: 'Coração fechado. Dificuldade de conexão emocional e compaixão.',
+      practice:
+        'Pranayama de coerência cardíaca (5s inspiração, 5s expiração) e atos de gentileza.',
+    },
+    subativo: {
+      insight:
+        'Coração se abrindo. HRV pode melhorar com práticas de compaixão.',
+      practice:
+        'Meditação de amor-bondade (Metta) e exercícios aeróbicos leves.',
+    },
+    equilibrado: {
+      insight:
+        'Coerência cardíaca excelente. Compaixão e amor incondicional fluem.',
+      practice: 'Sustente com gratidão diária e conexões afetivas genuínas.',
+    },
+    hiperativo: {
+      insight: 'Excesso de doação ou codependência emocional.',
+      practice:
+        'Estabeleça limites saudáveis e pratique autocompaixão antes de cuidar dos outros.',
+    },
   },
   Vishuddha: {
-    bloqueado: { insight: 'Dificuldade de expressão. Respiração superficial.', practice: 'Canto, mantra Om e exercícios de respiração rítmica.' },
-    subativo: { insight: 'Expressão parcial. Ritmos circadianos em ajuste.', practice: 'Melhore a regularidade do sono e pratique leitura em voz alta.' },
-    equilibrado: { insight: 'Comunicação clara. Ritmos biológicos harmônicos.', practice: 'Mantenha a consistência dos horários e pratique escuta ativa.' },
-    hiperativo: { insight: 'Fala excessiva ou agitação mental noturna.', practice: 'Pratique silêncio intencional (Mauna) e reduza estímulos antes de dormir.' },
+    bloqueado: {
+      insight: 'Dificuldade de expressão. Respiração superficial.',
+      practice: 'Canto, mantra Om e exercícios de respiração rítmica.',
+    },
+    subativo: {
+      insight: 'Expressão parcial. Ritmos circadianos em ajuste.',
+      practice:
+        'Melhore a regularidade do sono e pratique leitura em voz alta.',
+    },
+    equilibrado: {
+      insight: 'Comunicação clara. Ritmos biológicos harmônicos.',
+      practice: 'Mantenha a consistência dos horários e pratique escuta ativa.',
+    },
+    hiperativo: {
+      insight: 'Fala excessiva ou agitação mental noturna.',
+      practice:
+        'Pratique silêncio intencional (Mauna) e reduza estímulos antes de dormir.',
+    },
   },
   Ajna: {
-    bloqueado: { insight: 'Confusão mental, dificuldade de foco e visão turva.', practice: 'Meditação Trataka (foco na chama), sono REM adequado e redução de telas.' },
-    subativo: { insight: 'Intuição em desenvolvimento. Cognição pode ser ampliada.', practice: 'Aumente o tempo de meditação e garanta sono REM suficiente (>90 min).' },
-    equilibrado: { insight: 'Clareza mental e boa intuição. Processamento cognitivo eficiente.', practice: 'Continue praticando meditação e desafios cognitivos leves.' },
-    hiperativo: { insight: 'Hiperatividade mental, insônia por excesso de pensamento.', practice: 'Yoga Nidra para desacelerar e técnica 4-7-8 de respiração para dormir.' },
+    bloqueado: {
+      insight: 'Confusão mental, dificuldade de foco e visão turva.',
+      practice:
+        'Meditação Trataka (foco na chama), sono REM adequado e redução de telas.',
+    },
+    subativo: {
+      insight: 'Intuição em desenvolvimento. Cognição pode ser ampliada.',
+      practice:
+        'Aumente o tempo de meditação e garanta sono REM suficiente (>90 min).',
+    },
+    equilibrado: {
+      insight:
+        'Clareza mental e boa intuição. Processamento cognitivo eficiente.',
+      practice: 'Continue praticando meditação e desafios cognitivos leves.',
+    },
+    hiperativo: {
+      insight: 'Hiperatividade mental, insônia por excesso de pensamento.',
+      practice:
+        'Yoga Nidra para desacelerar e técnica 4-7-8 de respiração para dormir.',
+    },
   },
   Sahasrara: {
-    bloqueado: { insight: 'Desconexão espiritual. Sensação de falta de propósito.', practice: 'Meditação silenciosa diária (mesmo 5 minutos) e contato com a natureza.' },
-    subativo: { insight: 'Conexão sutil emergindo. Estresse ainda interfere.', practice: 'Amplie meditação gradualmente e pratique gratidão profunda ao acordar.' },
-    equilibrado: { insight: 'Senso de unidade e propósito. Estado de presença expansiva.', practice: 'Mantenha a prática meditativa e alimente-se de forma sátvica (pura e leve).' },
-    hiperativo: { insight: 'Dissociação do corpo físico ou escapismo espiritual.', practice: 'Reconecte-se com o corpo: exercícios físicos, alimentação nutritiva e aterramento.' },
+    bloqueado: {
+      insight: 'Desconexão espiritual. Sensação de falta de propósito.',
+      practice:
+        'Meditação silenciosa diária (mesmo 5 minutos) e contato com a natureza.',
+    },
+    subativo: {
+      insight: 'Conexão sutil emergindo. Estresse ainda interfere.',
+      practice:
+        'Amplie meditação gradualmente e pratique gratidão profunda ao acordar.',
+    },
+    equilibrado: {
+      insight: 'Senso de unidade e propósito. Estado de presença expansiva.',
+      practice:
+        'Mantenha a prática meditativa e alimente-se de forma sátvica (pura e leve).',
+    },
+    hiperativo: {
+      insight: 'Dissociação do corpo físico ou escapismo espiritual.',
+      practice:
+        'Reconecte-se com o corpo: exercícios físicos, alimentação nutritiva e aterramento.',
+    },
   },
 };
 
@@ -294,40 +396,87 @@ export function calculateChakraAlignment(
   metrics: ChakraMetricSnapshot
 ): ChakraAlignmentResult {
   const calculators = [
-    { name: 'Muladhara', label: 'Raiz (Muladhara)', color: '#EF4444', toneClass: 'text-red-500', calc: calcMuladhara },
-    { name: 'Svadhisthana', label: 'Sacro (Svadhisthana)', color: '#F97316', toneClass: 'text-orange-500', calc: calcSvadhisthana },
-    { name: 'Manipura', label: 'Plexo Solar (Manipura)', color: '#EAB308', toneClass: 'text-yellow-500', calc: calcManipura },
-    { name: 'Anahata', label: 'Coração (Anahata)', color: '#22C55E', toneClass: 'text-green-500', calc: calcAnahata },
-    { name: 'Vishuddha', label: 'Garganta (Vishuddha)', color: '#3B82F6', toneClass: 'text-blue-500', calc: calcVishuddha },
-    { name: 'Ajna', label: 'Terceiro Olho (Ajna)', color: '#6366F1', toneClass: 'text-indigo-500', calc: calcAjna },
-    { name: 'Sahasrara', label: 'Coroa (Sahasrara)', color: '#A855F7', toneClass: 'text-purple-500', calc: calcSahasrara },
+    {
+      name: 'Muladhara',
+      label: 'Raiz (Muladhara)',
+      color: '#EF4444',
+      toneClass: 'text-red-500',
+      calc: calcMuladhara,
+    },
+    {
+      name: 'Svadhisthana',
+      label: 'Sacro (Svadhisthana)',
+      color: '#F97316',
+      toneClass: 'text-orange-500',
+      calc: calcSvadhisthana,
+    },
+    {
+      name: 'Manipura',
+      label: 'Plexo Solar (Manipura)',
+      color: '#EAB308',
+      toneClass: 'text-yellow-500',
+      calc: calcManipura,
+    },
+    {
+      name: 'Anahata',
+      label: 'Coração (Anahata)',
+      color: '#22C55E',
+      toneClass: 'text-green-500',
+      calc: calcAnahata,
+    },
+    {
+      name: 'Vishuddha',
+      label: 'Garganta (Vishuddha)',
+      color: '#3B82F6',
+      toneClass: 'text-blue-500',
+      calc: calcVishuddha,
+    },
+    {
+      name: 'Ajna',
+      label: 'Terceiro Olho (Ajna)',
+      color: '#6366F1',
+      toneClass: 'text-indigo-500',
+      calc: calcAjna,
+    },
+    {
+      name: 'Sahasrara',
+      label: 'Coroa (Sahasrara)',
+      color: '#A855F7',
+      toneClass: 'text-purple-500',
+      calc: calcSahasrara,
+    },
   ];
 
-  const chakras: ChakraScore[] = calculators.map(({ name, label, color, toneClass, calc }) => {
-    const score = calc(metrics);
-    const status = getChakraStatus(score);
-    const chakraInsights = CHAKRA_INSIGHTS[name][status];
+  const chakras: ChakraScore[] = calculators.map(
+    ({ name, label, color, toneClass, calc }) => {
+      const score = calc(metrics);
+      const status = getChakraStatus(score);
+      const chakraInsights = CHAKRA_INSIGHTS[name][status];
 
-    return {
-      name,
-      label,
-      color,
-      toneClass,
-      score,
-      status,
-      insight: chakraInsights.insight,
-      practice: chakraInsights.practice,
-    };
-  });
+      return {
+        name,
+        label,
+        color,
+        toneClass,
+        score,
+        status,
+        insight: chakraInsights.insight,
+        practice: chakraInsights.practice,
+      };
+    }
+  );
 
   const overallScore = Math.round(
     chakras.reduce((sum, c) => sum + c.score, 0) / chakras.length
   );
 
   let overallLabel: string;
-  if (overallScore <= 30) overallLabel = 'Desalinhado — atenção holística necessária';
-  else if (overallScore <= 50) overallLabel = 'Parcialmente alinhado — ajustes em progresso';
-  else if (overallScore <= 75) overallLabel = 'Bem alinhado — harmonia crescente';
+  if (overallScore <= 30)
+    overallLabel = 'Desalinhado — atenção holística necessária';
+  else if (overallScore <= 50)
+    overallLabel = 'Parcialmente alinhado — ajustes em progresso';
+  else if (overallScore <= 75)
+    overallLabel = 'Bem alinhado — harmonia crescente';
   else overallLabel = 'Plenamente alinhado — fluxo vital aberto';
 
   return { overallScore, overallLabel, chakras };
