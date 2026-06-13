@@ -160,9 +160,16 @@ class EnvManager:
                 continue
             key, _, value = line.partition("=")
             value = value.strip()
-            if (value.startswith('"') and value.endswith('"')) or (
-                value.startswith("'") and value.endswith("'")
-            ):
+            if value.startswith('"') and value.endswith('"'):
+                # Simetria com upsert(): valores que contem espacos, aspas ou
+                # delimitadores JSON sao gravados via json.dumps (que escapa as
+                # aspas internas). Aqui desfazemos esse escape com json.loads
+                # para preservar JSONs validos (ex.: ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS).
+                try:
+                    value = json.loads(value)
+                except (ValueError, json.JSONDecodeError):
+                    value = value[1:-1]
+            elif value.startswith("'") and value.endswith("'"):
                 value = value[1:-1]
             self.cache[key.strip()] = value
         return self.cache

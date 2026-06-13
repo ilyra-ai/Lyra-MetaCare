@@ -60,8 +60,10 @@ Estilo: Astrologia moderna, aura esotérica luminosa e fusão com modelos de IA,
 - [x] Configuracao final do admin `admin@coragem.pet` validada em banco.
 - [x] Configuracao final do admin `admin@admin.com` validada em banco.
 - [x] Bootstrap multi-admin validado com migracao real e login administrativo real.
-- [~] Navegacao visual completa validada (validacao tecnica por grep concluida; validacao em navegador real pendente de sessao com MySQL ativo).
+- [x] Navegacao visual completa validada em navegador real (MySQL ativo, login admin@admin.com, percurso desktop+mobile: landing, login, dashboard, admin/ai-config, perfil e MobileSidebar).
 - [x] Checks finais executados com sucesso (fix:format, fix:lint, check:lint, check:format, check:types e vitest 59/59) e bloco versionado.
+- [x] Causa raiz de erro de hidratacao corrigida: `CardTitle` (`ui/card.tsx`) renderizava `<p>` e recebia `<div>` (boxes de icone) como filho — HTML proibe `<div>` dentro de `<p>`, gerando hydration error em todas as telas com titulo+icone; trocado para `<div>` (alinhado ao shadcn/ui atual). Prova no DOM: zero `<p>` com bloco aninhado em `/`, `/admin/ai-config` e `/profile`.
+- [x] Causa raiz de falha no bootstrap multi-admin corrigida: `EnvManager.load` (`run_windows.py`) nao desfazia o escape do `json.dumps` aplicado por `upsert`, entregando JSON invalido ao `mysql-migrate.mjs`; round-trip tornado simetrico com `json.loads`.
 
 ## Infraestrutura local validada nesta etapa
 
@@ -393,6 +395,10 @@ npm run check:types
 - 2026-06-12 52: varredura global final detectou residuos fora do mapa original: `LoginExperience` tokenizado por completo (ilustracao cenica em SVG preservada como camada de arte; botao morto `Esqueceu a senha?` removido pela causa raiz — nao existe fluxo de reset no backend), `VedicDashboard` migrado (doshas -> info/accent/success preservando semantica elemental; koshas/chakras header -> cosmic) e `plan-engine` com cores de pilares em tokens. Cores canonicas dos 7 chakras em `chakra/alignment-engine.ts` preservadas por semantica de dominio.
 - 2026-06-12 53: documento `INSTRUCAO_REIMPLEMENTACAO_UI_UX_LYRA_2026.md` criado na raiz a pedido do usuario, catalogando todas as funcoes, modulos, KPIs, metricas, engines, APIs e criterios de aceite para reimplementacao visual por outro modelo de IA.
 - 2026-06-12 54: prova de morte global executada — grep de classes legadas em `src/` retorna vazio (excecoes documentadas: cores canonicas dos chakras e fixture de teste); `check:lint`, `check:format`, `check:types` e `vitest` (59/59) todos verdes.
+- 2026-06-13 55: ambiente real subido (Docker MySQL `lyra-metacare-mysql` healthy na 3307, migracoes 001-008 ja aplicadas, bootstrap dos admins `admin@coragem.pet` e `admin@admin.com` assegurado) e validacao visual executada no navegador real via Claude Preview em desktop e mobile (375px).
+- 2026-06-13 56: causa raiz no orquestrador — `EnvManager.load` do `run_windows.py` removia apenas as aspas externas sem desfazer o escape do `json.dumps` feito no `upsert`, entregando `ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS` como JSON invalido ao `mysql-migrate.mjs`; `load` tornado simetrico com `json.loads` e fallback seguro.
+- 2026-06-13 57: causa raiz de hidratacao — primitivo `CardTitle` (`src/components/ui/card.tsx`) renderizava `<p>`, mas diversos titulos (ex.: `AIConfigForm` "Motor de Orquestracao") embutem um `<div>` com o box do icone; o parser HTML auto-fecha o `<p>` e o React acusa hydration error. `CardTitle` migrado de `<p>` para `<div>` (mantendo classes e alinhando ao shadcn/ui atual); prova deterministica no DOM: zero `<p>` com bloco aninhado nas rotas validadas.
+- 2026-06-13 58: `.claude/launch.json` criado para orquestrar o dev server pelo Claude Preview; validacao em navegador confirmou landing, login (sem o botao morto "Esqueceu a senha?"), dashboard com `PlanBadge` real na sidebar, admin tokenizado, perfil e MobileSidebar — todos no design system unico, tema claro, pt-BR e sem erros de console novos.
 
 ## Politica obrigatoria de commit e push
 
