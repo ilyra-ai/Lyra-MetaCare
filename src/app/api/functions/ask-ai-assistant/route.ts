@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 
-import { generateLocalAssistantReply } from '@/lib/ai/chat-engine';
+import {
+  buildSkillsContext,
+  generateLocalAssistantReply,
+  type AiSkillDocument,
+} from '@/lib/ai/chat-engine';
 import { getAstrologicalContext } from '@/lib/astrology/engine';
 import { getHttpErrorStatus } from '@/lib/http-error';
 import { queryRows } from '@/lib/mysql/pool';
@@ -50,6 +54,18 @@ export async function POST(request: Request) {
       [session.user.id]
     );
 
+    // Documentos/skills configurados no admin que orientam o que a IA deve
+    // saber, fazer e executar no app. Apenas os ativos, por prioridade.
+    const skills = await queryRows<AiSkillDocument>(
+      `
+        SELECT title, category, content
+        FROM ai_knowledge_documents
+        WHERE is_active = TRUE
+        ORDER BY priority DESC, created_at ASC
+        LIMIT 50
+      `
+    );
+
     const fallbackResponse = generateLocalAssistantReply(query, {
       profile: profile
         ? {
@@ -59,6 +75,7 @@ export async function POST(request: Request) {
         : null,
       latestMetric: latestMetric ?? null,
       astrology: getAstrologicalContext(new Date(), profile ?? undefined),
+      skills,
     });
 
     let finalResponse = fallbackResponse;
@@ -67,12 +84,19 @@ export async function POST(request: Request) {
     if (userApiKey && userApiKey.trim() !== '') {
       try {
         const aiModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-        const systemPrompt = `Você é o Lyra MetaCare, um assistente médico integrativo (PhD). 
-Abaixo está a análise determinística Védica-Quântica sobre os biomarcadores reais do usuário:
+        const skillsContext = buildSkillsContext(skills);
+        const systemPrompt = `Você é o Lyra MetaCare, um assistente médico integrativo (PhD).
+${
+  skillsContext
+    ? `${skillsContext}
+---
+`
+    : ''
+}Abaixo está a análise determinística Védica-Quântica sobre os biomarcadores reais do usuário:
 ---
 ${fallbackResponse}
 ---
-Use esta análise como base para responder à pergunta do usuário de forma humana, empática e clinicamente embasada. Responda APENAS com a sua resposta direta.`;
+Use esta análise como base e siga estritamente as habilidades, skills e treinamentos configurados acima para responder à pergunta do usuário de forma humana, empática e clinicamente embasada. Responda APENAS com a sua resposta direta.`;
 
         const geminiRes = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${aiModel}:generateContent?key=${userApiKey}`,

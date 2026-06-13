@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/header';
 import { useAuth } from '@/context/AuthContext';
 import { SplashScreen } from '@/components/SplashScreen';
 import { AIConfigForm } from '@/components/admin/AIConfigForm';
+import { AIKnowledgeManager } from '@/components/admin/AIKnowledgeManager';
 import { useIsAdmin } from '@/hooks/use-is-admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
@@ -68,8 +69,9 @@ export default function AIConfigPage() {
               IA da Lyra.
             </p>
           </div>
-          <div className="w-full relative">
+          <div className="w-full relative space-y-8">
             <AIConfigForm />
+            <AIKnowledgeManager />
           </div>
         </main>
         <MadeWithIlyra />

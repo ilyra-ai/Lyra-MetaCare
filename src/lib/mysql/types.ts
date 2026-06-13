@@ -132,6 +132,16 @@ export interface AITipRow extends TimestampedRow {
   is_active: boolean;
 }
 
+export interface AIKnowledgeDocumentRow extends TimestampedRow {
+  id: string;
+  title: string;
+  category: string;
+  content: string;
+  is_active: boolean;
+  priority: number;
+  updated_at: DateTimeString;
+}
+
 export interface AIConfigRow {
   id: string;
   mission: string;
@@ -204,6 +214,7 @@ export interface TableRowMap {
   suggested_habits: SuggestedHabitRow;
   ai_tips: AITipRow;
   ai_config: AIConfigRow;
+  ai_knowledge_documents: AIKnowledgeDocumentRow;
   ai_plans: AIPlanRow;
   appointments: AppointmentRow;
   professionals: ProfessionalRow;

@@ -6,6 +6,7 @@ export type TableName =
   | 'suggested_habits'
   | 'ai_tips'
   | 'ai_config'
+  | 'ai_knowledge_documents'
   | 'ai_plans'
   | 'appointments'
   | 'professionals'
@@ -167,6 +168,19 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'weight_activity',
       'weight_nutrition',
       'model_name',
+      'updated_at',
+    ],
+    adminOnlyCrud: true,
+  },
+  ai_knowledge_documents: {
+    columns: [
+      'id',
+      'title',
+      'category',
+      'content',
+      'is_active',
+      'priority',
+      'created_at',
       'updated_at',
     ],
     adminOnlyCrud: true,

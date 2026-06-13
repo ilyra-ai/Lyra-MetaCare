@@ -5,6 +5,12 @@ import { calculateChakraAlignment } from '@/lib/chakra/alignment-engine';
 import { calculatePranicIndex } from '@/lib/prana/prana-engine';
 import { calculateKoshas } from '@/lib/vedanta/kosha-engine';
 
+export interface AiSkillDocument {
+  title: string;
+  category: string;
+  content: string;
+}
+
 interface ChatContext {
   profile: {
     first_name: string | null;
@@ -18,6 +24,29 @@ interface ChatContext {
     blood_glucose_mgdl?: number | null;
   } | null;
   astrology: AstrologicalData;
+  // Documentos/skills configurados no admin que orientam o que a IA deve
+  // saber, fazer e executar no app. Injetados em tempo real no contexto.
+  skills?: AiSkillDocument[];
+}
+
+// Monta um bloco textual com as skills ativas, para uso como instrucao
+// determinante do comportamento do assistente (local e LLM).
+export function buildSkillsContext(skills?: AiSkillDocument[]): string {
+  if (!skills || skills.length === 0) {
+    return '';
+  }
+
+  const blocks = skills.map((skill, index) => {
+    const label = skill.category?.trim()
+      ? `${skill.title} [${skill.category}]`
+      : skill.title;
+    return `### Skill ${index + 1}: ${label}\n${skill.content.trim()}`;
+  });
+
+  return [
+    'HABILIDADES, SKILLS E TREINAMENTOS CONFIGURADOS (siga estritamente):',
+    ...blocks,
+  ].join('\n\n');
 }
 
 function formatSleep(minutes: number | null | undefined) {
@@ -76,11 +105,17 @@ export function generateLocalAssistantReply(
   const prana = calculatePranicIndex(snap, astro);
   const koshas = calculateKoshas(snap, astro);
 
+  const skills = context.skills ?? [];
+
   const responses: string[] = [];
 
   // 1. Processamento e Análise de Intenções (NLP Determinístico)
   const isGreeting =
     /\b(oi|ola|olá|bom dia|boa tarde|boa noite|tudo bem)\b/.test(text);
+  const isSkillsQuery =
+    /(o que voc[eê] (pode|sabe|consegue|faz)|suas? habilidades?|seus? skills?|suas? capacidades?|seus? treinament|seus? document|quais.*(habilidades?|skills?|capacidades?))/.test(
+      text
+    );
   const isSleepQuery =
     /\b(sono|dormir|descanso|insônia|cansaço|acordar)\b/.test(text);
   const isGlucoseQuery =
@@ -105,6 +140,31 @@ export function generateLocalAssistantReply(
     responses.push(
       `Olá, ${name}! Sou seu assistente de saúde inteligente da Lyra MetaCare. Analiso seus dados fisiológicos e a influência astrológica atual para te orientar. Como posso ajudar a aprimorar seu foco em ${goals} hoje?`
     );
+  }
+
+  // 2.1. Skills, habilidades e treinamentos configurados
+  if (isSkillsQuery) {
+    if (skills.length > 0) {
+      responses.push(
+        `Opero sob ${skills.length} ${skills.length === 1 ? 'habilidade configurada' : 'habilidades configuradas'} pela administração da Lyra, que definem o que devo saber e executar:`
+      );
+      skills.forEach((skill, index) => {
+        const label = skill.category?.trim()
+          ? `${skill.title} (${skill.category})`
+          : skill.title;
+        const summary = skill.content.trim().replace(/\s+/g, ' ').slice(0, 220);
+        responses.push(
+          `${index + 1}. ${label} — ${summary}${skill.content.trim().length > 220 ? '…' : ''}`
+        );
+      });
+      responses.push(
+        'Posso aplicar essas diretrizes junto da sua biometria, do plano de longevidade e do contexto astrológico. Peça uma delas pelo nome para detalharmos.'
+      );
+    } else {
+      responses.push(
+        `${name}, ainda não há documentos de habilidade configurados. Um administrador pode adicioná-los em Configuração de IA para ampliar o que devo saber e executar.`
+      );
+    }
   }
 
   // 3. Resumo de Saúde
@@ -223,6 +283,14 @@ export function generateLocalAssistantReply(
     responses.push(
       `Você pode me perguntar especificamente sobre seu SONO, GLICOSE, RECUPERAÇÃO (HRV), EXERCÍCIOS, RESUMO GERAL ou LEITURA ASTROLÓGICA para obter uma análise cruzada e profunda.`
     );
+    if (skills.length > 0) {
+      responses.push(
+        `Também opero sob ${skills.length} ${skills.length === 1 ? 'habilidade configurada' : 'habilidades configuradas'} (${skills
+          .map((skill) => skill.title)
+          .slice(0, 5)
+          .join(', ')}). Pergunte "o que você pode fazer" para ver todas.`
+      );
+    }
   }
 
   return responses.join('\n\n');

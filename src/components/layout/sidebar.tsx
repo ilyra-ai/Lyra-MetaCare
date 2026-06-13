@@ -59,8 +59,11 @@ export function Sidebar() {
 
   return (
     <aside
-      className="glass sticky top-0 hidden h-screen shrink-0 flex-col border-r border-sidebar-border md:flex"
-      style={{ width: `${appConfig.sizing.sidebarWidth}px` }}
+      className="glass sticky top-0 hidden h-screen shrink-0 flex-col border-r border-sidebar-border lg:flex"
+      style={{
+        width: `${appConfig.sizing.sidebarWidth}px`,
+        maxWidth: '34vw',
+      }}
     >
       <div className="flex h-full flex-col px-4 py-5">
         <div className="relative mb-8 flex flex-col items-center justify-center gap-3 py-6">

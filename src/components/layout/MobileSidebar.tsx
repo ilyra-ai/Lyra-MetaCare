@@ -34,7 +34,7 @@ export function MobileSidebar() {
         <Button
           variant="ghost"
           size="icon"
-          className="h-11 w-11 rounded-full md:hidden"
+          className="h-11 w-11 rounded-full lg:hidden"
           aria-label="Abrir navegação"
         >
           <Menu className="h-5 w-5" strokeWidth={1.8} />
