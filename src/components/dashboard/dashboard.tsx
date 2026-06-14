@@ -22,6 +22,7 @@ import {
 
 import { useDailyMetrics } from '@/hooks/use-daily-metrics';
 import { useAIScores } from '@/hooks/use-ai-scores';
+import { useProfile } from '@/hooks/use-profile';
 import { useAccountSubscription } from '@/hooks/use-account-subscription';
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { useHealthOrchestrator } from '@/context/HealthOrchestratorContext';
@@ -31,6 +32,7 @@ import { cn } from '@/lib/utils';
 import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
 import { AITipsCard } from './AITipsCard';
 import { MetricGrid } from './MetricGrid';
+import { LyraIntelligence2026 } from './LyraIntelligence2026';
 import { VedicDashboard } from './VedicDashboard';
 import { AssessmentCard } from './AssessmentCard';
 import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
@@ -235,6 +237,11 @@ export function Dashboard() {
     loading: metricsLoading,
   } = useDailyMetrics(7, dashboardEnabled);
   const { scores, loading: scoresLoading } = useAIScores(aiScoresEnabled);
+  const {
+    profile: intelligenceProfile,
+    chronologicalAge,
+    isFemale,
+  } = useProfile(dashboardEnabled);
 
   const loading = subscriptionLoading || metricsLoading || scoresLoading;
 
@@ -747,6 +754,15 @@ export function Dashboard() {
           </div>
         </CardContent>
       </Card>
+
+      <LyraIntelligence2026
+        metrics={metrics}
+        todayMetrics={todayMetrics}
+        profile={intelligenceProfile}
+        chronologicalAge={chronologicalAge}
+        isFemale={isFemale}
+        readinessScore={readinessScore}
+      />
 
       {todayMetrics ? (
         <section className="flex flex-col gap-5">

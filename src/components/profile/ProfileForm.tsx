@@ -52,6 +52,7 @@ import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { db as databaseClient } from '@/integrations/mysql/client';
 import { scaleRem } from '@/lib/site-page-config/runtime';
 import { AccountSubscriptionCard } from '@/components/subscription/AccountSubscriptionCard';
+import { MenstrualCycleSettings } from './MenstrualCycleSettings';
 
 // --- Data Definitions ---
 // --- Zod Schema ---
@@ -527,6 +528,7 @@ export function ProfileForm() {
             </Button>
           </CardContent>
         </Card>
+        {form.watch('gender') === 'female' ? <MenstrualCycleSettings /> : null}
         <HabitList />
       </div>
     </div>

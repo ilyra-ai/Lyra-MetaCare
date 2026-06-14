@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/popover';
 import { useAuth } from '@/context/AuthContext';
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
+import { usePrivacyMode } from '@/hooks/use-privacy-mode';
 import { scaleRem } from '@/lib/site-page-config/runtime';
 import { cn } from '@/lib/utils';
 import { ChatBubble } from './ChatBubble';
@@ -90,6 +91,7 @@ const integrations: IntegrationItem[] = [
 export function ChatAssistantContent() {
   const { db } = useAuth();
   const { config: appConfig } = usePublicSitePageConfig('app');
+  const { privacyMode } = usePrivacyMode();
   const chatConfig = appConfig.chat;
 
   const [messages, setMessages] = useState<Message[]>([
@@ -180,10 +182,12 @@ export function ChatAssistantContent() {
     setIsNearBottom(true);
 
     try {
+      // Modo Privacidade: não enviar a chave externa (BYOK); a conversa é
+      // atendida apenas pelo motor determinístico local, sem LLM externo.
       const { data, error } = await db.functions.invoke<{ response: string }>(
         'ask-ai-assistant',
         {
-          body: { query, userApiKey },
+          body: { query, userApiKey: privacyMode ? '' : userApiKey },
         }
       );
 

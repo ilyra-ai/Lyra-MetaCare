@@ -28,6 +28,11 @@ export interface ProfileRow extends AuditedRow {
   birth_time: TimeString | null;
   birth_location: string | null;
   avatar_url: string | null;
+  tracks_menstrual_cycle: boolean;
+  last_menstrual_period: DateString | null;
+  menstrual_cycle_length: number | null;
+  menstrual_period_length: number | null;
+  menstrual_life_stage: string | null;
   daily_metrics?: Array<{ date: DateString }>;
 }
 
@@ -95,6 +100,7 @@ export interface DailyMetricRow extends TimestampedRow {
   hrv_stress_index: number | null;
   eda_tonic_microsiemens: number | null;
   afib_history_percent: number | null;
+  menstrual_flow: string | null;
 }
 
 export interface GoalRow extends AuditedRow {

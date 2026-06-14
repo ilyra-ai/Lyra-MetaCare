@@ -35,7 +35,7 @@ const JSON_COLUMNS: Record<TableName, string[]> = {
 };
 
 const BOOLEAN_COLUMNS: Record<TableName, string[]> = {
-  profiles: ['onboarding_completed'],
+  profiles: ['onboarding_completed', 'tracks_menstrual_cycle'],
   daily_metrics: [],
   goals: [],
   habits: ['is_active'],
@@ -52,7 +52,7 @@ const BOOLEAN_COLUMNS: Record<TableName, string[]> = {
 };
 
 const DATE_COLUMNS: Record<TableName, string[]> = {
-  profiles: ['birth_date'],
+  profiles: ['birth_date', 'last_menstrual_period'],
   daily_metrics: ['date'],
   goals: [],
   habits: [],
