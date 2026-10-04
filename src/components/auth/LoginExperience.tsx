@@ -1,6 +1,6 @@
 'use client';
 
-import { CSSProperties, FormEvent, useEffect, useState } from 'react';
+import { CSSProperties, SubmitEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -81,7 +81,7 @@ export function LoginExperience({
   };
   const fieldStyle = escalaFluida(0.95, typography.fieldLabel);
 
-  async function handleLogin(event: FormEvent<HTMLFormElement>) {
+  async function handleLogin(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (previewMode) return;
 
@@ -106,7 +106,7 @@ export function LoginExperience({
     router.push('/');
   }
 
-  async function handleRegister(event: FormEvent<HTMLFormElement>) {
+  async function handleRegister(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (previewMode) return;
 

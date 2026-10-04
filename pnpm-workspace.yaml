@@ -4,3 +4,15 @@ allowBuilds:
   msw: true
   sharp: true
   unrs-resolver: true
+
+# Compatibilidade declarada e verificada: o eslint-config-next 16.3.8 depende
+# de eslint-plugin-react 7.37, eslint-plugin-import 2.32 e
+# eslint-plugin-jsx-a11y 6.10, que ainda não listam o ESLint 10 nos peers.
+# O ESLint 9 está em fim de vida (2026-08-06); os plugins rodam no ESLint 10
+# por meio do fixupConfigRules (@eslint/compat) em eslint.config.mjs, com
+# `pnpm check:lint` executado e aprovado.
+peerDependencyRules:
+  allowedVersions:
+    eslint-plugin-react>eslint: '10'
+    eslint-plugin-import>eslint: '10'
+    eslint-plugin-jsx-a11y>eslint: '10'

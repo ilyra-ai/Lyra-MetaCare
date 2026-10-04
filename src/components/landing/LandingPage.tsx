@@ -1,6 +1,6 @@
 'use client';
 
-import { CSSProperties, FormEvent, useEffect, useState } from 'react';
+import { CSSProperties, SubmitEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
@@ -212,7 +212,7 @@ export function LandingPage({
     router.push(href);
   }
 
-  async function handleQuickLogin(event: FormEvent<HTMLFormElement>) {
+  async function handleQuickLogin(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (previewMode) {
       return;

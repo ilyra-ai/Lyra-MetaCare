@@ -124,7 +124,7 @@ export function AIKnowledgeManager() {
     };
   }, [applyDocuments, fetchDocuments]);
 
-  const handleCreate = async (event: React.FormEvent) => {
+  const handleCreate = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const trimmedTitle = title.trim();
