@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import dynamic from 'next/dynamic';
 import { format, parseISO, setHours, setMinutes, startOfDay } from 'date-fns';
 import {
   CalendarClock,
@@ -17,7 +18,6 @@ import { toast } from 'sonner';
 
 import { AppointmentFormModal } from './AppointmentFormModal';
 import { ProfessionalFormModal } from './ProfessionalFormModal';
-import { Agenda } from './Agenda';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   AlertDialog,
@@ -84,6 +84,17 @@ type AppointmentFormValues = {
   appointment_time: string;
   notes?: string;
 };
+
+// O calendário (react-big-calendar + agenda.css) é carregado sob demanda:
+// importado estaticamente, o prefetch da rota /appointments pelos links da
+// navegação pré-carregava esse CSS em todas as páginas sem usá-lo.
+const Agenda = dynamic(
+  () => import('./Agenda').then((mod) => mod.Agenda<Appointment>),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[300px] w-full rounded-[24px]" />,
+  }
+);
 
 export function AppointmentsContent() {
   const { db, session } = useAuth();
