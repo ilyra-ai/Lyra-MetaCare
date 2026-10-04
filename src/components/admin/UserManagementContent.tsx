@@ -113,8 +113,7 @@ export function UserManagementContent() {
         credentials: 'include',
       });
       const payload = (await response.json()) as
-        | AdminUserListResponse
-        | { error?: string };
+        AdminUserListResponse | { error?: string };
 
       if (!response.ok || !('users' in payload)) {
         throw new Error(

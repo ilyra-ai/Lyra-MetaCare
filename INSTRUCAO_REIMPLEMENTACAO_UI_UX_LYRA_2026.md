@@ -31,37 +31,41 @@ Estrutura do shell autenticado: **Sidebar (desktop) + Header sticky com glassmor
 ### 3.1 Seções e rotas da navegação (com descrições oficiais)
 
 **Principal**
-| Rota | Label | Descrição | Atalho |
-|---|---|---|---|
-| `/` | Dashboard | Visão central da energia, sono, astro e insights de IA. | G D |
-| `/plan` | Plano de IA | Protocolos personalizados de foco, ritmo, nutrição e recuperação. | G P |
-| `/goals` | Metas | Evolução diária com progresso, streaks e prioridades suaves. | G M |
+
+| Rota     | Label       | Descrição                                                         | Atalho |
+| -------- | ----------- | ----------------------------------------------------------------- | ------ |
+| `/`      | Dashboard   | Visão central da energia, sono, astro e insights de IA.           | G D    |
+| `/plan`  | Plano de IA | Protocolos personalizados de foco, ritmo, nutrição e recuperação. | G P    |
+| `/goals` | Metas       | Evolução diária com progresso, streaks e prioridades suaves.      | G M    |
 
 **Fluxo Guiado**
-| Rota | Label | Descrição | Atalho |
-|---|---|---|---|
-| `/appointments` | Agendamentos | Agenda de encontros, profissionais e organização do seu fluxo. | G A |
-| `/monitoring` | Monitoramento | Leituras em tempo real, tendências e estados do momento. | G R |
-| `/chat` | Chat IA | Conversa inteligente com contexto biométrico, emocional e astral. | G C |
+
+| Rota            | Label         | Descrição                                                         | Atalho |
+| --------------- | ------------- | ----------------------------------------------------------------- | ------ |
+| `/appointments` | Agendamentos  | Agenda de encontros, profissionais e organização do seu fluxo.    | G A    |
+| `/monitoring`   | Monitoramento | Leituras em tempo real, tendências e estados do momento.          | G R    |
+| `/chat`         | Chat IA       | Conversa inteligente com contexto biométrico, emocional e astral. | G C    |
 
 **Pessoal**
-| Rota | Label | Descrição |
-|---|---|---|
+
+| Rota       | Label        | Descrição                                            |
+| ---------- | ------------ | ---------------------------------------------------- |
 | `/connect` | Dispositivos | Conexão e sincronização com wearables e integrações. |
-| `/profile` | Perfil | Dados pessoais, hábitos, preferências e avatar. |
+| `/profile` | Perfil       | Dados pessoais, hábitos, preferências e avatar.      |
 
 **Administração (somente admin)**
-| Rota | Label | Descrição |
-|---|---|---|
-| `/admin/dashboard` | Visão Geral Admin | Métricas de negócio, saúde da plataforma e alertas. |
-| `/admin/users` | Usuários | Gestão de contas, perfis e permissões. |
-| `/admin/plans` | Planos | Matriz comercial, capacidades e precificação. |
-| `/admin/data-health` | Saúde dos Dados | Integridade, latência e confiabilidade dos dados. |
-| `/admin/content` | Conteúdo | Curadoria de hábitos sugeridos, mensagens e recomendações (AI Tips). |
-| `/admin/ai-config` | Configuração de IA | Pesos, missão, parâmetros e segurança operacional da IA. |
-| `/admin/reports` | Relatórios | Leituras analíticas e exportação executiva. |
-| `/admin/page-builder` | Construtor UI | Gestão visual da landing, login e app interno (Site Experience Builder). |
-| `/admin/puck` | Editor Puck | Editor visual drag-and-drop com persistência real. |
+
+| Rota                  | Label              | Descrição                                                                |
+| --------------------- | ------------------ | ------------------------------------------------------------------------ |
+| `/admin/dashboard`    | Visão Geral Admin  | Métricas de negócio, saúde da plataforma e alertas.                      |
+| `/admin/users`        | Usuários           | Gestão de contas, perfis e permissões.                                   |
+| `/admin/plans`        | Planos             | Matriz comercial, capacidades e precificação.                            |
+| `/admin/data-health`  | Saúde dos Dados    | Integridade, latência e confiabilidade dos dados.                        |
+| `/admin/content`      | Conteúdo           | Curadoria de hábitos sugeridos, mensagens e recomendações (AI Tips).     |
+| `/admin/ai-config`    | Configuração de IA | Pesos, missão, parâmetros e segurança operacional da IA.                 |
+| `/admin/reports`      | Relatórios         | Leituras analíticas e exportação executiva.                              |
+| `/admin/page-builder` | Construtor UI      | Gestão visual da landing, login e app interno (Site Experience Builder). |
+| `/admin/puck`         | Editor Puck        | Editor visual drag-and-drop com persistência real.                       |
 
 **Rotas públicas/auxiliares:** Landing page (`/` deslogado), `/login` (login + registro), `/onboarding` (wizard pós-cadastro), `/billing/success`, `/billing/cancel`, `/instruments` (demo SSR).
 

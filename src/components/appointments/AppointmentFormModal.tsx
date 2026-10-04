@@ -49,8 +49,14 @@ interface Appointment {
 
 // Schema de validação
 const formSchema = z.object({
-  professional_id: z.string({ required_error: 'Selecione um profissional.' }),
-  appointment_date: z.date({ required_error: 'A data é obrigatória.' }),
+  professional_id: z.string({
+    error: (issue) =>
+      issue.input === undefined ? 'Selecione um profissional.' : undefined,
+  }),
+  appointment_date: z.date({
+    error: (issue) =>
+      issue.input === undefined ? 'A data é obrigatória.' : undefined,
+  }),
   appointment_time: z
     .string()
     .refine(

@@ -119,7 +119,12 @@ const goalsList = [
 const onboardingSchema = z.object({
   first_name: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres.'),
   last_name: z.string().min(2, 'O sobrenome deve ter pelo menos 2 caracteres.'),
-  birth_date: z.date({ required_error: 'Data de nascimento é obrigatória.' }),
+  birth_date: z.date({
+    error: (issue) =>
+      issue.input === undefined
+        ? 'Data de nascimento é obrigatória.'
+        : undefined,
+  }),
   birth_time: z
     .string()
     .optional()
@@ -129,12 +134,14 @@ const onboardingSchema = z.object({
       return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
     }, 'Formato de hora inválido (HH:MM).'),
   birth_location: z.string().min(3, 'Local de nascimento é obrigatório.'),
+  // O input type="number" entrega string no onChange; a coerção converte.
   age: z.coerce
-    .number()
+    .number<number | string>()
     .min(13, 'Você deve ter pelo menos 13 anos.')
     .max(120, 'Idade inválida.'),
   gender: z.enum(['male', 'female', 'other', 'prefer_not-to-say'], {
-    required_error: 'Por favor, selecione um gênero.',
+    error: (issue) =>
+      issue.input === undefined ? 'Por favor, selecione um gênero.' : undefined,
   }),
   activity_level: z.number().min(1).max(5).optional(),
   goals: z.array(z.string()).optional(),
@@ -143,7 +150,8 @@ const onboardingSchema = z.object({
   }),
 });
 
-type OnboardingValues = z.infer<typeof onboardingSchema>;
+type OnboardingInput = z.input<typeof onboardingSchema>;
+type OnboardingValues = z.output<typeof onboardingSchema>;
 
 const TOTAL_STEPS = 5;
 
@@ -164,7 +172,7 @@ export function OnboardingForm() {
   const router = useRouter();
   const { db, session } = useAuth();
 
-  const form = useForm<OnboardingValues>({
+  const form = useForm<OnboardingInput, unknown, OnboardingValues>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
       first_name: '',

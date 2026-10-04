@@ -25,10 +25,7 @@ export type PlanFeatureCategory = 'Essencial' | 'IA' | 'Clínico' | 'Operação'
 export type PlanFeatureType = 'boolean' | 'quota';
 
 export type PlanFeatureMeterKind =
-  | 'toggle'
-  | 'usage_counter'
-  | 'active_rows'
-  | 'rolling_days';
+  'toggle' | 'usage_counter' | 'active_rows' | 'rolling_days';
 
 export interface PlanFeatureAccess {
   key: PlanFeatureKey;

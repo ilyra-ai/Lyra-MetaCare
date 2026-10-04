@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { format, isValid, parse } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
-import type { SelectSingleEventHandler } from 'react-day-picker';
+import type { OnSelectHandler } from '@daypicker/react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -69,7 +69,7 @@ export function DatePicker({
     onChange(date);
   };
 
-  const handleSelect: SelectSingleEventHandler = (date) => {
+  const handleSelect: OnSelectHandler<Date | undefined> = (date) => {
     onChange(date);
     setOpen(false);
   };
@@ -107,10 +107,11 @@ export function DatePicker({
           mode="single"
           selected={value}
           onSelect={handleSelect}
-          initialFocus
-          captionLayout="dropdown-buttons"
-          fromYear={1900}
-          toYear={new Date().getFullYear()}
+          autoFocus
+          captionLayout="dropdown"
+          defaultMonth={value}
+          startMonth={new Date(1900, 0)}
+          endMonth={new Date(new Date().getFullYear(), 11)}
         />
       </PopoverContent>
     </Popover>

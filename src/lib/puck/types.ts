@@ -61,28 +61,16 @@ export type LyraHeadingTone = 'default' | 'cosmic' | 'teal' | 'coral';
 export type LyraBodyTextSize = 'sm' | 'md' | 'lg';
 export type LyraBodyTextTone = 'default' | 'muted' | 'cosmic';
 export type LyraButtonVariant =
-  | 'primary'
-  | 'accent'
-  | 'secondary'
-  | 'outline'
-  | 'ghost';
+  'primary' | 'accent' | 'secondary' | 'outline' | 'ghost';
 export type LyraButtonSize = 'sm' | 'default' | 'lg' | 'xl';
 export type LyraTrendDirection = 'up' | 'down' | 'neutral';
 export type LyraHeroCtaMode = 'manual-url' | 'surface-route';
 export type LyraHeroDynamicSource =
-  | 'manual'
-  | 'session-profile'
-  | 'subscription-context';
+  'manual' | 'session-profile' | 'subscription-context';
 export type LyraMetricDynamicSource = 'manual' | 'subscription-summary';
 export type LyraRootDynamicSource = 'manual' | 'session-context';
 export type LyraDecorativeIcon =
-  | 'sparkles'
-  | 'heart'
-  | 'cpu'
-  | 'calendar'
-  | 'shield'
-  | 'message'
-  | 'activity';
+  'sparkles' | 'heart' | 'cpu' | 'calendar' | 'shield' | 'message' | 'activity';
 export type LyraSurfaceVariant = 'glass' | 'surface' | 'cosmic' | 'aurora';
 export type LyraStackDirection = 'vertical' | 'horizontal';
 export type LyraStackGap = 'sm' | 'md' | 'lg' | 'xl';

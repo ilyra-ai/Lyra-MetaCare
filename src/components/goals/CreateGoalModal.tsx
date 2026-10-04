@@ -46,12 +46,13 @@ const formSchema = z.object({
       'Informe um valor-alvo maior que zero.'
     ),
   current_value: z.coerce
-    .number()
+    .number<number | string>()
     .min(0, 'O progresso inicial nao pode ser negativo.'),
   unit: z.string().trim(),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type FormInput = z.input<typeof formSchema>;
+type FormValues = z.output<typeof formSchema>;
 
 interface CreateGoalModalProps {
   children: React.ReactNode;
@@ -62,7 +63,7 @@ export function CreateGoalModal({ children, onCreated }: CreateGoalModalProps) {
   const { db, session } = useAuth();
   const [open, setOpen] = React.useState(false);
 
-  const form = useForm<FormValues>({
+  const form = useForm<FormInput, unknown, FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',

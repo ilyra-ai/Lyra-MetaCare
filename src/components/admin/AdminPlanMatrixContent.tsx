@@ -111,8 +111,7 @@ export function AdminPlanMatrixContent() {
         credentials: 'include',
       });
       const payload = (await response.json()) as
-        | PlanMatrixResponse
-        | { error?: string };
+        PlanMatrixResponse | { error?: string };
 
       if (!response.ok || !('plans' in payload)) {
         throw new Error(
@@ -217,8 +216,7 @@ export function AdminPlanMatrixContent() {
           body: JSON.stringify(requestPayload),
         });
         const payload = (await response.json()) as
-          | PlanMatrixResponse
-          | { error?: string };
+          PlanMatrixResponse | { error?: string };
 
         if (!response.ok || !('plans' in payload)) {
           throw new Error(

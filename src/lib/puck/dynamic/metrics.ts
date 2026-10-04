@@ -99,8 +99,7 @@ async function carregarResumoAssinaturaLyra(): Promise<LyraResumoAssinaturaDinam
   });
 
   const payloadBruto = (await response.json()) as
-    | AccountSubscriptionSummary
-    | { error?: string };
+    AccountSubscriptionSummary | { error?: string };
 
   if (!response.ok) {
     throw new Error(

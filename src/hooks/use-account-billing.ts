@@ -43,8 +43,7 @@ export function useAccountBilling(): UseAccountBillingResult {
         credentials: 'include',
       });
       const payload = (await response.json()) as
-        | AccountBillingContext
-        | { error?: string };
+        AccountBillingContext | { error?: string };
 
       if (!response.ok || !('environment' in payload)) {
         throw new Error(

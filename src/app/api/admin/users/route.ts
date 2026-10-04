@@ -26,10 +26,7 @@ export async function GET(request: NextRequest) {
       pageSize: parseIntegerParam(searchParams.get('pageSize'), 10),
       sortColumn:
         (searchParams.get('sortColumn') as
-          | 'created_at'
-          | 'first_name'
-          | 'email'
-          | null) ?? undefined,
+          'created_at' | 'first_name' | 'email' | null) ?? undefined,
       ascending: searchParams.get('ascending') === 'true',
     });
 

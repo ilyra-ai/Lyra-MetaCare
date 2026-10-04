@@ -1,12 +1,7 @@
 import type { LyraPuckDocumentKey } from '@/lib/puck/types';
 
 type LyraPuckCategoryName =
-  | 'fundamentos'
-  | 'narrativa'
-  | 'conversao'
-  | 'estrutura'
-  | 'dados'
-  | 'other';
+  'fundamentos' | 'narrativa' | 'conversao' | 'estrutura' | 'dados' | 'other';
 
 type LyraPuckCategories = Record<
   LyraPuckCategoryName,

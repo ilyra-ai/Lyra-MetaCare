@@ -4160,8 +4160,8 @@ export function SiteExperienceBuilder() {
       </CardHeader>
 
       <CardContent className="p-0">
-        <ResizablePanelGroup direction="horizontal" className="min-h-[980px]">
-          <ResizablePanel defaultSize={44} minSize={36}>
+        <ResizablePanelGroup orientation="horizontal" className="min-h-[980px]">
+          <ResizablePanel defaultSize="44%" minSize="36%">
             <ScrollArea className="h-[980px]">
               <div className="flex flex-col gap-6 p-6">
                 <div className="rounded-[24px] border border-border/70 bg-white/82 p-5">
@@ -4259,7 +4259,7 @@ export function SiteExperienceBuilder() {
 
           <ResizableHandle withHandle />
 
-          <ResizablePanel defaultSize={56} minSize={40}>
+          <ResizablePanel defaultSize="56%" minSize="40%">
             <div className="h-[980px] bg-[linear-gradient(180deg,rgba(249,248,252,0.96),rgba(255,255,255,0.98))] p-6">
               <div className="mb-4 flex items-center justify-between rounded-[24px] border border-border/70 bg-white/82 px-5 py-4">
                 <div>

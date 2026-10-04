@@ -16,11 +16,7 @@ import { addDays, differenceInCalendarDays, format, parseISO } from 'date-fns';
 export type MenstrualPhase = 'menstrual' | 'folicular' | 'ovulatoria' | 'lutea';
 
 export type MenstrualLifeStage =
-  | 'ciclo_regular'
-  | 'perimenopausa'
-  | 'menopausa'
-  | 'gestacao'
-  | 'sem_ciclo';
+  'ciclo_regular' | 'perimenopausa' | 'menopausa' | 'gestacao' | 'sem_ciclo';
 
 export interface MenstrualConfig {
   lastMenstrualPeriod: string | Date | null;

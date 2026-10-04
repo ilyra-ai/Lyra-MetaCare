@@ -39,10 +39,13 @@ interface Goal {
 }
 
 const formSchema = z.object({
-  current_value: z.coerce.number().min(0, 'O valor deve ser positivo.'),
+  current_value: z.coerce
+    .number<number | string>()
+    .min(0, 'O valor deve ser positivo.'),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type FormInput = z.input<typeof formSchema>;
+type FormValues = z.output<typeof formSchema>;
 
 interface UpdateGoalProgressModalProps {
   goal: Goal;
@@ -58,7 +61,7 @@ export function UpdateGoalProgressModal({
   const { db } = useAuth();
   const [open, setOpen] = React.useState(false);
 
-  const form = useForm<FormValues>({
+  const form = useForm<FormInput, unknown, FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       current_value: goal.current_value,

@@ -1,11 +1,7 @@
 import { AstrologicalData } from '../astrology/engine';
 
 export type KoshaName =
-  | 'Annamaya'
-  | 'Pranamaya'
-  | 'Manomaya'
-  | 'Vijnanamaya'
-  | 'Anandamaya';
+  'Annamaya' | 'Pranamaya' | 'Manomaya' | 'Vijnanamaya' | 'Anandamaya';
 
 export interface Kosha {
   name: KoshaName;

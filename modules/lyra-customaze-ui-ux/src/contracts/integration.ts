@@ -1,11 +1,7 @@
 export type LyraCustomazeSupportedProject = 'nextjs-app-router-typescript';
 
 export type LyraCustomazeSurfaceScope =
-  | 'public-page'
-  | 'auth-page'
-  | 'internal-page'
-  | 'layout'
-  | 'template';
+  'public-page' | 'auth-page' | 'internal-page' | 'layout' | 'template';
 
 export interface LyraCustomazeEditableZone {
   key: string;

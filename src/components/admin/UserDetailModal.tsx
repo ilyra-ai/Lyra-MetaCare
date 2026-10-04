@@ -131,8 +131,7 @@ export function UserDetailModal({
         credentials: 'include',
       });
       const payload = (await response.json()) as
-        | UserSubscriptionAssignment
-        | { error?: string };
+        UserSubscriptionAssignment | { error?: string };
 
       if (!response.ok || !('subscription' in payload)) {
         throw new Error(
@@ -178,8 +177,7 @@ export function UserDetailModal({
         }),
       });
       const payload = (await response.json()) as
-        | UserSubscriptionAssignment
-        | { error?: string };
+        UserSubscriptionAssignment | { error?: string };
 
       if (!response.ok || !('subscription' in payload)) {
         throw new Error(

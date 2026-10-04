@@ -50,14 +50,15 @@ import { Textarea } from '@/components/ui/textarea';
 const aiConfigSchema = z.object({
   mission: z.string().min(20, 'Descreva a missão com mais profundidade.'),
   key_objectives: z.string().min(20, 'Detalhe melhor os objetivos principais.'),
-  weight_hrv: z.coerce.number().min(0).max(100),
-  weight_sleep: z.coerce.number().min(0).max(100),
-  weight_activity: z.coerce.number().min(0).max(100),
-  weight_nutrition: z.coerce.number().min(0).max(100),
+  weight_hrv: z.coerce.number<number | string>().min(0).max(100),
+  weight_sleep: z.coerce.number<number | string>().min(0).max(100),
+  weight_activity: z.coerce.number<number | string>().min(0).max(100),
+  weight_nutrition: z.coerce.number<number | string>().min(0).max(100),
   model_name: z.string().min(1, 'Selecione um motor local.'),
 });
 
-type AIConfigValues = z.infer<typeof aiConfigSchema>;
+type AIConfigInput = z.input<typeof aiConfigSchema>;
+type AIConfigValues = z.output<typeof aiConfigSchema>;
 
 export function AIConfigForm() {
   const { db } = useAuth();
@@ -69,7 +70,7 @@ export function AIConfigForm() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isLoadingModels, setIsLoadingModels] = React.useState(false);
 
-  const form = useForm<AIConfigValues>({
+  const form = useForm<AIConfigInput, unknown, AIConfigValues>({
     resolver: zodResolver(aiConfigSchema),
     defaultValues: {
       mission: '',

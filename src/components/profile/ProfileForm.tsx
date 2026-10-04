@@ -72,15 +72,18 @@ export const profileSchema = z.object({
   birth_location: z.string().optional().or(z.literal('')),
 
   age: z.coerce
-    .number({ required_error: 'Idade é obrigatória.' })
+    // Com coerção, um campo vazio vira NaN e cai no erro de tipo numérico.
+    .number<number | string>({ error: 'Idade é obrigatória.' })
     .min(13, 'Você deve ter pelo menos 13 anos.')
     .max(120, 'Idade inválida.'),
   gender: z.enum(['male', 'female', 'other', 'prefer_not-to-say'], {
-    required_error: 'Por favor, selecione um gênero.',
+    error: (issue) =>
+      issue.input === undefined ? 'Por favor, selecione um gênero.' : undefined,
   }),
 });
 
-export type ProfileValues = z.infer<typeof profileSchema>;
+export type ProfileInput = z.input<typeof profileSchema>;
+export type ProfileValues = z.output<typeof profileSchema>;
 
 export function buildProfileUpdatePayload(data: ProfileValues) {
   const formattedBirthDate = data.birth_date
@@ -221,7 +224,7 @@ export function ProfileForm() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
 
-  const form = useForm<ProfileValues>({
+  const form = useForm<ProfileInput, unknown, ProfileValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       first_name: '',

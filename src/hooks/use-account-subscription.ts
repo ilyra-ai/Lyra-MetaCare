@@ -45,8 +45,7 @@ export function useAccountSubscription(): UseAccountSubscriptionResult {
         credentials: 'include',
       });
       const payload = (await response.json()) as
-        | AccountSubscriptionSummary
-        | { error?: string };
+        AccountSubscriptionSummary | { error?: string };
 
       if (!response.ok || !('plan' in payload)) {
         throw new Error(

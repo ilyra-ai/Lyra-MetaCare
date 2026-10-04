@@ -5,7 +5,10 @@ import { PlanKey, SubscriptionPlanSummary } from '@/types/subscription';
 import { BillingEnvironmentStatus } from '@/types/subscription';
 
 const STRIPE_PROVIDER = 'stripe' as const;
-const STRIPE_API_VERSION: Stripe.LatestApiVersion = '2026-02-25.clover';
+// Versão de API fixada pelo stripe-node 23 (ver CHANGELOG do pacote). O
+// endpoint de webhook no Dashboard da Stripe deve usar a mesma versão para que
+// os objetos recebidos tenham o formato tipado pela SDK.
+const STRIPE_API_VERSION: Stripe.LatestApiVersion = '2026-09-30.endive';
 
 function readOptionalEnv(name: string) {
   const value = process.env[name]?.trim();
