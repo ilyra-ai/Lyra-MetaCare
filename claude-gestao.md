@@ -2,7 +2,7 @@
 
 > [!IMPORTANT]
 > Este arquivo é o painel oficial de andamento da **INSTRUÇÃO MESTRA** definida em [`CLAUDE.md`](./CLAUDE.md).
-> Todo modelo ou agente de IA que atuar neste repositório deve atualizá-lo a cada tarefa iniciada, bloqueada ou finalizada, no mesmo commit da tarefa.
+> Todo modelo ou agente de IA que atuar neste repositório deve atualizá-lo a cada tarefa iniciada, bloqueada ou finalizada.
 
 **Regras de manutenção deste painel**
 
@@ -11,6 +11,7 @@
 3. **ANDAMENTO** comporta no máximo **3 tarefas simultâneas**; ao finalizar, a tarefa sai do Tópico 2 e entra no Tópico 4.
 4. **BLOQUEADAS** recebe toda tarefa que dependa de interação do usuário, credencial externa ou limitação real do ambiente, sempre com a evidência do bloqueio.
 5. O Tópico 4 registra apenas o que foi realmente implementado, testado, commitado e enviado para `origin/main`, com SHA e evidências reais.
+6. **Obrigatório:** logo após o commit e push de cada tarefa para `main`, este painel é atualizado imediatamente com o SHA real da tarefa e enviado em um commit e push próprios para `main`.
 
 **Legenda:** 🟢 finalizada · 🔵 em andamento · 🔴 bloqueada · ⚪ a iniciar
 
@@ -20,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `███░░░░░░░░░░░░░░░░░` **17%** |
+| Progresso          | `████░░░░░░░░░░░░░░░░` **22%** |
 | Tarefas totais     | 23                             |
-| 🟢 Finalizadas     | 4                              |
+| 🟢 Finalizadas     | 5                              |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 18                             |
+| ⚪ A iniciar       | 17                             |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-04                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (4 ÷ 23 = 17,4%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (5 ÷ 23 = 21,7%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -37,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                                            | O que está sendo realizado                                                                                                                                                                                              |
-| --- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 05  | Remoção comprovada de dependências não utilizadas | Busca `rg` de imports, requires, dynamic imports, scripts, loaders e configs de cada dependência; remoção somente com evidência, correção de seção (dependencies × devDependencies) e Prova de Morte após cada remoção. |
+| Nº  | Tarefa                              | O que está sendo realizado                                                                                                                                                                                                                                                     |
+| --- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 06  | Upgrade controlado das dependências | Pesquisa das versões estáveis de outubro de 2026, matriz por dependência (MANTER/ATUALIZAR/SUBSTITUIR/REMOVER) e migração dos majors de toolchain e bibliotecas (ESLint, TypeScript, Vitest, Zod, Recharts, Stripe, Sentry, Lucide e demais) com leitura dos migration guides. |
 
 ### BLOQUEADAS
 
@@ -48,16 +49,6 @@ Nenhuma tarefa bloqueada no momento.
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
-
-### 06 · Upgrade controlado das dependências
-
-_Instrução: Tarefa 4 · itens 8, 9, 12, 59, 62 e 63._
-
-- Pesquisar as versões oficiais estáveis de outubro de 2026 (documentação oficial dos mantenedores), sem beta, alpha, canary, RC ou experimental.
-- Montar a matriz interna por dependência: nome, versão declarada, versão instalada, última estável, tipo, onde é usada, breaking changes, compatibilidade e ação (MANTER, ATUALIZAR, SUBSTITUIR, REMOVER).
-- Analisar TypeScript, ESLint, Vitest, Radix, shadcn, Sentry, Stripe, Zod, mysql2, Recharts, React Hook Form, Puck, Monaco, Sonner, Lucide e todas as demais.
-- Para cada major: ler o migration guide, adaptar código e configuração, executar testes, build e runtime.
-- Não usar `pnpm update --latest` como trabalho concluído; não fazer downgrade para esconder conflito; substituir pacotes abandonados por alternativas mantidas em 2026 preservando a funcionalidade.
 
 ### 07 · Migração Next.js
 
@@ -228,7 +219,7 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
 
 ### 04 · Normalização do package manager e lockfiles
 
-- **Status:** 🟢 finalizada · **Commit:** `chore(pm): padroniza pnpm 11 via Corepack e remove bun` (SHA registrado na atualização seguinte deste painel)
+- **Status:** 🟢 finalizada · **Commit:** `27171f8` · **Push:** `e89a4b2..27171f8 main -> main` (confirmado)
 - **Decisão técnica (pesquisa de 2026-10-04):** pnpm é o gerenciador oficial (único lockfile real, `pnpm-workspace.yaml`, scripts e README). Versões avaliadas: pnpm 12.9.1 (lançado em 2026-08-26, reescrito em Rust) e pnpm 11.28.4 (suporte até 2027-04-30). O pnpm 12 **não executa via Corepack** (testado com Corepack 0.34.0 e 0.36.0: `Cannot find module .../pnpm/12.9.1/bin/pnpm.cjs`, pois o pacote passou a distribuir binário nativo), o que viola o requisito de Corepack reproduzível; por isso foi fixado o pnpm **11.28.4**, estável, suportado e compatível com Corepack.
 - **Implementado:**
   - `package.json`: `"packageManager": "pnpm@11.28.4+sha512..."` gerado por `corepack use`; `bun` removido das dependências; `db:start` usa `docker compose up -d --wait mysql && pnpm run db:migrate` (aguarda o healthcheck real em vez de migrar com o banco ainda subindo).
@@ -239,3 +230,15 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
   - Avaliado e descartado: manter `devEngines.packageManager` junto com `packageManager` gera o aviso `Cannot use both "packageManager" and "devEngines.packageManager"` no pnpm 11; foi mantido o campo exigido pela instrução e lido pelo Corepack.
 - **Evidências:** `corepack pnpm@11.28.4 --version` → `11.28.4`; `CI=true pnpm install --frozen-lockfile` → exit 0 sem warnings; Prova de Morte: `ls bun.lock` inexistente e `grep -c "bun@" pnpm-lock.yaml` → `0`; gates `check:format`, `check:lint`, `check:types` (exit 0), `test` (82/82) e `build` (exit 0).
 - **Pendências encaminhadas:** `run.py` e `run_windows.py` ainda citam `package-lock.json` e fallback para npm; serão tratados nas tarefas 13 e 15.
+
+### 05 · Remoção comprovada de dependências não utilizadas
+
+- **Status:** 🟢 finalizada · **Commit:** `ecf1b60` · **Push:** `27171f8..ecf1b60 main -> main` (confirmado)
+- **Método:** para cada dependência do `package.json`, busca `rg` por `'pacote` e `"pacote` em todo o repositório (código, configs, scripts, CSS), excluindo `node_modules`, lockfile e o próprio `package.json`; candidatos com zero referências foram reconferidos por nome curto (ex.: `monaco`, `tremor`, `vaul`, `tooltip`) e na documentação.
+- **Removidas (zero uso comprovado):** `@monaco-editor/react`, `monaco-editor`, `@radix-ui/react-aspect-ratio`, `@radix-ui/react-collapsible`, `@radix-ui/react-context-menu`, `@radix-ui/react-hover-card`, `@radix-ui/react-menubar`, `@radix-ui/react-navigation-menu`, `@radix-ui/react-tooltip` (os tooltips usados são do Recharts e do `ui/chart`), `@tremor/react` (só aparecia no `content` do Tailwind), `input-otp`, `vaul`, `@tailwindcss/typography` (não registrado em `plugins`) e `eslint-config-prettier` (não estendido no `.eslintrc.json`).
+- **Seção corrigida:** `@types/react-big-calendar` movido de `dependencies` para `devDependencies`.
+- **Mantidas com evidência:** `react-big-calendar` (`src/components/appointments/Agenda.tsx` e `globals.css`), `@dyad-sh/nextjs-webpack-component-tagger` (`next.config.ts`, opcional via `ENABLE_DYAD_COMPONENT_TAGGER`; reavaliado na tarefa 06), `implement_elementor_lyra.py` e `modules/lyra-customaze-ui-ux` (importado por `src/lib/site-page-config`).
+- **Defeito corrigido junto:** o `content` do Tailwind não incluía `src/lib` (componentes do Puck com `className`) nem `modules/`; agora cobre `./src/**/*` e `./modules/**/*`.
+- **Artefatos indevidamente versionados:** `.logs/` (2 arquivos) e `.playwright-cli/` (52 arquivos) estavam no Git apesar do `.gitignore`; dois snapshots continham a senha padrão do admin digitada no login. Foram removidos do índice (`git rm --cached`), permanecendo apenas locais e ignorados.
+- **Prova de Morte:** `git ls-files .logs .playwright-cli | wc -l` → `0`; nenhuma das 14 dependências permanece no `package.json` nem como importador direto no `pnpm-lock.yaml`.
+- **Evidências:** `CI=true pnpm install --frozen-lockfile` exit 0; `check:format`, `check:lint`, `check:types` exit 0; `test` 82/82; `build` exit 0. Uma execução de build falhou de forma transitória em `next/font` (`Cannot read properties of null (reading '1')`) por resposta inválida do Google Fonts durante o download; a repetição passou. A dependência de rede no build pelo `next/font/google` foi registrada para tratamento na tarefa 20 (performance/fontes).
