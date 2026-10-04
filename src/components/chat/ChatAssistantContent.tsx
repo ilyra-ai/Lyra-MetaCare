@@ -30,6 +30,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { usePrivacyMode } from '@/hooks/use-privacy-mode';
+import { useLocalStorageValue } from '@/hooks/use-local-storage-value';
 import { scaleRem } from '@/lib/site-page-config/runtime';
 import { cn } from '@/lib/utils';
 import { ChatBubble } from './ChatBubble';
@@ -42,6 +43,9 @@ export interface Message {
   text: string;
   sender: 'user' | 'ai';
 }
+
+const WELCOME_MESSAGE_ID = 0;
+const BYOK_STORAGE_KEY = 'lyra_byok_api_key';
 
 type IntegrationItem = {
   icon: React.ElementType;
@@ -94,50 +98,35 @@ export function ChatAssistantContent() {
   const { privacyMode } = usePrivacyMode();
   const chatConfig = appConfig.chat;
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: chatConfig.welcomeMessage,
-      sender: 'ai',
-    },
-  ]);
+  // A conversa guarda apenas as mensagens trocadas; a mensagem de boas-vindas
+  // é derivada da configuração publicada e sempre aparece em primeiro lugar.
+  const [conversation, setConversation] = useState<Message[]>([]);
+  const messages = useMemo<Message[]>(
+    () => [
+      { id: WELCOME_MESSAGE_ID, text: chatConfig.welcomeMessage, sender: 'ai' },
+      ...conversation,
+    ],
+    [chatConfig.welcomeMessage, conversation]
+  );
+  // Identificadores sequenciais das mensagens (gerados apenas em handlers).
+  const nextMessageIdRef = useRef(WELCOME_MESSAGE_ID + 1);
+  const createMessageId = () => {
+    const id = nextMessageIdRef.current;
+    nextMessageIdRef.current += 1;
+    return id;
+  };
   const [isTyping, setIsTyping] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isNearBottom, setIsNearBottom] = useState(true);
-  const [userApiKey, setUserApiKey] = useState('');
+  const [storedApiKey, setStoredApiKey] =
+    useLocalStorageValue(BYOK_STORAGE_KEY);
+  const userApiKey = storedApiKey ?? '';
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setUserApiKey(localStorage.getItem('lyra_byok_api_key') || '');
-  }, []);
-
   const handleSaveApiKey = (val: string) => {
-    setUserApiKey(val);
-    localStorage.setItem('lyra_byok_api_key', val);
-    if (val) {
-      toast.success('Chave de API (BYOK) configurada com sucesso on-device.');
-    }
+    setStoredApiKey(val.length > 0 ? val : null);
   };
-
-  useEffect(() => {
-    setMessages((current) => {
-      if (current.length !== 1 || current[0]?.sender !== 'ai') {
-        return current;
-      }
-
-      if (current[0].text === chatConfig.welcomeMessage) {
-        return current;
-      }
-
-      return [
-        {
-          ...current[0],
-          text: chatConfig.welcomeMessage,
-        },
-      ];
-    });
-  }, [chatConfig.welcomeMessage]);
 
   const quickReplies = useMemo(
     () =>
@@ -196,26 +185,27 @@ export function ChatAssistantContent() {
       }
 
       const newAiMessage: Message = {
-        id: Date.now() + 1,
+        id: createMessageId(),
         text: data.response,
         sender: 'ai',
       };
 
-      setMessages((prev) => [...prev, newAiMessage]);
+      setConversation((prev) => [...prev, newAiMessage]);
     } catch (error) {
-      const errorMessage = (error as Error).message;
+      const errorMessage =
+        error instanceof Error ? error.message : 'Erro desconhecido.';
 
       toast.error('Erro ao contatar o assistente.', {
         description: errorMessage,
       });
 
       const errorAiMessage: Message = {
-        id: Date.now() + 1,
+        id: createMessageId(),
         text: `Desculpe, ocorreu um erro ao processar sua solicitação: ${errorMessage}`,
         sender: 'ai',
       };
 
-      setMessages((prev) => [...prev, errorAiMessage]);
+      setConversation((prev) => [...prev, errorAiMessage]);
     } finally {
       setIsTyping(false);
     }
@@ -227,12 +217,12 @@ export function ChatAssistantContent() {
     }
 
     const newUserMessage: Message = {
-      id: Date.now(),
+      id: createMessageId(),
       text,
       sender: 'user',
     };
 
-    setMessages((prev) => [...prev, newUserMessage]);
+    setConversation((prev) => [...prev, newUserMessage]);
     await askAssistant(text);
   };
 
@@ -252,7 +242,7 @@ export function ChatAssistantContent() {
       return;
     }
 
-    setMessages((prev) => prev.filter((m) => m.id !== aiMessageId));
+    setConversation((prev) => prev.filter((m) => m.id !== aiMessageId));
     await askAssistant(previousUserMessage.text);
   };
 
@@ -351,10 +341,22 @@ export function ChatAssistantContent() {
                     <Input
                       type="password"
                       placeholder="sk-..."
+                      aria-label="Chave da API do modelo de linguagem (BYOK)"
+                      autoComplete="off"
                       value={userApiKey}
                       onChange={(e) => handleSaveApiKey(e.target.value)}
                       className="h-8 text-xs bg-white"
                     />
+                    <p
+                      className="mt-2 text-[11px] text-muted-foreground"
+                      aria-live="polite"
+                    >
+                      {userApiKey
+                        ? privacyMode
+                          ? 'Chave salva neste navegador, mas não enviada: o Modo Privacidade está ativo.'
+                          : 'Chave salva neste navegador.'
+                        : 'Nenhuma chave salva.'}
+                    </p>
                   </div>
                 </PopoverContent>
               </Popover>

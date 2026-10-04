@@ -23,52 +23,63 @@ export function ChatBubble({ message, isUser, onRegenerate }: ChatBubbleProps) {
   const [isHovering, setIsHovering] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [showActions, setShowActions] = useState(false);
-  const [isTyping, setIsTyping] = useState(!isUser);
-  const [displayedText, setDisplayedText] = useState('');
+  // Efeito de digitação das mensagens da IA: guarda quantos caracteres já
+  // foram revelados. Quando o texto muda, a contagem recomeça durante a
+  // renderização (estado derivado), sem setState síncrono em efeito.
+  const [revealedCount, setRevealedCount] = useState(0);
+  const [typedMessage, setTypedMessage] = useState(message);
+  if (typedMessage !== message) {
+    setTypedMessage(message);
+    setRevealedCount(0);
+  }
+  const displayedText = isUser ? message : message.slice(0, revealedCount);
+  const isTyping = !isUser && revealedCount < message.length;
+
   const [particles, setParticles] = useState<
     Array<{ id: number; x: number; y: number }>
   >([]);
+  const visibleParticles = !isUser && isHovering ? particles : [];
 
-  // Efeito de digitação para mensagens da IA
   useEffect(() => {
-    if (!isUser && message) {
-      setIsTyping(true);
-      setDisplayedText('');
-
-      let currentIndex = 0;
-      const typingInterval = setInterval(() => {
-        if (currentIndex < message.length) {
-          setDisplayedText(message.slice(0, currentIndex + 1));
-          currentIndex++;
-        } else {
-          setIsTyping(false);
-          clearInterval(typingInterval);
-        }
-      }, 20);
-
-      return () => clearInterval(typingInterval);
-    } else {
-      setDisplayedText(message);
-      setIsTyping(false);
+    if (isUser || !message) {
+      return;
     }
+
+    const typingInterval = setInterval(() => {
+      setRevealedCount((current) => {
+        if (current >= message.length) {
+          clearInterval(typingInterval);
+          return current;
+        }
+        return current + 1;
+      });
+    }, 20);
+
+    return () => clearInterval(typingInterval);
   }, [message, isUser]);
 
-  // Gerar partículas etéreas ao redor do avatar da IA
+  // Partículas etéreas ao redor do avatar da IA enquanto o cursor está sobre
+  // a mensagem (geradas apenas no callback do intervalo).
   useEffect(() => {
-    if (!isUser && isHovering) {
-      const interval = setInterval(() => {
-        const newParticle = {
-          id: Date.now(),
-          x: Math.random() * 40 - 20,
-          y: Math.random() * 40 - 20,
-        };
-        setParticles((prev) => [...prev.slice(-5), newParticle]);
-      }, 300);
-
-      return () => clearInterval(interval);
-    } else {
-      setParticles([]);
+    if (isUser || !isHovering) {
+      return;
     }
+
+    let particleId = 0;
+    const interval = setInterval(() => {
+      particleId += 1;
+      const newParticle = {
+        id: particleId,
+        x: Math.random() * 40 - 20,
+        y: Math.random() * 40 - 20,
+      };
+      setParticles((prev) => [...prev.slice(-5), newParticle]);
+    }, 300);
+
+    return () => {
+      clearInterval(interval);
+      setParticles([]);
+    };
   }, [isUser, isHovering]);
 
   const handleCopy = async () => {
@@ -104,7 +115,7 @@ export function ChatBubble({ message, isUser, onRegenerate }: ChatBubbleProps) {
       {/* Avatar com aura luminosa */}
       <div className="relative">
         {!isUser &&
-          particles.map((particle) => (
+          visibleParticles.map((particle) => (
             <div
               key={particle.id}
               className="animate-particle-float absolute h-1 w-1 rounded-full bg-cosmic"

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
@@ -43,6 +43,7 @@ import {
 import { Line, LineChart, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { DatePicker } from '@/components/ui/date-picker';
 import { differenceInYears, parseISO, format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { TimeInput } from '@/components/ui/time-input';
 import { AvatarUploader } from './AvatarUploader';
@@ -121,39 +122,47 @@ function ProgressChart({
   );
   const [loading, setLoading] = React.useState(true);
 
-  const fetchWeightData = React.useCallback(async () => {
-    setLoading(true);
-    const sixMonthsAgo = format(
-      new Date(Date.now() - 180 * 24 * 60 * 60 * 1000),
-      'yyyy-MM-dd'
-    );
-
-    const { data: metrics, error } = await db
-      .from('daily_metrics')
-      .select('date, weight_kg')
-      .eq('user_id', userId)
-      .gte('date', sixMonthsAgo)
-      .not('weight_kg', 'is', null)
-      .order('date', { ascending: true });
-
-    if (error) {
-      console.error('Error fetching weight data:', error);
-      setData([]);
-    } else {
-      const chartData = (metrics as Pick<DailyMetric, 'date' | 'weight_kg'>[])
-        .filter((m) => m.weight_kg !== null)
-        .map((m) => ({
-          date: format(parseISO(m.date), 'MMM'),
-          weight: m.weight_kg as number,
-        }));
-      setData(chartData);
-    }
-    setLoading(false);
-  }, [userId, db]);
-
+  // Carrega o peso dos últimos 6 meses (o estado inicial já é "carregando").
   React.useEffect(() => {
-    fetchWeightData();
-  }, [fetchWeightData]);
+    let active = true;
+
+    const fetchWeightData = async () => {
+      const sixMonthsAgo = format(
+        new Date(Date.now() - 180 * 24 * 60 * 60 * 1000),
+        'yyyy-MM-dd'
+      );
+
+      const { data: metrics, error } = await db
+        .from('daily_metrics')
+        .select('date, weight_kg')
+        .eq('user_id', userId)
+        .gte('date', sixMonthsAgo)
+        .not('weight_kg', 'is', null)
+        .order('date', { ascending: true });
+
+      if (!active) return;
+
+      if (error) {
+        console.error('Erro ao carregar o histórico de peso:', error);
+        setData([]);
+      } else {
+        const chartData = (metrics as Pick<DailyMetric, 'date' | 'weight_kg'>[])
+          .filter((m) => m.weight_kg !== null)
+          .map((m) => ({
+            date: format(parseISO(m.date), 'MMM', { locale: ptBR }),
+            weight: m.weight_kg as number,
+          }));
+        setData(chartData);
+      }
+      setLoading(false);
+    };
+
+    void fetchWeightData();
+
+    return () => {
+      active = false;
+    };
+  }, [userId, db]);
 
   if (loading) {
     return <Skeleton className="h-[250px] w-full" />;
@@ -238,7 +247,13 @@ export function ProfileForm() {
     mode: 'onChange',
   });
 
-  const birthDateWatch = form.watch('birth_date');
+  // useWatch assina apenas este campo e é compatível com o React Compiler
+  // (form.watch() retorna funções que não podem ser memoizadas com segurança).
+  const birthDateWatch = useWatch({
+    control: form.control,
+    name: 'birth_date',
+  });
+  const genderWatch = useWatch({ control: form.control, name: 'gender' });
 
   React.useEffect(() => {
     if (birthDateWatch) {
@@ -247,46 +262,57 @@ export function ProfileForm() {
     }
   }, [birthDateWatch, form]);
 
-  const fetchProfile = React.useCallback(async () => {
-    if (!session?.user) return;
+  const profileUserId = session?.user?.id ?? null;
 
-    const { data, error } = await db
-      .from('profiles')
-      .select(
-        'first_name, last_name, age, gender, birth_date, birth_time, birth_location, avatar_url'
-      )
-      .eq('id', session.user.id)
-      .maybeSingle();
-
-    if (error) {
-      toast.error('Erro ao carregar perfil.', { description: error.message });
-    } else if (data) {
-      const parsedBirthDate = data.birth_date
-        ? parseISO(data.birth_date)
-        : null;
-      const validBirthDate =
-        parsedBirthDate && !isNaN(parsedBirthDate.getTime())
-          ? parsedBirthDate
-          : undefined;
-
-      setAvatarUrl(data.avatar_url);
-
-      form.reset({
-        first_name: data.first_name ?? '',
-        last_name: data.last_name ?? '',
-        age: data.age ?? 18,
-        gender: (data.gender as ProfileValues['gender']) ?? 'prefer_not-to-say',
-        birth_date: validBirthDate,
-        birth_time: data.birth_time ?? '',
-        birth_location: data.birth_location ?? '',
-      });
-    }
-    setIsLoading(false);
-  }, [session, db, form]);
-
+  // Carrega o perfil do usuário (o estado inicial já é "carregando").
   React.useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    if (!profileUserId) return;
+    let active = true;
+
+    const fetchProfile = async () => {
+      const { data, error } = await db
+        .from('profiles')
+        .select(
+          'first_name, last_name, age, gender, birth_date, birth_time, birth_location, avatar_url'
+        )
+        .eq('id', profileUserId)
+        .maybeSingle();
+
+      if (!active) return;
+
+      if (error) {
+        toast.error('Erro ao carregar perfil.', { description: error.message });
+      } else if (data) {
+        const parsedBirthDate = data.birth_date
+          ? parseISO(data.birth_date)
+          : null;
+        const validBirthDate =
+          parsedBirthDate && !isNaN(parsedBirthDate.getTime())
+            ? parsedBirthDate
+            : undefined;
+
+        setAvatarUrl(data.avatar_url);
+
+        form.reset({
+          first_name: data.first_name ?? '',
+          last_name: data.last_name ?? '',
+          age: data.age ?? 18,
+          gender:
+            (data.gender as ProfileValues['gender']) ?? 'prefer_not-to-say',
+          birth_date: validBirthDate,
+          birth_time: data.birth_time ?? '',
+          birth_location: data.birth_location ?? '',
+        });
+      }
+      setIsLoading(false);
+    };
+
+    void fetchProfile();
+
+    return () => {
+      active = false;
+    };
+  }, [profileUserId, db, form]);
 
   const onSubmit = async (data: ProfileValues) => {
     if (!session?.user) return;
@@ -531,7 +557,7 @@ export function ProfileForm() {
             </Button>
           </CardContent>
         </Card>
-        {form.watch('gender') === 'female' ? <MenstrualCycleSettings /> : null}
+        {genderWatch === 'female' ? <MenstrualCycleSettings /> : null}
         <HabitList />
       </div>
     </div>

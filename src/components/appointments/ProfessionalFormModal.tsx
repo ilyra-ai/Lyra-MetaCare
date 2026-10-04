@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import {
   Dialog,
@@ -64,7 +64,8 @@ export function ProfessionalFormModal({
     defaultValues: { name: '', specialty: '', contact: '', avatar_url: '' },
   });
 
-  const professionalName = form.watch('name');
+  // useWatch assina apenas este campo e é compatível com o React Compiler.
+  const professionalName = useWatch({ control: form.control, name: 'name' });
 
   React.useEffect(() => {
     if (professionalToEdit) {

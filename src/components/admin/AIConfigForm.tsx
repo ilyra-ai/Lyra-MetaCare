@@ -57,6 +57,17 @@ const aiConfigSchema = z.object({
   model_name: z.string().min(1, 'Selecione um motor local.'),
 });
 
+type AIConfigRow = {
+  id: string;
+  mission: string;
+  key_objectives: string;
+  weight_hrv: number;
+  weight_sleep: number;
+  weight_activity: number;
+  weight_nutrition: number;
+  model_name: string | null;
+};
+
 type AIConfigInput = z.input<typeof aiConfigSchema>;
 type AIConfigValues = z.output<typeof aiConfigSchema>;
 
@@ -83,57 +94,55 @@ export function AIConfigForm() {
     },
   });
 
-  const loadConfig = React.useCallback(async () => {
-    setIsLoadingConfig(true);
-    const { data, error } = await db
-      .from('ai_config')
-      .select('*')
-      .limit(1)
-      .single();
-
-    if (error || !data) {
-      toast.error('Erro ao carregar configuração local de IA.', {
-        description:
-          error?.message || 'Registro de configuração não encontrado.',
-      });
-      setIsLoadingConfig(false);
-      return;
-    }
-
-    setConfigId(String((data as { id: string }).id));
-    form.reset({
-      mission: String((data as { mission: string }).mission),
-      key_objectives: String(
-        (data as { key_objectives: string }).key_objectives
-      ),
-      weight_hrv: Number((data as { weight_hrv: number }).weight_hrv),
-      weight_sleep: Number((data as { weight_sleep: number }).weight_sleep),
-      weight_activity: Number(
-        (data as { weight_activity: number }).weight_activity
-      ),
-      weight_nutrition: Number(
-        (data as { weight_nutrition: number }).weight_nutrition
-      ),
-      model_name: String(
-        (data as { model_name: string | null }).model_name ?? ''
-      ),
-    });
-
-    if ((data as { model_name: string | null }).model_name) {
-      setAvailableModels([
-        {
-          id: String((data as { model_name: string | null }).model_name),
-          label: String((data as { model_name: string | null }).model_name),
-        },
-      ]);
-    }
-
-    setIsLoadingConfig(false);
-  }, [form, db]);
-
+  // Carga inicial da configuração (o estado inicial já é "carregando").
   React.useEffect(() => {
-    loadConfig();
-  }, [loadConfig]);
+    let active = true;
+
+    const loadConfig = async () => {
+      const { data, error } = await db
+        .from('ai_config')
+        .select('*')
+        .limit(1)
+        .single();
+
+      if (!active) return;
+
+      if (error || !data) {
+        toast.error('Erro ao carregar configuração local de IA.', {
+          description:
+            error?.message || 'Registro de configuração não encontrado.',
+        });
+        setIsLoadingConfig(false);
+        return;
+      }
+
+      const row = data as AIConfigRow;
+      setConfigId(String(row.id));
+      form.reset({
+        mission: String(row.mission),
+        key_objectives: String(row.key_objectives),
+        weight_hrv: Number(row.weight_hrv),
+        weight_sleep: Number(row.weight_sleep),
+        weight_activity: Number(row.weight_activity),
+        weight_nutrition: Number(row.weight_nutrition),
+        model_name: String(row.model_name ?? ''),
+      });
+
+      if (row.model_name) {
+        setAvailableModels([
+          { id: String(row.model_name), label: String(row.model_name) },
+        ]);
+      }
+
+      setIsLoadingConfig(false);
+    };
+
+    void loadConfig();
+
+    return () => {
+      active = false;
+    };
+  }, [form, db]);
 
   const loadLocalModels = async () => {
     setIsLoadingModels(true);
@@ -187,9 +196,13 @@ export function AIConfigForm() {
 
   if (isLoadingConfig) {
     return (
-      <div className="space-y-8 animate-pulse">
-        <div className="h-32 bg-white/40 backdrop-blur-md rounded-3xl w-full border border-white/50" />
-        <div className="h-96 bg-white/40 backdrop-blur-md rounded-3xl w-full border border-white/50" />
+      <div
+        className="space-y-8"
+        role="status"
+        aria-label="Carregando configuração da IA"
+      >
+        <Skeleton className="h-32 w-full rounded-3xl border border-white/50 backdrop-blur-md" />
+        <Skeleton className="h-96 w-full rounded-3xl border border-white/50 backdrop-blur-md" />
       </div>
     );
   }

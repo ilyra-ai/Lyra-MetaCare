@@ -122,50 +122,71 @@ export function PuckEditorShell({
     setUpdatedByUserId(payload.updatedByUserId);
   }, []);
 
-  const loadDocument = useCallback(async () => {
-    setLoading(true);
+  // Busca o documento e resolve os dados dinâmicos, sem alterar estado.
+  const requestDocument = useCallback(async () => {
+    const response = await fetch(`/api/admin/puck/documents/${documentKey}`, {
+      method: 'GET',
+      cache: 'no-store',
+    });
+    const payload = (await response.json()) as AdminPuckResponse;
 
-    try {
-      const response = await fetch(`/api/admin/puck/documents/${documentKey}`, {
-        method: 'GET',
-        cache: 'no-store',
-      });
-      const payload = (await response.json()) as AdminPuckResponse;
-
-      if (!response.ok) {
-        throw new Error(
-          payload.error || 'Não foi possível carregar o documento do Puck.'
-        );
-      }
-
-      const [draftResolvido, publishedResolvido] = await Promise.all([
-        resolverDadosDocumento(payload.draftData),
-        resolverDadosDocumento(payload.publishedData),
-      ]);
-
-      hydrateFromResponse({
-        ...payload,
-        draftData: draftResolvido,
-        publishedData: publishedResolvido,
-      });
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : 'Falha inesperada ao carregar o documento Puck.'
+    if (!response.ok) {
+      throw new Error(
+        payload.error || 'Não foi possível carregar o documento do Puck.'
       );
-    } finally {
-      setLoading(false);
     }
-  }, [documentKey, hydrateFromResponse, resolverDadosDocumento]);
 
+    const [draftResolvido, publishedResolvido] = await Promise.all([
+      resolverDadosDocumento(payload.draftData),
+      resolverDadosDocumento(payload.publishedData),
+    ]);
+
+    return {
+      ...payload,
+      draftData: draftResolvido,
+      publishedData: publishedResolvido,
+    };
+  }, [documentKey, resolverDadosDocumento]);
+
+  const notifyLoadError = useCallback((error: unknown) => {
+    toast.error(
+      error instanceof Error
+        ? error.message
+        : 'Falha inesperada ao carregar o documento Puck.'
+    );
+  }, []);
+
+  // Botão "Recarregar": mostra o carregamento e reidrata o editor.
+  const loadDocument = useCallback(() => {
+    setLoading(true);
+    return requestDocument()
+      .then(hydrateFromResponse)
+      .catch(notifyLoadError)
+      .finally(() => setLoading(false));
+  }, [hydrateFromResponse, notifyLoadError, requestDocument]);
+
+  // Carga inicial (o estado inicial já é "carregando").
   useEffect(() => {
     if (!session || !isAdmin) {
       return;
     }
 
-    void loadDocument();
-  }, [isAdmin, loadDocument, session]);
+    let active = true;
+    requestDocument()
+      .then((resolved) => {
+        if (active) hydrateFromResponse(resolved);
+      })
+      .catch((error: unknown) => {
+        if (active) notifyLoadError(error);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [hydrateFromResponse, isAdmin, notifyLoadError, requestDocument, session]);
 
   const handleSaveDraft = useCallback(async () => {
     setSaving(true);

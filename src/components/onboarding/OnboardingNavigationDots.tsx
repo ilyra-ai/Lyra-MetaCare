@@ -13,19 +13,27 @@ export function OnboardingNavigationDots({
   api,
   count,
 }: OnboardingNavigationDotsProps) {
-  const [current, setCurrent] = React.useState(0);
-
-  React.useEffect(() => {
-    if (!api) {
-      return;
-    }
-
-    setCurrent(api.selectedScrollSnap() + 1);
-
-    api.on('select', () => {
-      setCurrent(api.selectedScrollSnap() + 1);
-    });
-  }, [api]);
+  // O índice do slide vive no Embla (store externo): useSyncExternalStore lê o
+  // valor atual e assina as mudanças, removendo o listener na desmontagem.
+  const subscribe = React.useCallback(
+    (onStoreChange: () => void) => {
+      if (!api) {
+        return () => undefined;
+      }
+      api.on('select', onStoreChange);
+      api.on('reInit', onStoreChange);
+      return () => {
+        api.off('select', onStoreChange);
+        api.off('reInit', onStoreChange);
+      };
+    },
+    [api]
+  );
+  const current = React.useSyncExternalStore(
+    subscribe,
+    () => (api ? api.selectedScrollSnap() + 1 : 0),
+    () => 0
+  );
 
   const dots = Array.from({ length: count }, (_, index) => (
     <div

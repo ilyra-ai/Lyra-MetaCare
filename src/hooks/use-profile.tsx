@@ -1,7 +1,8 @@
 'use client';
 
 import { useAuth } from '@/context/AuthContext';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback } from 'react';
+import { useKeyedResource } from '@/hooks/use-keyed-resource';
 import { differenceInYears, parseISO } from 'date-fns';
 
 export interface ProfileSummary {
@@ -23,7 +24,7 @@ interface UseProfileResult {
   chronologicalAge: number | null;
   isFemale: boolean;
   loading: boolean;
-  refresh: () => void;
+  refresh: () => Promise<void>;
 }
 
 const PROFILE_SELECT =
@@ -31,44 +32,41 @@ const PROFILE_SELECT =
 
 export function useProfile(enabled = true): UseProfileResult {
   const { db, session } = useAuth();
-  const [profile, setProfile] = useState<ProfileSummary | null>(null);
-  const [loading, setLoading] = useState(true);
-  const disposedRef = useRef(false);
+  const userId = enabled && session?.user ? session.user.id : null;
 
-  const fetchProfile = useCallback(async () => {
-    if (!enabled || !session?.user) {
-      if (!disposedRef.current) {
-        setProfile(null);
-        setLoading(false);
+  const requestProfile =
+    useCallback(async (): Promise<ProfileSummary | null> => {
+      if (!userId) {
+        return null;
       }
-      return;
-    }
 
-    setLoading(true);
-    const { data, error } = await db
-      .from('profiles')
-      .select(PROFILE_SELECT)
-      .eq('id', session.user.id)
-      .maybeSingle();
+      const { data, error } = await db
+        .from('profiles')
+        .select(PROFILE_SELECT)
+        .eq('id', userId)
+        .maybeSingle();
 
-    if (disposedRef.current) return;
+      if (error) {
+        throw new Error(error.message);
+      }
 
-    if (error) {
-      console.error('Erro ao carregar perfil (use-profile):', error);
-      setProfile(null);
-    } else {
-      setProfile((data as ProfileSummary) ?? null);
-    }
-    setLoading(false);
-  }, [db, enabled, session]);
+      return (data as ProfileSummary) ?? null;
+    }, [db, userId]);
 
-  useEffect(() => {
-    disposedRef.current = false;
-    void fetchProfile();
-    return () => {
-      disposedRef.current = true;
-    };
-  }, [fetchProfile]);
+  const logError = useCallback((error: unknown) => {
+    console.error('Erro ao carregar perfil (use-profile):', error);
+  }, []);
+
+  const {
+    data: profile,
+    loading,
+    refresh: fetchProfile,
+  } = useKeyedResource<ProfileSummary | null>(
+    userId,
+    requestProfile,
+    logError,
+    null
+  );
 
   const chronologicalAge = (() => {
     if (!profile) return null;

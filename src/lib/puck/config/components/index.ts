@@ -27,5 +27,5 @@ export const lyraPuckComponents = {
   LyraFixedColumnsBlock: lyraFixedColumnsBlockConfig,
   LyraFluidGridBlock: lyraFluidGridBlockConfig,
   LyraGridTileBlock: lyraGridTileBlockConfig,
-  VedicDashboardBlock: VedicDashboardBlock as any,
+  VedicDashboardBlock,
 } satisfies NonNullable<Config['components']>;

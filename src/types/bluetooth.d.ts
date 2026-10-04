@@ -51,3 +51,9 @@ interface Bluetooth {
     options?: BluetoothRequestDeviceOptions
   ): Promise<BluetoothDevice>;
 }
+
+// Web Bluetooth ainda não faz parte da lib DOM do TypeScript; a API só existe
+// em navegadores Chromium e, por isso, é declarada como opcional.
+interface Navigator {
+  readonly bluetooth?: Bluetooth;
+}

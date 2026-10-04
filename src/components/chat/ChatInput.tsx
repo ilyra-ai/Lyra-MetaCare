@@ -71,6 +71,16 @@ const DEFAULT_MAX_LENGTH = 4000;
 const HIGH_CHAR_THRESHOLD = 0.75;
 const CRITICAL_CHAR_THRESHOLD = 0.95;
 
+// Posições fixas das partículas do botão de envio, distribuídas pela razão
+// áurea. Valores determinísticos evitam que as partículas "pulem" a cada
+// renderização (Math.random() durante o render) e divergências de hidratação.
+const SEND_BUTTON_PARTICLES = Array.from({ length: 8 }, (_, index) => ({
+  id: index,
+  left: Math.round(((index * 0.618034 + 0.12) % 1) * 100),
+  top: Math.round(((index * 0.381966 + 0.27) % 1) * 100),
+  delay: Number(((index * 0.0625) % 0.5).toFixed(3)),
+}));
+
 function ChatInput({
   onSendMessage,
   disabled = false,
@@ -303,14 +313,14 @@ function ChatInput({
                 className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 aria-hidden="true"
               >
-                {[...Array(8)].map((_, i) => (
+                {SEND_BUTTON_PARTICLES.map((particle) => (
                   <div
-                    key={i}
+                    key={particle.id}
                     className="animate-particle absolute h-1 w-1 rounded-full bg-white"
                     style={{
-                      left: `${Math.random() * 100}%`,
-                      top: `${Math.random() * 100}%`,
-                      animationDelay: `${Math.random() * 0.5}s`,
+                      left: `${particle.left}%`,
+                      top: `${particle.top}%`,
+                      animationDelay: `${particle.delay}s`,
                     }}
                   />
                 ))}

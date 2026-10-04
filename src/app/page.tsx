@@ -28,8 +28,13 @@ export default function Home() {
   const { session, db } = useAuth();
   const { config: appConfig } = usePublicSitePageConfig('app');
   const [minimumTimeElapsed, setMinimumTimeElapsed] = useState(false);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [profileLoading, setProfileLoading] = useState(true);
+  // Perfil carregado junto com o id do usuário a que pertence: o estado de
+  // carregamento é derivado (perfil ausente ou de outro usuário), sem setState
+  // síncrono dentro do efeito.
+  const [loadedProfile, setLoadedProfile] = useState<{
+    userId: string;
+    profile: UserProfile;
+  } | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -41,30 +46,45 @@ export default function Home() {
 
   useEffect(() => {
     if (!session?.user) {
-      setProfile(null);
-      setProfileLoading(false);
       return;
     }
 
-    const loadProfile = async () => {
-      setProfileLoading(true);
+    const userId = session.user.id;
+    let active = true;
 
+    const loadProfile = async () => {
       const { data, error } = await db
         .from('profiles')
         .select('first_name')
-        .eq('id', session.user.id)
+        .eq('id', userId)
         .maybeSingle();
 
       if (error) {
         console.error('Erro ao carregar perfil na home:', error);
       }
 
-      setProfile({ first_name: data?.first_name ?? null });
-      setProfileLoading(false);
+      if (active) {
+        setLoadedProfile({
+          userId,
+          profile: { first_name: data?.first_name ?? null },
+        });
+      }
     };
 
     void loadProfile();
+
+    return () => {
+      active = false;
+    };
   }, [db, session]);
+
+  const currentUserId = session?.user?.id ?? null;
+  const profile =
+    currentUserId && loadedProfile?.userId === currentUserId
+      ? loadedProfile.profile
+      : null;
+  const profileLoading =
+    currentUserId !== null && loadedProfile?.userId !== currentUserId;
 
   const greeting = useMemo(() => getGreeting(), []);
 

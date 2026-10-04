@@ -137,34 +137,51 @@ export function GoalTrackingContent() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchGoals = useCallback(async () => {
-    if (!session?.user) {
-      return;
-    }
+  const userId = session?.user?.id ?? null;
 
-    setLoading(true);
-    const { data, error } = await db
-      .from('goals')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .order('created_at', { ascending: false });
+  // Consulta pura das metas do usuário.
+  const queryGoals = useCallback(
+    (ownerId: string) =>
+      db
+        .from('goals')
+        .select('*')
+        .eq('user_id', ownerId)
+        .order('created_at', { ascending: false }),
+    [db]
+  );
 
-    if (error) {
-      toast.error('Erro ao carregar metas.', {
-        description: error.message,
-      });
-      setGoals([]);
+  const applyGoals = useCallback(
+    ({ data, error }: Awaited<ReturnType<typeof queryGoals>>) => {
+      if (error) {
+        toast.error('Erro ao carregar metas.', {
+          description: error.message,
+        });
+        setGoals([]);
+      } else {
+        setGoals(data as Goal[]);
+      }
       setLoading(false);
-      return;
-    }
+    },
+    []
+  );
 
-    setGoals(data as Goal[]);
-    setLoading(false);
-  }, [db, session?.user]);
+  // Recarga após criar ou atualizar metas.
+  const fetchGoals = useCallback(async () => {
+    if (!userId) return;
+    applyGoals(await queryGoals(userId));
+  }, [applyGoals, queryGoals, userId]);
 
+  // Carga inicial (o estado inicial já é "carregando").
   useEffect(() => {
-    void fetchGoals();
-  }, [fetchGoals]);
+    if (!userId) return;
+    let active = true;
+    queryGoals(userId).then((result) => {
+      if (active) applyGoals(result);
+    });
+    return () => {
+      active = false;
+    };
+  }, [applyGoals, queryGoals, userId]);
 
   if (loading) {
     return <LoadingGoals />;

@@ -112,8 +112,20 @@ const tileToneClasses: Record<LyraGridTileTone, string> = {
     'border-accent/20 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(255,237,231,0.76))] text-foreground shadow-[0_20px_44px_-26px_rgba(240,101,67,0.34)]',
 };
 
-export function obterIconeDecorativo(icone: LyraDecorativeIcon): LucideIcon {
-  return iconRegistry[icone] ?? Sparkles;
+/**
+ * Renderiza o ícone decorativo escolhido no editor. Os componentes vêm do
+ * registro estático do módulo (nenhum componente é criado durante a
+ * renderização, o que preservaria/resetaria estado a cada render).
+ */
+export function IconeDecorativo({
+  icone,
+  className,
+}: {
+  icone: LyraDecorativeIcon;
+  className?: string;
+}) {
+  const Icone = iconRegistry[icone] ?? Sparkles;
+  return <Icone className={className} aria-hidden="true" />;
 }
 
 export function obterClasseTomHeading(tom: LyraHeadingTone) {

@@ -11,7 +11,6 @@ import {
   ShieldAlert,
   Sparkles,
   Thermometer,
-  Waves,
   Wind,
   Zap,
 } from 'lucide-react';

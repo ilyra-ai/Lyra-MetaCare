@@ -97,6 +97,30 @@ function buildFeatureCatalog(plans: PlanMatrixPlan[]) {
   );
 }
 
+// Busca a matriz de planos na API administrativa; lança erro com a mensagem
+// real da API quando a resposta não é válida.
+async function requestPlanMatrix(): Promise<PlanMatrixPlan[]> {
+  const response = await fetch('/api/admin/plans', {
+    credentials: 'include',
+  });
+  const payload = (await response.json()) as
+    PlanMatrixResponse | { error?: string };
+
+  if (!response.ok || !('plans' in payload)) {
+    throw new Error(
+      extractApiError(payload) || 'Falha ao carregar a matriz de planos.'
+    );
+  }
+
+  return payload.plans;
+}
+
+function notifyMatrixLoadError(error: unknown) {
+  toast.error('Falha ao carregar a matriz de capacidades.', {
+    description: error instanceof Error ? error.message : 'Erro desconhecido.',
+  });
+}
+
 export function AdminPlanMatrixContent() {
   const [plans, setPlans] = React.useState<PlanMatrixPlan[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -104,35 +128,32 @@ export function AdminPlanMatrixContent() {
     null
   );
 
-  const loadMatrix = React.useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/admin/plans', {
-        credentials: 'include',
+  // Carga inicial da matriz (o estado inicial já é "carregando").
+  React.useEffect(() => {
+    let active = true;
+    requestPlanMatrix()
+      .then((loadedPlans) => {
+        if (active) setPlans(loadedPlans);
+      })
+      .catch((error: unknown) => {
+        if (active) notifyMatrixLoadError(error);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
       });
-      const payload = (await response.json()) as
-        PlanMatrixResponse | { error?: string };
-
-      if (!response.ok || !('plans' in payload)) {
-        throw new Error(
-          extractApiError(payload) || 'Falha ao carregar a matriz de planos.'
-        );
-      }
-
-      setPlans(payload.plans);
-    } catch (error) {
-      toast.error('Falha ao carregar a matriz de capacidades.', {
-        description:
-          error instanceof Error ? error.message : 'Erro desconhecido.',
-      });
-    } finally {
-      setLoading(false);
-    }
+    return () => {
+      active = false;
+    };
   }, []);
 
-  React.useEffect(() => {
-    loadMatrix();
-  }, [loadMatrix]);
+  // Botão "Recarregar matriz".
+  const handleReload = React.useCallback(() => {
+    setLoading(true);
+    requestPlanMatrix()
+      .then(setPlans)
+      .catch(notifyMatrixLoadError)
+      .finally(() => setLoading(false));
+  }, []);
 
   const updatePlanField = React.useCallback(
     <K extends keyof PlanMatrixPlan>(
@@ -281,7 +302,7 @@ export function AdminPlanMatrixContent() {
             </div>
             <Button
               variant="outline"
-              onClick={loadMatrix}
+              onClick={handleReload}
               className="rounded-full bg-card/85 backdrop-blur"
             >
               <RefreshCw className="mr-2 h-4 w-4" />

@@ -43,17 +43,15 @@ export function AITipsCard({
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
+    // Sem o recurso no plano o card renderiza apenas o aviso de upgrade, então
+    // não há o que carregar (o estado inicial já é "carregando").
     if (!featureEnabled) {
-      setTip(null);
-      setLoading(false);
       return;
     }
 
     let ignoreResult = false;
 
     const fetchTip = async () => {
-      setLoading(true);
-
       try {
         const { count, error: countError } = await db
           .from('ai_tips')

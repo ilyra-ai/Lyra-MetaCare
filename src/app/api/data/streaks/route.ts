@@ -2,13 +2,11 @@ import { NextResponse } from 'next/server';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 import { getHttpErrorStatus } from '@/lib/http-error';
 import { getUserStreaks, updateUserStreak } from '@/lib/kpi/streak-repository';
-import { queryRows } from '@/lib/mysql/pool';
 import { calculateAdherenceScore } from '@/lib/kpi/assessment-engine';
-import { RowDataPacket } from 'mysql2';
 
 export const runtime = 'nodejs';
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const session = await requireServerSession();
     const streaks = await getUserStreaks(session.user.id);

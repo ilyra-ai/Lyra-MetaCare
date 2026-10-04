@@ -83,28 +83,46 @@ export function AIKnowledgeManager() {
   const [content, setContent] = React.useState('');
   const [priority, setPriority] = React.useState('0');
 
-  const loadDocuments = React.useCallback(async () => {
-    setLoading(true);
-    const { data, error } = await db
-      .from('ai_knowledge_documents')
-      .select('*')
-      .order('priority', { ascending: false })
-      .order('created_at', { ascending: true });
+  // Busca pura (sem efeitos colaterais em estado) reutilizada na montagem e
+  // nas recargas após criar/alterar documentos.
+  const fetchDocuments = React.useCallback(
+    () =>
+      db
+        .from('ai_knowledge_documents')
+        .select('*')
+        .order('priority', { ascending: false })
+        .order('created_at', { ascending: true }),
+    [db]
+  );
 
-    if (error) {
-      toast.error('Erro ao carregar documentos da IA.', {
-        description: error.message,
-      });
-      setDocuments([]);
-    } else {
-      setDocuments((data as AiKnowledgeDocument[]) ?? []);
-    }
-    setLoading(false);
-  }, [db]);
+  const applyDocuments = React.useCallback(
+    (result: Awaited<ReturnType<typeof fetchDocuments>>) => {
+      if (result.error) {
+        toast.error('Erro ao carregar documentos da IA.', {
+          description: result.error.message,
+        });
+        setDocuments([]);
+      } else {
+        setDocuments((result.data as AiKnowledgeDocument[]) ?? []);
+      }
+      setLoading(false);
+    },
+    []
+  );
+
+  const loadDocuments = React.useCallback(async () => {
+    applyDocuments(await fetchDocuments());
+  }, [applyDocuments, fetchDocuments]);
 
   React.useEffect(() => {
-    void loadDocuments();
-  }, [loadDocuments]);
+    let active = true;
+    fetchDocuments().then((result) => {
+      if (active) applyDocuments(result);
+    });
+    return () => {
+      active = false;
+    };
+  }, [applyDocuments, fetchDocuments]);
 
   const handleCreate = async (event: React.FormEvent) => {
     event.preventDefault();

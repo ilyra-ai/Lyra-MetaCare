@@ -15,7 +15,7 @@ export interface UserAssessment {
   user_id: string;
   assessment_type: AssessmentType;
   score_value: number;
-  raw_responses?: any;
+  raw_responses?: unknown;
   notes?: string;
   created_at?: string;
 }

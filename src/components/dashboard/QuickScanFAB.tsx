@@ -19,17 +19,17 @@ import {
 
 export function QuickScanFAB() {
   const router = useRouter();
-  const { triggerManualSync, isSyncing, syncError } = useHealthOrchestrator();
-  const [requestedSync, setRequestedSync] = React.useState(false);
+  const { triggerManualSync, isSyncing } = useHealthOrchestrator();
 
-  React.useEffect(() => {
-    if (!requestedSync || isSyncing) {
-      return;
-    }
+  // O resultado da sincronização é tratado no próprio handler (evento do
+  // usuário), sem efeito observando o estado do contexto.
+  const handleSync = async () => {
+    toast.info('Sincronizando leituras e céu do momento...');
+    const { error } = await triggerManualSync();
 
-    if (syncError) {
+    if (error) {
       toast.info('Sincronização concluída com contexto parcial.', {
-        description: syncError,
+        description: error,
       });
     } else {
       toast.success('Leituras do ecossistema atualizadas.', {
@@ -37,14 +37,6 @@ export function QuickScanFAB() {
           'Os sinais disponíveis no seu dispositivo foram reavaliados junto do contexto astrológico atual.',
       });
     }
-
-    setRequestedSync(false);
-  }, [isSyncing, requestedSync, syncError]);
-
-  const handleSync = async () => {
-    setRequestedSync(true);
-    toast.info('Sincronizando leituras e céu do momento...');
-    await triggerManualSync();
   };
 
   return (

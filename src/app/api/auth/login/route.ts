@@ -13,6 +13,9 @@ export const runtime = 'nodejs';
 interface LoginPayload {
   email: string;
   password: string;
+  // "Lembrar-me": true mantém a sessão por 7 dias; false cria uma sessão que
+  // termina ao fechar o navegador.
+  remember?: boolean;
 }
 
 interface UserRow {
@@ -67,12 +70,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Senha inválida.' }, { status: 401 });
     }
 
-    const token = await signSessionToken({
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-    });
-    await setSessionCookie(token);
+    const sessionOptions = { persistent: payload.remember === true };
+    const token = await signSessionToken(
+      {
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+      },
+      sessionOptions
+    );
+    await setSessionCookie(token, sessionOptions);
 
     return NextResponse.json({
       session: buildAppSession(

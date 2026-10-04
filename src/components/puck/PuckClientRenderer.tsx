@@ -20,12 +20,10 @@ export function PuckClientRenderer({
 }: PuckClientRendererProps) {
   const [data, setData] = React.useState<LyraPuckData | null>(null);
   const [error, setError] = React.useState<string | null>(null);
-  const [isClient, setIsClient] = React.useState(false);
 
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
-
+  // Os dados só existem após a busca no cliente; no servidor e na primeira
+  // renderização do cliente o resultado é o mesmo (placeholder), então não há
+  // divergência de hidratação e nenhuma flag "isClient" é necessária.
   React.useEffect(() => {
     let active = true;
 
@@ -49,8 +47,11 @@ export function PuckClientRenderer({
           setData(resolved);
         }
       } catch (err) {
-        if (active)
-          setError(err instanceof Error ? err.message : 'Erro genérico');
+        if (!active) return;
+        const message =
+          err instanceof Error ? err.message : 'Erro desconhecido.';
+        console.error(`PuckClientRenderer [${documentKey}]:`, message);
+        setError(message);
       }
     }
 
@@ -61,10 +62,8 @@ export function PuckClientRenderer({
     };
   }, [documentKey]);
 
-  if (!isClient) return null;
-
+  // Falha já registrada no console; o bloco opcional não é renderizado.
   if (error) {
-    console.error(`PuckClientRenderer [${documentKey}]:`, error);
     return null;
   }
 

@@ -29,28 +29,51 @@ export function HabitList() {
   const [loading, setLoading] = React.useState(true);
   const [isInitializing, setIsInitializing] = React.useState(false);
 
+  const userId = session?.user?.id ?? null;
+
+  // Consulta pura dos hábitos do usuário.
+  const queryHabits = React.useCallback(
+    (ownerId: string) =>
+      db
+        .from('habits')
+        .select('*')
+        .eq('user_id', ownerId)
+        .order('created_at', { ascending: true }),
+    [db]
+  );
+
+  const applyHabits = React.useCallback(
+    ({ data, error }: Awaited<ReturnType<typeof queryHabits>>) => {
+      if (error) {
+        toast.error('Erro ao carregar hábitos.', {
+          description: error.message,
+        });
+        setHabits([]);
+      } else {
+        setHabits(data as Habit[]);
+      }
+      setLoading(false);
+    },
+    []
+  );
+
+  // Recarga após inicializar hábitos sugeridos.
   const fetchHabits = React.useCallback(async () => {
-    if (!session?.user) return;
+    if (!userId) return;
+    applyHabits(await queryHabits(userId));
+  }, [applyHabits, queryHabits, userId]);
 
-    setLoading(true);
-    const { data, error } = await db
-      .from('habits')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .order('created_at', { ascending: true });
-
-    if (error) {
-      toast.error('Erro ao carregar hábitos.', { description: error.message });
-      setHabits([]);
-    } else {
-      setHabits(data as Habit[]);
-    }
-    setLoading(false);
-  }, [session, db]);
-
+  // Carga inicial (o estado inicial já é "carregando").
   React.useEffect(() => {
-    fetchHabits();
-  }, [fetchHabits]);
+    if (!userId) return;
+    let active = true;
+    queryHabits(userId).then((result) => {
+      if (active) applyHabits(result);
+    });
+    return () => {
+      active = false;
+    };
+  }, [applyHabits, queryHabits, userId]);
 
   const handleToggleHabit = async (habit: Habit, newStatus: boolean) => {
     const { error } = await db

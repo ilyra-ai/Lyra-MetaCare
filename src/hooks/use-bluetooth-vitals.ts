@@ -32,8 +32,10 @@ export function useBluetoothVitals(): BluetoothVitals {
     return Math.round(Math.sqrt(sumDiffSq / (intervals.length - 1)));
   };
 
-  const handleCharacteristicValueChanged = useCallback((event: any) => {
-    const value = event.target.value as DataView;
+  const handleCharacteristicValueChanged = useCallback((event: Event) => {
+    const characteristic = event.target as BluetoothRemoteGATTCharacteristic;
+    const value = characteristic.value;
+    if (!value) return;
     const flags = value.getUint8(0);
     const hr16Bit = flags & 0x01;
     const rrPresent = (flags & 0x10) !== 0;
@@ -62,8 +64,8 @@ export function useBluetoothVitals(): BluetoothVitals {
   }, []);
 
   const connect = async () => {
-    const nav = navigator as any;
-    if (!nav.bluetooth) {
+    const bluetooth = navigator.bluetooth;
+    if (!bluetooth) {
       toast.error(
         'Web Bluetooth não é suportado neste navegador. Use Chrome, Edge ou Opera.'
       );
@@ -72,7 +74,7 @@ export function useBluetoothVitals(): BluetoothVitals {
 
     try {
       setIsConnecting(true);
-      const btDevice = await nav.bluetooth.requestDevice({
+      const btDevice = await bluetooth.requestDevice({
         filters: [{ services: ['heart_rate'] }],
       });
 

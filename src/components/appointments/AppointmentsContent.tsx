@@ -101,49 +101,68 @@ export function AppointmentsContent() {
   const [professionalToEdit, setProfessionalToEdit] =
     React.useState<Professional | null>(null);
 
-  const fetchData = React.useCallback(async () => {
-    if (!session?.user) return;
+  const userId = session?.user?.id ?? null;
 
-    setLoading(true);
+  // Consulta pura de profissionais e consultas do usuário.
+  const queryData = React.useCallback(
+    (ownerId: string) =>
+      Promise.all([
+        db
+          .from('professionals')
+          .select('*')
+          .eq('user_id', ownerId)
+          .order('name'),
+        db
+          .from('appointments')
+          .select('*, professionals(name, specialty, avatar_url)')
+          .eq('user_id', ownerId),
+      ]),
+    [db]
+  );
 
-    const professionalsPromise = db
-      .from('professionals')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .order('name');
-
-    const appointmentsPromise = db
-      .from('appointments')
-      .select('*, professionals(name, specialty, avatar_url)')
-      .eq('user_id', session.user.id);
-
-    const [
+  const applyData = React.useCallback(
+    ([
       { data: professionalsData, error: professionalsError },
       { data: appointmentsData, error: appointmentsError },
-    ] = await Promise.all([professionalsPromise, appointmentsPromise]);
+    ]: Awaited<ReturnType<typeof queryData>>) => {
+      if (professionalsError) {
+        toast.error('Erro ao buscar profissionais.', {
+          description: professionalsError.message,
+        });
+      } else {
+        setProfessionals(professionalsData || []);
+      }
 
-    if (professionalsError) {
-      toast.error('Erro ao buscar profissionais.', {
-        description: professionalsError.message,
-      });
-    } else {
-      setProfessionals(professionalsData || []);
-    }
+      if (appointmentsError) {
+        toast.error('Erro ao buscar consultas.', {
+          description: appointmentsError.message,
+        });
+      } else {
+        setAppointments(appointmentsData || []);
+      }
 
-    if (appointmentsError) {
-      toast.error('Erro ao buscar consultas.', {
-        description: appointmentsError.message,
-      });
-    } else {
-      setAppointments(appointmentsData || []);
-    }
+      setLoading(false);
+    },
+    []
+  );
 
-    setLoading(false);
-  }, [db, session]);
+  // Recarga após criar/editar/excluir (sem voltar ao estado de carregamento).
+  const fetchData = React.useCallback(async () => {
+    if (!userId) return;
+    applyData(await queryData(userId));
+  }, [applyData, queryData, userId]);
 
+  // Carga inicial (o estado inicial já é "carregando").
   React.useEffect(() => {
-    void fetchData();
-  }, [fetchData]);
+    if (!userId) return;
+    let active = true;
+    queryData(userId).then((result) => {
+      if (active) applyData(result);
+    });
+    return () => {
+      active = false;
+    };
+  }, [applyData, queryData, userId]);
 
   const handleSaveProfessional = async (
     data: ProfessionalFormValues,

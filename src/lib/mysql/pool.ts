@@ -6,11 +6,8 @@ import mysql, {
 } from 'mysql2/promise';
 import { QueryRecord } from '@/lib/mysql/types';
 
-/* eslint-disable no-var */
-declare global {
-  var __lyraMysqlPool: Pool | undefined;
-}
-/* eslint-enable no-var */
+// Cache do pool no escopo global (sobrevive ao hot reload em desenvolvimento);
+// o acesso é sempre feito pelo tipo GlobalMysqlState.
 
 type GlobalMysqlState = typeof globalThis & {
   __lyraMysqlPool?: Pool;

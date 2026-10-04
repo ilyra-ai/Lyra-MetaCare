@@ -8,8 +8,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
+  IconeDecorativo,
   obterApresentacaoTrend,
-  obterIconeDecorativo,
 } from '@/lib/puck/config/components/helpers';
 import { obterResumoAssinaturaLyra } from '@/lib/puck/dynamic/metrics';
 import {
@@ -94,7 +94,6 @@ function LyraMetricCardBlock({
   badgeLabel,
   icon,
 }: LyraMetricCardBlockProps) {
-  const Icone = obterIconeDecorativo(icon);
   const trend = obterApresentacaoTrend(trendDirection);
 
   return (
@@ -115,7 +114,7 @@ function LyraMetricCardBlock({
             </CardTitle>
           </div>
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-teal text-white shadow-teal">
-            <Icone className="h-5 w-5" />
+            <IconeDecorativo icone={icon} className="h-5 w-5" />
           </div>
         </div>
       </CardHeader>

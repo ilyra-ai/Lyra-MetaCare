@@ -1,7 +1,7 @@
 'use client';
 
 import type { ElementType } from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useHealthOrchestrator } from '@/context/HealthOrchestratorContext';
 import {
@@ -297,44 +297,54 @@ export function AIPlanContent() {
   const [loading, setLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const fetchPlan = useCallback(async () => {
-    if (!session?.user) {
-      return;
-    }
+  const userId = session?.user?.id ?? null;
 
-    setLoading(true);
-    const { data, error } = await db
-      .from('ai_plans')
-      .select('plan_data')
-      .eq('user_id', session.user.id)
-      .maybeSingle();
-
-    if (error) {
-      toast.error('Erro ao carregar o plano salvo.', {
-        description: error.message,
-      });
-      setLoading(false);
-      return;
-    }
-
-    if (data?.plan_data && isPlanData(data.plan_data)) {
-      setPlan(data.plan_data);
-    } else if (data?.plan_data) {
-      toast.error('Plano persistido em formato inválido.', {
-        description:
-          'O registro encontrado em ai_plans não segue o contrato esperado do motor local.',
-      });
-      setPlan(null);
-    } else {
-      setPlan(null);
-    }
-
-    setLoading(false);
-  }, [db, session?.user]);
-
+  // Carrega o plano salvo do usuário (o estado inicial já é "carregando").
   useEffect(() => {
+    if (!userId) {
+      return;
+    }
+
+    let active = true;
+
+    const fetchPlan = async () => {
+      const { data, error } = await db
+        .from('ai_plans')
+        .select('plan_data')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (!active) return;
+
+      if (error) {
+        toast.error('Erro ao carregar o plano salvo.', {
+          description: error.message,
+        });
+        setLoading(false);
+        return;
+      }
+
+      if (data?.plan_data && isPlanData(data.plan_data)) {
+        setPlan(data.plan_data);
+      } else if (data?.plan_data) {
+        toast.error('Plano persistido em formato inválido.', {
+          description:
+            'O registro encontrado em ai_plans não segue o contrato esperado do motor local.',
+        });
+        setPlan(null);
+      } else {
+        setPlan(null);
+      }
+
+      setLoading(false);
+    };
+
     void fetchPlan();
-  }, [fetchPlan]);
+
+    return () => {
+      active = false;
+    };
+  }, [db, userId]);
 
   const handleGeneratePlan = async () => {
     if (!session?.user) {

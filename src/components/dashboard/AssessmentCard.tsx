@@ -47,6 +47,26 @@ export function AssessmentCard() {
   const [npsScore, setNpsScore] = useState<number | null>(null);
   const [npsNotes, setNpsNotes] = useState('');
 
+  // Envia a avaliação e propaga a mensagem real da API em caso de falha, para
+  // que o erro não seja trocado silenciosamente por um texto genérico.
+  const enviarAvaliacao = async (body: {
+    type: 'mood' | 'who5' | 'nps';
+    payload: Record<string, unknown>;
+  }) => {
+    const res = await fetch('/api/data/user-assessments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+      } | null;
+      throw new Error(data?.error ?? `Falha na API (HTTP ${res.status}).`);
+    }
+  };
+
   const handleMoodSubmit = async () => {
     if (!moodValue) {
       toast.error('Por favor, selecione um humor.');
@@ -54,20 +74,13 @@ export function AssessmentCard() {
     }
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/data/user-assessments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'mood',
-          payload: { moodValue },
-        }),
-      });
-      if (!res.ok) throw new Error('Falha na API');
+      await enviarAvaliacao({ type: 'mood', payload: { moodValue } });
 
       setCompleted((prev) => ({ ...prev, mood: true }));
       toast.success('Estado emocional registrado com sucesso!');
       setActiveTab('who5');
     } catch (err) {
+      console.error('[AssessmentCard] Falha ao registrar humor:', err);
       toast.error('Erro ao registrar avaliação.');
     } finally {
       setIsSubmitting(false);
@@ -81,24 +94,16 @@ export function AssessmentCard() {
     }
     setIsSubmitting(true);
     try {
-      const score = Object.values(who5Answers).reduce(
-        (acc, val) => acc + Number(val),
-        0
-      );
-      const res = await fetch('/api/data/user-assessments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'who5',
-          payload: { answers: who5Answers },
-        }),
+      await enviarAvaliacao({
+        type: 'who5',
+        payload: { answers: who5Answers },
       });
-      if (!res.ok) throw new Error('Falha na API');
 
       setCompleted((prev) => ({ ...prev, who5: true }));
       toast.success('Índice WHO-5 calculado e salvo com excelência!');
       setActiveTab('nps');
     } catch (err) {
+      console.error('[AssessmentCard] Falha ao salvar o WHO-5:', err);
       toast.error('Erro ao calcular índice.');
     } finally {
       setIsSubmitting(false);
@@ -112,21 +117,17 @@ export function AssessmentCard() {
     }
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/data/user-assessments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'nps',
-          payload: { score: npsScore, notes: npsNotes },
-        }),
+      await enviarAvaliacao({
+        type: 'nps',
+        payload: { score: npsScore, notes: npsNotes },
       });
-      if (!res.ok) throw new Error('Falha na API');
 
       setCompleted((prev) => ({ ...prev, nps: true }));
       toast.success(
         'Seu feedback é o combustível da nossa inovação. Obrigado!'
       );
     } catch (err) {
+      console.error('[AssessmentCard] Falha ao enviar o NPS:', err);
       toast.error('Erro ao enviar feedback.');
     } finally {
       setIsSubmitting(false);

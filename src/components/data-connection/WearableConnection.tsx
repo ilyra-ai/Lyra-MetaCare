@@ -1,6 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useSyncExternalStore,
+} from 'react';
 import {
   Card,
   CardContent,
@@ -17,7 +22,8 @@ import { AppPageConfig } from '@/lib/site-page-config/schema';
 import { scaleRem } from '@/lib/site-page-config/runtime';
 
 type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'error';
-type BluetoothNavigator = Navigator & { bluetooth?: Bluetooth };
+// Capacidades do navegador não mudam durante a sessão: não há o que assinar.
+const subscribeToStaticCapability = () => () => undefined;
 const BLUETOOTH_UNSUPPORTED_MESSAGE =
   'O Web Bluetooth só funciona em navegadores compatíveis baseados em Chromium e em contexto seguro (localhost ou HTTPS).';
 type ConnectConfig = AppPageConfig['connect'];
@@ -49,16 +55,17 @@ export function WearableConnection({
   const [status, setStatus] = useState<ConnectionStatus>('idle');
   const [deviceName, setDeviceName] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [bluetoothSupported, setBluetoothSupported] = useState<boolean | null>(
-    null
+  // Suporte a Web Bluetooth é uma capacidade fixa do navegador: lida como
+  // store externo (null no servidor, booleano no cliente após a hidratação).
+  const bluetoothSupported = useSyncExternalStore<boolean | null>(
+    subscribeToStaticCapability,
+    () => Boolean(navigator.bluetooth),
+    () => null
   );
   const deviceRef = useRef<BluetoothDevice | null>(null);
   const rrHistoryRef = useRef<number[]>([]);
 
   useEffect(() => {
-    const bluetoothNavigator = navigator as BluetoothNavigator;
-    setBluetoothSupported(Boolean(bluetoothNavigator.bluetooth));
-
     return () => {
       // Cleanup on unmount
       if (deviceRef.current?.gatt?.connected) {
@@ -112,9 +119,8 @@ export function WearableConnection({
     setDeviceName(null);
     setErrorMessage(null);
 
-    const bluetoothNavigator = navigator as BluetoothNavigator;
-    if (!bluetoothNavigator.bluetooth) {
-      setBluetoothSupported(false);
+    const bluetooth = navigator.bluetooth;
+    if (!bluetooth) {
       setStatus('idle');
       setErrorMessage(BLUETOOTH_UNSUPPORTED_MESSAGE);
       toast.error('Bluetooth indisponível neste navegador', {
@@ -124,7 +130,7 @@ export function WearableConnection({
     }
 
     try {
-      const device = await bluetoothNavigator.bluetooth.requestDevice({
+      const device = await bluetooth.requestDevice({
         filters: [{ services: ['heart_rate'] }],
         optionalServices: ['battery_service'],
       });

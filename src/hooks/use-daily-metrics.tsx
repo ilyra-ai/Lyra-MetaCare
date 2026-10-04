@@ -1,7 +1,8 @@
 'use client';
 
 import { useAuth } from '@/context/AuthContext';
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
+import { useKeyedResource } from '@/hooks/use-keyed-resource';
 import { toast } from 'sonner';
 import { format, subDays } from 'date-fns';
 
@@ -87,7 +88,7 @@ interface UseDailyMetricsResult {
   metrics: DailyMetric[];
   todayMetrics: DailyMetric | null;
   loading: boolean;
-  refresh: () => void;
+  refresh: () => Promise<void>;
 }
 
 const defaultMetricValues = {
@@ -160,30 +161,30 @@ const defaultMetricValues = {
   afib_history_percent: null,
 };
 
+// Referência estável para "sem métricas" (evita recomputar dependências).
+const EMPTY_METRICS: DailyMetric[] = [];
+
 export function useDailyMetrics(
   days: number = 7,
   enabled = true
 ): UseDailyMetricsResult {
   const { db, session } = useAuth();
-  const [metrics, setMetrics] = useState<DailyMetric[]>([]);
-  const [loading, setLoading] = useState(true);
+  // As métricas pertencem ao usuário e à janela de dias consultada; a chave
+  // identifica a carga atual e o carregamento é derivado dela.
+  const userId = enabled && session?.user ? session.user.id : null;
+  const requestKey = userId ? `${userId}:${days}` : null;
 
-  const fetchMetrics = useCallback(async () => {
-    if (!enabled || !session?.user) {
-      setMetrics([]);
-      setLoading(false);
-      return;
-    }
+  // Consulta pura: retorna as métricas completas (com dias vazios
+  // preenchidos) ou lança o erro da API.
+  const requestMetrics = useCallback(
+    async (ownerId: string): Promise<DailyMetric[]> => {
+      const startDate = format(subDays(new Date(), days - 1), 'yyyy-MM-dd');
+      const endDate = format(new Date(), 'yyyy-MM-dd');
 
-    setLoading(true);
-
-    const startDate = format(subDays(new Date(), days - 1), 'yyyy-MM-dd');
-    const endDate = format(new Date(), 'yyyy-MM-dd');
-
-    const { data, error } = await db
-      .from('daily_metrics')
-      .select(
-        `
+      const { data, error } = await db
+        .from('daily_metrics')
+        .select(
+          `
         date, steps, sleep_duration_minutes, resting_heart_rate, calories_burned, hrv_ms, deep_sleep_minutes,
         resting_heart_rate_min, resting_heart_rate_max, spo2_average, respiratory_rate, body_temperature_celsius,
         total_distance_km, active_minutes, workout_calories, vo2_max, sleep_latency_minutes, rem_sleep_minutes,
@@ -197,20 +198,18 @@ export function useDailyMetrics(
         whtr_ratio, protein_g_per_kg, dietary_fiber_grams, eating_window_hours, sodium_potassium_ratio, hydration_ml_per_kg,
         reaction_time_pvt_ms, pvt_lapses_count, cognitive_test_score, hrv_stress_index, eda_tonic_microsiemens, afib_history_percent
       `
-      )
-      .eq('user_id', session.user.id)
-      .gte('date', startDate)
-      .lte('date', endDate)
-      .order('date', { ascending: true });
+        )
+        .eq('user_id', ownerId)
+        .gte('date', startDate)
+        .lte('date', endDate)
+        .order('date', { ascending: true });
 
-    if (error) {
-      toast.error('Erro ao carregar métricas diárias.', {
-        description: error.message,
-      });
-      console.error('Error fetching daily metrics:', error);
-      setMetrics([]);
-    } else {
-      // Ensure all 'days' are present, filling missing days with defaults for chart consistency
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      // Garante todos os dias da janela, preenchendo ausências com valores
+      // padrão para manter os gráficos consistentes.
       const dateMap = new Map(data.map((m) => [m.date, m]));
       const completeMetrics: DailyMetric[] = [];
 
@@ -225,16 +224,35 @@ export function useDailyMetrics(
         } as DailyMetric);
       }
 
-      setMetrics(completeMetrics);
-    }
-    setLoading(false);
-  }, [enabled, session, db, days]);
+      return completeMetrics;
+    },
+    [db, days]
+  );
 
-  useEffect(() => {
-    fetchMetrics();
-  }, [fetchMetrics]);
+  const notifyError = useCallback((error: unknown) => {
+    console.error('Erro ao carregar métricas diárias:', error);
+    toast.error('Erro ao carregar métricas diárias.', {
+      description:
+        error instanceof Error ? error.message : 'Erro desconhecido.',
+    });
+  }, []);
 
+  const requestCurrent = useCallback(
+    () => (userId ? requestMetrics(userId) : Promise.resolve(EMPTY_METRICS)),
+    [requestMetrics, userId]
+  );
+
+  const {
+    data: metrics,
+    loading,
+    refresh,
+  } = useKeyedResource<DailyMetric[]>(
+    requestKey,
+    requestCurrent,
+    notifyError,
+    EMPTY_METRICS
+  );
   const todayMetrics = metrics.length > 0 ? metrics[metrics.length - 1] : null;
 
-  return { metrics, todayMetrics, loading, refresh: fetchMetrics };
+  return { metrics, todayMetrics, loading, refresh };
 }

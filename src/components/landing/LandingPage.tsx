@@ -27,10 +27,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  getDefaultPageConfig,
   LandingSectionKey,
   LandingPageConfig,
 } from '@/lib/site-page-config/schema';
+import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import {
   getBuilderIcon,
   getToneNumberClass,
@@ -40,12 +40,6 @@ import { cn } from '@/lib/utils';
 
 type PublicPlansPayload = {
   plans: PlanMatrixPlan[];
-  error?: string;
-};
-
-type PublicPageConfigPayload = {
-  pageKey: 'landing';
-  config: LandingPageConfig;
   error?: string;
 };
 
@@ -76,9 +70,10 @@ export function LandingPage({
 }: LandingPageProps) {
   const router = useRouter();
   const { db } = useAuth();
-  const [config, setConfig] = useState<LandingPageConfig>(
-    overrideConfig ?? getDefaultPageConfig('landing')
-  );
+  // Configuração publicada (carregada pelo hook compartilhado) ou o rascunho
+  // em edição no Site Experience Builder (pré-visualização).
+  const { config: publicConfig } = usePublicSitePageConfig('landing');
+  const config: LandingPageConfig = overrideConfig ?? publicConfig;
   const [plans, setPlans] = useState<PlanMatrixPlan[]>([]);
   const [plansStatus, setPlansStatus] = useState<'loading' | 'ready' | 'error'>(
     'loading'
@@ -137,39 +132,6 @@ export function LandingPage({
       ),
     } satisfies CSSProperties,
   };
-
-  useEffect(() => {
-    if (overrideConfig) {
-      setConfig(overrideConfig);
-      return;
-    }
-
-    const controller = new AbortController();
-
-    async function loadConfig() {
-      try {
-        const response = await fetch('/api/public/page-config/landing', {
-          cache: 'no-store',
-          signal: controller.signal,
-        });
-        const payload = (await response.json()) as PublicPageConfigPayload;
-
-        if (!response.ok || !payload.config) {
-          throw new Error(
-            payload.error || 'Falha ao carregar a configuracao da landing.'
-          );
-        }
-
-        setConfig(payload.config);
-      } catch {
-        if (controller.signal.aborted) return;
-        setConfig(getDefaultPageConfig('landing'));
-      }
-    }
-
-    void loadConfig();
-    return () => controller.abort();
-  }, [overrideConfig]);
 
   useEffect(() => {
     const controller = new AbortController();

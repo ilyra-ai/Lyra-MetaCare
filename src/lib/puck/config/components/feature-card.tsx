@@ -12,8 +12,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
+  IconeDecorativo,
   obterClasseTomHeading,
-  obterIconeDecorativo,
 } from '@/lib/puck/config/components/helpers';
 import { fetchListPlanos } from '@/lib/puck/data-sources/plans';
 import type {
@@ -31,7 +31,6 @@ function LyraFeatureCardBlock({
   ctaLabel,
   ctaHref,
 }: LyraFeatureCardBlockProps) {
-  const Icone = obterIconeDecorativo(icon);
   const seloExibido = externalPlan?.name ?? eyebrow;
   const descricaoExibida = externalPlan ? externalPlan.tagline : description;
 
@@ -39,7 +38,7 @@ function LyraFeatureCardBlock({
     <Card className="h-full border-border/70 bg-white/92">
       <CardHeader className="gap-4">
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-aurora text-primary shadow-glass">
-          <Icone className="h-5 w-5" />
+          <IconeDecorativo icone={icon} className="h-5 w-5" />
         </div>
         <div className="space-y-3">
           <Badge variant="info" className="w-fit">

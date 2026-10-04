@@ -24,14 +24,16 @@ function LyraGridTileBlock({
   tone,
   spanCol,
   spanRow,
-  puck,
+  // Callback ref do Puck para componentes `inline`: repassado diretamente ao
+  // elemento raiz para que o editor arraste o próprio tile, sem wrapper.
+  puck: { dragRef },
 }: GridTileRenderProps) {
   const colunas = obterNumeroSpan(spanCol);
   const linhas = obterNumeroSpan(spanRow);
 
   return (
     <article
-      ref={puck.dragRef}
+      ref={dragRef}
       className={juntarClasses(
         'group min-h-[196px] rounded-[24px] border p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-28px_rgba(15,23,42,0.28)] sm:p-6',
         obterClasseTomTile(tone)

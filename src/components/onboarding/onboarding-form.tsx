@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -188,7 +188,8 @@ export function OnboardingForm() {
     },
   });
 
-  const birthDate = form.watch('birth_date');
+  // useWatch assina apenas este campo e é compatível com o React Compiler.
+  const birthDate = useWatch({ control: form.control, name: 'birth_date' });
 
   React.useEffect(() => {
     if (birthDate) {

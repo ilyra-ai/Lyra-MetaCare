@@ -348,7 +348,11 @@ export const db = {
       emitAuthChange('SIGNED_OUT', null);
       return { error: null };
     },
-    async signInWithPassword(credentials: { email: string; password: string }) {
+    async signInWithPassword(credentials: {
+      email: string;
+      password: string;
+      remember?: boolean;
+    }) {
       const result = await requestJson<{
         session?: AppSession;
         error?: string;

@@ -114,7 +114,20 @@ export function UserDetailModal({
 }: UserDetailModalProps) {
   const [assignment, setAssignment] =
     React.useState<UserSubscriptionAssignment | null>(null);
-  const [loadingAssignment, setLoadingAssignment] = React.useState(false);
+  // A assinatura é recarregada a cada abertura do modal. O carregamento é
+  // derivado: modal aberto e assinatura ainda não carregada para este usuário
+  // nesta abertura. Ao fechar, a marca é limpa durante a renderização.
+  const [loadedForUserId, setLoadedForUserId] = React.useState<string | null>(
+    null
+  );
+  const [wasOpen, setWasOpen] = React.useState(open);
+  if (wasOpen !== open) {
+    setWasOpen(open);
+    if (!open) {
+      setLoadedForUserId(null);
+    }
+  }
+  const loadingAssignment = open && loadedForUserId !== user.id;
   const [savingAssignment, setSavingAssignment] = React.useState(false);
   const [selectedPlanKey, setSelectedPlanKey] = React.useState<PlanKey>(
     user.plan.key ?? 'free'
@@ -124,45 +137,58 @@ export function UserDetailModal({
       user.plan.billingInterval === 'annual' ? 'annual' : 'monthly'
     );
 
-  const loadAssignment = React.useCallback(async () => {
-    setLoadingAssignment(true);
-    try {
-      const response = await fetch(`/api/admin/users/${user.id}/subscription`, {
-        credentials: 'include',
-      });
-      const payload = (await response.json()) as
-        UserSubscriptionAssignment | { error?: string };
-
-      if (!response.ok || !('subscription' in payload)) {
-        throw new Error(
-          extractApiError(payload) ||
-            'Falha ao carregar a assinatura do usuário.'
-        );
-      }
-
-      setAssignment(payload);
-      setSelectedPlanKey(payload.subscription.plan.key);
-      setSelectedBillingInterval(
-        payload.subscription.billingInterval === 'annual' ? 'annual' : 'monthly'
-      );
-    } catch (error) {
-      toast.error('Falha ao carregar a assinatura do usuário.', {
-        description:
-          error instanceof Error ? error.message : 'Erro desconhecido.',
-      });
-      setAssignment(null);
-    } finally {
-      setLoadingAssignment(false);
-    }
-  }, [user.id]);
-
   React.useEffect(() => {
     if (!open) {
       return;
     }
 
-    loadAssignment();
-  }, [loadAssignment, open]);
+    const userId = user.id;
+    let active = true;
+
+    const loadAssignment = async () => {
+      try {
+        const response = await fetch(
+          `/api/admin/users/${userId}/subscription`,
+          { credentials: 'include' }
+        );
+        const payload = (await response.json()) as
+          UserSubscriptionAssignment | { error?: string };
+
+        if (!response.ok || !('subscription' in payload)) {
+          throw new Error(
+            extractApiError(payload) ||
+              'Falha ao carregar a assinatura do usuário.'
+          );
+        }
+
+        if (!active) return;
+        setAssignment(payload);
+        setSelectedPlanKey(payload.subscription.plan.key);
+        setSelectedBillingInterval(
+          payload.subscription.billingInterval === 'annual'
+            ? 'annual'
+            : 'monthly'
+        );
+      } catch (error) {
+        if (!active) return;
+        toast.error('Falha ao carregar a assinatura do usuário.', {
+          description:
+            error instanceof Error ? error.message : 'Erro desconhecido.',
+        });
+        setAssignment(null);
+      } finally {
+        if (active) {
+          setLoadedForUserId(userId);
+        }
+      }
+    };
+
+    void loadAssignment();
+
+    return () => {
+      active = false;
+    };
+  }, [open, user.id]);
 
   const handleSaveSubscription = async () => {
     setSavingAssignment(true);

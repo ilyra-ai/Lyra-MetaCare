@@ -8,7 +8,6 @@ import {
   ArrowUpRight,
   BedDouble,
   Bot,
-  BrainCircuit,
   Droplets,
   HeartPulse,
   MoonStar,

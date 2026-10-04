@@ -62,17 +62,33 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       },
       plugins
     );
-    const [canScrollPrev, setCanScrollPrev] = React.useState(false);
-    const [canScrollNext, setCanScrollNext] = React.useState(false);
-
-    const onSelect = React.useCallback((api: CarouselApi) => {
-      if (!api) {
-        return;
-      }
-
-      setCanScrollPrev(api.canScrollPrev());
-      setCanScrollNext(api.canScrollNext());
-    }, []);
+    // O estado de navegação vive no Embla (store externo): lido com
+    // useSyncExternalStore e atualizado nos eventos select/reInit, com remoção
+    // dos listeners na desmontagem.
+    const subscribe = React.useCallback(
+      (onStoreChange: () => void) => {
+        if (!api) {
+          return () => undefined;
+        }
+        api.on('reInit', onStoreChange);
+        api.on('select', onStoreChange);
+        return () => {
+          api.off('reInit', onStoreChange);
+          api.off('select', onStoreChange);
+        };
+      },
+      [api]
+    );
+    const canScrollPrev = React.useSyncExternalStore(
+      subscribe,
+      () => api?.canScrollPrev() ?? false,
+      () => false
+    );
+    const canScrollNext = React.useSyncExternalStore(
+      subscribe,
+      () => api?.canScrollNext() ?? false,
+      () => false
+    );
 
     const scrollPrev = React.useCallback(() => {
       api?.scrollPrev();
@@ -100,16 +116,12 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       [scrollPrev, scrollNext, opts]
     );
 
+    // Entrega a API do Embla ao componente pai quando ela fica disponível.
     React.useEffect(() => {
-      if (!api) {
-        return;
+      if (api) {
+        setApi?.(api);
       }
-
-      setApi?.(api);
-      onSelect(api);
-      api.on('reInit', onSelect);
-      api.on('select', onSelect);
-    }, [api, onSelect, setApi]);
+    }, [api, setApi]);
 
     return (
       <CarouselContext.Provider

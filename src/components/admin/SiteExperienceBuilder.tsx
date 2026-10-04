@@ -749,8 +749,21 @@ export function SiteExperienceBuilder() {
   const [publishedConfig, setPublishedConfig] = useState<EditableDraft>(
     getDefaultPageConfig('landing')
   );
-  const [jsonValue, setJsonValue] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [jsonValue, setJsonValue] = useState(() =>
+    JSON.stringify(getDefaultPageConfig('landing'), null, 2)
+  );
+  // O JSON editável acompanha o rascunho: quando o rascunho muda (edição pelos
+  // campos, carga ou publicação), o texto é regenerado durante a renderização,
+  // conforme o padrão do React para estado derivado de outro estado.
+  const [jsonSourceDraft, setJsonSourceDraft] =
+    useState<EditableDraft>(draftConfig);
+  if (jsonSourceDraft !== draftConfig) {
+    setJsonSourceDraft(draftConfig);
+    setJsonValue(JSON.stringify(draftConfig, null, 2));
+  }
+  // A página está carregando enquanto o último pageKey carregado for outro.
+  const [loadedPageKey, setLoadedPageKey] = useState<SitePageKey | null>(null);
+  const loading = loadedPageKey !== pageKey;
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [meta, setMeta] = useState<{
@@ -762,9 +775,11 @@ export function SiteExperienceBuilder() {
   });
 
   useEffect(() => {
-    async function loadPage() {
-      setLoading(true);
+    // Evita aplicar a resposta de uma página antiga se o admin trocar de
+    // página antes do fim da requisição.
+    let active = true;
 
+    async function loadPage() {
       try {
         const response = await fetch(`/api/admin/page-config/${pageKey}`, {
           cache: 'no-store',
@@ -775,6 +790,7 @@ export function SiteExperienceBuilder() {
           throw new Error(payload.error || 'Falha ao carregar o editor.');
         }
 
+        if (!active) return;
         setDraftConfig(payload.draftConfig);
         setPublishedConfig(payload.publishedConfig);
         setMeta({
@@ -782,7 +798,8 @@ export function SiteExperienceBuilder() {
           updatedByUserId: payload.updatedByUserId,
         });
       } catch (error) {
-        toast.error('Nao foi possivel carregar o editor.', {
+        if (!active) return;
+        toast.error('Não foi possível carregar o editor.', {
           description:
             error instanceof Error ? error.message : 'Falha desconhecida.',
         });
@@ -795,16 +812,18 @@ export function SiteExperienceBuilder() {
           updatedByUserId: null,
         });
       } finally {
-        setLoading(false);
+        if (active) {
+          setLoadedPageKey(pageKey);
+        }
       }
     }
 
     void loadPage();
-  }, [pageKey]);
 
-  useEffect(() => {
-    setJsonValue(JSON.stringify(draftConfig, null, 2));
-  }, [draftConfig]);
+    return () => {
+      active = false;
+    };
+  }, [pageKey]);
 
   const normalizedLandingDraft = useMemo(() => {
     return isLandingConfig(draftConfig)

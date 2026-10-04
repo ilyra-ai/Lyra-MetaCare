@@ -1,53 +1,78 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
 import { getHttpErrorStatus } from '@/lib/http-error';
 import { executeStatement } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
-import {
-  AssessmentType,
-  calculateWHO5Score,
-  classifyNPS,
-} from '@/lib/kpi/assessment-engine';
+import { calculateWHO5Score, classifyNPS } from '@/lib/kpi/assessment-engine';
 
 export const runtime = 'nodejs';
+
+// Valores numéricos chegam como string (RadioGroup) ou número; ambos são
+// aceitos e convertidos, mas apenas dentro das escalas válidas de cada
+// instrumento.
+const escala = (min: number, max: number) =>
+  z.coerce.number<number | string>().int().min(min).max(max);
+
+const assessmentSchema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('mood'),
+    payload: z.object({
+      moodValue: escala(1, 5),
+      notes: z.string().trim().max(2000).optional(),
+    }),
+  }),
+  z.object({
+    type: z.literal('who5'),
+    payload: z.object({
+      // Cinco respostas (perguntas 1 a 5) na escala WHO-5 de 0 a 5. No Zod 4,
+      // um record com chaves enum é exaustivo: todas as 5 são obrigatórias e
+      // chaves extras são rejeitadas.
+      answers: z.record(z.enum(['1', '2', '3', '4', '5']), escala(0, 5)),
+      notes: z.string().trim().max(2000).optional(),
+    }),
+  }),
+  z.object({
+    type: z.literal('nps'),
+    payload: z.object({
+      score: escala(0, 10),
+      notes: z.string().trim().max(2000).optional(),
+    }),
+  }),
+]);
 
 export async function POST(request: Request) {
   try {
     const session = await requireServerSession();
+    const assessment = assessmentSchema.parse(await request.json());
 
-    const body = await request.json();
-    const { type, payload } = body as {
-      type: AssessmentType;
-      payload: any;
-    };
+    let scoreValue: number;
+    let notes = assessment.payload.notes ?? '';
+    let rawResponses: unknown = assessment.payload;
 
-    if (!type || !payload) {
-      return NextResponse.json(
-        { error: 'Payload ou tipo inválido.' },
-        { status: 400 }
-      );
-    }
-
-    let scoreValue = 0;
-    let notes = payload.notes || '';
-    let rawResponses = JSON.stringify(payload);
-
-    if (type === 'mood') {
-      scoreValue = Number(payload.moodValue);
-    } else if (type === 'who5') {
-      const answers: number[] = Object.values(payload.answers).map(Number);
-      const result = calculateWHO5Score(answers);
-      scoreValue = result.percentageScore; // Save percentage
-      notes = result.insight;
-    } else if (type === 'nps') {
-      scoreValue = Number(payload.score);
-      const classification = classifyNPS(scoreValue);
-      rawResponses = JSON.stringify({ ...payload, classification });
-    } else {
-      return NextResponse.json(
-        { error: 'Tipo de avaliação desconhecido.' },
-        { status: 400 }
-      );
+    switch (assessment.type) {
+      case 'mood':
+        scoreValue = assessment.payload.moodValue;
+        break;
+      case 'who5': {
+        const answers = ['1', '2', '3', '4', '5'].map(
+          (questionId) =>
+            assessment.payload.answers[
+              questionId as keyof typeof assessment.payload.answers
+            ]
+        );
+        const result = calculateWHO5Score(answers);
+        scoreValue = result.percentageScore;
+        notes = result.insight;
+        break;
+      }
+      case 'nps':
+        scoreValue = assessment.payload.score;
+        rawResponses = {
+          ...assessment.payload,
+          classification: classifyNPS(scoreValue),
+        };
+        break;
     }
 
     await executeStatement(
@@ -66,9 +91,9 @@ export async function POST(request: Request) {
       [
         crypto.randomUUID(),
         session.user.id,
-        type,
+        assessment.type,
         scoreValue,
-        rawResponses,
+        JSON.stringify(rawResponses),
         notes,
       ]
     );

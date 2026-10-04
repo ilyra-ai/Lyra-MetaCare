@@ -3,12 +3,8 @@ import Stripe from 'stripe';
 import { HttpError } from '@/lib/http-error';
 import { getStripeApiVersion, getStripeSecretKey } from '@/lib/billing/config';
 
-/* eslint-disable no-var */
-declare global {
-  var __lyraStripeClient: Stripe | undefined;
-}
-/* eslint-enable no-var */
-
+// Cache do cliente no escopo global (sobrevive ao hot reload em
+// desenvolvimento); o acesso é sempre feito pelo tipo abaixo.
 type GlobalStripeState = typeof globalThis & {
   __lyraStripeClient?: Stripe;
 };

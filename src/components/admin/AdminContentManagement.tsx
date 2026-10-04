@@ -82,34 +82,68 @@ export function AdminContentManagement() {
   } | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
 
+  // Consultas puras (sem alterar estado) e funções que aplicam o resultado.
+  // O estado inicial já marca hábitos e insights como "carregando"; recargas
+  // após salvar/excluir atualizam as tabelas sem voltar ao esqueleto.
+  const queryHabits = React.useCallback(
+    () =>
+      db
+        .from('suggested_habits')
+        .select('*')
+        .order('created_at', { ascending: false }),
+    [db]
+  );
+
+  const queryTips = React.useCallback(
+    () =>
+      db.from('ai_tips').select('*').order('created_at', { ascending: false }),
+    [db]
+  );
+
+  const applyHabits = React.useCallback(
+    ({ data, error }: Awaited<ReturnType<typeof queryHabits>>) => {
+      if (error)
+        toast.error('Erro ao carregar hábitos.', {
+          description: error.message,
+        });
+      else setHabits(data);
+      setLoading((prev) => ({ ...prev, habits: false }));
+    },
+    []
+  );
+
+  const applyTips = React.useCallback(
+    ({ data, error }: Awaited<ReturnType<typeof queryTips>>) => {
+      if (error)
+        toast.error('Erro ao carregar insights.', {
+          description: error.message,
+        });
+      else setTips(data);
+      setLoading((prev) => ({ ...prev, tips: false }));
+    },
+    []
+  );
+
   const fetchHabits = React.useCallback(async () => {
-    setLoading((prev) => ({ ...prev, habits: true }));
-    const { data, error } = await db
-      .from('suggested_habits')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (error)
-      toast.error('Erro ao carregar hábitos.', { description: error.message });
-    else setHabits(data);
-    setLoading((prev) => ({ ...prev, habits: false }));
-  }, [db]);
+    applyHabits(await queryHabits());
+  }, [applyHabits, queryHabits]);
 
   const fetchTips = React.useCallback(async () => {
-    setLoading((prev) => ({ ...prev, tips: true }));
-    const { data, error } = await db
-      .from('ai_tips')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (error)
-      toast.error('Erro ao carregar insights.', { description: error.message });
-    else setTips(data);
-    setLoading((prev) => ({ ...prev, tips: false }));
-  }, [db]);
+    applyTips(await queryTips());
+  }, [applyTips, queryTips]);
 
   React.useEffect(() => {
-    fetchHabits();
-    fetchTips();
-  }, [fetchHabits, fetchTips]);
+    let active = true;
+    queryHabits().then((result) => {
+      if (active) applyHabits(result);
+    });
+    queryTips().then((result) => {
+      if (active) applyTips(result);
+    });
+    return () => {
+      active = false;
+    };
+  }, [applyHabits, applyTips, queryHabits, queryTips]);
 
   const handleSaveHabit = async (
     data: SuggestedHabitPayload,

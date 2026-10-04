@@ -58,18 +58,31 @@ export function DatePicker({
   );
   const [open, setOpen] = React.useState(false);
 
-  React.useEffect(() => {
-    setInputValue(value ? format(value, 'dd/MM/yyyy') : '');
-  }, [value]);
+  // Sincroniza o texto com o valor vindo do formulário durante a renderização
+  // (estado derivado). Quando o valor recebido é o mesmo que o próprio campo
+  // acabou de emitir (ex.: `undefined` enquanto a data ainda está incompleta),
+  // o texto digitado é preservado; antes ele era apagado a cada tecla quando o
+  // campo já tinha uma data.
+  const [syncedValue, setSyncedValue] = React.useState(value);
+  const [lastEmittedValue, setLastEmittedValue] = React.useState(value);
+  if (value !== syncedValue) {
+    setSyncedValue(value);
+    if (value !== lastEmittedValue) {
+      setInputValue(value ? format(value, 'dd/MM/yyyy') : '');
+    }
+  }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { displayValue, date } = normalizeDateInput(event.target.value);
 
     setInputValue(displayValue);
+    setLastEmittedValue(date);
     onChange(date);
   };
 
   const handleSelect: OnSelectHandler<Date | undefined> = (date) => {
+    setInputValue(date ? format(date, 'dd/MM/yyyy') : '');
+    setLastEmittedValue(date);
     onChange(date);
     setOpen(false);
   };
