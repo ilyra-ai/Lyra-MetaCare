@@ -18,18 +18,18 @@
 
 ## Tópico 1 · Andamento Geral
 
-| Indicador          | Valor                         |
-| ------------------ | ----------------------------- |
-| Progresso          | `██░░░░░░░░░░░░░░░░░░` **9%** |
-| Tarefas totais     | 23                            |
-| 🟢 Finalizadas     | 2                             |
-| 🔵 Em andamento    | 1                             |
-| 🔴 Bloqueadas      | 0                             |
-| ⚪ A iniciar       | 20                            |
-| Branch de trabalho | `main` (única permitida)      |
-| Última atualização | 2026-10-04                    |
+| Indicador          | Valor                          |
+| ------------------ | ------------------------------ |
+| Progresso          | `███░░░░░░░░░░░░░░░░░` **13%** |
+| Tarefas totais     | 23                             |
+| 🟢 Finalizadas     | 3                              |
+| 🔵 Em andamento    | 1                              |
+| 🔴 Bloqueadas      | 0                              |
+| ⚪ A iniciar       | 19                             |
+| Branch de trabalho | `main` (única permitida)       |
+| Última atualização | 2026-10-04                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (2 ÷ 23 = 8,7%, arredondado para 9%). Cada bloco da barra representa 5%.
+> Cálculo: tarefas finalizadas ÷ tarefas totais (3 ÷ 23 = 13,0%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -37,9 +37,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                                                        | O que está sendo realizado                                                                                                                                                                     |
-| --- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 03  | Auditoria baseline e correção dos erros atualmente existentes | Registro das versões do ambiente e execução real de `pnpm install`, `check:lint`, `check:format`, `check:types`, `test`, `build`, `outdated` e `audit` para identificar erros pela causa raiz. |
+| Nº  | Tarefa                                      | O que está sendo realizado                                                                                                                                                |
+| --- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 04  | Normalização do package manager e lockfiles | Investigação de `pnpm-lock.yaml`, `bun.lock` e da dependência `bun` com busca `rg` de uso real, padronização em pnpm com `packageManager` fixado e Corepack reprodutível. |
 
 ### BLOQUEADAS
 
@@ -48,16 +48,6 @@ Nenhuma tarefa bloqueada no momento.
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
-
-### 04 · Normalização do package manager e lockfiles
-
-_Instrução: Tarefa 2 · itens 6, 11, 65 e 66 do `CLAUDE.md`._
-
-- Determinar o package manager oficial do projeto (a evidência aponta para pnpm).
-- Padronizar todo o projeto em pnpm, adicionar `packageManager` explícito no `package.json`, fixar versão estável do pnpm e usar Corepack de forma reprodutível.
-- Investigar `pnpm-lock.yaml`, `package-lock.json` e `bun.lock`; eliminar lockfiles concorrentes somente após comprovar que não são necessários.
-- Remover `bun` das dependências se não for usado em runtime, após busca com `rg` por imports, requires, dynamic imports, scripts, loaders, configs, documentação e uso indireto.
-- Não manter três fontes de resolução de dependências; não depender de pacotes globais sem necessidade técnica.
 
 ### 05 · Remoção comprovada de dependências não utilizadas
 
@@ -230,8 +220,17 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
 
 ### 02 · Painel de gestão `claude-gestao.md`
 
-- **Status:** 🟢 finalizada · **Commit:** registrado no histórico Git com a mensagem `docs(gestao): cria painel claude-gestao.md da instrução mestra`
+- **Status:** 🟢 finalizada · **Commit:** `a99510b` · **Push:** `1272c56..a99510b main -> main` (confirmado)
 - **Implementado:**
   - Painel com os quatro tópicos exigidos: Andamento Geral com barra e porcentagem, Tarefas em Andamento ou Bloqueadas (ANDAMENTO limitado a 3 e BLOQUEADAS), Tarefas a Iniciar com o escopo integral de cada tarefa e Histórico das Tarefas Finalizadas.
   - Layout baseado em padrões atuais de painéis em Markdown no GitHub: alertas nativos (`> [!IMPORTANT]`), tabelas de indicadores, barra de progresso em blocos Unicode legível em qualquer visualizador e legenda de status.
   - Numeração única e crescente (01 a 23), sem repetição entre tópicos; as tarefas 03 a 23 correspondem às Tarefas 1 a 21 do item 53 da instrução.
+
+### 03 · Auditoria baseline e correção dos erros atualmente existentes
+
+- **Status:** 🟢 finalizada · **Commit:** `fix(database): corrige migrations em banco novo e registra baseline forense` (um commit não contém o próprio SHA; o SHA é registrado na atualização seguinte deste painel)
+- **Implementado:**
+  - Baseline forense real registrado em [`docs/auditoria/2026-10-04-baseline-forense.md`](./docs/auditoria/2026-10-04-baseline-forense.md): versões do ambiente, quality gates, build, runtime, `pnpm outdated` e `pnpm audit` (146 avisos: 4 críticos, 50 altos, 80 moderados, 12 baixos).
+  - Erro real encontrado: `pnpm db:migrate` falhava em banco novo criado pelo Compose (`fk_ui_config_updated_by ... are incompatible`). Causa raiz: tabelas iniciais herdavam `utf8mb4_0900_ai_ci` do servidor enquanto as novas declaram `utf8mb4_unicode_ci`; só o `run.py` mascarava o defeito ao iniciar o MySQL com `--collation-server=utf8mb4_unicode_ci`.
+  - Correções: migration `mysql/migrations/005_add_tables_unicode_collation.sql`; `compose.yaml` com `--character-set-server=utf8mb4` e `--collation-server=utf8mb4_unicode_ci`; `scripts/mysql-migrate.mjs` com ordenação determinística por código de caractere.
+- **Evidências:** banco parcialmente migrado → 7 migrations aplicadas (exit 0); reexecução idempotente ("Já aplicada"); banco novo → 12 migrations aplicadas e todas as tabelas em `utf8mb4_unicode_ci`; `pnpm start` com `GET /`, `/login`, `/api/public/plans`, `/api/public/ui-config` em HTTP 200 e login do admin bootstrap com sessão válida; gates `check:format`, `check:lint`, `check:types` (exit 0), `test` (82/82) e `build` (exit 0).

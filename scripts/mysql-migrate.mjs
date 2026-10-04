@@ -411,9 +411,11 @@ async function main() {
 
   try {
     await waitForDatabase(pool);
+    // Ordenação por código de caractere (independente de locale/ICU) para que
+    // a sequência das migrations seja idêntica em qualquer máquina.
     const files = (await readdir(migrationsDir))
       .filter((file) => file.endsWith('.sql'))
-      .sort((left, right) => left.localeCompare(right));
+      .sort((left, right) => (left < right ? -1 : left > right ? 1 : 0));
 
     await ensureMigrationTable(pool);
 
