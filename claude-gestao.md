@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `█████████░░░░░░░░░░░` **46%** |
+| Progresso          | `██████████░░░░░░░░░░` **50%** |
 | Tarefas totais     | 26                             |
-| 🟢 Finalizadas     | 12                             |
+| 🟢 Finalizadas     | 13                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 13                             |
+| ⚪ A iniciar       | 12                             |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-04                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (12 ÷ 26 = 46,2%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (13 ÷ 26 = 50%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                           | O que está sendo realizado                                                                                                                                                            |
-| --- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 10  | Modernização Node/pnpm/toolchain | Pesquisa da versão Node.js LTS recomendada em outubro de 2026 (sem EOL); criação de `.nvmrc`, `.node-version` e do campo `engines`; ambiente reproduzível com Corepack e pnpm fixado. |
+| Nº  | Tarefa                            | O que está sendo realizado                                                                                                                                                                                                                                                                                                                            |
+| --- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 11  | Modernização MySQL e autenticação | Pesquisa das versões LTS do MySQL em 2026 e da rota oficial de upgrade a partir do 8.0.x; eliminação de `mysql_native_password` em favor de `caching_sha2_password`; revisão de `compose.yaml`, `scripts/mysql-migrate.mjs`, `src/lib/mysql/`, `src/integrations/mysql/`, `mysql/migrations/` e launchers, com upgrade testado sobre banco existente. |
 
 ### BLOQUEADAS
 
@@ -49,14 +49,6 @@ Nenhuma tarefa bloqueada no momento.
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
-
-### 11 · Modernização MySQL e autenticação
-
-_Instrução: Tarefa 9 · item 16._
-
-- Pesquisar as versões LTS do MySQL em 2026 e a rota oficial de upgrade a partir do 8.0.x, sem atualizar a imagem Docker cegamente.
-- Eliminar `mysql_native_password` e migrar para `caching_sha2_password` quando compatível.
-- Revisar `compose.yaml`, `scripts/mysql-migrate.mjs`, `src/lib/mysql/`, `src/integrations/mysql/`, `mysql/migrations/`, `run.py`, `run.sh` e `run_windows.py`, eliminando opções removidas ou depreciadas.
 
 ### 12 · Compose, env e secrets
 
@@ -292,6 +284,29 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
   - `pnpm start` com capturas reais de 14 páginas em 1440×900 e 390×844, comparadas pixel a pixel com a baseline do Tailwind 3: zero erros de console; diferenças restantes inspecionadas e justificadas acima.
   - O painel de slot vazio retorna `display: none` em `/appointments`.
 - **Encaminhado:** o editor `/admin/puck` quebra com React #185, defeito pré-existente comprovado no commit `7cbf0f3`, tratado na tarefa 25. Os documentos históricos de redesign que citam `tailwind.config.ts` serão revistos na tarefa 23.
+
+### 10 · Modernização Node/pnpm/toolchain
+
+- **Status:** 🟢 finalizada · **Commit:** `dcae3a4` · **Push:** `012138a..dcae3a4 main -> main` (confirmado)
+- **Pesquisa (cronograma oficial `nodejs/Release` e `nodejs.org/dist/index.json` em 2026-10-04):**
+  - Node 24 "Krypton" é **Active LTS**: entra em manutenção em 2026-10-20 e tem suporte até 2028-04-30. A última release é a 24.21.0 (2026-09-07) e a última de segurança, a 24.18.1.
+  - Node 26 continua **Current** até virar LTS em 2026-10-28.
+  - Node 22 está em manutenção até 2027-04-30; Node 20 está em EOL desde 2026-04-30.
+  - Escolha: **Node 24 LTS**, por estabilidade e suporte, conforme o item 63 da instrução.
+- **Implementado:**
+  - `.nvmrc` e `.node-version` com `24.21.0`.
+  - `engines.node` `^24.18.1` no `package.json`, com piso na última release de segurança da linha 24 e sem aceitar linhas Current.
+  - `engineStrict: true` no `pnpm-workspace.yaml`.
+  - `codemagic.yaml` com Node `24.21.0` fixo (antes era `lts` flutuante) e `corepack install` para a versão e o sha512 do `packageManager`. Antes o CI usava `corepack prepare pnpm@latest --activate`, que ativaria o pnpm 12, incompatível com o Corepack segundo a tarefa 04, e ignoraria a versão fixada.
+  - README com os pré-requisitos reais.
+- **Evidências:**
+  - Tarball oficial do Node 24.21.0 verificado por SHA-256 (`SHASUMS256.txt`). O Node 24 inclui o Corepack 0.36.0, que resolve o pnpm 11.28.4 do `packageManager`.
+  - `corepack install` num `COREPACK_HOME` vazio baixa e verifica o pnpm exato.
+  - Com Node 22, `pnpm install --frozen-lockfile` sai com exit 1 e `ERR_PNPM_UNSUPPORTED_ENGINE` (Expected `^24.18.1`, Got `v22.22.0`).
+  - Com Node 24.21.0, instalação limpa (sem `node_modules` e `.next`) com exit 0 e zero avisos.
+  - `check:format`, `check:lint` e `check:types` com exit 0; `test` 112/112; `build` com exit 0 e zero avisos; `pnpm db:migrate` com exit 0 e idempotente.
+  - `pnpm start` com capturas das 14 páginas sem erros, zero avisos de console e editor Puck salvando rascunho.
+- **Encaminhado:** `run.sh` (mensagem "Node.js 20+"), `run.py` e `run_windows.py` ainda não validam a versão do Node pelo `.nvmrc`; isso será tratado nas tarefas 13 a 15.
 
 ### 24 · Correção crítica: vazamento de conexões MySQL em produção
 
