@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `████████░░░░░░░░░░░░` **42%** |
+| Progresso          | `█████████░░░░░░░░░░░` **46%** |
 | Tarefas totais     | 26                             |
-| 🟢 Finalizadas     | 11                             |
+| 🟢 Finalizadas     | 12                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 14                             |
+| ⚪ A iniciar       | 13                             |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-04                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (11 ÷ 26 = 42,3%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (12 ÷ 26 = 46,2%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                                                    | O que está sendo realizado                                                                                                                                                                                                                                                                                   |
-| --- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 26  | Correção: CSS da agenda pré-carregado em todas as páginas | Regressão da tarefa 09 encontrada no QA da tarefa 25: o prefetch da rota `/appointments` pela navegação pré-carregava o `agenda.css` em todas as páginas autenticadas, gerando aviso de preload não usado. Carregamento sob demanda do calendário com `next/dynamic`, validação de tipos, build e navegador. |
+| Nº  | Tarefa                           | O que está sendo realizado                                                                                                                                                            |
+| --- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 10  | Modernização Node/pnpm/toolchain | Pesquisa da versão Node.js LTS recomendada em outubro de 2026 (sem EOL); criação de `.nvmrc`, `.node-version` e do campo `engines`; ambiente reproduzível com Corepack e pnpm fixado. |
 
 ### BLOQUEADAS
 
@@ -49,14 +49,6 @@ Nenhuma tarefa bloqueada no momento.
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
-
-### 10 · Modernização Node/pnpm/toolchain
-
-_Instrução: Tarefa 8 · itens 10, 11 e 65._
-
-- Avaliar a versão Node.js LTS recomendada em outubro de 2026, sem versão EOL.
-- Criar ou atualizar `.nvmrc`, `.node-version` e o campo `engines` do `package.json`.
-- Garantir ambiente reproduzível com Corepack e pnpm fixado.
 
 ### 11 · Modernização MySQL e autenticação
 
@@ -331,3 +323,14 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
   - CRUD real: "Salvar rascunho" exibe "Rascunho do Puck salvo com sucesso." e o MySQL registra `landing-home` com 0 zonas e 6 filhos no slot `content`.
   - `check:format`, `check:lint` e `check:types` com exit 0; `test` 112/112; `build` com exit 0 e zero avisos; capturas das 14 páginas sem erros de console.
 - **Encaminhado:** o mesmo QA revelou que o `agenda.css` da tarefa 09 era pré-carregado em todas as páginas pelo prefetch de `/appointments`; isso é tratado na tarefa 26. Os dados iniciais em `initial-data.ts` continuam no formato legado e são convertidos na carga pela migração oficial; a reescrita para slots nativos fica para a tarefa 16 (migrations e dados).
+
+### 26 · Correção: CSS da agenda pré-carregado em todas as páginas
+
+- **Status:** 🟢 finalizada · **Commit:** `de0308a` · **Push:** `2ec8679..de0308a main -> main` (confirmado)
+- **Origem:** regressão da tarefa 09, encontrada no QA da tarefa 25. Chrome registrava "preloaded using link preload but not used" em `/`, `/goals`, `/profile` e demais páginas autenticadas.
+- **Causa raiz:** o `agenda.css`, criado na tarefa 09, era importado estaticamente pela rota `/appointments`. O prefetch dessa rota pelos links da navegação baixava e pré-carregava o CSS em todas as páginas, sem usá-lo.
+- **Implementado:** o componente `Agenda` (react-big-calendar + `agenda.css`) passou a ser carregado com `next/dynamic` (`ssr: false`), com skeleton da mesma altura para não deslocar o layout. O tipo genérico é preservado pela expressão de instanciação `Agenda<Appointment>`, sem casts. O JS e o CSS do calendário agora só são baixados quando o calendário é exibido.
+- **Evidências:**
+  - Zero avisos ou erros de console em `/`, `/goals`, `/profile`, `/chat`, `/admin/dashboard` e `/admin/puck`.
+  - O chunk com `.rbc-btn` é requisitado somente em `/appointments`, onde o calendário renderiza com 35 células, em pt-BR e com as personalizações Lyra aplicadas (raio de 24 px, botão ativo com gradiente).
+  - `check:format`, `check:lint` e `check:types` com exit 0; `test` 112/112; `build` com exit 0 e zero avisos.
