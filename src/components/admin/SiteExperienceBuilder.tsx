@@ -426,7 +426,7 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
       <div className="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
         <Card className="border-border/70 bg-white/88 shadow-sm">
           <CardHeader className="gap-4">
-            <div className="rounded-[22px] border border-border/70 bg-gradient-to-br from-white via-white to-cosmic-light/45 p-4">
+            <div className="rounded-[22px] border border-border/70 bg-linear-to-br from-white via-white to-cosmic-light/45 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
                 {config.sidebar.brandEyebrow}
               </p>

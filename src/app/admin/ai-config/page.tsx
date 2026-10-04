@@ -47,7 +47,7 @@ export default function AIConfigPage() {
   return (
     <div className="relative flex min-h-screen overflow-hidden">
       {/* Background Decorativo Premium 2026 */}
-      <div className="pointer-events-none absolute left-0 top-0 z-0 h-[50vh] w-full bg-gradient-to-b from-primary/10 to-transparent"></div>
+      <div className="pointer-events-none absolute left-0 top-0 z-0 h-[50vh] w-full bg-linear-to-b from-primary/10 to-transparent"></div>
       <div className="pointer-events-none absolute right-[-10%] top-[-10%] z-0 h-[600px] w-[600px] rounded-full bg-primary/15 blur-3xl"></div>
       <div className="pointer-events-none absolute bottom-[-10%] left-[-10%] z-0 h-[500px] w-[500px] rounded-full bg-accent/10 blur-3xl"></div>
 
@@ -57,7 +57,7 @@ export default function AIConfigPage() {
         <Header />
         <PuckClientRenderer
           documentKey="admin-ai-config"
-          className="w-full flex-shrink-0"
+          className="w-full shrink-0"
         />
         <main className="flex-1 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto w-full">
           <div className="mb-10 text-center sm:text-left">

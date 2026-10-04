@@ -233,10 +233,10 @@ export function RealTimeMonitoringContent({
       </Card>
 
       <div className="grid min-h-0 gap-6 xl:grid-cols-[minmax(0,1.2fr)_0.8fr]">
-        <div className="min-h-[24rem]">
+        <div className="min-h-96">
           <LiveHeartRateChart initialData={liveData.heartRate ?? 0} />
         </div>
-        <div className="min-h-[24rem]">
+        <div className="min-h-96">
           <MapPlaceholder />
         </div>
       </div>

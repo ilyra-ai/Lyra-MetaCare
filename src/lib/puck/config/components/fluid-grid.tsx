@@ -81,7 +81,7 @@ function LyraFluidGridBlock({
             obterClasseGapStack(gap),
             layoutMode === 'flex'
               ? 'flex flex-wrap items-stretch'
-              : 'grid grid-cols-1 md:[grid-template-columns:var(--lyra-grid-tablet)] xl:[grid-template-columns:var(--lyra-grid-desktop)]'
+              : 'grid grid-cols-1 md:grid-cols-(--lyra-grid-tablet) xl:grid-cols-(--lyra-grid-desktop)'
           )}
           style={layoutMode === 'grid' ? estiloGrid : undefined}
         />

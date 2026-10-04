@@ -277,7 +277,7 @@ export function LandingPage({
                       <CardHeader>
                         <div
                           className={cn(
-                            'flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br shadow-sm',
+                            'flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br shadow-sm',
                             getToneSurfaceClass(feature.tone)
                           )}
                         >
@@ -758,9 +758,9 @@ export function LandingPage({
       <main>
         <section className="relative overflow-hidden px-4 pb-18 pt-10 sm:px-6 lg:px-8 lg:pb-24 lg:pt-14">
           <div className="pointer-events-none absolute inset-0">
-            <div className="cosmic-orb left-[-8rem] top-[-2rem] h-80 w-80 bg-primary/16" />
-            <div className="cosmic-orb right-[-5rem] top-16 h-80 w-80 bg-cosmic/16" />
-            <div className="cosmic-orb bottom-[-5rem] left-1/3 h-72 w-72 bg-accent/10" />
+            <div className="orchestrated-orb -left-32 -top-8 h-80 w-80 bg-primary/16" />
+            <div className="orchestrated-orb -right-20 top-16 h-80 w-80 bg-cosmic/16" />
+            <div className="orchestrated-orb -bottom-20 left-1/3 h-72 w-72 bg-accent/10" />
           </div>
 
           <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.06fr_0.94fr] lg:items-start">
@@ -917,7 +917,7 @@ export function LandingPage({
                       >
                         <div
                           className={cn(
-                            'flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br shadow-sm',
+                            'flex h-10 w-10 items-center justify-center rounded-2xl bg-linear-to-br shadow-sm',
                             getToneSurfaceClass(item.tone)
                           )}
                         >

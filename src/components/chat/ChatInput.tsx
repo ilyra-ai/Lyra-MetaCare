@@ -217,7 +217,7 @@ function ChatInput({
             maxRows={5}
             aria-label="Campo de mensagem"
             aria-describedby={`${helperId} ${statusId}`}
-            className="w-full resize-none border-0 bg-transparent px-1 py-2 text-sm leading-6 text-foreground placeholder:text-muted-foreground focus:outline-none"
+            className="w-full resize-none border-0 bg-transparent px-1 py-2 text-sm leading-6 text-foreground placeholder:text-muted-foreground focus:outline-hidden"
           />
 
           {showCounter && (
@@ -304,7 +304,7 @@ function ChatInput({
                   : 'border border-border/70 bg-secondary'
               }
               disabled:cursor-not-allowed disabled:opacity-50
-              before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/40 before:to-transparent
+              before:absolute before:inset-0 before:bg-linear-to-br before:from-white/40 before:to-transparent
               before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100
             `}
           >

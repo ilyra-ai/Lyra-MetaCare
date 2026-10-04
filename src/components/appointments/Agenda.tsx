@@ -10,6 +10,8 @@ import {
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
+import './agenda.css';
+
 const locales = {
   'pt-BR': ptBR,
 };

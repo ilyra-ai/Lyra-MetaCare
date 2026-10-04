@@ -5,9 +5,9 @@ import { MoonStar, Orbit, Sparkles } from 'lucide-react';
 export function SplashScreen() {
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-6">
-      <div className="orchestrated-orb left-[-8rem] top-[-4rem] h-64 w-64 bg-primary animate-pulse-slow" />
-      <div className="orchestrated-orb right-[-5rem] top-[12%] h-56 w-56 bg-cosmic animate-float" />
-      <div className="orchestrated-orb bottom-[-4rem] left-[18%] h-52 w-52 bg-accent animate-pulse-slow" />
+      <div className="orchestrated-orb -left-32 -top-16 h-64 w-64 bg-primary animate-pulse-slow" />
+      <div className="orchestrated-orb -right-20 top-[12%] h-56 w-56 bg-cosmic animate-float" />
+      <div className="orchestrated-orb -bottom-16 left-[18%] h-52 w-52 bg-accent animate-pulse-slow" />
 
       <div className="surface-panel relative w-full max-w-xl overflow-hidden px-10 py-14 text-center animate-scale-in">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-aurora" />

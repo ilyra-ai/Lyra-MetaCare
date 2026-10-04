@@ -13,7 +13,7 @@ export default async function InstrumentsPage() {
     <div className="page-shell min-h-screen p-8">
       <PuckClientRenderer
         documentKey="instruments"
-        className="w-full flex-shrink-0"
+        className="w-full shrink-0"
       />
       <Card className="max-w-3xl mx-auto">
         <CardHeader>

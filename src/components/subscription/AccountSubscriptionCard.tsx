@@ -59,7 +59,7 @@ export function AccountSubscriptionCard() {
           background: `linear-gradient(90deg, ${data.plan.accentFrom}, ${data.plan.accentTo})`,
         }}
       />
-      <CardHeader className="space-y-4 bg-[radial-gradient(circle_at_top_left,_rgba(49,155,142,0.14),_transparent_35%),radial-gradient(circle_at_top_right,_rgba(139,92,246,0.12),_transparent_35%)]">
+      <CardHeader className="space-y-4 bg-[radial-gradient(circle_at_top_left,rgba(49,155,142,0.14),transparent_35%),radial-gradient(circle_at_top_right,rgba(139,92,246,0.12),transparent_35%)]">
         <div className="flex items-center justify-between gap-4">
           <div className="space-y-2">
             <PlanBadge planKey={data.plan.key} />
@@ -76,7 +76,7 @@ export function AccountSubscriptionCard() {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-border/70 bg-white/84 p-4 backdrop-blur">
+          <div className="rounded-2xl border border-border/70 bg-white/84 p-4 backdrop-blur-sm">
             <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
               <Wallet className="h-3.5 w-3.5" />
               Ciclo atual
@@ -88,7 +88,7 @@ export function AccountSubscriptionCard() {
               Vigente até {formatDate(data.currentPeriodEnd)}
             </p>
           </div>
-          <div className="rounded-2xl border border-border/70 bg-white/84 p-4 backdrop-blur">
+          <div className="rounded-2xl border border-border/70 bg-white/84 p-4 backdrop-blur-sm">
             <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
               <CalendarClock className="h-3.5 w-3.5" />
               Status
@@ -120,7 +120,7 @@ export function AccountSubscriptionCard() {
               return (
                 <div
                   key={feature.key}
-                  className="rounded-2xl border border-border/70 bg-white/84 p-4 backdrop-blur"
+                  className="rounded-2xl border border-border/70 bg-white/84 p-4 backdrop-blur-sm"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div>
@@ -142,12 +142,12 @@ export function AccountSubscriptionCard() {
             })}
           </div>
         ) : (
-          <div className="rounded-2xl border border-border/70 bg-white/84 p-4 text-sm text-muted-foreground backdrop-blur">
+          <div className="rounded-2xl border border-border/70 bg-white/84 p-4 text-sm text-muted-foreground backdrop-blur-sm">
             Seu plano atual não possui quotas numéricas expostas nesta tela.
           </div>
         )}
 
-        <div className="space-y-3 rounded-2xl border border-border/70 bg-white/84 p-4 backdrop-blur">
+        <div className="space-y-3 rounded-2xl border border-border/70 bg-white/84 p-4 backdrop-blur-sm">
           <p className="text-sm font-semibold">Ações comerciais</p>
           <p className="text-sm text-muted-foreground">
             Checkout e portal de cobrança ficam disponíveis aqui quando o

@@ -267,7 +267,7 @@ export function AdminPlanMatrixContent() {
   if (loading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="flex items-center gap-3 rounded-full bg-card/75 px-6 py-3 shadow-xl ring-1 ring-border/70 backdrop-blur">
+        <div className="flex items-center gap-3 rounded-full bg-card/75 px-6 py-3 shadow-xl ring-1 ring-border/70 backdrop-blur-sm">
           <Loader2 className="h-5 w-5 animate-spin text-primary" />
           <span className="text-sm font-medium text-muted-foreground">
             Carregando matriz real de capacidades...
@@ -286,7 +286,7 @@ export function AdminPlanMatrixContent() {
             <div className="space-y-3">
               <Badge
                 variant="outline"
-                className="border-border/80 bg-card/75 text-foreground backdrop-blur"
+                className="border-border/80 bg-card/75 text-foreground backdrop-blur-sm"
               >
                 <ShieldCheck className="mr-1.5 h-3.5 w-3.5" />
                 Administração premium de planos
@@ -303,7 +303,7 @@ export function AdminPlanMatrixContent() {
             <Button
               variant="outline"
               onClick={handleReload}
-              className="rounded-full bg-card/85 backdrop-blur"
+              className="rounded-full bg-card/85 backdrop-blur-sm"
             >
               <RefreshCw className="mr-2 h-4 w-4" />
               Recarregar matriz
@@ -350,7 +350,7 @@ export function AdminPlanMatrixContent() {
                       {plan.tagline}
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-white/15 p-3 backdrop-blur">
+                  <div className="rounded-2xl bg-white/15 p-3 backdrop-blur-sm">
                     <Palette className="h-5 w-5" />
                   </div>
                 </div>

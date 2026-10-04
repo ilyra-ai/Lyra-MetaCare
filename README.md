@@ -89,17 +89,17 @@ Cinco melhorias baseadas em tendências reais de 2026, **todas implementadas de 
 
 ## 🧰 Stack tecnológica
 
-| Camada              | Tecnologias                                                                  |
-| ------------------- | ---------------------------------------------------------------------------- |
-| **Framework**       | Next.js 15 (App Router) · React 19 · TypeScript 5                            |
-| **UI**              | Tailwind CSS 3.4 · shadcn/ui (Radix) · lucide-react · Recharts · sonner      |
-| **Backend**         | Rotas API do Next.js · MySQL 8 (mysql2) · autenticação com `jose`/`bcryptjs` |
-| **Pagamentos**      | Stripe (checkout, portal, webhooks)                                          |
-| **Conteúdo**        | Puck (`@puckeditor/core`) · Site Experience Builder                          |
-| **IA**              | Motores determinísticos próprios · Google Gemini opcional via BYOK           |
-| **Observabilidade** | Sentry                                                                       |
-| **Qualidade**       | Vitest · ESLint · Prettier · TypeScript estrito                              |
-| **Infra local**     | Docker Compose (MySQL) · pnpm (via Corepack) · `run.sh`                      |
+| Camada              | Tecnologias                                                                         |
+| ------------------- | ----------------------------------------------------------------------------------- |
+| **Framework**       | Next.js 16 (App Router, Turbopack) · React 19.3 · TypeScript 6                      |
+| **UI**              | Tailwind CSS 4 (CSS-first) · shadcn/ui (Radix) · lucide-react · Recharts 3 · sonner |
+| **Backend**         | Rotas API do Next.js · MySQL 8 (mysql2) · autenticação com `jose`/`bcryptjs`        |
+| **Pagamentos**      | Stripe (checkout, portal, webhooks)                                                 |
+| **Conteúdo**        | Puck (`@puckeditor/core`) · Site Experience Builder                                 |
+| **IA**              | Motores determinísticos próprios · Google Gemini opcional via BYOK                  |
+| **Observabilidade** | Sentry                                                                              |
+| **Qualidade**       | Vitest · ESLint · Prettier · TypeScript estrito                                     |
+| **Infra local**     | Docker Compose (MySQL) · pnpm (via Corepack) · `run.sh`                             |
 
 ---
 

@@ -122,10 +122,10 @@ function LoadingDashboard() {
   return (
     <div className="flex flex-col gap-6">
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <Skeleton className="h-[20rem] md:col-span-2" />
-        <Skeleton className="h-[20rem]" />
-        <Skeleton className="h-[20rem]" />
-        <Skeleton className="h-[18rem] md:col-span-2 xl:col-span-4" />
+        <Skeleton className="h-80 md:col-span-2" />
+        <Skeleton className="h-80" />
+        <Skeleton className="h-80" />
+        <Skeleton className="h-72 md:col-span-2 xl:col-span-4" />
       </div>
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <Skeleton className="h-40" />
@@ -133,8 +133,8 @@ function LoadingDashboard() {
         <Skeleton className="h-40" />
         <Skeleton className="h-40" />
       </div>
-      <Skeleton className="h-[24rem]" />
-      <Skeleton className="h-[36rem]" />
+      <Skeleton className="h-96" />
+      <Skeleton className="h-144" />
     </div>
   );
 }
@@ -495,7 +495,7 @@ export function Dashboard() {
                 </p>
                 <ChartContainer
                   config={pulseChartConfig}
-                  className="min-h-[12rem] border-none bg-transparent p-0 shadow-none"
+                  className="min-h-48 border-none bg-transparent p-0 shadow-none"
                 >
                   <AreaChart accessibilityLayer data={pulseTrendData}>
                     <defs>
@@ -689,7 +689,7 @@ export function Dashboard() {
         <CardContent className="flex flex-col gap-6">
           <ChartContainer
             config={weeklyChartConfig}
-            className="min-h-[22rem] border-none bg-transparent p-0 shadow-none"
+            className="min-h-88 border-none bg-transparent p-0 shadow-none"
           >
             <AreaChart accessibilityLayer data={weeklyFlowData}>
               <defs>

@@ -170,7 +170,7 @@ function LoadingPlan() {
         <Skeleton className="h-72 rounded-[32px]" />
       </div>
       <Skeleton className="h-14 rounded-full" />
-      <Skeleton className="h-[32rem] rounded-[32px]" />
+      <Skeleton className="h-128 rounded-[32px]" />
     </div>
   );
 }
@@ -469,7 +469,7 @@ export function AIPlanContent() {
                 disabled={isGenerating || isSyncing}
                 variant={plan ? 'secondary' : 'default'}
                 size="lg"
-                className="min-w-[13rem]"
+                className="min-w-52"
               >
                 {isGenerating ? (
                   <>

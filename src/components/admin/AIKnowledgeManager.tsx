@@ -343,7 +343,7 @@ export function AIKnowledgeManager() {
               <Button
                 type="submit"
                 disabled={isSaving}
-                className="bg-gradient-to-br from-cosmic to-primary text-white shadow-cosmic hover:brightness-105"
+                className="bg-linear-to-br from-cosmic to-primary text-white shadow-cosmic hover:brightness-105"
               >
                 {isSaving ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -403,7 +403,7 @@ export function AIKnowledgeManager() {
                             </Badge>
                           )}
                         </div>
-                        <p className="line-clamp-3 whitespace-pre-wrap break-words text-sm leading-6 text-muted-foreground">
+                        <p className="line-clamp-3 whitespace-pre-wrap wrap-break-word text-sm leading-6 text-muted-foreground">
                           {doc.content}
                         </p>
                       </div>

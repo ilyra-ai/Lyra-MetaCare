@@ -675,7 +675,7 @@ export function OnboardingForm() {
                                     />
                                   </FormControl>
                                   <div className="flex items-center space-x-2.5">
-                                    <GoalIcon className="h-4 w-4 text-primary flex-shrink-0" />
+                                    <GoalIcon className="h-4 w-4 text-primary shrink-0" />
                                     <FormLabel className="font-medium cursor-pointer text-sm">
                                       {item.label}
                                     </FormLabel>

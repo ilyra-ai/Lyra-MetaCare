@@ -182,7 +182,7 @@ export function ChatBubble({ message, isUser, onRegenerate }: ChatBubbleProps) {
             'animate-in fade-in-50 slide-in-from-bottom-3 duration-500',
             isUser
               ? 'rounded-br-md bg-gradient-teal text-white shadow-teal'
-              : 'rounded-bl-md border border-cosmic/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.94),hsl(var(--cosmic-light)/0.4))] text-foreground shadow-md backdrop-blur-sm',
+              : 'rounded-bl-md border border-cosmic/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.94),hsl(var(--cosmic-light)/0.4))] text-foreground shadow-md backdrop-blur-xs',
             isHovering && !isUser && 'border-cosmic/25 shadow-cosmic',
             isHovering && isUser && 'shadow-lg'
           )}
@@ -190,7 +190,7 @@ export function ChatBubble({ message, isUser, onRegenerate }: ChatBubbleProps) {
           {/* Brilho superior sutil */}
           <div
             className={cn(
-              'absolute inset-x-0 top-0 h-px bg-gradient-to-r opacity-50',
+              'absolute inset-x-0 top-0 h-px bg-linear-to-r opacity-50',
               isUser
                 ? 'from-transparent via-white to-transparent'
                 : 'from-transparent via-cosmic/40 to-transparent'
@@ -246,7 +246,7 @@ export function ChatBubble({ message, isUser, onRegenerate }: ChatBubbleProps) {
               onClick={handleCopy}
               className={cn(
                 'flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 transition-all duration-200',
-                'border border-border/70 bg-card/90 backdrop-blur-sm',
+                'border border-border/70 bg-card/90 backdrop-blur-xs',
                 'hover:scale-105 hover:bg-card hover:shadow-md',
                 'active:scale-95'
               )}
@@ -273,7 +273,7 @@ export function ChatBubble({ message, isUser, onRegenerate }: ChatBubbleProps) {
                 onClick={onRegenerate}
                 className={cn(
                   'flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 transition-all duration-200',
-                  'border border-border/70 bg-card/90 backdrop-blur-sm',
+                  'border border-border/70 bg-card/90 backdrop-blur-xs',
                   'hover:scale-105 hover:bg-card hover:shadow-md',
                   'active:scale-95'
                 )}

@@ -6,7 +6,7 @@ export default function OnboardingPage() {
     <div className="page-shell flex min-h-screen w-full items-center justify-center p-4">
       <PuckClientRenderer
         documentKey="onboarding"
-        className="w-full flex-shrink-0"
+        className="w-full shrink-0"
       />
       <OnboardingForm />
     </div>

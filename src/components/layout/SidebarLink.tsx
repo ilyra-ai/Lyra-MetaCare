@@ -37,7 +37,7 @@ export function SidebarLink({
       className={cn(
         'group relative flex w-full items-center gap-3 overflow-hidden rounded-[20px] px-4 py-3 transition-all duration-300',
         isActive
-          ? 'bg-gradient-to-r from-primary/10 via-primary/5 to-cosmic/10 text-primary shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.18)]'
+          ? 'bg-linear-to-r from-primary/10 via-primary/5 to-cosmic/10 text-primary shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.18)]'
           : 'text-muted-foreground hover:bg-sidebar-accent/70 hover:text-foreground',
         className
       )}

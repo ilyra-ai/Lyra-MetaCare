@@ -142,7 +142,7 @@ export function LoginExperience({
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-[#eaf4f4] via-[#f0f8f8] to-[#d6ece9] opacity-80" />
+        <div className="absolute inset-0 bg-linear-to-b from-[#eaf4f4] via-[#f0f8f8] to-[#d6ece9] opacity-80" />
         <div className="absolute left-[10%] top-10 h-10 w-32 rounded-full bg-white/40 blur-2xl" />
         <div className="absolute right-[15%] top-40 h-16 w-48 rounded-full bg-white/30 blur-3xl" />
         <div className="animate-pulse-slow absolute left-1/3 top-20 h-2 w-2 rounded-full bg-white opacity-70" />
@@ -204,7 +204,7 @@ export function LoginExperience({
                 {intro.badgeText}
               </p>
               <h1
-                className="mb-2 font-display font-light text-foreground drop-shadow-sm"
+                className="mb-2 font-display font-light text-foreground drop-shadow-xs"
                 style={escalaFluida(3, typography.introTitle)}
               >
                 {intro.title}
@@ -327,7 +327,7 @@ export function LoginExperience({
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
                   aria-pressed={showPassword}
-                  className="absolute inset-y-0 right-0 flex items-center rounded-full pr-4 text-primary/50 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="absolute inset-y-0 right-0 flex items-center rounded-full pr-4 text-primary/50 transition-colors hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" aria-hidden />
@@ -461,7 +461,7 @@ export function LoginExperience({
                 <Button
                   type="submit"
                   disabled={previewMode || submitMode === 'register'}
-                  className="w-full transform rounded-full bg-gradient-to-r from-[#d97272] to-[#de8a8a] px-10 font-bold uppercase tracking-widest text-white shadow-coral transition-all hover:scale-105 hover:from-[#c25f5f] hover:to-[#d97272]"
+                  className="w-full transform rounded-full bg-linear-to-r from-[#d97272] to-[#de8a8a] px-10 font-bold uppercase tracking-widest text-white shadow-coral transition-all hover:scale-105 hover:from-[#c25f5f] hover:to-[#d97272]"
                   style={buttonStyle}
                 >
                   {submitMode === 'register'
@@ -478,7 +478,7 @@ export function LoginExperience({
               <button
                 type="button"
                 onClick={() => setIsRegistering(!isRegistering)}
-                className="ml-2 rounded font-bold text-primary transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="ml-2 rounded font-bold text-primary transition-colors hover:text-primary/80 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {isRegistering ? auth.loginTabLabel : auth.registerTabLabel}
               </button>
@@ -498,7 +498,7 @@ export function LoginExperience({
           </p>
           <Link
             href="/"
-            className="rounded font-bold text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="rounded font-bold text-primary underline-offset-4 hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           >
             {auth.backToLandingLabel}
           </Link>

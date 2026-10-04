@@ -3,7 +3,7 @@
 export function TypingIndicator() {
   return (
     <div
-      className="inline-flex items-center gap-1.5 rounded-full border border-cosmic/15 bg-card/90 px-4 py-2.5 shadow-sm backdrop-blur-sm"
+      className="inline-flex items-center gap-1.5 rounded-full border border-cosmic/15 bg-card/90 px-4 py-2.5 shadow-sm backdrop-blur-xs"
       role="status"
       aria-label="Lyra está digitando"
     >

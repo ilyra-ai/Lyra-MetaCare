@@ -227,7 +227,7 @@ export function VedicDashboard({ featureEnabled = true }: VedicDashboardProps) {
         {/* Card Dosha Ayurvédico */}
         <Card
           className={cn(
-            'overflow-hidden border-border/70 bg-gradient-to-br',
+            'overflow-hidden border-border/70 bg-linear-to-br',
             doshaConfig.gradient
           )}
         >
@@ -269,14 +269,14 @@ export function VedicDashboard({ featureEnabled = true }: VedicDashboardProps) {
               ))}
             </div>
             {dosha.astroInfluence ? (
-              <div className="rounded-2xl border border-border/70 bg-white/60 p-3 backdrop-blur-sm">
+              <div className="rounded-2xl border border-border/70 bg-white/60 p-3 backdrop-blur-xs">
                 <p className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Moon className="h-3.5 w-3.5" />
                   {dosha.astroInfluence}
                 </p>
               </div>
             ) : null}
-            <div className="rounded-2xl border border-border/70 bg-white/60 p-3 backdrop-blur-sm">
+            <div className="rounded-2xl border border-border/70 bg-white/60 p-3 backdrop-blur-xs">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                 Nutrição recomendada
               </p>

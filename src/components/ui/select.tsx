@@ -16,7 +16,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      'flex h-12 w-full items-center justify-between rounded-[14px] border border-input bg-card/96 px-4 py-3 text-sm text-foreground shadow-sm transition-all duration-200 data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-4 focus:ring-primary/12 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
+      'flex h-12 w-full items-center justify-between rounded-[14px] border border-input bg-card/96 px-4 py-3 text-sm text-foreground shadow-sm transition-all duration-200 data-placeholder:text-muted-foreground focus:outline-hidden focus:ring-4 focus:ring-primary/12 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
       className
     )}
     {...props}
@@ -76,7 +76,7 @@ const SelectContent = React.forwardRef<
       ref={ref}
       position={position}
       className={cn(
-        'relative z-50 max-h-[400px] min-w-[10rem] overflow-hidden rounded-[20px] border border-white/85 bg-card/95 text-popover-foreground shadow-xl backdrop-blur-xl data-[state=open]:animate-scale-in',
+        'relative z-50 max-h-[400px] min-w-40 overflow-hidden rounded-[20px] border border-white/85 bg-card/95 text-popover-foreground shadow-xl backdrop-blur-xl data-[state=open]:animate-scale-in',
         position === 'popper' &&
           'data-[side=bottom]:translate-y-2 data-[side=left]:-translate-x-2 data-[side=right]:translate-x-2 data-[side=top]:-translate-y-2',
         className
@@ -87,7 +87,7 @@ const SelectContent = React.forwardRef<
       <SelectPrimitive.Viewport
         className={cn(
           'p-2',
-          position === 'popper' && 'min-w-[var(--radix-select-trigger-width)]'
+          position === 'popper' && 'min-w-(--radix-select-trigger-width)'
         )}
       >
         {children}
@@ -122,7 +122,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex w-full cursor-default select-none items-center rounded-[14px] py-3 pl-3 pr-9 text-sm text-foreground outline-none transition-colors focus:bg-muted data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'relative flex w-full cursor-default select-none items-center rounded-[14px] py-3 pl-3 pr-9 text-sm text-foreground outline-hidden transition-colors focus:bg-muted data-disabled:pointer-events-none data-disabled:opacity-50',
       className
     )}
     {...props}

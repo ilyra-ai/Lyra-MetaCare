@@ -198,7 +198,7 @@ export function BillingReturnExperience({
                   ) : null}
 
                   {mode === 'cancel' ? (
-                    <div className="rounded-3xl border border-border/70 bg-card/80 p-5 backdrop-blur">
+                    <div className="rounded-3xl border border-border/70 bg-card/80 p-5 backdrop-blur-sm">
                       <div className="space-y-2">
                         <p className="text-sm font-semibold">
                           Retomar assinatura

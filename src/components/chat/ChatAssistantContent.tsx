@@ -253,7 +253,7 @@ export function ChatAssistantContent() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex items-start gap-4">
               <div className="relative">
-                <div className="absolute inset-0 rounded-[22px] bg-gradient-to-br from-cosmic/45 via-accent/20 to-primary/45 blur-xl" />
+                <div className="absolute inset-0 rounded-[22px] bg-linear-to-br from-cosmic/45 via-accent/20 to-primary/45 blur-xl" />
                 <div className="relative flex h-14 w-14 items-center justify-center rounded-[22px] border border-white/80 bg-[linear-gradient(135deg,hsl(var(--cosmic)),hsl(var(--primary)))] text-white shadow-cosmic">
                   <Brain className="h-6 w-6" />
                 </div>
@@ -297,7 +297,7 @@ export function ChatAssistantContent() {
                     {chatConfig.integrationsButtonLabel}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[22rem] border-border/70 bg-white/92 p-0 backdrop-blur-xl">
+                <PopoverContent className="w-88 border-border/70 bg-white/92 p-0 backdrop-blur-xl">
                   <div className="border-b border-border/60 px-5 py-4">
                     <h4 className="text-base font-semibold text-foreground">
                       {chatConfig.integrationsTitle}
@@ -366,8 +366,8 @@ export function ChatAssistantContent() {
       </Card>
 
       <div className="grid flex-1 gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
-        <Card className="relative flex min-h-[44rem] flex-col overflow-hidden border-border/70 bg-[radial-gradient(circle_at_top_left,hsl(var(--cosmic)/0.08)_0%,transparent_30%),radial-gradient(circle_at_top_right,hsl(var(--primary)/0.10)_0%,transparent_32%),linear-gradient(180deg,rgba(255,255,255,0.94),rgba(249,248,252,0.96))] shadow-sm backdrop-blur-xl">
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.04)_1px,transparent_1px)] bg-[size:22px_22px] opacity-40" />
+        <Card className="relative flex min-h-176 flex-col overflow-hidden border-border/70 bg-[radial-gradient(circle_at_top_left,hsl(var(--cosmic)/0.08)_0%,transparent_30%),radial-gradient(circle_at_top_right,hsl(var(--primary)/0.10)_0%,transparent_32%),linear-gradient(180deg,rgba(255,255,255,0.94),rgba(249,248,252,0.96))] shadow-sm backdrop-blur-xl">
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.04)_1px,transparent_1px)] bg-size-[22px_22px] opacity-40" />
 
           <div className="relative z-10 flex items-center justify-between gap-4 border-b border-border/60 px-6 py-5">
             <div className="flex items-center gap-3">

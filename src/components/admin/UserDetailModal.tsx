@@ -82,7 +82,7 @@ const DetailItem = ({
   label: string;
   value: React.ReactNode;
 }) => (
-  <div className="flex items-start gap-3 rounded-2xl border border-border/70 bg-card/80 p-4 backdrop-blur">
+  <div className="flex items-start gap-3 rounded-2xl border border-border/70 bg-card/80 p-4 backdrop-blur-sm">
     <Icon className="mt-1 h-4 w-4 text-muted-foreground" />
     <div className="space-y-1">
       <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
@@ -271,7 +271,7 @@ export function UserDetailModal({
                 </div>
               </div>
 
-              <div className="min-w-[280px] rounded-3xl border border-border/70 bg-card/85 p-5 shadow-xl backdrop-blur">
+              <div className="min-w-[280px] rounded-3xl border border-border/70 bg-card/85 p-5 shadow-xl backdrop-blur-sm">
                 <div className="mb-4 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
                   <ShieldCheck className="h-4 w-4" />
                   Gestão premium da assinatura
@@ -429,7 +429,7 @@ export function UserDetailModal({
                     </div>
                   ) : assignment ? (
                     <>
-                      <div className="rounded-2xl border border-border/70 bg-card/80 p-4 backdrop-blur">
+                      <div className="rounded-2xl border border-border/70 bg-card/80 p-4 backdrop-blur-sm">
                         <div className="mb-3 flex items-center justify-between gap-3">
                           <div className="space-y-2">
                             <PlanBadge
@@ -477,7 +477,7 @@ export function UserDetailModal({
                         </div>
                       </div>
 
-                      <div className="rounded-2xl border border-border/70 bg-card/80 p-4 backdrop-blur">
+                      <div className="rounded-2xl border border-border/70 bg-card/80 p-4 backdrop-blur-sm">
                         <p className="mb-3 text-sm font-semibold">
                           Capacidades habilitadas
                         </p>
@@ -496,7 +496,7 @@ export function UserDetailModal({
                       </div>
                     </>
                   ) : (
-                    <div className="rounded-2xl border border-border/70 bg-card/80 p-4 text-sm text-muted-foreground backdrop-blur">
+                    <div className="rounded-2xl border border-border/70 bg-card/80 p-4 text-sm text-muted-foreground backdrop-blur-sm">
                       Não foi possível carregar a assinatura atual deste
                       usuário.
                     </div>

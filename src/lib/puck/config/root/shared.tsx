@@ -42,7 +42,7 @@ const classesPorTema: Record<LyraPuckThemeVariant, string> = {
 const badgePorTema: Record<LyraPuckThemeVariant, string> = {
   aurora: 'border-cosmic/20 bg-cosmic/10 text-cosmic',
   serene: 'border-primary/20 bg-primary/10 text-primary',
-  shell: 'border-foreground/10 bg-foreground/[0.06] text-foreground',
+  shell: 'border-foreground/10 bg-foreground/6 text-foreground',
 };
 
 function obterRegrasVisibilidade(visibilityRules: string) {
@@ -63,9 +63,11 @@ function LyraSurfaceRoot({
   visibilityRules,
   resolvedContextSummary,
   rotuloBadge,
+  isEditing,
 }: LyraPuckRootProps & {
   children?: ReactNode;
   rotuloBadge: string;
+  isEditing: boolean;
 }) {
   const regras = obterRegrasVisibilidade(visibilityRules);
 
@@ -118,7 +120,7 @@ function LyraSurfaceRoot({
               {surfaceDescription}
             </p>
             {resolvedContextSummary ? (
-              <div className="rounded-[22px] border border-primary/15 bg-primary/[0.06] px-4 py-3 text-sm leading-7 text-foreground/85">
+              <div className="rounded-[22px] border border-primary/15 bg-primary/6 px-4 py-3 text-sm leading-7 text-foreground/85">
                 {resolvedContextSummary}
               </div>
             ) : null}
@@ -137,7 +139,17 @@ function LyraSurfaceRoot({
         </div>
       </div>
 
-      <div className="space-y-4 rounded-[28px] border border-white/80 bg-white/92 p-5 shadow-[0_20px_80px_-60px_rgba(15,23,42,0.38)] md:p-6">
+      {/*
+        Fora do editor, o painel do slot some quando não há blocos publicados
+        (o Puck renderiza apenas um `<div>` vazio); no editor ele permanece
+        visível como área de soltar.
+      */}
+      <div
+        className={cn(
+          'space-y-4 rounded-[28px] border border-white/80 bg-white/92 p-5 shadow-[0_20px_80px_-60px_rgba(15,23,42,0.38)] md:p-6',
+          !isEditing && 'has-[>div:only-child:empty]:hidden'
+        )}
+      >
         {children}
       </div>
     </section>
@@ -268,6 +280,7 @@ export function criarLyraRootConfig(
         )}
         resolvedContextSummary={String(props?.resolvedContextSummary ?? '')}
         rotuloBadge={configParams.rotuloBadge}
+        isEditing={props.puck.isEditing}
       >
         {props?.children}
       </LyraSurfaceRoot>

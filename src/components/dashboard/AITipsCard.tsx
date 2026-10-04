@@ -109,9 +109,7 @@ export function AITipsCard({
   }
 
   if (loading) {
-    return (
-      <Skeleton className={cn('h-full min-h-[18rem] w-full', className)} />
-    );
+    return <Skeleton className={cn('h-full min-h-72 w-full', className)} />;
   }
 
   if (!tip) {
@@ -225,7 +223,7 @@ export function AITipsCard({
         <Button
           variant="secondary"
           onClick={() => router.push('/plan')}
-          className="min-w-[11rem]"
+          className="min-w-44"
         >
           Ver plano completo
           <ChevronRight />

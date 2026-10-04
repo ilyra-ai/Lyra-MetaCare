@@ -55,7 +55,7 @@ function Calendar({
           'relative h-10 w-10 p-0 text-center text-sm',
           isRange
             ? '[&.rdp-range_end]:rounded-r-full [&.rdp-range_start]:rounded-l-full'
-            : '[&[aria-selected]]:rounded-full'
+            : 'aria-[selected]:rounded-full'
         ),
         day_button: cn(
           buttonVariants({ variant: 'ghost', size: 'icon' }),

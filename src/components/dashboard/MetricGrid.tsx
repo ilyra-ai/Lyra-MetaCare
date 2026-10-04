@@ -152,7 +152,7 @@ function MetricTile({ metric, tone }: { metric: PillarMetric; tone: ToneKey }) {
   return (
     <div
       className={cn(
-        'rounded-[22px] border bg-white/78 p-4 shadow-[0_12px_40px_-28px_rgba(22,21,48,0.45)] backdrop-blur-sm transition-transform duration-200 hover:-translate-y-0.5',
+        'rounded-[22px] border bg-white/78 p-4 shadow-[0_12px_40px_-28px_rgba(22,21,48,0.45)] backdrop-blur-xs transition-transform duration-200 hover:-translate-y-0.5',
         toneStyles[tone].metricGlow
       )}
     >

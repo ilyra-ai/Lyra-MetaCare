@@ -44,7 +44,7 @@ export default function AdminReportsPage() {
         <Header />
         <PuckClientRenderer
           documentKey="admin-reports"
-          className="w-full flex-shrink-0"
+          className="w-full shrink-0"
         />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           <h1 className="page-title mb-8">Relatórios e Exportação</h1>

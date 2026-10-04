@@ -27,16 +27,13 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[linear-gradient(180deg,hsl(var(--background)),hsl(var(--background))_45%,rgba(255,255,255,0.96))] font-[family-name:var(--font-geist-sans)]">
+    <div className="flex min-h-screen bg-[linear-gradient(180deg,hsl(var(--background)),hsl(var(--background))_45%,rgba(255,255,255,0.96))] font-(family-name:--font-geist-sans)">
       <Sidebar />
       <div className="flex flex-col flex-1 min-w-0">
         <Header />
-        <PuckClientRenderer
-          documentKey="chat"
-          className="w-full flex-shrink-0"
-        />
+        <PuckClientRenderer documentKey="chat" className="w-full shrink-0" />
         <main className="flex flex-1 items-stretch justify-center p-4 animate-in fade-in duration-500 md:p-6">
-          <div className="h-full w-full max-w-[96rem]">
+          <div className="h-full w-full max-w-384">
             {chatEnabled ? (
               <ChatAssistantContent />
             ) : (
