@@ -27,16 +27,12 @@ function createStripeClient() {
 
 const globalStripeState = globalThis as GlobalStripeState;
 
+// Um único cliente Stripe por processo, em qualquer ambiente (antes um novo
+// cliente, com seu próprio agente HTTP, era criado a cada uso em produção).
 export function getStripeClient() {
-  if (globalStripeState.__lyraStripeClient) {
-    return globalStripeState.__lyraStripeClient;
+  if (!globalStripeState.__lyraStripeClient) {
+    globalStripeState.__lyraStripeClient = createStripeClient();
   }
 
-  const client = createStripeClient();
-
-  if (process.env.NODE_ENV !== 'production') {
-    globalStripeState.__lyraStripeClient = client;
-  }
-
-  return client;
+  return globalStripeState.__lyraStripeClient;
 }

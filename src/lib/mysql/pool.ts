@@ -54,18 +54,16 @@ function createLyraPool(): Pool {
 
 const globalMysqlState = globalThis as GlobalMysqlState;
 
+// Um único pool por processo, em qualquer ambiente. Antes o pool só era
+// reaproveitado fora de produção: em `next start` cada consulta criava um pool
+// novo (até 20 conexões e 10 ociosas com keep-alive) que nunca era fechado,
+// esgotando o `max_connections` do MySQL ("Too many connections").
 function getMysqlPool(): Pool {
-  if (globalMysqlState.__lyraMysqlPool) {
-    return globalMysqlState.__lyraMysqlPool;
+  if (!globalMysqlState.__lyraMysqlPool) {
+    globalMysqlState.__lyraMysqlPool = createLyraPool();
   }
 
-  const pool = createLyraPool();
-
-  if (process.env.NODE_ENV !== 'production') {
-    globalMysqlState.__lyraMysqlPool = pool;
-  }
-
-  return pool;
+  return globalMysqlState.__lyraMysqlPool;
 }
 
 export async function queryRows<TRow extends object = QueryRecord>(
