@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `██████████░░░░░░░░░░` **50%** |
+| Progresso          | `███████████░░░░░░░░░` **54%** |
 | Tarefas totais     | 26                             |
-| 🟢 Finalizadas     | 13                             |
+| 🟢 Finalizadas     | 14                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 12                             |
+| ⚪ A iniciar       | 11                             |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-04                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (13 ÷ 26 = 50%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (14 ÷ 26 = 53,8%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                            | O que está sendo realizado                                                                                                                                                                                                                                                                                                                            |
-| --- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 11  | Modernização MySQL e autenticação | Pesquisa das versões LTS do MySQL em 2026 e da rota oficial de upgrade a partir do 8.0.x; eliminação de `mysql_native_password` em favor de `caching_sha2_password`; revisão de `compose.yaml`, `scripts/mysql-migrate.mjs`, `src/lib/mysql/`, `src/integrations/mysql/`, `mysql/migrations/` e launchers, com upgrade testado sobre banco existente. |
+| Nº  | Tarefa                 | O que está sendo realizado                                                                                                                                                                                                                           |
+| --- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 12  | Compose, env e secrets | Auditoria do `compose.yaml` (credenciais fixas, inclusive no healthcheck) e de todo o repositório por segredos; `.env.example` seguro; geração correta de segredos de desenvolvimento; fonte única de configuração para Compose, launchers e README. |
 
 ### BLOQUEADAS
 
@@ -49,16 +49,6 @@ Nenhuma tarefa bloqueada no momento.
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
-
-### 12 · Compose, env e secrets
-
-_Instrução: Tarefa 10 · itens 19, 20 e 28._
-
-- Auditar o `compose.yaml`: remover credenciais e passwords hardcoded (inclusive no healthcheck), opções MySQL removidas, versões obsoletas e configurações inseguras; consumir variáveis do ambiente mantendo o healthcheck realmente funcional.
-- Testar `docker compose config`, `up -d`, `ps` e `logs` até estado saudável real.
-- Auditar todo o repositório por `password`, `secret`, `token`, `apikey`, `api_key`, `Authorization`, `Bearer`, `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`, `AUTH_SECRET`, `STRIPE`, `GEMINI`, `SENTRY` e `admin123`.
-- Criar ou atualizar `.env.example` apenas com documentação segura; `.env.local` nunca é commitado; gerar segredos de desenvolvimento corretamente.
-- Centralizar a configuração em uma fonte única de verdade para `run.py`, `run.sh`, `run_windows.py`, `compose.yaml` e `README.md`.
 
 ### 13 · Correção e modernização completa do run.py
 
@@ -307,6 +297,49 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
   - `check:format`, `check:lint` e `check:types` com exit 0; `test` 112/112; `build` com exit 0 e zero avisos; `pnpm db:migrate` com exit 0 e idempotente.
   - `pnpm start` com capturas das 14 páginas sem erros, zero avisos de console e editor Puck salvando rascunho.
 - **Encaminhado:** `run.sh` (mensagem "Node.js 20+"), `run.py` e `run_windows.py` ainda não validam a versão do Node pelo `.nvmrc`; isso será tratado nas tarefas 13 a 15.
+
+### 11 · Modernização MySQL e autenticação
+
+- **Status:** 🟢 finalizada · **Commit:** `c24421a` · **Push:** `bd7028c..c24421a main -> main` (confirmado)
+- **Pesquisa (fontes primárias em 2026-10-04):**
+  - MySQL 8.0, a versão do projeto (8.0.45), está em **fim de vida desde 2026-04-30**.
+  - A tag oficial `lts` do Docker Hub aponta para o digest da **9.7.2** (LTS, suporte até 2034). A 8.4.11 é a LTS anterior; a 26.7 é Innovation e foi descartada.
+  - O manual ("Upgrade Paths") só suporta upgrade de uma série LTS/Bugfix para a **próxima** LTS. Rota obrigatória: 8.0 → 8.4 → 9.7.
+- **Evidências que motivaram as mudanças:**
+  - O 9.7.2 sobre um datadir 8.0 encerra com `MY-014060 Cannot upgrade from 80045 to 90702`, sem tocar nos dados (o 8.0.45 sobe de novo na mesma cópia).
+  - `lyra@%`, `root@%` e `root@localhost` usavam `mysql_native_password`, que vem desligado no 8.4 e foi removido no 9.x. O resultado seria perda total de acesso.
+  - `VALUES(col)` em `ON DUPLICATE KEY UPDATE` gerava o warning 1287 no 8.0.45.
+- **Implementado:**
+  - `compose.yaml` com `mysql:9.7.2` e remoção de `--default-authentication-plugin`, opção removida no 8.4 com a qual o servidor nem inicia.
+  - **`scripts/mysql-upgrade.mjs` (`pnpm db:upgrade`)**, idempotente:
+    - backup a frio verificado (bytes e quantidade de arquivos);
+    - detecção da versão do datadir pela imagem mais antiga da cadeia (recusa de downgrade sem alterar dados);
+    - migração dos usuários para `caching_sha2_password` na série atual;
+    - um passo por série LTS, com validação final;
+    - `--restaurar <volume>`.
+    - Imagem-alvo, volume e credenciais vêm do `docker compose config`; as senhas entram por variável de ambiente herdada (`-e MYSQL_PWD`), nunca nos argumentos visíveis no `ps`.
+  - Os cinco upserts (`data-api`, `plans`, `billing`, `ai_plans`, `ui_config`) passaram a usar o alias de linha `AS novo`.
+  - `run.py` com `mysql:9.7.2` sem o plugin nativo.
+  - README com badges, stack e instrução do `db:upgrade`.
+- **Defeitos do próprio script encontrados nos testes e corrigidos antes do commit:**
+  - Regex de detecção sem o texto real de downgrade (`Cannot downgrade from 90702 to 80045`).
+  - Backup de cerca de 200 MB repetido em toda reexecução; agora há um caminho rápido quando o serviço já está na série-alvo.
+  - Restauração tentava `docker volume rm` num volume referenciado pelo container parado do compose; agora o conteúdo é substituído, preservando nome e rótulos.
+  - Abordagens avaliadas e descartadas com evidência: `ibd2sdi` (ausente das imagens oficiais), `--innodb-read-only` (o InnoDB recusa iniciar, com md5 provando que não altera o datadir) e o "creator" do redo log (não é regravado no upgrade).
+- **Evidências:**
+  - **Banco existente:** `pnpm db:upgrade` real em 34 s, com o servidor registrando `8.0.45 → 8.4.11` e `8.4.11 → 9.7.2`. As 27 tabelas têm contagem idêntica a um backup independente em 8.0.45 (86 linhas).
+  - **Restore testado:** `--restaurar` devolveu o datadir 8.0, que sobe no 8.0.45; o novo upgrade completo também ficou idêntico à referência.
+  - **Idempotência:** com o serviço parado em 9.7, detecta e valida; com o serviço saudável, termina sem backup.
+  - **Banco vazio:** 12 migrations aplicadas no 9.7.2, reexecução 12× "Já aplicada", usuário em `caching_sha2_password` e 27 tabelas `utf8mb4_unicode_ci`.
+  - **mysql2:** autenticação `caching_sha2_password` completa (cache vazio após restart, TCP sem TLS) com `pnpm db:migrate` exit 0.
+  - **Upserts em runtime pelas APIs reais** (`PATCH /api/admin/plans/free`, `POST /api/admin/ui-config`, `POST /api/data/profiles`, duas gerações de plano de IA): HTTP 200 e **0 warnings** no `performance_schema`. Billing validado com o SQL exato em transação com `ROLLBACK`.
+  - Ao todo, 1.200 instruções da aplicação com 0 warnings.
+  - `check:format`, `check:lint` e `check:types` com exit 0; `test` 112/112; `build` com exit 0 e zero avisos; 14 páginas sem erros de console; editor Puck salvando.
+  - Avisos restantes do servidor são da imagem oficial e legítimos (item 59): CA TLS autoassinada gerada automaticamente e diretório `/var/run/mysqld` da imagem.
+- **Encaminhado:**
+  - Senha de root fixa no `compose.yaml` → tarefa 12.
+  - `run.py` com `docker rm -f` e volume anônimo (destrói dados) e encerramento de processos na porta 3306 → tarefa 13.
+  - `POST /api/data/*` devolvendo 500 com a mensagem crua do banco para payload inválido → tarefa 18.
 
 ### 24 · Correção crítica: vazamento de conexões MySQL em produção
 
