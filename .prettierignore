@@ -5,3 +5,5 @@ output
 venv
 tsconfig.tsbuildinfo
 ELEMENTOR
+# Instrução mestra preservada byte a byte (texto integral, sem reformatação automática)
+CLAUDE.md

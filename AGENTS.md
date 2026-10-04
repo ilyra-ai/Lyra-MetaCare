@@ -1,3 +1,10 @@
+INSTRUÇÃO MESTRA (OBRIGATÓRIO PARA TODOS OS MODELOS E AGENTES DE IA):
+
+- O arquivo `CLAUDE.md`, na raiz do repositório, contém a INSTRUÇÃO MESTRA DE ENGENHARIA, AUDITORIA FORENSE, UPGRADE E ESTABILIZAÇÃO TOTAL do projeto Lyra MetaCare.
+- Todo modelo ou agente de IA (Claude, Codex, Copilot, Cursor, Gemini, Devin ou qualquer outro) DEVE ler o `CLAUDE.md` por completo, na íntegra, em sua totalidade, linha a linha, antes de executar qualquer comando ou modificar qualquer arquivo neste repositório, e DEVE cumpri-lo integralmente.
+- Em caso de conflito entre este `AGENTS.md` e o `CLAUDE.md`, prevalece a regra mais restritiva e que preserve mais requisitos; o conflito deve ser apontado explicitamente.
+- O andamento das tarefas da INSTRUÇÃO MESTRA é registrado obrigatoriamente no arquivo `claude-gestao.md`, na raiz do repositório, que deve ser atualizado a cada tarefa iniciada, bloqueada ou finalizada.
+
 IDIOMA (OBRIGATÓRIO):
 
 - Falar 100% em pt-br.
