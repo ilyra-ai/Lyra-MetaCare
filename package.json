@@ -16,6 +16,7 @@
     "check:types": "tsc --noEmit",
     "db:start": "docker compose up -d --wait mysql && pnpm run db:migrate",
     "db:migrate": "node scripts/mysql-migrate.mjs",
+    "db:upgrade": "node scripts/mysql-upgrade.mjs",
     "db:stop": "docker compose down",
     "db:logs": "docker compose logs -f mysql",
     "lyra-customaze:install": "python3 implement_elementor_lyra.py"

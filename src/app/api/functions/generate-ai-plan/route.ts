@@ -81,9 +81,9 @@ export async function POST(request: Request) {
       await connection.execute(
         `
           INSERT INTO ai_plans (id, user_id, plan_data)
-          VALUES (?, ?, ?)
+          VALUES (?, ?, ?) AS novo
           ON DUPLICATE KEY UPDATE
-            plan_data = VALUES(plan_data),
+            plan_data = novo.plan_data,
             updated_at = CURRENT_TIMESTAMP
         `,
         [planId, session.user.id, JSON.stringify(plan)]

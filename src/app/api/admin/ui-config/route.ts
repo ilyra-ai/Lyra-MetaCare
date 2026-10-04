@@ -33,11 +33,11 @@ export async function POST(request: Request) {
 
     await executeStatement(
       `INSERT INTO ui_config (id, landing_data, login_data, updated_by)
-       VALUES (?, ?, ?, ?)
+       VALUES (?, ?, ?, ?) AS novo
        ON DUPLICATE KEY UPDATE
-         landing_data=VALUES(landing_data),
-         login_data=VALUES(login_data),
-         updated_by=VALUES(updated_by)
+         landing_data = novo.landing_data,
+         login_data = novo.login_data,
+         updated_by = novo.updated_by
       `,
       [
         'default',

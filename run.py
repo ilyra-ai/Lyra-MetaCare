@@ -71,7 +71,7 @@ APP_PID_FILE = STATE_DIR / "app.pid"
 APP_META_FILE = STATE_DIR / "app.meta"
 INSTALL_HASH_FILE = STATE_DIR / "install.hash"
 
-DOCKER_IMAGE = "mysql:8.0"
+DOCKER_IMAGE = "mysql:9.7.2"
 DOCKER_CONTAINER = "lyra_metacare"
 DOCKER_MYSQL_PORT = "3306"
 
@@ -1104,7 +1104,6 @@ class DockerManager:
                     "--health-retries",
                     "5",
                     DOCKER_IMAGE,
-                    "--default-authentication-plugin=mysql_native_password",
                     "--character-set-server=utf8mb4",
                     "--collation-server=utf8mb4_unicode_ci",
                     "--bind-address=0.0.0.0",

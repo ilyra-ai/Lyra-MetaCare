@@ -841,10 +841,12 @@ export async function runUpsertQuery(options: {
   const updateColumns = columns.filter(
     (column) => column !== options.onConflict && column !== 'id'
   );
+  // Alias de linha (`AS novo`) no lugar da função VALUES(), depreciada desde
+  // o MySQL 8.0.20 (warning 1287).
   const sql = `
     INSERT INTO ${table} (${columns.join(', ')})
-    VALUES (${columns.map(() => '?').join(', ')})
-    ON DUPLICATE KEY UPDATE ${updateColumns.map((column) => `${column} = VALUES(${column})`).join(', ')}
+    VALUES (${columns.map(() => '?').join(', ')}) AS novo
+    ON DUPLICATE KEY UPDATE ${updateColumns.map((column) => `${column} = novo.${column}`).join(', ')}
   `;
   await executeStatement(
     sql,

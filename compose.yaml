@@ -1,9 +1,11 @@
 services:
   mysql:
-    image: mysql:8.0.45
+    # MySQL 9.7 LTS (tag `lts` oficial). Volumes criados em 8.0 precisam do
+    # upgrade em etapas 8.0 → 8.4 → 9.7: `pnpm db:upgrade`. A autenticação é a
+    # padrão caching_sha2_password (mysql_native_password foi removido no 9.x).
+    image: mysql:9.7.2
     container_name: lyra-metacare-mysql
     command:
-      - --default-authentication-plugin=mysql_native_password
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     environment:

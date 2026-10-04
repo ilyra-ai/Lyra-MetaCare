@@ -278,11 +278,11 @@ async function upsertBillingCustomerMapping(options: {
         email_snapshot,
         metadata
       )
-      VALUES (?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?) AS novo
       ON DUPLICATE KEY UPDATE
-        external_customer_id = VALUES(external_customer_id),
-        email_snapshot = VALUES(email_snapshot),
-        metadata = VALUES(metadata)
+        external_customer_id = novo.external_customer_id,
+        email_snapshot = novo.email_snapshot,
+        metadata = novo.metadata
     `,
     [
       crypto.randomUUID(),

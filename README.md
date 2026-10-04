@@ -4,13 +4,14 @@
 
 **Plataforma premium de bem-estar e longevidade que une biometria de wearables, inteligência artificial e sabedoria integrativa — com privacidade no centro.**
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-000000?style=flat-square&logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19-087EA4?style=flat-square&logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat-square&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.3-087EA4?style=flat-square&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-9.7_LTS-4479A1?style=flat-square&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-24_LTS-5FA04E?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Stripe](https://img.shields.io/badge/Stripe-Billing-635BFF?style=flat-square&logo=stripe&logoColor=white)](https://stripe.com/)
-[![Vitest](https://img.shields.io/badge/Vitest-82_testes-6E9F18?style=flat-square&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-112_testes-6E9F18?style=flat-square&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![pnpm](https://img.shields.io/badge/pnpm-workspace-F69220?style=flat-square&logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![Licença](https://img.shields.io/badge/Licença-MIT-22C55E?style=flat-square)](#-licença)
 
@@ -89,17 +90,17 @@ Cinco melhorias baseadas em tendências reais de 2026, **todas implementadas de 
 
 ## 🧰 Stack tecnológica
 
-| Camada              | Tecnologias                                                                         |
-| ------------------- | ----------------------------------------------------------------------------------- |
-| **Framework**       | Next.js 16 (App Router, Turbopack) · React 19.3 · TypeScript 6                      |
-| **UI**              | Tailwind CSS 4 (CSS-first) · shadcn/ui (Radix) · lucide-react · Recharts 3 · sonner |
-| **Backend**         | Rotas API do Next.js · MySQL 8 (mysql2) · autenticação com `jose`/`bcryptjs`        |
-| **Pagamentos**      | Stripe (checkout, portal, webhooks)                                                 |
-| **Conteúdo**        | Puck (`@puckeditor/core`) · Site Experience Builder                                 |
-| **IA**              | Motores determinísticos próprios · Google Gemini opcional via BYOK                  |
-| **Observabilidade** | Sentry                                                                              |
-| **Qualidade**       | Vitest · ESLint · Prettier · TypeScript estrito                                     |
-| **Infra local**     | Docker Compose (MySQL) · pnpm (via Corepack) · `run.sh`                             |
+| Camada              | Tecnologias                                                                                                 |
+| ------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Framework**       | Next.js 16 (App Router, Turbopack) · React 19.3 · TypeScript 6                                              |
+| **UI**              | Tailwind CSS 4 (CSS-first) · shadcn/ui (Radix) · lucide-react · Recharts 3 · sonner                         |
+| **Backend**         | Rotas API do Next.js · MySQL 9.7 LTS (mysql2, `caching_sha2_password`) · autenticação com `jose`/`bcryptjs` |
+| **Pagamentos**      | Stripe (checkout, portal, webhooks)                                                                         |
+| **Conteúdo**        | Puck (`@puckeditor/core`) · Site Experience Builder                                                         |
+| **IA**              | Motores determinísticos próprios · Google Gemini opcional via BYOK                                          |
+| **Observabilidade** | Sentry                                                                                                      |
+| **Qualidade**       | Vitest · ESLint · Prettier · TypeScript estrito                                                             |
+| **Infra local**     | Docker Compose (MySQL) · pnpm (via Corepack) · `run.sh`                                                     |
 
 ---
 
@@ -135,6 +136,15 @@ pnpm db:migrate              # aplica migrações + bootstrap de admins
 pnpm dev                     # inicia o servidor de desenvolvimento
 ```
 
+> [!IMPORTANT]
+> **Banco criado com MySQL 8.0?** O MySQL 8.0 está em fim de vida desde 2026-04-30 e o projeto usa o **MySQL 9.7 LTS**. O MySQL não aceita o salto direto 8.0 → 9.7 (recusa o datadir com `MY-014060`, sem alterar os dados). Antes de subir o banco com o `compose.yaml` atual, rode uma vez:
+>
+> ```bash
+> pnpm db:upgrade   # backup a frio do volume → usuários para caching_sha2_password → 8.0 → 8.4 LTS → 9.7 LTS
+> ```
+>
+> O comando é idempotente, faz backup verificado antes de qualquer alteração e informa como desfazer (`node scripts/mysql-upgrade.mjs --restaurar <volume_de_backup>`).
+
 <details>
 <summary><strong>Variáveis de ambiente (.env.local)</strong></summary>
 
@@ -162,15 +172,16 @@ GEMINI_MODEL=gemini-2.5-flash
 
 ## 📜 Scripts disponíveis
 
-| Comando                                              | Descrição                                 |
-| ---------------------------------------------------- | ----------------------------------------- |
-| `pnpm dev`                                           | Servidor de desenvolvimento (Next.js)     |
-| `pnpm build` / `pnpm start`                          | Build de produção / execução              |
-| `pnpm test`                                          | Suíte de testes (Vitest)                  |
-| `pnpm check:types`                                   | Verificação de tipos (`tsc --noEmit`)     |
-| `pnpm check:lint` / `pnpm fix:lint`                  | Lint (ESLint) — checar / corrigir         |
-| `pnpm check:format` / `pnpm fix:format`              | Formatação (Prettier) — checar / corrigir |
-| `pnpm db:start` / `pnpm db:migrate` / `pnpm db:stop` | Banco: subir+migrar / migrar / parar      |
+| Comando                                              | Descrição                                                           |
+| ---------------------------------------------------- | ------------------------------------------------------------------- |
+| `pnpm dev`                                           | Servidor de desenvolvimento (Next.js)                               |
+| `pnpm build` / `pnpm start`                          | Build de produção / execução                                        |
+| `pnpm test`                                          | Suíte de testes (Vitest)                                            |
+| `pnpm check:types`                                   | Verificação de tipos (`tsc --noEmit`)                               |
+| `pnpm check:lint` / `pnpm fix:lint`                  | Lint (ESLint) — checar / corrigir                                   |
+| `pnpm check:format` / `pnpm fix:format`              | Formatação (Prettier) — checar / corrigir                           |
+| `pnpm db:start` / `pnpm db:migrate` / `pnpm db:stop` | Banco: subir+migrar / migrar / parar                                |
+| `pnpm db:upgrade`                                    | Upgrade controlado do volume MySQL (8.0 → 8.4 → 9.7 LTS) com backup |
 
 ---
 

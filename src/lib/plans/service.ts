@@ -715,11 +715,11 @@ export async function updatePlanMatrixByKey(
             quota_value,
             reset_interval
           )
-          VALUES (?, ?, ?, ?, ?, ?)
+          VALUES (?, ?, ?, ?, ?, ?) AS novo
           ON DUPLICATE KEY UPDATE
-            enabled = VALUES(enabled),
-            quota_value = VALUES(quota_value),
-            reset_interval = VALUES(reset_interval)
+            enabled = novo.enabled,
+            quota_value = novo.quota_value,
+            reset_interval = novo.reset_interval
         `,
         [
           crypto.randomUUID(),
