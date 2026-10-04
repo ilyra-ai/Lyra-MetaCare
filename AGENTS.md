@@ -56,11 +56,13 @@ PERSISTÊNCIA:
 
 CHECAGENS ANTES DA ENTREGA (OBRIGATÓRIO):
 Sempre verificar o @current_problems
-Rodar/cumprir e corrigir até passar:
-npm run fix:format
-npm run fix:lint
-npm run check:lint
-npm run check:format
-npm run check:types
+Rodar/cumprir e corrigir até passar (o gerenciador oficial é o pnpm, fixado no campo `packageManager` do `package.json` e ativado via Corepack):
+pnpm fix:format
+pnpm fix:lint
+pnpm check:lint
+pnpm check:format
+pnpm check:types
+pnpm test
+pnpm build
 
 - Entregar relatório final com status e correções.

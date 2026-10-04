@@ -20,16 +20,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `███░░░░░░░░░░░░░░░░░` **13%** |
+| Progresso          | `███░░░░░░░░░░░░░░░░░` **17%** |
 | Tarefas totais     | 23                             |
-| 🟢 Finalizadas     | 3                              |
+| 🟢 Finalizadas     | 4                              |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 19                             |
+| ⚪ A iniciar       | 18                             |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-04                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (3 ÷ 23 = 13,0%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (4 ÷ 23 = 17,4%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -37,9 +37,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                                      | O que está sendo realizado                                                                                                                                                |
-| --- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 04  | Normalização do package manager e lockfiles | Investigação de `pnpm-lock.yaml`, `bun.lock` e da dependência `bun` com busca `rg` de uso real, padronização em pnpm com `packageManager` fixado e Corepack reprodutível. |
+| Nº  | Tarefa                                            | O que está sendo realizado                                                                                                                                                                                              |
+| --- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 05  | Remoção comprovada de dependências não utilizadas | Busca `rg` de imports, requires, dynamic imports, scripts, loaders e configs de cada dependência; remoção somente com evidência, correção de seção (dependencies × devDependencies) e Prova de Morte após cada remoção. |
 
 ### BLOQUEADAS
 
@@ -48,15 +48,6 @@ Nenhuma tarefa bloqueada no momento.
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
-
-### 05 · Remoção comprovada de dependências não utilizadas
-
-_Instrução: Tarefa 3 · itens 11, 12 e 43._
-
-- Buscar com `rg` imports, requires, dynamic imports, scripts, loaders, configs, documentação e uso indireto de cada dependência.
-- Remover somente com evidência, nunca por intuição nem apenas porque uma ferramenta automática apontou como não usada.
-- Verificar pacotes instalados em seção errada (dependencies × devDependencies).
-- Executar a Prova de Morte (`grep`/`rg`) após cada remoção.
 
 ### 06 · Upgrade controlado das dependências
 
@@ -228,9 +219,23 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
 
 ### 03 · Auditoria baseline e correção dos erros atualmente existentes
 
-- **Status:** 🟢 finalizada · **Commit:** `fix(database): corrige migrations em banco novo e registra baseline forense` (um commit não contém o próprio SHA; o SHA é registrado na atualização seguinte deste painel)
+- **Status:** 🟢 finalizada · **Commit:** `e89a4b2` · **Push:** `a99510b..e89a4b2 main -> main` (confirmado)
 - **Implementado:**
   - Baseline forense real registrado em [`docs/auditoria/2026-10-04-baseline-forense.md`](./docs/auditoria/2026-10-04-baseline-forense.md): versões do ambiente, quality gates, build, runtime, `pnpm outdated` e `pnpm audit` (146 avisos: 4 críticos, 50 altos, 80 moderados, 12 baixos).
   - Erro real encontrado: `pnpm db:migrate` falhava em banco novo criado pelo Compose (`fk_ui_config_updated_by ... are incompatible`). Causa raiz: tabelas iniciais herdavam `utf8mb4_0900_ai_ci` do servidor enquanto as novas declaram `utf8mb4_unicode_ci`; só o `run.py` mascarava o defeito ao iniciar o MySQL com `--collation-server=utf8mb4_unicode_ci`.
   - Correções: migration `mysql/migrations/005_add_tables_unicode_collation.sql`; `compose.yaml` com `--character-set-server=utf8mb4` e `--collation-server=utf8mb4_unicode_ci`; `scripts/mysql-migrate.mjs` com ordenação determinística por código de caractere.
 - **Evidências:** banco parcialmente migrado → 7 migrations aplicadas (exit 0); reexecução idempotente ("Já aplicada"); banco novo → 12 migrations aplicadas e todas as tabelas em `utf8mb4_unicode_ci`; `pnpm start` com `GET /`, `/login`, `/api/public/plans`, `/api/public/ui-config` em HTTP 200 e login do admin bootstrap com sessão válida; gates `check:format`, `check:lint`, `check:types` (exit 0), `test` (82/82) e `build` (exit 0).
+
+### 04 · Normalização do package manager e lockfiles
+
+- **Status:** 🟢 finalizada · **Commit:** `chore(pm): padroniza pnpm 11 via Corepack e remove bun` (SHA registrado na atualização seguinte deste painel)
+- **Decisão técnica (pesquisa de 2026-10-04):** pnpm é o gerenciador oficial (único lockfile real, `pnpm-workspace.yaml`, scripts e README). Versões avaliadas: pnpm 12.9.1 (lançado em 2026-08-26, reescrito em Rust) e pnpm 11.28.4 (suporte até 2027-04-30). O pnpm 12 **não executa via Corepack** (testado com Corepack 0.34.0 e 0.36.0: `Cannot find module .../pnpm/12.9.1/bin/pnpm.cjs`, pois o pacote passou a distribuir binário nativo), o que viola o requisito de Corepack reproduzível; por isso foi fixado o pnpm **11.28.4**, estável, suportado e compatível com Corepack.
+- **Implementado:**
+  - `package.json`: `"packageManager": "pnpm@11.28.4+sha512..."` gerado por `corepack use`; `bun` removido das dependências; `db:start` usa `docker compose up -d --wait mysql && pnpm run db:migrate` (aguarda o healthcheck real em vez de migrar com o banco ainda subindo).
+  - `bun.lock` removido; `package-lock.json` não existia no repositório.
+  - `pnpm-workspace.yaml`: removidos `bun` e `termios` de `allowBuilds` (nenhum dos dois existe no lockfile).
+  - `pnpm-lock.yaml` regenerado pelo pnpm 11 e incluído no `.prettierignore` (causa raiz dos diffs espúrios: o `prettier --write .` reformatava o lockfile e o pnpm o reescrevia a cada install).
+  - `AGENTS.md`: checagens obrigatórias passam a usar `pnpm` (incluindo `pnpm test` e `pnpm build`).
+  - Avaliado e descartado: manter `devEngines.packageManager` junto com `packageManager` gera o aviso `Cannot use both "packageManager" and "devEngines.packageManager"` no pnpm 11; foi mantido o campo exigido pela instrução e lido pelo Corepack.
+- **Evidências:** `corepack pnpm@11.28.4 --version` → `11.28.4`; `CI=true pnpm install --frozen-lockfile` → exit 0 sem warnings; Prova de Morte: `ls bun.lock` inexistente e `grep -c "bun@" pnpm-lock.yaml` → `0`; gates `check:format`, `check:lint`, `check:types` (exit 0), `test` (82/82) e `build` (exit 0).
+- **Pendências encaminhadas:** `run.py` e `run_windows.py` ainda citam `package-lock.json` e fallback para npm; serão tratados nas tarefas 13 e 15.

@@ -5,5 +5,7 @@ output
 venv
 tsconfig.tsbuildinfo
 ELEMENTOR
+# Lockfile gerado e mantido exclusivamente pelo pnpm (formatá-lo gera diffs espúrios a cada install)
+pnpm-lock.yaml
 # Instrução mestra preservada byte a byte (texto integral, sem reformatação automática)
 CLAUDE.md
