@@ -6,7 +6,8 @@ workflows:
 
     environment:
       ubuntu: 24.04
-      node: lts
+      # Mesma versão fixada em .nvmrc e .node-version (Node.js 24 LTS).
+      node: 24.21.0
       vars:
         PNPM_STORE_PATH: '$HOME/.pnpm-store'
         NEXT_TELEMETRY_DISABLED: '1'
@@ -48,8 +49,10 @@ workflows:
 
       - name: Enable pnpm
         script: |
+          # O Corepack instala o pnpm exato do campo `packageManager` do
+          # package.json (versão e hash sha512), em vez de `pnpm@latest`.
           corepack enable
-          corepack prepare pnpm@latest --activate
+          corepack install
           pnpm --version
           pnpm config set store-dir "$PNPM_STORE_PATH"
 

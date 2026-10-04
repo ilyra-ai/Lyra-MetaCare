@@ -107,9 +107,9 @@ Cinco melhorias baseadas em tendências reais de 2026, **todas implementadas de 
 
 ### Pré-requisitos
 
-- **Node.js 20+**
+- **Node.js 24 LTS** (versão exata em `.nvmrc` e `.node-version`, hoje 24.21.0; o `pnpm install` recusa versões fora de `^24.18.1`). Com nvm: `nvm install && nvm use`; fnm e nodenv leem o `.node-version` automaticamente.
 - **Docker** (Engine/Desktop) com Docker Compose
-- **pnpm** (ativado automaticamente via Corepack)
+- **pnpm 11** via Corepack, incluído no Node.js 24: `corepack enable && corepack install` ativa a versão exata do campo `packageManager`, sem instalação global.
 - **Bash** (Linux, macOS ou Git Bash no Windows) para o orquestrador `run.sh`
 
 ### Caminho recomendado — um único comando

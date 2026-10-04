@@ -1,3 +1,8 @@
+# Runtime reproduzível: o Node.js oficial do projeto é o fixado em .nvmrc e
+# .node-version (linha 24 LTS); a instalação falha fora do intervalo do campo
+# `engines` do package.json, inclusive para dependências.
+engineStrict: true
+
 allowBuilds:
   '@sentry/cli': true
   esbuild: true
