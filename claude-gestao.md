@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `██████░░░░░░░░░░░░░░` **30%** |
+| Progresso          | `███████░░░░░░░░░░░░░` **35%** |
 | Tarefas totais     | 23                             |
-| 🟢 Finalizadas     | 7                              |
+| 🟢 Finalizadas     | 8                              |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 15                             |
+| ⚪ A iniciar       | 14                             |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-04                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (7 ÷ 23 = 30,4%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (8 ÷ 23 = 34,8%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa         | O que está sendo realizado                                                                                                                                                                         |
-| --- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 08  | Migração React | Atualização de React e React DOM 19.2.5 para 19.3.x estável (compatível com Next.js 16.3.8), revisão de APIs depreciadas, refs, hidratação e novas APIs estáveis, com build e runtime de produção. |
+| Nº  | Tarefa                                   | O que está sendo realizado                                                                                                                                                                                                          |
+| --- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 09  | Migração Tailwind/shadcn/UI dependencies | Migração de Tailwind CSS 3.4 para 4.x estável: configuração CSS-first, PostCSS, `tailwindcss-animate`, tokens, classes renomeadas, compatibilidade shadcn, build e verificação visual preservando a identidade Lyra e o tema claro. |
 
 ### BLOQUEADAS
 
@@ -49,14 +49,6 @@ Nenhuma tarefa bloqueada no momento.
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
-
-### 09 · Migração Tailwind/shadcn/UI dependencies
-
-_Instrução: Tarefa 7 · itens 15 e 64._
-
-- Migrar Tailwind CSS 3.x para o Tailwind CSS 4.x estável atual, sem apenas trocar o número da versão.
-- Revisar configuração, PostCSS, plugins, typography, animate, design tokens, classes obsoletas, custom utilities, dark/light mode, componentes, compatibilidade com shadcn, build, CSS final, content detection e responsividade.
-- Testar visualmente as páginas após a migração, preservando a identidade Lyra e o tema claro.
 
 ### 10 · Modernização Node/pnpm/toolchain
 
@@ -265,3 +257,14 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
   - O gráfico de peso do perfil exibia meses em inglês; agora usa `ptBR`.
 - **Evidências:** `check:format`, `check:lint` (0 problemas), `check:types` exit 0; `test` 84/84 (2 testes novos de fallback de papel em `use-is-admin`); `build` exit 0 em Turbopack; `pnpm start` com `/`, `/login`, `/admin/dashboard`, `/chat`, `/profile`, `/goals`, `/api/public/plans`, `/api/public/ui-config` em HTTP 200; login com `remember:false` sem `Max-Age` e com `remember:true` com `Max-Age=604800`; avaliação WHO-5 inválida → 400 e válida → 200 (score 84); `pnpm audit` sem críticos (de 3 para 0; 72 avisos restantes, tarefa 19).
 - **Encaminhado:** React 19.3 (tarefa 08), mensagens de erro Zod amigáveis nas APIs (tarefa 18), cookie `Secure` exige HTTPS fora de `localhost` (documentação, tarefa 23).
+
+### 08 · Migração React
+
+- **Status:** 🟢 finalizada · **Commit:** `ae0ead5` · **Push:** `e7b7ccc..ae0ead5 main -> main` (confirmado)
+- **Pesquisa:** registry npm consultado em 2026-10-04: React 19.3.0 é a versão estável mais recente (publicada em 2026-09-09); o Next.js 16.3.8 declara `react ^19.0.0` como peer. Nenhuma versão canary ou experimental foi usada.
+- **Implementado:**
+  - `react` e `react-dom` 19.2.5 → 19.3.0 (`@types/react`/`@types/react-dom` 19.3.0 já instalados na tarefa 06).
+  - Revisão de APIs depreciadas com os tipos oficiais do React 19.3: `React.ElementRef` (depreciado em favor de `React.ComponentRef`) substituído nas 61 ocorrências de 21 componentes `src/components/ui/*`; `FormEvent` (marcado como depreciado: "FormEvent doesn't actually exist") substituído por `SubmitEvent<HTMLFormElement>` nos handlers de envio de `LoginExperience`, `LandingPage` e `AIKnowledgeManager`. Sem uso de `defaultProps` em componentes de função, string refs, `findDOMNode`, `ReactDOM.render` ou `propTypes` (as ocorrências de `defaultProps` são da configuração do Puck, não do React).
+  - Refs, efeitos, hidratação e estado derivado já haviam sido revistos na tarefa 07 pelas regras do React Compiler (`react-hooks` 7).
+  - `pnpm-workspace.yaml` passou a declarar em `peerDependencyRules.allowedVersions` a compatibilidade, verificada na tarefa 07, entre o ESLint 10 e os plugins `react`, `import` e `jsx-a11y` exigidos pelo `eslint-config-next`.
+- **Evidências:** Prova de Morte `rg "ElementRef<|MutableRefObject|PropsWithRef|FormEvent|LegacyRef" src` → nenhum resultado; `pnpm peers check` → "No peer dependency issues found"; `check:format`, `check:lint`, `check:types` exit 0; `test` 84/84; `build` exit 0; `pnpm start` com `/`, `/login`, `/admin/dashboard`, `/chat`, `/profile`, `/appointments`, `/plan`, `/monitoring`, `/connect` e `/onboarding` em HTTP 200, sem erros no log do servidor.
