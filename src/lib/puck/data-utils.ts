@@ -40,10 +40,13 @@ export function normalizarDadosPuck(
     ? (parsed.content as LyraPuckData['content'])
     : fallback.content;
 
+  // Zonas pertencem ao documento lido: um documento sem `zones` (formato de
+  // slots do Puck) não pode herdar as zonas do fallback, o que misturaria
+  // blocos de outro documento e reintroduziria DropZones legadas.
   const zones =
     parsed.zones && typeof parsed.zones === 'object'
       ? (parsed.zones as LyraPuckData['zones'])
-      : fallback.zones;
+      : {};
 
   const rootRecord =
     parsed.root && typeof parsed.root === 'object'
