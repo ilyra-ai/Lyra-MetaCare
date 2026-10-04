@@ -4,10 +4,11 @@ import tailwindcssAnimate from 'tailwindcss-animate';
 const config = {
   darkMode: ['class'],
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-    './node_modules/@tremor/**/*.{js,ts,jsx,tsx}',
+    // Todo o código-fonte que declara classes Tailwind: além de app/ e
+    // components/, os componentes do Puck (src/lib/puck) e o módulo
+    // lyra-customaze também usam className.
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
+    './modules/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     container: {
