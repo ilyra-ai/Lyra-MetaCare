@@ -48,20 +48,12 @@ readonly MYSQL_SERVICE="mysql"
 mkdir -p "$STATE_DIR" "$LOG_DIR"
 
 # -----------------------------------------------------------------------------
-# Defaults REAIS do projeto (espelham compose.yaml e o fluxo de migracao)
+# Portas padrao (as demais variaveis e todos os segredos vem do .env.local,
+# gerado por scripts/env-init.mjs a partir do .env.example — fonte unica)
 # -----------------------------------------------------------------------------
-readonly DEFAULT_MYSQL_HOST="127.0.0.1"
 readonly DEFAULT_MYSQL_HOST_PORT="3307"
-readonly DEFAULT_MYSQL_USER="lyra"
-readonly DEFAULT_MYSQL_PASSWORD="lyra_mysql_local_2026"
-readonly DEFAULT_MYSQL_ROOT_PASSWORD="lyra_mysql_root_2026"
-readonly DEFAULT_MYSQL_DATABASE="lyra_metacare"
 readonly DEFAULT_APP_PORT="3000"
-readonly DEFAULT_ADMIN_EMAIL="admin@coragem.pet"
-readonly DEFAULT_ADMIN_PASSWORD="admin123"
-readonly DEFAULT_ADMIN_FIRST_NAME="Admin"
-readonly DEFAULT_ADMIN_LAST_NAME="Coragem"
-readonly DEFAULT_ADMIN_ADDITIONAL='[{"email":"admin@admin.com","password":"admin123","firstName":"Admin","lastName":"Principal"}]'
+readonly ENV_INIT_SCRIPT="$ROOT_DIR/scripts/env-init.mjs"
 
 # Portas resolvidas em runtime (preenchidas por resolve_ports)
 APP_PORT="$DEFAULT_APP_PORT"
@@ -265,13 +257,14 @@ detect_os() {
   esac
 }
 
-# Resolve "docker compose" (v2) ou "docker-compose" (v1) em um array.
+# Resolve "docker compose" (v2) ou "docker-compose" (v1) em um array. O
+# compose.yaml le as credenciais do .env.local (fonte unica de configuracao).
 declare -a COMPOSE_CMD=()
 resolve_compose_cmd() {
   if docker compose version >/dev/null 2>&1; then
-    COMPOSE_CMD=(docker compose)
+    COMPOSE_CMD=(docker compose --env-file "$ENV_FILE")
   elif have docker-compose; then
-    COMPOSE_CMD=(docker-compose)
+    COMPOSE_CMD=(docker-compose --env-file "$ENV_FILE")
   else
     COMPOSE_CMD=()
   fi
@@ -290,7 +283,7 @@ resolve_pm_cmd() {
 }
 
 # =============================================================================
-# Gestao do .env.local (leitura, escrita idempotente e geracao de segredos)
+# Gestao do .env.local (leitura e escrita idempotente; segredos: env-init)
 # =============================================================================
 declare -A ENV_MAP=()
 
@@ -345,16 +338,6 @@ upsert_env() {
   ENV_MAP["$key"]="$value"
 }
 
-generate_secret() {
-  if have openssl; then openssl rand -hex 32; return; fi
-  if have node; then node -e 'process.stdout.write(require("crypto").randomBytes(32).toString("hex"))'; return; fi
-  # Fallback final via /dev/urandom
-  if [[ -r /dev/urandom ]]; then
-    head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n'; return
-  fi
-  printf 'lyra_fallback_%s_%s' "$RANDOM" "$RANDOM"
-}
-
 # =============================================================================
 # Utilidades de porta — deteccao real de ocupacao e descoberta de porta livre
 # =============================================================================
@@ -392,56 +375,33 @@ find_free_port() {
 }
 
 # =============================================================================
-# Garantia do .env.local (gera com os valores REAIS do projeto + AUTH_SECRET)
+# Garantia do .env.local — delega ao gerador unico do projeto
+# (scripts/env-init.mjs): valores padrao do .env.example e segredos aleatorios
+# criptograficos, sem nunca sobrescrever valores existentes.
 # =============================================================================
 ensure_env_file() {
   log_step "Verificando configuracao de ambiente (.env.local)"
+  if ! have node; then
+    log_error "Node.js e necessario para gerar o .env.local (scripts/env-init.mjs)."
+    return 1
+  fi
+  if ! node "$ENV_INIT_SCRIPT"; then
+    log_error "Falha ao preparar o .env.local (mensagem do env:init acima)."
+    return 1
+  fi
   load_env_map
-  local created=0
-  [[ -f "$ENV_FILE" ]] || { created=1; : >"$ENV_FILE"; }
-
-  # Banco — alinhado 1:1 ao compose.yaml e ao mysql-migrate.mjs
-  [[ -z "$(env_value MYSQL_HOST)" ]]          && upsert_env MYSQL_HOST          "$DEFAULT_MYSQL_HOST"          none
-  [[ -z "$(env_value MYSQL_HOST_PORT)" ]]     && upsert_env MYSQL_HOST_PORT     "$DEFAULT_MYSQL_HOST_PORT"     none
-  [[ -z "$(env_value MYSQL_PORT)" ]]          && upsert_env MYSQL_PORT          "$DEFAULT_MYSQL_HOST_PORT"     none
-  [[ -z "$(env_value MYSQL_USER)" ]]          && upsert_env MYSQL_USER          "$DEFAULT_MYSQL_USER"          none
-  [[ -z "$(env_value MYSQL_PASSWORD)" ]]      && upsert_env MYSQL_PASSWORD      "$DEFAULT_MYSQL_PASSWORD"      none
-  [[ -z "$(env_value MYSQL_ROOT_PASSWORD)" ]] && upsert_env MYSQL_ROOT_PASSWORD "$DEFAULT_MYSQL_ROOT_PASSWORD" none
-  [[ -z "$(env_value MYSQL_DATABASE)" ]]      && upsert_env MYSQL_DATABASE      "$DEFAULT_MYSQL_DATABASE"      none
-
-  # Bootstrap de administradores
-  [[ -z "$(env_value ADMIN_BOOTSTRAP_EMAIL)" ]]      && upsert_env ADMIN_BOOTSTRAP_EMAIL      "$DEFAULT_ADMIN_EMAIL"      none
-  [[ -z "$(env_value ADMIN_BOOTSTRAP_PASSWORD)" ]]   && upsert_env ADMIN_BOOTSTRAP_PASSWORD   "$DEFAULT_ADMIN_PASSWORD"   none
-  [[ -z "$(env_value ADMIN_BOOTSTRAP_FIRST_NAME)" ]] && upsert_env ADMIN_BOOTSTRAP_FIRST_NAME "$DEFAULT_ADMIN_FIRST_NAME" none
-  [[ -z "$(env_value ADMIN_BOOTSTRAP_LAST_NAME)" ]]  && upsert_env ADMIN_BOOTSTRAP_LAST_NAME  "$DEFAULT_ADMIN_LAST_NAME"  none
-  # JSON em aspas simples: o parser do migrate remove as aspas e preserva o JSON.
-  if [[ -z "$(env_value ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS)" ]]; then
-    upsert_env ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS "$DEFAULT_ADMIN_ADDITIONAL" single
-  fi
-
-  # Segredo de sessao (jose/cookies) — gerado de forma forte e real.
-  if [[ -z "$(env_value AUTH_SECRET)" ]]; then
-    local secret; secret="$(generate_secret)"
-    upsert_env AUTH_SECRET "$secret" none
-    log_ok "AUTH_SECRET gerado com 256 bits de entropia."
-  fi
-
-  if (( created == 1 )); then
-    log_ok ".env.local criado com a configuracao real do projeto."
-  else
-    log_ok ".env.local verificado e completo."
-  fi
+  log_ok ".env.local completo (modelo: .env.example)."
 }
 
-# Valida que o JSON de admins adicionais e parseavel (causa raiz comum de falha).
+# Valida que o JSON de admins adicionais e parseavel (causa raiz comum de
+# falha). Um valor invalido e configuracao do usuario: nunca e substituido.
 validate_admin_json() {
   local raw; raw="$(env_value ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS)"
   [[ -z "$raw" ]] && return 0
-  if have node; then
-    if ! printf '%s' "$raw" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const v=JSON.parse(s);if(!Array.isArray(v))process.exit(2)}catch{process.exit(1)}})' 2>/dev/null; then
-      log_warn "ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS invalido — restaurando valor padrao correto."
-      upsert_env ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS "$DEFAULT_ADMIN_ADDITIONAL" single
-    fi
+  if ! printf '%s' "$raw" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const v=JSON.parse(s);if(!Array.isArray(v))process.exit(2)}catch{process.exit(1)}})' 2>/dev/null; then
+    log_error "ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS no .env.local nao e um array JSON valido."
+    log_warn  "Corrija o valor (formato no .env.example) ou deixe-o vazio."
+    return 1
   fi
 }
 
@@ -672,7 +632,7 @@ db_up() {
 db_migrate() {
   log_step "Aplicando migracoes e bootstrap de administradores"
   [[ -f "$MIGRATE_SCRIPT" ]] || { log_error "Script de migracao ausente: $MIGRATE_SCRIPT"; return 1; }
-  validate_admin_json
+  validate_admin_json || return 1
   # Exporta a porta resolvida para o node (tem precedencia sobre o .env.local).
   if ! run_cmd "Migracao MySQL (node)" env \
         MYSQL_PORT="$MYSQL_HOST_PORT_RESOLVED" \
@@ -823,7 +783,7 @@ preflight_all() {
   bar_set 16 "Preflight" "dependencias do projeto"
   check_dependencies || true
   bar_set 20 "Preflight" "ambiente (.env.local)"
-  ensure_env_file
+  ensure_env_file || PREFLIGHT_FAILED=1
   bar_set 24 "Preflight" "Docker e Compose"
   check_docker || true
   if (( PREFLIGHT_FAILED == 1 )); then
@@ -849,7 +809,7 @@ cmd_up() {
   log_ok "Stack completo no ar:"
   printf '   %s%s Frontend + Backend:%s http://localhost:%s\n' "$C_TEAL" "$I_WEB" "$C_RESET" "$APP_PORT"
   printf '   %s%s MySQL:%s 127.0.0.1:%s (db: %s)\n' "$C_TEAL" "$I_DB" "$C_RESET" "$MYSQL_HOST_PORT_RESOLVED" "$(env_value MYSQL_DATABASE)"
-  printf '   %s%s Admins:%s %s | %s\n' "$C_GRAY$C_DIM" "$I_DOT" "$C_RESET" "$(env_value ADMIN_BOOTSTRAP_EMAIL)" "admin@admin.com"
+  printf '   %s%s Admin:%s %s (senha em ADMIN_BOOTSTRAP_PASSWORD no .env.local)\n' "$C_GRAY$C_DIM" "$I_DOT" "$C_RESET" "$(env_value ADMIN_BOOTSTRAP_EMAIL)"
   return 0
 }
 
@@ -863,7 +823,7 @@ cmd_app() {
 cmd_db() {
   banner
   check_docker || return 1
-  ensure_env_file
+  ensure_env_file || return 1
   resolve_ports
   db_up || return 1
   db_migrate || return 1
@@ -872,7 +832,7 @@ cmd_db() {
 cmd_migrate() {
   banner
   check_docker || return 1
-  ensure_env_file
+  ensure_env_file || return 1
   resolve_ports
   db_migrate
 }
@@ -911,8 +871,8 @@ cmd_fix() {
   banner
   log_step "Reparo do ambiente (auto-fix por causa raiz)"
   preflight_all
-  ensure_env_file
-  validate_admin_json
+  ensure_env_file || return 1
+  validate_admin_json || return 1
   log_ok "Reparo concluido. Rode o diagnostico para confirmar."
 }
 

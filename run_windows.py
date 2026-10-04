@@ -40,22 +40,9 @@ APP_PID_FILE = STATE_DIR / "app.pid"
 APP_META_FILE = STATE_DIR / "app.meta.json"
 INSTALL_HASH_FILE = STATE_DIR / "install.hash"
 
-DEFAULT_ENV = {
-    "APP_BASE_URL": "http://localhost:3000",
-    "NEXT_PUBLIC_APP_URL": "http://localhost:3000",
-    "MYSQL_HOST": "127.0.0.1",
-    "MYSQL_HOST_PORT": "3307",
-    "MYSQL_PORT": "3307",
-    "MYSQL_USER": "lyra",
-    "MYSQL_PASSWORD": "lyra_mysql_local_2026",
-    "MYSQL_ROOT_PASSWORD": "lyra_mysql_root_2026",
-    "MYSQL_DATABASE": "lyra_metacare",
-    "ADMIN_BOOTSTRAP_EMAIL": "admin@coragem.pet",
-    "ADMIN_BOOTSTRAP_PASSWORD": "admin123",
-    "ADMIN_BOOTSTRAP_FIRST_NAME": "Admin",
-    "ADMIN_BOOTSTRAP_LAST_NAME": "Coragem",
-    "ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS": '[{"email":"admin@admin.com","password":"admin123","firstName":"Admin","lastName":"Principal"}]',
-}
+# Gerador único do .env.local (valores do .env.example e segredos aleatórios
+# criptográficos, sem sobrescrever valores existentes).
+ENV_INIT_SCRIPT = ROOT_DIR / "scripts" / "env-init.mjs"
 
 
 @dataclass
@@ -63,6 +50,10 @@ class CommandResult:
     code: int
     stdout: str = ""
     stderr: str = ""
+
+
+class EnvConfigError(Exception):
+    """Falha ao preparar o .env.local (mensagem já pronta para o operador)."""
 
 
 def emit_info(message: str) -> None:
@@ -83,10 +74,6 @@ def emit_error(message: str) -> None:
 
 def have(command: str) -> bool:
     return shutil.which(command) is not None
-
-
-def generate_secret(length: int = 32) -> str:
-    return os.urandom(length).hex()
 
 
 def run_cmd(
@@ -199,12 +186,29 @@ class EnvManager:
         self.cache[key] = value
 
     def ensure_defaults(self) -> None:
+        node = shutil.which("node")
+        if not node:
+            raise EnvConfigError(
+                "Node.js e necessario para gerar o .env.local (scripts/env-init.mjs)."
+            )
+        # O Node escreve UTF-8; a codificação de localidade do Windows (cp1252)
+        # não decodifica todos os bytes acentuados.
+        result = subprocess.run(
+            [node, str(ENV_INIT_SCRIPT)],
+            cwd=ROOT_DIR,
+            capture_output=True,
+            encoding="utf-8",
+            errors="replace",
+            check=False,
+        )
+        for line in (result.stdout + result.stderr).splitlines():
+            if line.strip():
+                print(line)
+        if result.returncode != 0:
+            raise EnvConfigError(
+                "Falha ao preparar o .env.local (mensagem do env:init acima)."
+            )
         self.load()
-        for key, value in DEFAULT_ENV.items():
-            if not self.get(key):
-                self.upsert(key, value)
-        if not self.get("AUTH_SECRET"):
-            self.upsert("AUTH_SECRET", generate_secret())
 
     def export(self) -> dict[str, str]:
         self.load()
@@ -275,7 +279,8 @@ def ensure_dependencies() -> bool:
 
 
 def docker_compose_cmd(*args: str) -> list[str]:
-    return ["docker", "compose", *args]
+    # O compose.yaml le as credenciais do .env.local (fonte unica).
+    return ["docker", "compose", "--env-file", str(ENV_FILE), *args]
 
 
 def mysql_host_port() -> int:
@@ -644,6 +649,9 @@ def main() -> int:
     try:
         success = bool(COMMANDS[args.command]())
         return 0 if success else 1
+    except EnvConfigError as error:
+        emit_error(str(error))
+        return 1
     except KeyboardInterrupt:
         emit_warn("Operacao interrompida pelo operador.")
         return 130

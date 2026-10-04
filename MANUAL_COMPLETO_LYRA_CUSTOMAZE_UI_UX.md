@@ -467,9 +467,9 @@ Neste ambiente, o fluxo da Lyra responde corretamente em `localhost`. Em alguns 
 
 ## 11. Variáveis de ambiente importantes
 
-No Windows, o `run_windows.py` garante valores padrão em `.env.local`.
+O `.env.local` é criado ou completado por `pnpm env:init` (os launchers `run.sh` e `run_windows.py` chamam o mesmo comando) a partir do `.env.example`, que documenta todas as variáveis.
 
-Os principais são:
+Os principais valores não secretos são:
 
 - `APP_BASE_URL=http://localhost:3000`
 - `NEXT_PUBLIC_APP_URL=http://localhost:3000`
@@ -477,16 +477,16 @@ Os principais são:
 - `MYSQL_HOST_PORT=3307`
 - `MYSQL_PORT=3307`
 - `MYSQL_USER=lyra`
-- `MYSQL_PASSWORD=lyra_mysql_local_2026`
-- `MYSQL_ROOT_PASSWORD=lyra_mysql_root_2026`
 - `MYSQL_DATABASE=lyra_metacare`
 
-Usuários admin de bootstrap atualmente definidos:
+Os segredos (`MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`, `AUTH_SECRET` e `ADMIN_BOOTSTRAP_PASSWORD`) não têm valor padrão: são gerados com aleatoriedade criptográfica na primeira execução e ficam apenas no seu `.env.local`.
 
-- `admin@coragem.pet` com senha `admin123`
-- `admin@admin.com` com senha `admin123`
+Usuário admin de bootstrap:
 
-Esses usuários são úteis para acesso administrativo real ao builder.
+- e-mail em `ADMIN_BOOTSTRAP_EMAIL` (padrão `admin@lyra.local`);
+- senha gerada em `ADMIN_BOOTSTRAP_PASSWORD`.
+
+Esse usuário dá acesso administrativo real ao builder. Administradores extras podem ser declarados em `ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS` (formato no `.env.example`).
 
 ---
 
@@ -677,14 +677,10 @@ Agora vamos para o uso prático.
 
 Faça login usando um admin válido.
 
-No projeto atual, exemplos reais:
+No projeto atual, o administrador de bootstrap é:
 
-- `admin@coragem.pet`
-- `admin@admin.com`
-
-Senha atual padrão:
-
-- `admin123`
+- e-mail: valor de `ADMIN_BOOTSTRAP_EMAIL` no `.env.local` (padrão `admin@lyra.local`);
+- senha: valor gerado em `ADMIN_BOOTSTRAP_PASSWORD` no `.env.local` (não existe senha padrão).
 
 ### 16.2. Passo 2: abrir o construtor
 
@@ -1141,13 +1137,8 @@ Abra:
 
 Entre com:
 
-- `admin@admin.com`
-- senha `admin123`
-
-ou:
-
-- `admin@coragem.pet`
-- senha `admin123`
+- o e-mail de `ADMIN_BOOTSTRAP_EMAIL` (padrão `admin@lyra.local`);
+- a senha gerada em `ADMIN_BOOTSTRAP_PASSWORD` no seu `.env.local`.
 
 ### 26.5. Acessar o builder
 

@@ -580,14 +580,14 @@ Sistema de 4px: `4, 8, 12, 16, 20, 24, 32, 40, 48, 56, 64, 80, 96`
 
 Criar ou atualizar o usuário administrador com acesso FULL ao sistema:
 
-| Campo         | Valor                        |
-| ------------- | ---------------------------- |
-| Email         | `admin@coragem.pet`          |
-| Senha         | `admin123`                   |
-| Perfil        | `admin` (Administrador Full) |
-| Primeiro Nome | `Admin`                      |
-| Último Nome   | `Lyra`                       |
-| Status        | `active`                     |
+| Campo         | Valor                                                                     |
+| ------------- | ------------------------------------------------------------------------- |
+| Email         | `ADMIN_BOOTSTRAP_EMAIL` (padrão `admin@lyra.local`)                       |
+| Senha         | gerada em `ADMIN_BOOTSTRAP_PASSWORD` por `pnpm env:init` (sem senha fixa) |
+| Perfil        | `admin` (Administrador Full)                                              |
+| Primeiro Nome | `Admin`                                                                   |
+| Último Nome   | `Lyra`                                                                    |
+| Status        | `active`                                                                  |
 
 **Permissões:** Acesso total a TODAS as páginas, configurações, funcionalidades, funções, recursos, tabelas, banco de dados, edição, criação, manutenção, gestão de acessos, perfis, usuários, planos, API, modelos de AI, e qualquer outra funcionalidade presente ou futura do sistema.
 

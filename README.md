@@ -131,8 +131,8 @@ Ao final, a aplicação responde em **http://localhost:3000** e o MySQL em **127
 
 ```bash
 pnpm install                 # instala as dependências
-docker compose up -d mysql   # sobe o banco
-pnpm db:migrate              # aplica migrações + bootstrap de admins
+pnpm env:init                # cria o .env.local (segredos gerados) a partir do .env.example
+pnpm db:start                # sobe o MySQL (docker compose --env-file .env.local) e aplica as migrações
 pnpm dev                     # inicia o servidor de desenvolvimento
 ```
 
@@ -148,23 +148,16 @@ pnpm dev                     # inicia o servidor de desenvolvimento
 <details>
 <summary><strong>Variáveis de ambiente (.env.local)</strong></summary>
 
-O `run.sh` gera o `.env.local` automaticamente com valores locais coerentes. Para configuração manual:
+O `.env.local` é a **fonte única de configuração**, lida pelo Next.js, pelos scripts do banco, pelo Docker Compose (`--env-file .env.local`) e pelos launchers. Ele é criado ou completado por `pnpm env:init` (os launchers chamam o mesmo comando) a partir do [`.env.example`](./.env.example), que documenta cada variável:
 
-```dotenv
-MYSQL_HOST=127.0.0.1
-MYSQL_HOST_PORT=3307
-MYSQL_PORT=3307
-MYSQL_USER=lyra
-MYSQL_PASSWORD=lyra_mysql_local_2026
-MYSQL_ROOT_PASSWORD=lyra_mysql_root_2026
-MYSQL_DATABASE=lyra_metacare
-AUTH_SECRET=<256 bits de entropia>
-# Opcional — IA externa via Google AI Studio:
-GEMINI_API_KEY=AIza...
-GEMINI_MODEL=gemini-2.5-flash
-```
+- os segredos (`MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`, `AUTH_SECRET` e `ADMIN_BOOTSTRAP_PASSWORD`) são gerados com aleatoriedade criptográfica — não existem senhas padrão;
+- valores existentes nunca são sobrescritos, e o arquivo é gravado com permissão `0600`;
+- `AUTH_SECRET` precisa ter pelo menos 32 bytes (HS256): a aplicação recusa um valor mais curto.
 
-**Administrador de desenvolvimento local:** `admin@admin.com` / `admin123` (provisionado pelo bootstrap; use apenas em ambiente local).
+**Administrador de desenvolvimento local:** o e-mail é `ADMIN_BOOTSTRAP_EMAIL` (padrão `admin@lyra.local`) e a senha é o valor gerado em `ADMIN_BOOTSTRAP_PASSWORD` no seu `.env.local`.
+
+> [!NOTE]
+> Bancos criados antes desta versão foram inicializados com as senhas fixas do `compose.yaml` antigo. O MySQL só aplica `MYSQL_PASSWORD` e `MYSQL_ROOT_PASSWORD` na criação do volume: mantenha no `.env.local` os valores com que o seu banco foi criado (o `pnpm env:init` não altera valores existentes).
 
 </details>
 

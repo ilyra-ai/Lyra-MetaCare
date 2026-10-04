@@ -1,3 +1,6 @@
+# Configuração lida do `.env.local` (fonte única, gerado por `pnpm env:init`):
+#   docker compose --env-file .env.local <comando>
+# Os scripts `pnpm db:*` e os launchers já passam o --env-file.
 services:
   mysql:
     # MySQL 9.7 LTS (tag `lts` oficial). Volumes criados em 8.0 precisam do
@@ -9,28 +12,28 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     environment:
-      MYSQL_DATABASE: lyra_metacare
-      MYSQL_USER: lyra
-      MYSQL_PASSWORD: lyra_mysql_local_2026
-      MYSQL_ROOT_PASSWORD: lyra_mysql_root_2026
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?defina MYSQL_DATABASE no .env.local (pnpm env:init) e use docker compose --env-file .env.local}
+      MYSQL_USER: ${MYSQL_USER:?defina MYSQL_USER no .env.local (pnpm env:init) e use docker compose --env-file .env.local}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?defina MYSQL_PASSWORD no .env.local (pnpm env:init) e use docker compose --env-file .env.local}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?defina MYSQL_ROOT_PASSWORD no .env.local (pnpm env:init) e use docker compose --env-file .env.local}
     ports:
-      - '${MYSQL_HOST_PORT:-3307}:3306'
+      # Somente na interface local: o banco não fica exposto na rede.
+      - '127.0.0.1:${MYSQL_HOST_PORT:-3307}:3306'
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
+      # Saudável somente quando o usuário da aplicação autentica via TCP no
+      # banco da aplicação (o `mysqladmin ping` retorna sucesso até com
+      # "Access denied"). As credenciais vêm do ambiente do próprio container
+      # (`$$` evita a interpolação do Compose), sem aparecer no comando.
       test:
-        [
-          'CMD',
-          'mysqladmin',
-          'ping',
-          '-h',
-          '127.0.0.1',
-          '-uroot',
-          '-plyra_mysql_root_2026',
-        ]
+        - CMD-SHELL
+        - MYSQL_PWD="$$MYSQL_PASSWORD" mysql --protocol=TCP -h 127.0.0.1 -u"$$MYSQL_USER" -D "$$MYSQL_DATABASE" --batch --skip-column-names -e 'SELECT 1' >/dev/null
       interval: 10s
       timeout: 5s
-      retries: 20
+      retries: 30
+      start_period: 30s
+      start_interval: 2s
 
 volumes:
   mysql_data:

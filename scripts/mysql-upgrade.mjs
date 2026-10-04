@@ -24,9 +24,16 @@
  *   node scripts/mysql-upgrade.mjs --restaurar <volume_de_backup>
  */
 import { execFile } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 
 const executar = promisify(execFile);
+
+const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+// Fonte única de configuração, também lida pelo Docker Compose.
+const ARQUIVO_ENV = path.join(RAIZ, '.env.local');
 
 const SERVICO = 'mysql';
 const CONTAINER_TEMPORARIO = 'lyra-metacare-mysql-upgrade';
@@ -49,8 +56,14 @@ async function docker(
   args,
   { permitirFalha = false, timeout = 600_000, env } = {}
 ) {
+  // Todo comando do Compose lê a configuração do .env.local.
+  const argumentos =
+    args[0] === 'compose'
+      ? ['compose', '--env-file', ARQUIVO_ENV, ...args.slice(1)]
+      : args;
   try {
-    const { stdout, stderr } = await executar('docker', args, {
+    const { stdout, stderr } = await executar('docker', argumentos, {
+      cwd: RAIZ,
       maxBuffer: 64 * 1024 * 1024,
       timeout,
       // Segredos entram por variável de ambiente herdada (`-e NOME` sem
@@ -68,7 +81,7 @@ async function docker(
       return resultado;
     }
     throw new ErroUpgrade(
-      `Comando falhou (exit ${resultado.codigo}): docker ${args.join(' ')}\n${resultado.stderr}`
+      `Comando falhou (exit ${resultado.codigo}): docker ${argumentos.join(' ')}\n${resultado.stderr}`
     );
   }
 }
@@ -585,6 +598,11 @@ async function restaurar(volumeBackup) {
 }
 
 async function main() {
+  if (!existsSync(ARQUIVO_ENV)) {
+    throw new ErroUpgrade(
+      `${ARQUIVO_ENV} não encontrado. Use o .env.local com as senhas atuais do seu banco (\`pnpm env:init\` só completa chaves ausentes).`
+    );
+  }
   const indice = process.argv.indexOf('--restaurar');
   if (indice !== -1) {
     const volumeBackup = process.argv[indice + 1];

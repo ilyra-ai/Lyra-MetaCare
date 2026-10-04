@@ -11,12 +11,21 @@ interface SessionPayload extends JWTPayload {
   role: string;
 }
 
-function getSecret() {
+// HS256 exige chave de pelo menos 256 bits (RFC 7518, seção 3.2).
+export const AUTH_SECRET_MIN_BYTES = 32;
+
+export function getSecret() {
   const secret = process.env.AUTH_SECRET;
   if (!secret) {
     throw new Error('Variável de ambiente obrigatória ausente: AUTH_SECRET');
   }
-  return new TextEncoder().encode(secret);
+  const encoded = new TextEncoder().encode(secret);
+  if (encoded.byteLength < AUTH_SECRET_MIN_BYTES) {
+    throw new Error(
+      `AUTH_SECRET muito curto (${encoded.byteLength} bytes; mínimo ${AUTH_SECRET_MIN_BYTES}). Gere um novo com \`pnpm env:init\`.`
+    );
+  }
+  return encoded;
 }
 
 // Sessão persistente ("Lembrar-me" marcado ou cadastro): 7 dias.
@@ -48,8 +57,11 @@ export async function signSessionToken(
 export async function verifySessionToken(
   token: string
 ): Promise<SessionPayload | null> {
+  // Fora do try: erro de configuração (AUTH_SECRET ausente ou fraco) deve
+  // aparecer, e não virar "sessão inválida" em silêncio.
+  const secret = getSecret();
   try {
-    const { payload } = await jwtVerify(token, getSecret());
+    const { payload } = await jwtVerify(token, secret);
     return {
       sub: String(payload.sub),
       email: String(payload.email),

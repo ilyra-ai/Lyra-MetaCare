@@ -50,8 +50,10 @@ pnpm-debug.log*
 .logs/
 /backups/mysql/
 
-# env files (can opt-in for committing if needed)
+# Arquivos de ambiente: todos contêm configuração local e segredos, exceto o
+# modelo documentado .env.example (sem valores secretos).
 .env*
+!.env.example
 
 # vercel
 .vercel

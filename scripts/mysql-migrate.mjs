@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { access, readdir, readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -7,59 +7,14 @@ import { fileURLToPath } from 'node:url';
 import bcrypt from 'bcryptjs';
 import mysql from 'mysql2/promise';
 
+import { loadEnvFile } from './lib/env-file.mjs';
+
 const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   '..'
 );
 const migrationsDir = path.join(projectRoot, 'mysql', 'migrations');
 const migrationTable = '_lyra_schema_migrations';
-
-function parseEnvContents(contents) {
-  const entries = {};
-
-  for (const rawLine of contents.split(/\r?\n/u)) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith('#')) {
-      continue;
-    }
-
-    const separatorIndex = line.indexOf('=');
-    if (separatorIndex <= 0) {
-      continue;
-    }
-
-    const key = line.slice(0, separatorIndex).trim();
-    const rawValue = line.slice(separatorIndex + 1).trim();
-    const normalizedValue =
-      rawValue.startsWith('"') && rawValue.endsWith('"')
-        ? rawValue.slice(1, -1)
-        : rawValue.startsWith("'") && rawValue.endsWith("'")
-          ? rawValue.slice(1, -1)
-          : rawValue;
-
-    entries[key] = normalizedValue;
-  }
-
-  return entries;
-}
-
-async function loadEnvFile(fileName) {
-  const filePath = path.join(projectRoot, fileName);
-  try {
-    await access(filePath);
-  } catch {
-    return;
-  }
-
-  const contents = await readFile(filePath, 'utf8');
-  const values = parseEnvContents(contents);
-
-  for (const [key, value] of Object.entries(values)) {
-    if (!process.env[key]) {
-      process.env[key] = value;
-    }
-  }
-}
 
 function getRequiredEnv(name) {
   const value = process.env[name];
@@ -395,8 +350,8 @@ async function waitForDatabase(pool, attempts = 30, delayMs = 2000) {
 }
 
 async function main() {
-  await loadEnvFile('.env.local');
-  await loadEnvFile('.env');
+  await loadEnvFile(projectRoot, '.env.local');
+  await loadEnvFile(projectRoot, '.env');
 
   const pool = mysql.createPool({
     host: getRequiredEnv('MYSQL_HOST'),
