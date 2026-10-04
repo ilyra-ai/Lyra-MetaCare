@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `███████████░░░░░░░░░` **54%** |
+| Progresso          | `████████████░░░░░░░░` **58%** |
 | Tarefas totais     | 26                             |
-| 🟢 Finalizadas     | 14                             |
+| 🟢 Finalizadas     | 15                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 11                             |
+| ⚪ A iniciar       | 10                             |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-04                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (14 ÷ 26 = 53,8%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (15 ÷ 26 = 57,7%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                 | O que está sendo realizado                                                                                                                                                                                                                           |
-| --- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 12  | Compose, env e secrets | Auditoria do `compose.yaml` (credenciais fixas, inclusive no healthcheck) e de todo o repositório por segredos; `.env.example` seguro; geração correta de segredos de desenvolvimento; fonte única de configuração para Compose, launchers e README. |
+| Nº  | Tarefa                                     | O que está sendo realizado                                                                                                                                                                                                                                                                                                         |
+| --- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 13  | Correção e modernização completa do run.py | Orquestrador oficial do WSL2 Ubuntu sobre o Docker Compose e o `env:init`: validação completa do ambiente, venv próprio com manifesto Python, separação de `doctor`/`fix`/`repair`/`purge` sem operações destrutivas automáticas, portas sem matar processos de terceiros, logs honestos, idempotência, restart e testes de falha. |
 
 ### BLOQUEADAS
 
@@ -49,17 +49,6 @@ Nenhuma tarefa bloqueada no momento.
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
-
-### 13 · Correção e modernização completa do run.py
-
-_Instrução: Tarefa 11 · itens 21, 22, 23, 26, 27, 44, 45, 46, 54, 56, 57 e 58._
-
-- `run.py` como orquestrador oficial do WSL2 Ubuntu, validando plataforma, versão do Ubuntu, Python, Node, pnpm, Corepack, Docker, Docker Compose, daemon, portas, `.env.local`, dependências, MySQL, migrations, aplicação, health check e shutdown.
-- Substituir a instalação dinâmica do Rich por ambiente virtual próprio do launcher, manifesto explícito de dependências Python e bootstrap seguro, sem `--break-system-packages` como fluxo normal.
-- Separar `doctor`, `fix` seguro, `repair` e `purge` explícito; nenhuma operação destrutiva (apt purge, rm -rf, remoção de MySQL/MariaDB, diretórios, usuário/grupo) em fluxo automático.
-- Portas: identificar PID, processo, proprietário e origem; nunca matar processos de terceiros; ajustar `APP_BASE_URL`, `NEXT_PUBLIC_APP_URL`, `PORT`, `MYSQL_HOST_PORT` e `MYSQL_PORT` de forma coerente.
-- Logs com etapa, comando, resultado, causa provável, localização do log e exit code; sem esconder stderr; sem `[OK]` antes da verificação.
-- Critérios de aprovação: iniciar, detectar ambiente, preparar dependências, subir banco, aguardar healthcheck, migrar, iniciar Next.js, identificar URL, acessar aplicação, status, logs, parar aplicação e banco; zero traceback não tratado; idempotência, restart e teste de falhas.
 
 ### 14 · Correção e modernização completa do run.sh
 
@@ -340,6 +329,48 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
   - Senha de root fixa no `compose.yaml` → tarefa 12.
   - `run.py` com `docker rm -f` e volume anônimo (destrói dados) e encerramento de processos na porta 3306 → tarefa 13.
   - `POST /api/data/*` devolvendo 500 com a mensagem crua do banco para payload inválido → tarefa 18.
+
+### 12 · Compose, env e secrets
+
+- **Status:** 🟢 finalizada · **Commit:** `a5b5e12` · **Push:** `8b54dec..a5b5e12 main -> main` (confirmado)
+- **Auditoria de segredos** (todos os arquivos versionados, termos do item 20, chaves `sk_`/`whsec_`/`AIza`/`ghp_`, chaves privadas e DSNs):
+  - O código da aplicação estava limpo: `AUTH_SECRET` obrigatório, sem fallbacks secretos, e nenhum `.env`, chave ou certificado versionado.
+  - Havia senhas fixas no `compose.yaml` (inclusive no healthcheck), no `run.sh`, no `run_windows.py`, no `run.py`, no README e em manuais (`lyra_mysql_*`, `admin123`, `Lyra123#` e um admin extra `admin@admin.com`/`admin123`).
+  - Havia três geradores de `.env.local` divergentes, um por launcher.
+- **Implementado:**
+  - **Fonte única de configuração:** `.env.example` versionado (25 variáveis levantadas do código, sem segredos) e `pnpm env:init` (`scripts/env-init.mjs` + `scripts/lib/env-file.mjs`).
+    - Gera `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`, `AUTH_SECRET` e `ADMIN_BOOTSTRAP_PASSWORD` com aleatoriedade criptográfica (base64url, seguro para o dotenv do Next, para o Compose e para o shell).
+    - Nunca sobrescreve valores, grava com permissão 0600 e não imprime segredos.
+    - O `mysql-migrate.mjs` passou a usar o parser comum, removendo a duplicação.
+  - **`compose.yaml`:**
+    - credenciais interpoladas do `.env.local`, com erro orientado se faltarem;
+    - porta publicada só em `127.0.0.1` (antes exposta em todas as interfaces);
+    - **healthcheck real**, que autentica o usuário da aplicação via TCP no banco da aplicação. O `mysqladmin ping` anterior retornava 0 até com senha errada (comprovado). A senha vem do ambiente do container e não aparece no comando.
+  - **Launchers e scripts:**
+    - `pnpm db:*`, `db:upgrade`, `run.sh` e `run_windows.py` usam `docker compose --env-file .env.local` e delegam o `.env.local` ao `env:init`.
+    - Removido o fallback de cerca de 30 bits do `run.sh` (`lyra_fallback_$RANDOM_$RANDOM`).
+    - Um JSON inválido em `ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS` passa a ser erro, em vez de ser substituído por um admin com senha fixa.
+    - O `run_windows.py` decodifica a saída do Node como UTF-8, porque o cp1252 do Windows quebraria com bytes como o de "Á".
+  - **`AUTH_SECRET`:** mínimo de 32 bytes (HS256, RFC 7518 §3.2). Além disso, `verifySessionToken` deixou de converter erro de configuração em "sessão inválida" silenciosa.
+  - **`.gitignore`:** exceção para o `.env.example`, com os finais de linha mistos normalizados para LF.
+  - README, manual e prompt de redesign atualizados: sem senhas padrão, com o fluxo real.
+- **Evidências:**
+  - 13 testes novos: 7 do gerador (`.env.example` sem segredos, idempotência, preservação, preenchimento no lugar, `AUTH_SECRET` fraco, entropia e charset) e 6 da sessão.
+  - **`.env.local` existente:** 16 chaves acrescentadas e as 12 existentes com hash idêntico; a 2ª execução não altera nada; permissão 600.
+  - **Instalação nova:** 28 variáveis, permissão 0600 mesmo com `umask 022`, segredos com 32/32/48/24 bytes e nenhum segredo na saída.
+  - **Compose:** sem `--env-file`, erro orientado (exit 1). Com o serviço recriado: saudável, `PortBindings` em `127.0.0.1:3307` e healthcheck sem senha. Healthcheck novo com senha errada ou banco inexistente: exit 1; `mysqladmin ping` antigo com senha errada: exit 0.
+  - **Ponta a ponta com segredos gerados** (projeto compose isolado, volume novo): migrations aplicadas, login do admin com a senha gerada 200, sessão válida e `admin123` com 401. O volume de teste foi removido em seguida.
+  - **Launchers:**
+    - `pnpm db:start` e `./run.sh db` com exit 0;
+    - `./run.sh doctor`: ambiente saudável;
+    - `python3 run_windows.py setup-env` e `db-start`: exit 0; com Node ausente, mensagem clara e exit 1, sem traceback;
+    - `db:upgrade`: caminho rápido com exit 0; sem `.env.local`, erro orientado.
+  - `check:format`, `check:lint` e `check:types` com exit 0; `test` 125/125; `build` com exit 0 e zero avisos.
+  - `shellcheck` 0.11 no `run.sh`: só três variáveis sem uso pré-existentes, fora das linhas alteradas. `ruff` (E, F, W) no `run_windows.py`: sem achados.
+- **Encaminhado:**
+  - O `run.py` ainda cria o próprio container via `docker run` com `Lyra123#`/`admin123`; ele será reescrito sobre o Compose e o `env:init` na tarefa 13.
+  - Variáveis sem uso no `run.sh` → tarefa 14.
+  - A `INSTRUCAO_REIMPLEMENTACAO_UI_UX_LYRA_2026.md` ainda descreve o bootstrap antigo → tarefa 23.
 
 ### 24 · Correção crítica: vazamento de conexões MySQL em produção
 
