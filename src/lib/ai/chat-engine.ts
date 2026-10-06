@@ -49,6 +49,19 @@ export function buildSkillsContext(skills?: AiSkillDocument[]): string {
   ].join('\n\n');
 }
 
+// Busca de termos como palavras inteiras com limites Unicode. O `\b` do
+// JavaScript só considera [A-Za-z0-9_]: "olá" sozinho ou no fim da frase não
+// era reconhecido, porque não há limite de palavra depois do "á".
+function contemTermo(texto: string, termos: string[]) {
+  const escapados = termos.map((termo) =>
+    termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  );
+  return new RegExp(
+    `(?<![\\p{L}\\p{N}_])(?:${escapados.join('|')})(?![\\p{L}\\p{N}_])`,
+    'u'
+  ).test(texto);
+}
+
 function formatSleep(minutes: number | null | undefined) {
   if (!minutes) {
     return 'sem registro recente de sono';
@@ -110,30 +123,78 @@ export function generateLocalAssistantReply(
   const responses: string[] = [];
 
   // 1. Processamento e Análise de Intenções (NLP Determinístico)
-  const isGreeting =
-    /\b(oi|ola|olá|bom dia|boa tarde|boa noite|tudo bem)\b/.test(text);
+  const isGreeting = contemTermo(text, [
+    'oi',
+    'ola',
+    'olá',
+    'bom dia',
+    'boa tarde',
+    'boa noite',
+    'tudo bem',
+  ]);
   const isSkillsQuery =
     /(o que voc[eê] (pode|sabe|consegue|faz)|suas? habilidades?|seus? skills?|suas? capacidades?|seus? treinament|seus? document|quais.*(habilidades?|skills?|capacidades?))/.test(
       text
     );
-  const isSleepQuery =
-    /\b(sono|dormir|descanso|insônia|cansaço|acordar)\b/.test(text);
-  const isGlucoseQuery =
-    /\b(glicose|açúcar|insulina|diabetes|doce|carboidrato|comida)\b/.test(text);
-  const isHeartHrvQuery =
-    /\b(coração|hrv|frequência|batimentos|estresse|recuperação|prontidão)\b/.test(
-      text
-    );
-  const isActivityQuery =
-    /\b(exercício|treino|passos|caminhada|atividade|movimento|musculação)\b/.test(
-      text
-    );
-  const isAstrologyQuery =
-    /\b(astrologia|céu|lua|planeta|signo|energia|astrológico)\b/.test(text);
-  const isSummaryQuery =
-    /\b(resumo|ontem|hoje|relatório|status|como estou)\b/.test(text);
-  const isConsultationQuery =
-    /\b(consulta|médico|profissional|agendar|agendamento)\b/.test(text);
+  const isSleepQuery = contemTermo(text, [
+    'sono',
+    'dormir',
+    'descanso',
+    'insônia',
+    'cansaço',
+    'acordar',
+  ]);
+  const isGlucoseQuery = contemTermo(text, [
+    'glicose',
+    'açúcar',
+    'insulina',
+    'diabetes',
+    'doce',
+    'carboidrato',
+    'comida',
+  ]);
+  const isHeartHrvQuery = contemTermo(text, [
+    'coração',
+    'hrv',
+    'frequência',
+    'batimentos',
+    'estresse',
+    'recuperação',
+    'prontidão',
+  ]);
+  const isActivityQuery = contemTermo(text, [
+    'exercício',
+    'treino',
+    'passos',
+    'caminhada',
+    'atividade',
+    'movimento',
+    'musculação',
+  ]);
+  const isAstrologyQuery = contemTermo(text, [
+    'astrologia',
+    'céu',
+    'lua',
+    'planeta',
+    'signo',
+    'energia',
+    'astrológico',
+  ]);
+  const isSummaryQuery = contemTermo(text, [
+    'resumo',
+    'ontem',
+    'hoje',
+    'relatório',
+    'status',
+    'como estou',
+  ]);
+  const isConsultationQuery = contemTermo(text, [
+    'consulta',
+    'médico',
+    'profissional',
+    'agendar',
+    'agendamento',
+  ]);
 
   // 2. Resposta de Saudação
   if (isGreeting && text.length < 30) {

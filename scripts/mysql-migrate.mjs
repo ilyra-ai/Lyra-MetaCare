@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
@@ -8,13 +8,19 @@ import bcrypt from 'bcryptjs';
 import mysql from 'mysql2/promise';
 
 import { loadEnvFile } from './lib/env-file.mjs';
+import {
+  MIGRATION_TABLE as migrationTable,
+  buildBootstrapAdmins,
+  buildChecksumCandidates,
+  buildStableChecksum,
+  sortMigrationFiles,
+} from './lib/migrations.mjs';
 
 const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   '..'
 );
 const migrationsDir = path.join(projectRoot, 'mysql', 'migrations');
-const migrationTable = '_lyra_schema_migrations';
 
 function getRequiredEnv(name) {
   const value = process.env[name];
@@ -22,33 +28,6 @@ function getRequiredEnv(name) {
     throw new Error(`Variável obrigatória ausente: ${name}`);
   }
   return value;
-}
-
-function buildChecksum(contents) {
-  return createHash('sha256').update(contents).digest('hex');
-}
-
-function normalizeMigrationContents(contents) {
-  return contents
-    .replace(/^\uFEFF/u, '')
-    .replace(/\r\n/g, '\n')
-    .replace(/\r/g, '\n');
-}
-
-function buildStableChecksum(contents) {
-  return buildChecksum(normalizeMigrationContents(contents));
-}
-
-function buildChecksumCandidates(contents) {
-  const normalized = normalizeMigrationContents(contents);
-
-  return [
-    ...new Set([
-      buildChecksum(contents),
-      buildChecksum(normalized),
-      buildChecksum(normalized.replace(/\n/g, '\r\n')),
-    ]),
-  ];
 }
 
 async function ensureMigrationTable(connection) {
@@ -60,120 +39,6 @@ async function ensureMigrationTable(connection) {
       applied_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
   `);
-}
-
-function normalizeOptionalString(value) {
-  if (typeof value !== 'string') {
-    return '';
-  }
-
-  return value.trim();
-}
-
-function parseAdditionalBootstrapAdmins(rawValue) {
-  const normalizedValue = normalizeOptionalString(rawValue);
-  if (!normalizedValue) {
-    return [];
-  }
-
-  let parsedValue;
-  try {
-    parsedValue = JSON.parse(normalizedValue);
-  } catch {
-    throw new Error(
-      'ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS precisa ser um JSON valido.'
-    );
-  }
-
-  if (!Array.isArray(parsedValue)) {
-    throw new Error(
-      'ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS precisa ser um array JSON.'
-    );
-  }
-
-  return parsedValue.map((item, index) => {
-    if (!item || typeof item !== 'object') {
-      throw new Error(
-        `ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS[${index}] precisa ser um objeto valido.`
-      );
-    }
-
-    return {
-      email: normalizeOptionalString(item.email).toLowerCase(),
-      password: normalizeOptionalString(item.password),
-      firstName: normalizeOptionalString(item.firstName) || 'Admin',
-      lastName: normalizeOptionalString(item.lastName) || 'Local',
-    };
-  });
-}
-
-function buildBootstrapAdmins() {
-  const primaryEmail = normalizeOptionalString(
-    process.env.ADMIN_BOOTSTRAP_EMAIL
-  ).toLowerCase();
-  const primaryPassword = normalizeOptionalString(
-    process.env.ADMIN_BOOTSTRAP_PASSWORD
-  );
-  const primaryFirstName =
-    normalizeOptionalString(process.env.ADMIN_BOOTSTRAP_FIRST_NAME) || 'Admin';
-  const primaryLastName =
-    normalizeOptionalString(process.env.ADMIN_BOOTSTRAP_LAST_NAME) || 'Local';
-
-  const admins = [];
-  const hasAnyPrimaryValue = [
-    primaryEmail,
-    primaryPassword,
-    primaryFirstName,
-    primaryLastName,
-  ].some(Boolean);
-
-  if (hasAnyPrimaryValue) {
-    if (!primaryEmail || !primaryPassword) {
-      throw new Error(
-        'Bootstrap admin principal configurado de forma incompleta: ADMIN_BOOTSTRAP_EMAIL e ADMIN_BOOTSTRAP_PASSWORD sao obrigatorios.'
-      );
-    }
-
-    admins.push({
-      email: primaryEmail,
-      password: primaryPassword,
-      firstName: primaryFirstName,
-      lastName: primaryLastName,
-    });
-  }
-
-  admins.push(
-    ...parseAdditionalBootstrapAdmins(
-      process.env.ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS
-    )
-  );
-
-  if (admins.length === 0) {
-    return [];
-  }
-
-  const seenEmails = new Set();
-  for (const admin of admins) {
-    if (!admin.email || !admin.password) {
-      throw new Error(
-        'Todo admin bootstrap precisa ter email e password preenchidos.'
-      );
-    }
-
-    if (admin.password.length < 8) {
-      throw new Error(
-        `A senha do bootstrap admin ${admin.email} precisa ter pelo menos 8 caracteres.`
-      );
-    }
-
-    if (seenEmails.has(admin.email)) {
-      throw new Error(`Email duplicado em bootstrap admin: ${admin.email}.`);
-    }
-
-    seenEmails.add(admin.email);
-  }
-
-  return admins;
 }
 
 async function ensureBootstrapAdminUser(pool, admin) {
@@ -383,11 +248,7 @@ async function main() {
 
   try {
     await waitForDatabase(pool);
-    // Ordenação por código de caractere (independente de locale/ICU) para que
-    // a sequência das migrations seja idêntica em qualquer máquina.
-    const files = (await readdir(migrationsDir))
-      .filter((file) => file.endsWith('.sql'))
-      .sort((left, right) => (left < right ? -1 : left > right ? 1 : 0));
+    const files = sortMigrationFiles(await readdir(migrationsDir));
 
     await ensureMigrationTable(pool);
 

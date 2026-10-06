@@ -29,10 +29,14 @@ export interface QueryOrder {
 
 interface TableConfig {
   columns: string[];
+  /** Coluna que liga a linha ao usuário dono (escopo de leitura e escrita). */
   userScopedBy?: string;
   publicRead?: boolean;
   adminOnlyCrud?: boolean;
+  /** Administradores leem e alteram linhas de qualquer usuário. */
   adminReadAll?: boolean;
+  /** Colunas que só administradores podem gravar (ex.: o papel do usuário). */
+  adminOnlyColumns?: string[];
 }
 
 export const TABLE_CONFIG: Record<TableName, TableConfig> = {
@@ -62,6 +66,9 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
     ],
     userScopedBy: 'id',
     adminReadAll: true,
+    // O papel vai para o token de sessão no login: só um administrador pode
+    // alterá-lo (impede a autopromoção a admin).
+    adminOnlyColumns: ['role'],
   },
   daily_metrics: {
     columns: [

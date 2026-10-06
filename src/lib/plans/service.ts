@@ -329,36 +329,79 @@ async function fetchPlanIdByKey(
   return planId;
 }
 
-export async function ensureUserSubscription(
+// Serializa, por usuário, as transações que criam assinatura ou contadores de
+// uso. Sem esse bloqueio, duas requisições simultâneas viam "nenhuma
+// assinatura ativa" e criavam duas, ou tentavam criar o mesmo contador e uma
+// falhava com chave duplicada.
+async function lockUserRow(connection: QueryableConnection, userId: string) {
+  const rows = await queryWithConnection<{ id: string }>(
+    connection,
+    'SELECT id FROM users WHERE id = ? FOR UPDATE',
+    [userId]
+  );
+  if (!rows[0]) {
+    throw new HttpError('Usuário não encontrado.', 404);
+  }
+}
+
+async function ensureUserSubscriptionWithConnection(
+  connection: QueryableConnection,
   userId: string,
   preferredPlanKey: PlanKey,
-  source = 'bootstrap'
-) {
-  const current = await fetchCurrentSubscriptionRow(userId);
-  if (current) {
-    return current;
+  source: string
+): Promise<CurrentSubscriptionRow> {
+  await lockUserRow(connection, userId);
+  const active = await fetchCurrentSubscriptionRow(userId, connection);
+  if (active) {
+    return active;
   }
 
-  await withTransaction(async (connection) => {
-    const active = await fetchCurrentSubscriptionRow(userId, connection);
-    if (active) {
-      return active;
-    }
+  const planId = await fetchPlanIdByKey(preferredPlanKey, connection);
+  await insertSubscription(connection, userId, planId, source);
 
-    const planId = await fetchPlanIdByKey(preferredPlanKey, connection);
-    await insertSubscription(connection, userId, planId, source);
-    return null;
-  });
-
-  const ensured = await fetchCurrentSubscriptionRow(userId);
-  if (!ensured) {
+  const created = await fetchCurrentSubscriptionRow(userId, connection);
+  if (!created) {
     throw new HttpError(
       'Não foi possível assegurar a assinatura do usuário.',
       500
     );
   }
+  return created;
+}
 
-  return ensured;
+/**
+ * Garante uma assinatura ativa. Com `connection`, roda na transação do
+ * chamador: abrir outra conexão do pool a partir de uma transação em curso
+ * esgotava o pool sob concorrência e travava todas as requisições.
+ */
+export async function ensureUserSubscription(
+  userId: string,
+  preferredPlanKey: PlanKey,
+  source = 'bootstrap',
+  connection?: QueryableConnection
+): Promise<CurrentSubscriptionRow> {
+  if (connection) {
+    return ensureUserSubscriptionWithConnection(
+      connection,
+      userId,
+      preferredPlanKey,
+      source
+    );
+  }
+
+  const current = await fetchCurrentSubscriptionRow(userId);
+  if (current) {
+    return current;
+  }
+
+  return withTransaction((transaction) =>
+    ensureUserSubscriptionWithConnection(
+      transaction,
+      userId,
+      preferredPlanKey,
+      source
+    )
+  );
 }
 
 async function fetchEntitlementRows(
@@ -517,7 +560,12 @@ async function fetchFeatureAccess(
   const preferredPlan = role === 'admin' ? 'care' : 'free';
   const current =
     (await fetchCurrentSubscriptionRow(userId, connection)) ??
-    (await ensureUserSubscription(userId, preferredPlan, 'auto_repair_plan'));
+    (await ensureUserSubscription(
+      userId,
+      preferredPlan,
+      'auto_repair_plan',
+      connection
+    ));
 
   const featureList = await buildFeatureAccessList(
     userId,
@@ -1054,6 +1102,9 @@ export async function consumeUsageQuota(options: {
   }
 
   const consume = async (connection: PoolConnection) => {
+    // Um consumo por vez para o mesmo usuário: a leitura do contador (FOR
+    // UPDATE) não bloqueia uma linha que ainda não existe.
+    await lockUserRow(connection, options.session.user.id);
     const { feature, subscription } = await fetchFeatureAccess(
       options.session.user.id,
       options.session.user.role,

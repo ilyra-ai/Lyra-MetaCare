@@ -304,12 +304,27 @@ export function calculateDynamicDosha(
     }
   }
 
-  // Normalização para percentuais
-  const total = vata + pitta + kapha || 1;
+  // Normalização para percentuais inteiros pelo método do maior resto: a
+  // soma é sempre exatamente 100 (arredondar cada parcela separadamente
+  // produzia 99 ou 101). Sem nenhum escore, as três parcelas são iguais.
+  const brutos = { vata, pitta, kapha };
+  const total = vata + pitta + kapha;
+  const chaves = ['vata', 'pitta', 'kapha'] as const;
+  const exatos = chaves.map((chave) =>
+    total > 0 ? (brutos[chave] / total) * 100 : 100 / 3
+  );
+  const inteiros = exatos.map(Math.floor);
+  const faltam = 100 - inteiros.reduce((soma, valor) => soma + valor, 0);
+  [0, 1, 2]
+    .sort((a, b) => exatos[b] - inteiros[b] - (exatos[a] - inteiros[a]))
+    .slice(0, faltam)
+    .forEach((indice) => {
+      inteiros[indice] += 1;
+    });
   const percentages = {
-    vata: Math.round((vata / total) * 100),
-    pitta: Math.round((pitta / total) * 100),
-    kapha: Math.round((kapha / total) * 100),
+    vata: inteiros[0],
+    pitta: inteiros[1],
+    kapha: inteiros[2],
   };
 
   // Determina o dosha dominante

@@ -239,6 +239,107 @@ function isAdmin(session: AppSession | null) {
   return session?.user.role === 'admin';
 }
 
+// Limite de linhas por consulta da API genérica.
+export const DATA_API_MAX_LIMIT = 1000;
+
+function isScalarValue(value: unknown) {
+  return (
+    value === null ||
+    typeof value === 'string' ||
+    typeof value === 'boolean' ||
+    (typeof value === 'number' && Number.isFinite(value)) ||
+    (value instanceof Date && !Number.isNaN(value.getTime()))
+  );
+}
+
+// Objetos e arrays nunca chegam ao SQL fora das colunas JSON: o mysql2 os
+// expandiria em `chave` = valor ou listas, alterando o sentido da consulta.
+function assertScalarValue(table: TableName, column: string, value: unknown) {
+  if (!isScalarValue(value)) {
+    throw new HttpError(`Valor inválido para ${table}.${column}.`, 400);
+  }
+}
+
+function assertNonNegativeInteger(
+  name: string,
+  value: number | null | undefined,
+  minimum = 0
+) {
+  if (value === null || value === undefined) {
+    return;
+  }
+  if (!Number.isInteger(value) || value < minimum) {
+    throw new HttpError(
+      `Parâmetro ${name} inválido: use um inteiro maior ou igual a ${minimum}.`,
+      400
+    );
+  }
+}
+
+// Regras de escrita por coluna, aplicadas antes de qualquer SQL:
+// - colunas exclusivas de administradores (profiles.role);
+// - o e-mail do próprio perfil acompanha o da conta;
+// - a coluna de dono não pode transferir a linha para outro usuário.
+function protectWriteColumns(
+  table: TableName,
+  session: AppSession,
+  payload: Record<string, unknown>,
+  mode: 'insert' | 'update' | 'upsert'
+) {
+  const config = TABLE_CONFIG[table];
+  const admin = isAdmin(session);
+
+  if (!admin) {
+    for (const column of config.adminOnlyColumns ?? []) {
+      if (!(column in payload)) {
+        continue;
+      }
+      if (column === 'role' && payload.role === session.user.role) {
+        delete payload.role;
+        continue;
+      }
+      throw new HttpError(
+        `Apenas administradores podem alterar ${table}.${column}.`,
+        403
+      );
+    }
+
+    if (
+      table === 'profiles' &&
+      'email' in payload &&
+      payload.email !== session.user.email
+    ) {
+      throw new HttpError(
+        'O e-mail do perfil acompanha o e-mail da conta e não pode ser alterado aqui.',
+        403
+      );
+    }
+  }
+
+  const owner = config.userScopedBy;
+  if (mode === 'update' && owner && owner in payload) {
+    if (payload[owner] !== session.user.id) {
+      throw new HttpError(
+        `Não é permitido transferir registros de ${table} para outro usuário.`,
+        403
+      );
+    }
+    delete payload[owner];
+  }
+}
+
+// UPDATE e DELETE sempre exigem ao menos um filtro explícito: sem ele, a
+// operação atingiria todas as linhas visíveis (ou a tabela inteira, para
+// administradores).
+function assertWriteFilters(filters: QueryFilter[], operation: string) {
+  if (!Array.isArray(filters) || filters.length === 0) {
+    throw new HttpError(
+      `Informe ao menos um filtro para ${operation} registros.`,
+      400
+    );
+  }
+}
+
 function coerceWriteValue(table: TableName, column: string, value: unknown) {
   if (value === undefined) {
     return undefined;
@@ -295,7 +396,10 @@ function ensureCanRead(table: TableName, session: AppSession | null) {
   }
 }
 
-function ensureCanWrite(table: TableName, session: AppSession | null) {
+function ensureCanWrite(
+  table: TableName,
+  session: AppSession | null
+): AppSession {
   if (!session) {
     throw new HttpError('Sessão autenticada obrigatória para escrita.', 401);
   }
@@ -305,6 +409,19 @@ function ensureCanWrite(table: TableName, session: AppSession | null) {
       403
     );
   }
+  return session;
+}
+
+// Valida o valor recebido para uma coluna antes da conversão: colunas JSON
+// aceitam qualquer valor serializável; as demais, somente escalares.
+function prepareWriteValue(table: TableName, column: string, value: unknown) {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!JSON_COLUMNS[table].includes(column)) {
+    assertScalarValue(table, column, value);
+  }
+  return coerceWriteValue(table, column, value);
 }
 
 async function ensurePlanFeatureAccessForTable(
@@ -364,7 +481,12 @@ function parseOrExpression(expression: string, table: TableName) {
   for (const piece of pieces) {
     const match = piece.match(/^([a-z_]+)\.ilike\.\%(.*)\%$/i);
     if (!match) {
-      continue;
+      // Um trecho ignorado em silêncio ampliaria o resultado (ou o alvo de
+      // uma escrita) sem que o chamador soubesse.
+      throw new HttpError(
+        `Filtro OR inválido em ${table}: use coluna.ilike.%termo%.`,
+        400
+      );
     }
     const [, column, term] = match;
     if (!TABLE_CONFIG[table].columns.includes(column)) {
@@ -390,16 +512,20 @@ function buildWhereClause(
   session: AppSession | null,
   writeOperation = false
 ) {
+  if (!Array.isArray(filters)) {
+    throw new HttpError(`Filtros inválidos para ${table}: use uma lista.`, 400);
+  }
   const whereParts: string[] = [];
   const params: unknown[] = [];
   const config = TABLE_CONFIG[table];
   const admin = isAdmin(session);
 
-  if (
-    config.userScopedBy &&
-    session &&
-    (!admin || !config.adminReadAll || writeOperation)
-  ) {
+  // Usuários comuns só alcançam as próprias linhas, na leitura e na escrita.
+  // Administradores alcançam qualquer linha das tabelas `adminReadAll` (ex.:
+  // marcar o onboarding ou remover o perfil de outro usuário); antes, as
+  // escritas do administrador também eram limitadas às próprias linhas e
+  // essas ações terminavam sem efeito.
+  if (config.userScopedBy && session && !(admin && config.adminReadAll)) {
     whereParts.push(`t.${config.userScopedBy} = ?`);
     params.push(session.user.id);
   }
@@ -413,23 +539,31 @@ function buildWhereClause(
   }
 
   for (const filter of filters) {
-    if (filter.type === 'or' && filter.expression) {
-      const parsed = parseOrExpression(filter.expression, table);
-      if (parsed.clause) {
-        whereParts.push(parsed.clause);
-        params.push(...parsed.params);
+    if (!filter || typeof filter !== 'object') {
+      throw new HttpError(`Filtro inválido para ${table}.`, 400);
+    }
+
+    if (filter.type === 'or') {
+      if (typeof filter.expression !== 'string' || !filter.expression.trim()) {
+        throw new HttpError(`Filtro OR vazio em ${table}.`, 400);
       }
+      const parsed = parseOrExpression(filter.expression, table);
+      whereParts.push(parsed.clause);
+      params.push(...parsed.params);
       continue;
     }
 
     if (
       !isColumnFilter(filter) ||
+      !['eq', 'gte', 'lte', 'not'].includes(filter.type) ||
+      typeof filter.column !== 'string' ||
       !TABLE_CONFIG[table].columns.includes(filter.column)
     ) {
       throw new HttpError(`Filtro inválido para ${table}.`, 400);
     }
 
     const column = filter.column;
+    assertScalarValue(table, column, filter.value);
     const filterValue = coerceFilterValue(table, column, filter.value);
 
     if (filter.type === 'eq') {
@@ -450,13 +584,18 @@ function buildWhereClause(
       continue;
     }
 
-    if (filter.type === 'not') {
-      if (filter.operator === 'is' && filter.value === null) {
-        whereParts.push(`t.${column} IS NOT NULL`);
-      } else {
-        whereParts.push(`t.${column} <> ?`);
-        params.push(filterValue);
-      }
+    // `not`: somente "is null" (IS NOT NULL) e "eq" (<>), os operadores que o
+    // cliente expõe; qualquer outro seria interpretado de forma errada.
+    if (filter.operator === 'is' && filter.value === null) {
+      whereParts.push(`t.${column} IS NOT NULL`);
+    } else if (filter.operator === 'eq' && filter.value !== null) {
+      whereParts.push(`t.${column} <> ?`);
+      params.push(filterValue);
+    } else {
+      throw new HttpError(
+        `Operador "not.${String(filter.operator)}" não suportado em ${table}.`,
+        400
+      );
     }
   }
 
@@ -471,12 +610,29 @@ function buildOrderClause(
   orders: QueryOrder[],
   hasProfileDailyMetricSelect = false
 ) {
+  if (!Array.isArray(orders)) {
+    throw new HttpError(
+      `Ordenação inválida para ${table}: use uma lista.`,
+      400
+    );
+  }
   if (hasProfileDailyMetricSelect) {
     return 'ORDER BY latest_metric_date DESC';
   }
-  const safeOrders = orders.filter((order) =>
-    TABLE_CONFIG[table].columns.includes(order.column)
-  );
+  // Ordenações de tabelas relacionadas (`foreignTable`) são resolvidas pelas
+  // consultas especiais; na tabela principal, só colunas conhecidas.
+  const safeOrders = orders.filter((order) => {
+    if (!order || typeof order !== 'object' || order.foreignTable) {
+      return false;
+    }
+    if (!TABLE_CONFIG[table].columns.includes(order.column)) {
+      throw new HttpError(
+        `Coluna de ordenação não permitida em ${table}: ${String(order.column)}`,
+        400
+      );
+    }
+    return true;
+  });
   if (safeOrders.length === 0) {
     return '';
   }
@@ -588,8 +744,57 @@ export async function runSelectQuery(options: {
   assertTable(options.table);
   const table = options.table;
   ensureCanRead(table, options.session);
+
+  // LIMIT/OFFSET são interpolados no SQL: só inteiros validados chegam lá.
+  assertNonNegativeInteger('limit', options.limit, 1);
+  assertNonNegativeInteger('rangeFrom', options.rangeFrom);
+  assertNonNegativeInteger('rangeTo', options.rangeTo);
+  const hasRangeFrom =
+    options.rangeFrom !== null && options.rangeFrom !== undefined;
+  const hasRangeTo = options.rangeTo !== null && options.rangeTo !== undefined;
+  if (hasRangeFrom !== hasRangeTo) {
+    throw new HttpError('Informe rangeFrom e rangeTo juntos.', 400);
+  }
+  if (
+    hasRangeFrom &&
+    hasRangeTo &&
+    (options.rangeTo as number) < (options.rangeFrom as number)
+  ) {
+    throw new HttpError('rangeTo precisa ser maior ou igual a rangeFrom.', 400);
+  }
+  const requestedRows =
+    options.limit ??
+    (hasRangeFrom && hasRangeTo
+      ? (options.rangeTo as number) - (options.rangeFrom as number) + 1
+      : null);
+  if (requestedRows !== null && requestedRows > DATA_API_MAX_LIMIT) {
+    throw new HttpError(
+      `No máximo ${DATA_API_MAX_LIMIT} linhas por consulta.`,
+      400
+    );
+  }
+  if (options.count !== null && options.count !== undefined) {
+    if (options.count !== 'exact') {
+      throw new HttpError('Parâmetro count inválido: use "exact".', 400);
+    }
+  }
+  if (
+    options.singleMode !== null &&
+    options.singleMode !== undefined &&
+    options.singleMode !== 'single' &&
+    options.singleMode !== 'maybeSingle'
+  ) {
+    throw new HttpError(
+      'Parâmetro singleMode inválido: use "single" ou "maybeSingle".',
+      400
+    );
+  }
+
   await ensurePlanFeatureAccessForTable(table, options.session, 'read');
 
+  if (!Array.isArray(options.filters)) {
+    throw new HttpError(`Filtros inválidos para ${table}: use uma lista.`, 400);
+  }
   const effectiveFilters = [...options.filters];
   if (
     table === 'daily_metrics' &&
@@ -622,16 +827,8 @@ export async function runSelectQuery(options: {
 
   const where = buildWhereClause(table, effectiveFilters, options.session);
   const order = buildOrderClause(table, options.orders, specialProfiles);
-  const limit =
-    options.limit ??
-    (options.rangeFrom !== null &&
-    options.rangeFrom !== undefined &&
-    options.rangeTo !== null &&
-    options.rangeTo !== undefined
-      ? options.rangeTo - options.rangeFrom + 1
-      : null);
-  const offset = options.rangeFrom ?? null;
-  const limitClause = limit ? `LIMIT ${limit}` : '';
+  const offset = hasRangeFrom ? (options.rangeFrom as number) : null;
+  const limitClause = requestedRows !== null ? `LIMIT ${requestedRows}` : '';
   const offsetClause = offset !== null ? `OFFSET ${offset}` : '';
 
   let data: QueryRecord[];
@@ -701,13 +898,25 @@ export async function runInsertQuery(options: {
 }) {
   assertTable(options.table);
   const table = options.table;
-  ensureCanWrite(table, options.session);
-  await ensurePlanFeatureAccessForTable(table, options.session, 'write');
+  const session = ensureCanWrite(table, options.session);
+  await ensurePlanFeatureAccessForTable(table, session, 'write');
 
   const config = TABLE_CONFIG[table];
   const payloads = Array.isArray(options.values)
     ? options.values
     : [options.values];
+  if (
+    payloads.length === 0 ||
+    payloads.some(
+      (payload) =>
+        !payload || typeof payload !== 'object' || Array.isArray(payload)
+    )
+  ) {
+    throw new HttpError(
+      `Informe o registro (ou a lista de registros) a inserir em ${table}.`,
+      400
+    );
+  }
   const preparedPayloads = payloads.map((payload) => {
     const nextPayload: Record<string, unknown> = {};
 
@@ -715,10 +924,9 @@ export async function runInsertQuery(options: {
       if (column === 'created_at' || column === 'updated_at') {
         continue;
       }
-      const incomingValue = payload[column];
-      const coercedValue = coerceWriteValue(table, column, incomingValue);
-      if (coercedValue !== undefined) {
-        nextPayload[column] = coercedValue;
+      const preparedValue = prepareWriteValue(table, column, payload[column]);
+      if (preparedValue !== undefined) {
+        nextPayload[column] = preparedValue;
       }
     }
 
@@ -728,19 +936,32 @@ export async function runInsertQuery(options: {
 
     if (
       config.userScopedBy &&
-      options.session &&
-      (!isAdmin(options.session) || config.userScopedBy !== 'id')
+      (!isAdmin(session) || config.userScopedBy !== 'id')
     ) {
-      nextPayload[config.userScopedBy] = options.session.user.id;
+      nextPayload[config.userScopedBy] = session.user.id;
     }
 
-    if (table === 'profiles' && options.session && !isAdmin(options.session)) {
-      nextPayload.id = options.session.user.id;
-      nextPayload.email = options.session.user.email;
+    if (table === 'profiles' && !isAdmin(session)) {
+      nextPayload.id = session.user.id;
+      nextPayload.email = session.user.email;
     }
 
+    protectWriteColumns(table, session, nextPayload, 'insert');
     return nextPayload;
   });
+
+  // Um INSERT de várias linhas usa uma única lista de colunas.
+  const columnSignature = Object.keys(preparedPayloads[0]).sort().join(',');
+  if (
+    preparedPayloads.some(
+      (payload) => Object.keys(payload).sort().join(',') !== columnSignature
+    )
+  ) {
+    throw new HttpError(
+      `Todas as linhas inseridas em ${table} precisam informar as mesmas colunas.`,
+      400
+    );
+  }
 
   if (options.session && !isAdmin(options.session)) {
     if (table === 'professionals') {
@@ -814,17 +1035,30 @@ export async function runUpsertQuery(options: {
 }) {
   assertTable(options.table);
   const table = options.table;
-  ensureCanWrite(table, options.session);
-  await ensurePlanFeatureAccessForTable(table, options.session, 'write');
+  const session = ensureCanWrite(table, options.session);
+  await ensurePlanFeatureAccessForTable(table, session, 'write');
 
   const config = TABLE_CONFIG[table];
+  if (
+    !options.values ||
+    typeof options.values !== 'object' ||
+    Array.isArray(options.values)
+  ) {
+    throw new HttpError(`Informe o registro a gravar em ${table}.`, 400);
+  }
+  if (!config.columns.includes(options.onConflict)) {
+    throw new HttpError(
+      `Coluna de conflito inválida em ${table}: ${String(options.onConflict)}`,
+      400
+    );
+  }
   const payload: Record<string, unknown> = {};
 
   for (const column of config.columns) {
     if (column === 'created_at' || column === 'updated_at') {
       continue;
     }
-    const value = coerceWriteValue(table, column, options.values[column]);
+    const value = prepareWriteValue(table, column, options.values[column]);
     if (value !== undefined) {
       payload[column] = value;
     }
@@ -833,20 +1067,46 @@ export async function runUpsertQuery(options: {
   if (!payload.id && config.columns.includes('id')) {
     payload.id = crypto.randomUUID();
   }
-  if (config.userScopedBy && options.session && table !== 'profiles') {
-    payload[config.userScopedBy] = options.session.user.id;
+  if (table === 'profiles' && !isAdmin(session)) {
+    payload.id = session.user.id;
+    payload.email = session.user.email;
+  } else if (config.userScopedBy && config.userScopedBy !== 'id') {
+    payload[config.userScopedBy] = session.user.id;
+  }
+  protectWriteColumns(table, session, payload, 'upsert');
+
+  // O ON DUPLICATE KEY UPDATE sobrescreveria a linha de outro usuário que
+  // tivesse o mesmo id: a linha existente precisa pertencer à sessão.
+  const owner = config.userScopedBy;
+  if (owner && typeof payload.id === 'string') {
+    const existing = await queryRows<Record<string, unknown>>(
+      `SELECT ${owner} AS owner FROM ${table} WHERE id = ? LIMIT 1`,
+      [payload.id]
+    );
+    if (existing[0] && existing[0].owner !== payload[owner]) {
+      throw new HttpError(
+        `O registro ${payload.id} de ${table} pertence a outro usuário.`,
+        403
+      );
+    }
   }
 
   const columns = Object.keys(payload);
   const updateColumns = columns.filter(
-    (column) => column !== options.onConflict && column !== 'id'
+    (column) =>
+      column !== options.onConflict && column !== 'id' && column !== owner
   );
   // Alias de linha (`AS novo`) no lugar da função VALUES(), depreciada desde
-  // o MySQL 8.0.20 (warning 1287).
+  // o MySQL 8.0.20 (warning 1287). Sem colunas a atualizar, o conflito é um
+  // no-op explícito (`id = id`).
+  const updateAssignments =
+    updateColumns.length > 0
+      ? updateColumns.map((column) => `${column} = novo.${column}`).join(', ')
+      : `id = ${table}.id`;
   const sql = `
     INSERT INTO ${table} (${columns.join(', ')})
     VALUES (${columns.map(() => '?').join(', ')}) AS novo
-    ON DUPLICATE KEY UPDATE ${updateColumns.map((column) => `${column} = novo.${column}`).join(', ')}
+    ON DUPLICATE KEY UPDATE ${updateAssignments}
   `;
   await executeStatement(
     sql,
@@ -863,19 +1123,32 @@ export async function runUpdateQuery(options: {
 }) {
   assertTable(options.table);
   const table = options.table;
-  ensureCanWrite(table, options.session);
-  await ensurePlanFeatureAccessForTable(table, options.session, 'write');
+  const session = ensureCanWrite(table, options.session);
+  await ensurePlanFeatureAccessForTable(table, session, 'write');
 
-  const entries = Object.entries(options.values)
-    .filter(
-      ([column]) =>
-        TABLE_CONFIG[table].columns.includes(column) && column !== 'id'
-    )
-    .map(
-      ([column, value]) =>
-        [column, coerceWriteValue(table, column, value)] as const
-    )
-    .filter(([, value]) => value !== undefined);
+  if (
+    !options.values ||
+    typeof options.values !== 'object' ||
+    Array.isArray(options.values)
+  ) {
+    throw new HttpError(`Informe os campos a atualizar em ${table}.`, 400);
+  }
+  assertWriteFilters(options.filters, 'atualizar');
+
+  // Colunas fora da configuração da tabela são ignoradas (o cliente pode
+  // enviar campos calculados); `id` nunca é alterado.
+  const payload: Record<string, unknown> = {};
+  for (const [column, value] of Object.entries(options.values)) {
+    if (!TABLE_CONFIG[table].columns.includes(column) || column === 'id') {
+      continue;
+    }
+    const preparedValue = prepareWriteValue(table, column, value);
+    if (preparedValue !== undefined) {
+      payload[column] = preparedValue;
+    }
+  }
+  protectWriteColumns(table, session, payload, 'update');
+  const entries = Object.entries(payload);
 
   if (entries.length === 0) {
     return {
@@ -952,20 +1225,24 @@ export async function runDeleteQuery(options: {
 }) {
   assertTable(options.table);
   const table = options.table;
-  ensureCanWrite(table, options.session);
-  await ensurePlanFeatureAccessForTable(table, options.session, 'write');
+  const session = ensureCanWrite(table, options.session);
+  await ensurePlanFeatureAccessForTable(table, session, 'write');
+  assertWriteFilters(options.filters, 'excluir');
 
-  if (table === 'profiles' && isAdmin(options.session)) {
-    const where = buildWhereClause(
-      table,
-      options.filters,
-      options.session,
-      true
-    );
+  // O administrador remove a conta inteira (users → perfil e dados em
+  // cascata), nunca a própria.
+  if (table === 'profiles' && isAdmin(session)) {
+    const where = buildWhereClause(table, options.filters, session, true);
     const rows = await queryRows<{ id: string }>(
       `SELECT t.id FROM profiles t ${where.clause}`,
       where.params
     );
+    if (rows.some((row) => row.id === session.user.id)) {
+      throw new HttpError(
+        'Um administrador não pode remover a própria conta por aqui.',
+        400
+      );
+    }
     await withTransaction(async (connection) => {
       for (const row of rows) {
         await connection.execute('DELETE FROM users WHERE id = ?', [row.id]);

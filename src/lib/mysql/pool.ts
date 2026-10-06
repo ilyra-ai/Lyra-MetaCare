@@ -54,6 +54,9 @@ function createLyraPool(): Pool {
     // Sem isso, o mysql2 usa o fuso local do Node.js (ex.: -03:00) e grava
     // horários deslocados em relação aos gerados pelo próprio MySQL.
     timezone: 'Z',
+    // Defesa em profundidade: um objeto passado por engano como parâmetro vira
+    // texto entre aspas, em vez de ser expandido em `chave` = valor no SQL.
+    stringifyObjects: true,
   });
 }
 
@@ -69,6 +72,14 @@ function getMysqlPool(): Pool {
   }
 
   return globalMysqlState.__lyraMysqlPool;
+}
+
+// Encerra o pool do processo (testes de integração e scripts de curta
+// duração); a próxima consulta cria um pool novo.
+export async function closeMysqlPool(): Promise<void> {
+  const pool = globalMysqlState.__lyraMysqlPool;
+  globalMysqlState.__lyraMysqlPool = undefined;
+  await pool?.end();
 }
 
 export async function queryRows<TRow extends object = QueryRecord>(

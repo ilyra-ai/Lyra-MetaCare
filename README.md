@@ -166,7 +166,8 @@ pnpm dev                     # inicia o servidor de desenvolvimento
 
 - **Migrations** (`mysql/migrations/*.sql`, aplicadas por `pnpm db:migrate` em ordem de nome): cada arquivo é registrado em `_lyra_schema_migrations` com o SHA-256 do conteúdo (fins de linha normalizados). Uma migration já aplicada nunca é editada — o runner recusa conteúdo divergente; correções entram em um arquivo novo. Como o MySQL faz commit implícito em DDL, migrations com `ALTER` verificam o estado no `information_schema` antes de alterar, para que uma reexecução após falha parcial seja segura. Uma falha informa o arquivo e o erro do MySQL.
 - **Fuso:** o servidor roda em UTC (`--default-time-zone=+00:00` no `compose.yaml`) e a aplicação envia datas em UTC (`timezone: 'Z'` no mysql2), então `NOW()`, `UTC_TIMESTAMP()` e as datas gravadas pelo Node.js são coerentes em qualquer fuso da máquina. Em um MySQL fora do Compose, configure o mesmo `default-time-zone`.
-- **Administradores de bootstrap:** criados por `pnpm db:migrate` a partir do `.env.local`; reexecuções não alteram a linha, e a senha só é regravada quando o valor do `.env.local` muda.
+- **Administradores de bootstrap:** criados por `pnpm db:migrate` a partir do `.env.local`; reexecuções não alteram a linha, e a senha só é regravada quando o valor do `.env.local` muda. Deixar `ADMIN_BOOTSTRAP_EMAIL` e `ADMIN_BOOTSTRAP_PASSWORD` vazios desativa o bootstrap.
+- **Testes de integração** (`pnpm test:integration`): com o MySQL do projeto em execução, criam `<MYSQL_DATABASE>_test` (via `MYSQL_ROOT_PASSWORD`), aplicam as migrations reais, testam API de dados, planos e webhook da Stripe contra esse banco e o removem ao final; o banco de desenvolvimento não é tocado.
 - **Backup e restauração:** `pnpm db:backup` para o MySQL, copia o volume para `lyra-metacare_mysql_data_backup_<data>`, confere a cópia e religa o banco se ele estava ativo; `pnpm db:restore <volume>` restaura (recriando o volume pelo Compose se necessário). Os volumes de backup aparecem em `docker volume ls --filter name=_backup_`. O `purge` dos launchers e o `pnpm db:upgrade` fazem esse backup antes de qualquer alteração.
 
 </details>
@@ -195,7 +196,10 @@ O `.env.local` é a **fonte única de configuração**, lida pelo Next.js, pelos
 | ---------------------------------------------------- | -------------------------------------------------------------------- |
 | `pnpm dev`                                           | Servidor de desenvolvimento (Next.js)                                |
 | `pnpm build` / `pnpm start`                          | Build de produção / execução                                         |
-| `pnpm test`                                          | Suíte de testes (Vitest)                                             |
+| `pnpm test`                                          | Testes unitários (Vitest), sem infraestrutura externa                |
+| `pnpm test:integration`                              | Testes contra o MySQL real em um banco isolado `<banco>_test`        |
+| `pnpm test:coverage`                                 | Unitários + integração com relatório de cobertura (`coverage/`)      |
+| `pnpm test:launchers`                                | Testes do `run.py` e do `run_windows.py` (unittest do Python)        |
 | `pnpm check:types`                                   | Verificação de tipos (`tsc --noEmit`)                                |
 | `pnpm check:lint` / `pnpm fix:lint`                  | Lint (ESLint) — checar / corrigir                                    |
 | `pnpm check:format` / `pnpm fix:format`              | Formatação (Prettier) — checar / corrigir                            |

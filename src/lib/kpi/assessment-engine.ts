@@ -42,7 +42,16 @@ export function calculateWHO5Score(responses: number[]): {
   insight: string;
 } {
   if (responses.length !== 5) {
-    throw new Error('WHO-5 requires exactly 5 responses');
+    throw new Error('O WHO-5 exige exatamente 5 respostas.');
+  }
+  // Cada item do WHO-5 é pontuado de 0 a 5 (inteiro); fora disso o
+  // percentual passaria de 100 ou ficaria negativo.
+  if (
+    responses.some(
+      (resposta) => !Number.isInteger(resposta) || resposta < 0 || resposta > 5
+    )
+  ) {
+    throw new Error('Cada resposta do WHO-5 precisa ser um inteiro de 0 a 5.');
   }
 
   const rawScore = responses.reduce((acc, val) => acc + val, 0);
@@ -119,8 +128,10 @@ export function calculateAdherenceScore(streaks: UserStreak[]): {
  * Classifica um resultado de NPS
  */
 export function classifyNPS(score: number): 'detrator' | 'neutro' | 'promotor' {
-  if (score >= 0 && score <= 6) return 'detrator';
-  if (score >= 7 && score <= 8) return 'neutro';
-  if (score >= 9 && score <= 10) return 'promotor';
-  throw new Error('NPS score must be between 0 and 10');
+  if (!Number.isInteger(score) || score < 0 || score > 10) {
+    throw new Error('A nota NPS precisa ser um inteiro de 0 a 10.');
+  }
+  if (score <= 6) return 'detrator';
+  if (score <= 8) return 'neutro';
+  return 'promotor';
 }
