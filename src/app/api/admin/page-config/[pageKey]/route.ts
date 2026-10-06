@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
-import { getHttpErrorStatus } from '@/lib/http-error';
+import { HttpError } from '@/lib/http-error';
+import { lerJson, respostaDeErro } from '@/lib/http/api';
 import { requireAdminSession } from '@/lib/mysql/server-auth';
 import {
   getAdminSitePageConfig,
@@ -13,11 +15,21 @@ import { isSitePageKey, SitePageKey } from '@/lib/site-page-config/schema';
 
 export const runtime = 'nodejs';
 
-function assertPageKey(value: string): asserts value is SitePageKey {
-  if (!isSitePageKey(value)) {
-    throw new Error(`Pagina nao suportada: ${value}`);
+async function lerPageKey(
+  params: Promise<{ pageKey: string }>
+): Promise<SitePageKey> {
+  const { pageKey } = await params;
+  if (!isSitePageKey(pageKey)) {
+    throw new HttpError(`Página não suportada: ${pageKey}`, 404);
   }
+  return pageKey;
 }
+
+// O conteúdo de `config` é validado pelo schema da página no serviço.
+const salvarSchema = z.object({ config: z.unknown() });
+const acaoSchema = z.object({
+  action: z.enum(['publish', 'restorePublished', 'restoreDefaults']),
+});
 
 export async function GET(
   _request: Request,
@@ -25,21 +37,10 @@ export async function GET(
 ) {
   try {
     await requireAdminSession();
-    const { pageKey } = await params;
-    assertPageKey(pageKey);
-
-    const config = await getAdminSitePageConfig(pageKey);
-    return NextResponse.json(config);
+    const pageKey = await lerPageKey(params);
+    return NextResponse.json(await getAdminSitePageConfig(pageKey));
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao carregar o editor administrativo.',
-      },
-      { status: getHttpErrorStatus(error) }
-    );
+    return respostaDeErro(error, 'Falha ao carregar o editor administrativo.');
   }
 }
 
@@ -49,27 +50,16 @@ export async function PUT(
 ) {
   try {
     const session = await requireAdminSession();
-    const { pageKey } = await params;
-    assertPageKey(pageKey);
-
-    const body = (await request.json()) as { config: unknown };
+    const pageKey = await lerPageKey(params);
+    const body = await lerJson(request, salvarSchema);
     const response = await saveSitePageDraft({
       pageKey,
       actorUserId: session.user.id,
       draftConfig: body.config,
     });
-
     return NextResponse.json(response);
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao salvar o rascunho da pagina.',
-      },
-      { status: getHttpErrorStatus(error) }
-    );
+    return respostaDeErro(error, 'Falha ao salvar o rascunho da página.');
   }
 }
 
@@ -79,50 +69,18 @@ export async function POST(
 ) {
   try {
     const session = await requireAdminSession();
-    const { pageKey } = await params;
-    assertPageKey(pageKey);
+    const pageKey = await lerPageKey(params);
+    const { action } = await lerJson(request, acaoSchema);
+    const opcoes = { pageKey, actorUserId: session.user.id };
 
-    const body = (await request.json()) as {
-      action: 'publish' | 'restorePublished' | 'restoreDefaults';
-    };
-
-    if (body.action === 'publish') {
-      return NextResponse.json(
-        await publishSitePageDraft({
-          pageKey,
-          actorUserId: session.user.id,
-        })
-      );
+    if (action === 'publish') {
+      return NextResponse.json(await publishSitePageDraft(opcoes));
     }
-
-    if (body.action === 'restorePublished') {
-      return NextResponse.json(
-        await restoreSitePageDraftFromPublished({
-          pageKey,
-          actorUserId: session.user.id,
-        })
-      );
+    if (action === 'restorePublished') {
+      return NextResponse.json(await restoreSitePageDraftFromPublished(opcoes));
     }
-
-    if (body.action === 'restoreDefaults') {
-      return NextResponse.json(
-        await restoreSitePageDefaults({
-          pageKey,
-          actorUserId: session.user.id,
-        })
-      );
-    }
-
-    throw new Error('Acao administrativa invalida.');
+    return NextResponse.json(await restoreSitePageDefaults(opcoes));
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao executar a acao administrativa.',
-      },
-      { status: getHttpErrorStatus(error) }
-    );
+    return respostaDeErro(error, 'Falha ao executar a ação administrativa.');
   }
 }

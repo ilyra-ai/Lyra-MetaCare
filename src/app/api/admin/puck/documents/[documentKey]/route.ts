@@ -1,27 +1,22 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
-import { getHttpErrorStatus } from '@/lib/http-error';
+import { lerJson, respostaDeErro } from '@/lib/http/api';
 import { requireAdminSession } from '@/lib/mysql/server-auth';
+import { lerDocumentKey, puckDataSchema } from '@/lib/puck/api-schema';
 import {
   getAdminPuckDocument,
   publishPuckDocument,
   savePuckDraft,
 } from '@/lib/puck/storage/service';
-import {
-  isLyraPuckDocumentKey,
-  LyraPuckData,
-  LyraPuckDocumentKey,
-} from '@/lib/puck/types';
 
 export const runtime = 'nodejs';
 
-function assertDocumentKey(
-  value: string
-): asserts value is LyraPuckDocumentKey {
-  if (!isLyraPuckDocumentKey(value)) {
-    throw new Error(`Documento Puck não suportado: ${value}`);
-  }
-}
+const salvarSchema = z.object({ draftData: puckDataSchema });
+const publicarSchema = z.object({
+  action: z.literal('publish'),
+  draftData: puckDataSchema.optional(),
+});
 
 export async function GET(
   _request: Request,
@@ -29,19 +24,12 @@ export async function GET(
 ) {
   try {
     await requireAdminSession();
-    const { documentKey } = await params;
-    assertDocumentKey(documentKey);
-
+    const documentKey = lerDocumentKey((await params).documentKey);
     return NextResponse.json(await getAdminPuckDocument(documentKey));
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao carregar o documento administrativo do Puck.',
-      },
-      { status: getHttpErrorStatus(error) }
+    return respostaDeErro(
+      error,
+      'Falha ao carregar o documento administrativo do Puck.'
     );
   }
 }
@@ -52,29 +40,19 @@ export async function PUT(
 ) {
   try {
     const session = await requireAdminSession();
-    const { documentKey } = await params;
-    assertDocumentKey(documentKey);
-
-    const body = (await request.json()) as {
-      draftData: LyraPuckData;
-    };
-
+    const documentKey = lerDocumentKey((await params).documentKey);
+    const { draftData } = await lerJson(request, salvarSchema);
     return NextResponse.json(
       await savePuckDraft({
         documentKey,
         actorUserId: session.user.id,
-        draftData: body.draftData,
+        draftData,
       })
     );
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao salvar o rascunho do documento Puck.',
-      },
-      { status: getHttpErrorStatus(error) }
+    return respostaDeErro(
+      error,
+      'Falha ao salvar o rascunho do documento Puck.'
     );
   }
 }
@@ -85,34 +63,16 @@ export async function POST(
 ) {
   try {
     const session = await requireAdminSession();
-    const { documentKey } = await params;
-    assertDocumentKey(documentKey);
-
-    const body = (await request.json()) as {
-      action: 'publish';
-      draftData?: LyraPuckData;
-    };
-
-    if (body.action !== 'publish') {
-      throw new Error('Ação administrativa do Puck inválida.');
-    }
-
+    const documentKey = lerDocumentKey((await params).documentKey);
+    const { draftData } = await lerJson(request, publicarSchema);
     return NextResponse.json(
       await publishPuckDocument({
         documentKey,
         actorUserId: session.user.id,
-        draftData: body.draftData,
+        draftData,
       })
     );
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao publicar o documento Puck.',
-      },
-      { status: getHttpErrorStatus(error) }
-    );
+    return respostaDeErro(error, 'Falha ao publicar o documento Puck.');
   }
 }

@@ -1,10 +1,24 @@
 import { NextResponse } from 'next/server';
-import { requireServerSession } from '@/lib/mysql/server-auth';
-import { getHttpErrorStatus } from '@/lib/http-error';
-import { getUserStreaks, updateUserStreak } from '@/lib/kpi/streak-repository';
+import { z } from 'zod';
+
+import { lerJson, respostaDeErro } from '@/lib/http/api';
 import { calculateAdherenceScore } from '@/lib/kpi/assessment-engine';
+import { getUserStreaks, updateUserStreak } from '@/lib/kpi/streak-repository';
+import { requireServerSession } from '@/lib/mysql/server-auth';
 
 export const runtime = 'nodejs';
+
+const atividadesSchema = z.object({
+  activityTypes: z
+    .array(
+      z
+        .string()
+        .trim()
+        .regex(/^[a-z0-9_]{1,50}$/, 'Tipo de atividade inválido.')
+    )
+    .min(1, 'Nenhuma atividade reportada para o streak.')
+    .max(20),
+});
 
 export async function GET() {
   try {
@@ -14,15 +28,7 @@ export async function GET() {
 
     return NextResponse.json({ success: true, streaks, adherence });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao buscar consistência.',
-      },
-      { status: getHttpErrorStatus(error) }
-    );
+    return respostaDeErro(error, 'Falha ao buscar consistência.');
   }
 }
 
@@ -30,20 +36,13 @@ export async function POST(request: Request) {
   try {
     const session = await requireServerSession();
     const userId = session.user.id;
-    const body = await request.json();
-    const { activityTypes } = body as { activityTypes: string[] };
-
-    if (!Array.isArray(activityTypes) || activityTypes.length === 0) {
-      return NextResponse.json(
-        { error: 'Nenhuma atividade reportada para o streak.' },
-        { status: 400 }
-      );
-    }
+    const { activityTypes } = await lerJson(request, atividadesSchema);
 
     const today = new Date();
 
-    // Atualiza o streak para cada tipo de atividade detectada hoje
-    for (const type of activityTypes) {
+    // Atualiza o streak para cada tipo de atividade detectada hoje (tipos
+    // repetidos contam uma vez).
+    for (const type of new Set(activityTypes)) {
       await updateUserStreak(userId, type, today);
     }
 
@@ -56,14 +55,6 @@ export async function POST(request: Request) {
       adherence,
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao computar consistência diária.',
-      },
-      { status: getHttpErrorStatus(error) }
-    );
+    return respostaDeErro(error, 'Falha ao computar consistência diária.');
   }
 }

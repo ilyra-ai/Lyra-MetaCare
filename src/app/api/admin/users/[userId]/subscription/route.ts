@@ -1,19 +1,22 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
-import { getHttpErrorStatus } from '@/lib/http-error';
+import { lerJson, respostaDeErro } from '@/lib/http/api';
 import { requireAdminSession } from '@/lib/mysql/server-auth';
 import {
   assignPlanToUserByAdmin,
   getUserSubscriptionAssignment,
 } from '@/lib/plans/service';
-import { PlanKey } from '@/types/subscription';
+import { PLAN_KEYS } from '@/types/subscription';
 
 export const runtime = 'nodejs';
 
-interface UpdateUserSubscriptionPayload {
-  planKey: PlanKey;
-  billingInterval?: 'monthly' | 'annual';
-}
+const userIdSchema = z.uuid('Identificador de usuário inválido.');
+
+const updateSchema = z.object({
+  planKey: z.enum(PLAN_KEYS),
+  billingInterval: z.enum(['monthly', 'annual']).default('monthly'),
+});
 
 export async function GET(
   _request: Request,
@@ -21,19 +24,11 @@ export async function GET(
 ) {
   try {
     await requireAdminSession();
-    const { userId } = await params;
+    const userId = userIdSchema.parse((await params).userId);
     const assignment = await getUserSubscriptionAssignment(userId);
     return NextResponse.json(assignment);
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao carregar a assinatura do usuário.',
-      },
-      { status: getHttpErrorStatus(error) }
-    );
+    return respostaDeErro(error, 'Falha ao carregar a assinatura do usuário.');
   }
 }
 
@@ -43,26 +38,18 @@ export async function PATCH(
 ) {
   try {
     const adminSession = await requireAdminSession();
-    const { userId } = await params;
-    const payload = (await request.json()) as UpdateUserSubscriptionPayload;
+    const userId = userIdSchema.parse((await params).userId);
+    const payload = await lerJson(request, updateSchema);
 
     const assignment = await assignPlanToUserByAdmin({
       targetUserId: userId,
       actorUserId: adminSession.user.id,
       planKey: payload.planKey,
-      billingInterval: payload.billingInterval ?? 'monthly',
+      billingInterval: payload.billingInterval,
     });
 
     return NextResponse.json(assignment);
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao atualizar a assinatura do usuário.',
-      },
-      { status: getHttpErrorStatus(error) }
-    );
+    return respostaDeErro(error, 'Falha ao atualizar a assinatura do usuário.');
   }
 }

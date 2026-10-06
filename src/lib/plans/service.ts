@@ -795,6 +795,9 @@ export async function assignPlanToUserByAdmin(options: {
   const source = options.source ?? 'admin_console';
 
   await withTransaction(async (connection) => {
+    // 404 para usuário inexistente (antes, erro de chave estrangeira) e
+    // serialização com outras trocas de plano do mesmo usuário.
+    await lockUserRow(connection, options.targetUserId);
     const planId = await fetchPlanIdByKey(options.planKey, connection);
     const current = await fetchCurrentSubscriptionRow(
       options.targetUserId,

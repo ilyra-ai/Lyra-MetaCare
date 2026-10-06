@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { getHttpErrorStatus } from '@/lib/http-error';
+import { respostaDeErro } from '@/lib/http/api';
 import { requireAdminSession } from '@/lib/mysql/server-auth';
 import { getPlanMatrix } from '@/lib/plans/service';
 
@@ -12,14 +12,6 @@ export async function GET() {
     const matrix = await getPlanMatrix();
     return NextResponse.json(matrix);
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao carregar os planos.',
-      },
-      { status: getHttpErrorStatus(error) }
-    );
+    return respostaDeErro(error, 'Falha ao carregar os planos.');
   }
 }

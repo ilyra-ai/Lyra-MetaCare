@@ -192,21 +192,23 @@ O `.env.local` é a **fonte única de configuração**, lida pelo Next.js, pelos
 
 ## 📜 Scripts disponíveis
 
-| Comando                                              | Descrição                                                            |
-| ---------------------------------------------------- | -------------------------------------------------------------------- |
-| `pnpm dev`                                           | Servidor de desenvolvimento (Next.js)                                |
-| `pnpm build` / `pnpm start`                          | Build de produção / execução                                         |
-| `pnpm test`                                          | Testes unitários (Vitest), sem infraestrutura externa                |
-| `pnpm test:integration`                              | Testes contra o MySQL real em um banco isolado `<banco>_test`        |
-| `pnpm test:coverage`                                 | Unitários + integração com relatório de cobertura (`coverage/`)      |
-| `pnpm test:launchers`                                | Testes do `run.py` e do `run_windows.py` (unittest do Python)        |
-| `pnpm check:types`                                   | Verificação de tipos (`tsc --noEmit`)                                |
-| `pnpm check:lint` / `pnpm fix:lint`                  | Lint (ESLint) — checar / corrigir                                    |
-| `pnpm check:format` / `pnpm fix:format`              | Formatação (Prettier) — checar / corrigir                            |
-| `pnpm db:start` / `pnpm db:migrate` / `pnpm db:stop` | Banco: subir+migrar / migrar / parar                                 |
-| `pnpm db:upgrade`                                    | Upgrade controlado do volume MySQL (8.0 → 8.4 → 9.7 LTS) com backup  |
-| `pnpm db:backup`                                     | Backup a frio verificado do volume do MySQL (`BACKUP_VOLUME=<nome>`) |
-| `pnpm db:restore <volume_de_backup>`                 | Restaura o volume a partir de um backup                              |
+| Comando                     | Descrição                                                       |
+| --------------------------- | --------------------------------------------------------------- |
+| `pnpm dev`                  | Servidor de desenvolvimento (Next.js)                           |
+| `pnpm build` / `pnpm start` | Build de produção / execução                                    |
+| `pnpm test`                 | Testes unitários (Vitest), sem infraestrutura externa           |
+| `pnpm test:integration`     | Testes contra o MySQL real em um banco isolado `<banco>_test`   |
+| `pnpm test:coverage`        | Unitários + integração com relatório de cobertura (`coverage/`) |
+| `pnpm test:launchers`       | Testes do `run.py` e do `run_windows.py` (unittest do Python)   |
+
+Mapa das rotas da API (autenticação, entrada, saída, erros e tabelas): [`docs/api.md`](./docs/api.md).
+| `pnpm check:types` | Verificação de tipos (`tsc --noEmit`) |
+| `pnpm check:lint` / `pnpm fix:lint` | Lint (ESLint) — checar / corrigir |
+| `pnpm check:format` / `pnpm fix:format` | Formatação (Prettier) — checar / corrigir |
+| `pnpm db:start` / `pnpm db:migrate` / `pnpm db:stop` | Banco: subir+migrar / migrar / parar |
+| `pnpm db:upgrade` | Upgrade controlado do volume MySQL (8.0 → 8.4 → 9.7 LTS) com backup |
+| `pnpm db:backup` | Backup a frio verificado do volume do MySQL (`BACKUP_VOLUME=<nome>`) |
+| `pnpm db:restore <volume_de_backup>` | Restaura o volume a partir de um backup |
 
 ---
 

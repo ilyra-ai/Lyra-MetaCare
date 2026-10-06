@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { getHttpErrorStatus } from '@/lib/http-error';
+import { lerJson, respostaDeErro } from '@/lib/http/api';
 import { executeStatement } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 import { calculateWHO5Score, classifyNPS } from '@/lib/kpi/assessment-engine';
@@ -44,7 +44,7 @@ const assessmentSchema = z.discriminatedUnion('type', [
 export async function POST(request: Request) {
   try {
     const session = await requireServerSession();
-    const assessment = assessmentSchema.parse(await request.json());
+    const assessment = await lerJson(request, assessmentSchema);
 
     let scoreValue: number;
     let notes = assessment.payload.notes ?? '';
@@ -100,14 +100,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, scoreValue, notes });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao salvar a avaliação.',
-      },
-      { status: getHttpErrorStatus(error) }
-    );
+    return respostaDeErro(error, 'Falha ao salvar a avaliação.');
   }
 }

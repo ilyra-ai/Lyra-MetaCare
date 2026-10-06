@@ -1,16 +1,11 @@
 import { NextResponse } from 'next/server';
 
-import { getHttpErrorStatus } from '@/lib/http-error';
+import { HttpError } from '@/lib/http-error';
+import { respostaDeErro } from '@/lib/http/api';
 import { getPublicSitePageConfig } from '@/lib/site-page-config/service';
-import { isSitePageKey, SitePageKey } from '@/lib/site-page-config/schema';
+import { isSitePageKey } from '@/lib/site-page-config/schema';
 
 export const runtime = 'nodejs';
-
-function assertPageKey(value: string): asserts value is SitePageKey {
-  if (!isSitePageKey(value)) {
-    throw new Error(`Pagina nao suportada: ${value}`);
-  }
-}
 
 export async function GET(
   _request: Request,
@@ -18,23 +13,16 @@ export async function GET(
 ) {
   try {
     const { pageKey } = await params;
-    assertPageKey(pageKey);
+    if (!isSitePageKey(pageKey)) {
+      throw new HttpError(`Página não suportada: ${pageKey}`, 404);
+    }
 
     const config = await getPublicSitePageConfig(pageKey);
-
-    return NextResponse.json({
-      pageKey,
-      config,
-    });
+    return NextResponse.json({ pageKey, config });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao carregar a configuracao publica da pagina.',
-      },
-      { status: getHttpErrorStatus(error) }
+    return respostaDeErro(
+      error,
+      'Falha ao carregar a configuração pública da página.'
     );
   }
 }

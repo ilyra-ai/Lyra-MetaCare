@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import type { RowDataPacket } from 'mysql2/promise';
+import { z } from 'zod';
 
 import { hashPassword } from '@/lib/auth/password';
 import {
@@ -6,61 +8,60 @@ import {
   setSessionCookie,
   signSessionToken,
 } from '@/lib/auth/session';
-import { queryRows, withTransaction } from '@/lib/mysql/pool';
+import { lerJson, respostaDeErro } from '@/lib/http/api';
+import { withTransaction } from '@/lib/mysql/pool';
 import { ensureUserSubscription } from '@/lib/plans/service';
 
 export const runtime = 'nodejs';
 
-interface RegisterPayload {
-  email: string;
-  password: string;
-  firstName?: string;
-  lastName?: string;
-}
+const nomeOpcional = z
+  .string()
+  .trim()
+  .max(120)
+  .optional()
+  .transform((valor) => (valor ? valor : null));
+
+const registerSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .pipe(z.email('Informe um e-mail válido.').max(255)),
+  password: z
+    .string()
+    .trim()
+    .min(8, 'A senha precisa ter pelo menos 8 caracteres.')
+    .max(200, 'A senha pode ter no máximo 200 caracteres.'),
+  firstName: nomeOpcional,
+  lastName: nomeOpcional,
+});
 
 export async function POST(request: Request) {
   try {
-    const payload = (await request.json()) as RegisterPayload;
-    const email = payload.email?.trim().toLowerCase();
-    const password = payload.password?.trim();
-
-    if (!email || !password || password.length < 8) {
-      return NextResponse.json(
-        {
-          error:
-            'Email válido e senha com pelo menos 8 caracteres são obrigatórios.',
-        },
-        { status: 400 }
-      );
-    }
-
-    const existing = await queryRows<{ id: string }>(
-      'SELECT id FROM users WHERE email = ? LIMIT 1',
-      [email]
-    );
-    if (existing.length > 0) {
-      return NextResponse.json(
-        { error: 'Já existe uma conta com este email.' },
-        { status: 409 }
-      );
-    }
-
-    const passwordHash = await hashPassword(password);
+    const payload = await lerJson(request, registerSchema);
+    const passwordHash = await hashPassword(payload.password);
     const userId = crypto.randomUUID();
-    const totalUsers = await queryRows<{ total: number }>(
-      'SELECT COUNT(*) AS total FROM users'
-    );
-    const role = Number(totalUsers[0]?.total ?? 0) === 0 ? 'admin' : 'patient';
 
-    await withTransaction(async (connection) => {
-      await connection.execute(
-        `
-          INSERT INTO users (id, email, password_hash)
-          VALUES (?, ?, ?)
-        `,
-        [userId, email, passwordHash]
+    // Contagem e inserção na mesma transação, com bloqueio da tabela de
+    // usuários: dois cadastros simultâneos num banco vazio não viram dois
+    // administradores. E-mail repetido (inclusive em corrida) → 409.
+    const role = await withTransaction(async (connection) => {
+      const [existentes] = await connection.query<RowDataPacket[]>(
+        'SELECT id FROM users WHERE email = ? LIMIT 1',
+        [payload.email]
       );
+      if (existentes.length > 0) {
+        return null;
+      }
+      const [contagem] = await connection.query<RowDataPacket[]>(
+        'SELECT COUNT(*) AS total FROM users FOR UPDATE'
+      );
+      const papel = Number(contagem[0]?.total ?? 0) === 0 ? 'admin' : 'patient';
 
+      await connection.execute(
+        'INSERT INTO users (id, email, password_hash) VALUES (?, ?, ?)',
+        [userId, payload.email, passwordHash]
+      );
       await connection.execute(
         `
           INSERT INTO profiles (
@@ -75,14 +76,22 @@ export async function POST(request: Request) {
         `,
         [
           userId,
-          payload.firstName ?? null,
-          payload.lastName ?? null,
-          email,
+          payload.firstName,
+          payload.lastName,
+          payload.email,
           false,
-          role,
+          papel,
         ]
       );
+      return papel;
     });
+
+    if (!role) {
+      return NextResponse.json(
+        { error: 'Já existe uma conta com este e-mail.' },
+        { status: 409 }
+      );
+    }
 
     await ensureUserSubscription(
       userId,
@@ -92,27 +101,19 @@ export async function POST(request: Request) {
 
     const token = await signSessionToken({
       sub: userId,
-      email,
+      email: payload.email,
       role,
     });
     await setSessionCookie(token);
 
     const session = buildAppSession(
       token,
-      { sub: userId, email, role },
-      {
-        first_name: payload.firstName ?? null,
-        last_name: payload.lastName ?? null,
-      }
+      { sub: userId, email: payload.email, role },
+      { first_name: payload.firstName, last_name: payload.lastName }
     );
 
     return NextResponse.json({ session });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : 'Falha ao criar conta.',
-      },
-      { status: 500 }
-    );
+    return respostaDeErro(error, 'Falha ao criar a conta.');
   }
 }

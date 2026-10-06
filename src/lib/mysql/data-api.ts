@@ -736,9 +736,11 @@ export async function runSelectQuery(options: {
   limit?: number | null;
   rangeFrom?: number | null;
   rangeTo?: number | null;
-  count?: 'exact' | null;
+  // Texto livre vindo da URL: validado abaixo ("exact" / "single" |
+  // "maybeSingle"); valores fora do contrato geram 400.
+  count?: string | null;
   head?: boolean;
-  singleMode?: SingleMode;
+  singleMode?: SingleMode | string;
   session: AppSession | null;
 }) {
   assertTable(options.table);

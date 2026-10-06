@@ -112,7 +112,8 @@ export async function getPublicPuckDocument(
 export async function savePuckDraft(options: {
   documentKey: LyraPuckDocumentKey;
   actorUserId: string;
-  draftData: LyraPuckData;
+  // Dados recebidos da API: normalizados por normalizarDadosPuck.
+  draftData: unknown;
 }) {
   const row = await getPuckDocumentRow(options.documentKey);
   const fallback = getInitialPuckData(options.documentKey);
@@ -160,7 +161,7 @@ export async function savePuckDraft(options: {
 export async function publishPuckDocument(options: {
   documentKey: LyraPuckDocumentKey;
   actorUserId: string;
-  draftData?: LyraPuckData;
+  draftData?: unknown;
 }) {
   const row = await getPuckDocumentRow(options.documentKey);
   const fallback = getInitialPuckData(options.documentKey);

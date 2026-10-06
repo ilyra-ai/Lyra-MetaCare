@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
 
 import { processStripeWebhook } from '@/lib/billing/service';
-import { getHttpErrorStatus } from '@/lib/http-error';
+import { mensagemDeErro, statusDeErro } from '@/lib/http/api';
 
 export const runtime = 'nodejs';
 
@@ -13,14 +14,20 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ received: true, ...result });
   } catch (error) {
+    // Assinatura inválida: 400 (a Stripe não deve reenviar). Falha interna
+    // (ex.: banco fora do ar): 5xx, para que a Stripe reenvie o evento; antes
+    // toda falha virava 400 e o evento se perdia.
+    if (error instanceof Stripe.errors.StripeSignatureVerificationError) {
+      return NextResponse.json(
+        { error: 'Assinatura do webhook inválida.' },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
       {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao processar o webhook Stripe.',
+        error: mensagemDeErro(error, 'Falha ao processar o webhook Stripe.'),
       },
-      { status: getHttpErrorStatus(error, 400) }
+      { status: statusDeErro(error) }
     );
   }
 }

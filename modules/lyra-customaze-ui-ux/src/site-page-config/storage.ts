@@ -86,11 +86,9 @@ export function validatePageConfigOrThrow<TKey extends SitePageKey>(
   const validation = validatePageConfig(pageKey, input);
 
   if (!validation.success) {
-    throw new Error(
-      validation.error.issues
-        .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
-        .join(' | ')
-    );
+    // O próprio ZodError: as rotas o convertem em HTTP 400 com os campos
+    // inválidos (um Error genérico virava 500).
+    throw validation.error;
   }
 
   return validation.data;

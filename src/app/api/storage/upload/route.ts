@@ -3,58 +3,65 @@ import path from 'node:path';
 
 import { NextResponse } from 'next/server';
 
-import { getHttpErrorStatus } from '@/lib/http-error';
+import { HttpError } from '@/lib/http-error';
+import { respostaDeErroDados } from '@/lib/http/api';
 import { requireServerSession } from '@/lib/mysql/server-auth';
+import {
+  assertUploadAllowed,
+  resolveStoragePath,
+  splitStoragePath,
+} from '@/lib/storage/local';
 
 export const runtime = 'nodejs';
 
-const STORAGE_ROOT = path.join(process.cwd(), 'storage');
-
 export async function POST(request: Request) {
   try {
-    await requireServerSession();
-    const formData = await request.formData();
+    const session = await requireServerSession();
+    let formData: FormData;
+    try {
+      formData = await request.formData();
+    } catch {
+      throw new HttpError('Envie o arquivo como multipart/form-data.', 400);
+    }
     const bucket = String(formData.get('bucket') ?? '');
     const filePath = String(formData.get('path') ?? '');
     const upsert = String(formData.get('upsert') ?? 'false') === 'true';
     const file = formData.get('file');
 
     if (!bucket || !filePath || !(file instanceof File)) {
-      return NextResponse.json(
-        { error: 'Parâmetros de upload inválidos.' },
-        { status: 400 }
-      );
+      throw new HttpError('Parâmetros de upload inválidos.', 400);
     }
 
-    const normalizedPath = filePath.replace(/^\/+/, '');
-    const fullDirectory = path.join(
-      STORAGE_ROOT,
+    const { absolute, relative } = resolveStoragePath(
       bucket,
-      path.dirname(normalizedPath)
+      splitStoragePath(filePath)
     );
-    const fullFilePath = path.join(STORAGE_ROOT, bucket, normalizedPath);
-    await mkdir(fullDirectory, { recursive: true });
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    assertUploadAllowed({
+      relative,
+      bytes,
+      userId: session.user.id,
+      isAdmin: session.user.role === 'admin',
+    });
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(fullFilePath, buffer, { flag: upsert ? 'w' : 'wx' });
+    await mkdir(path.dirname(absolute), { recursive: true });
+    try {
+      await writeFile(absolute, bytes, { flag: upsert ? 'w' : 'wx' });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
+        throw new HttpError('Já existe um arquivo nesse caminho.', 409);
+      }
+      throw error;
+    }
 
     return NextResponse.json({
       data: {
-        path: normalizedPath,
-        publicUrl: `/api/storage/${bucket}/${normalizedPath}`,
+        path: relative,
+        publicUrl: `/api/storage/${bucket}/${relative}`,
       },
       error: null,
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        data: null,
-        error: {
-          message:
-            error instanceof Error ? error.message : 'Falha no upload local.',
-        },
-      },
-      { status: getHttpErrorStatus(error) }
-    );
+    return respostaDeErroDados(error, 'Falha no upload.');
   }
 }

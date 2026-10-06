@@ -4,7 +4,7 @@ import {
   calculateLongevityScores,
   MetricSnapshot,
 } from '@/lib/ai/score-engine';
-import { getHttpErrorStatus } from '@/lib/http-error';
+import { respostaDeErro } from '@/lib/http/api';
 import { queryRows } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 import { requireFeatureEnabled } from '@/lib/plans/service';
@@ -32,12 +32,6 @@ export async function POST() {
       calculateLongevityScores(metric ?? null, config ?? undefined)
     );
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error ? error.message : 'Falha no cálculo local.',
-      },
-      { status: getHttpErrorStatus(error) }
-    );
+    return respostaDeErro(error, 'Falha no cálculo local.');
   }
 }

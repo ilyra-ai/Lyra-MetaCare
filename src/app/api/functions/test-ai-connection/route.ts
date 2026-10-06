@@ -4,6 +4,7 @@ import { generateLocalAssistantReply } from '@/lib/ai/chat-engine';
 import { generateLocalWellnessPlan } from '@/lib/ai/plan-engine';
 import { calculateLongevityScores } from '@/lib/ai/score-engine';
 import { getAstrologicalContext } from '@/lib/astrology/engine';
+import { mensagemDeErro, statusDeErro } from '@/lib/http/api';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 
 export const runtime = 'nodejs';
@@ -23,12 +24,15 @@ async function testGeminiConnection() {
   }
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
     {
       method: 'POST',
+      // Chave no cabeçalho, nunca na URL (que aparece em logs de proxy).
       headers: {
         'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey,
       },
+      signal: AbortSignal.timeout(20_000),
       body: JSON.stringify({
         contents: [
           {
@@ -137,7 +141,18 @@ export async function POST() {
       },
       astrology,
     });
-    const geminiCheck = await testGeminiConnection();
+    // Falha de rede ou timeout do Gemini é resultado do teste, não erro da rota.
+    const geminiCheck = await testGeminiConnection().catch(
+      (error: unknown) => ({
+        configured: true,
+        ok: false,
+        provider: 'gemini',
+        error:
+          error instanceof Error
+            ? `Sem resposta do Gemini: ${error.message}`
+            : 'Sem resposta do Gemini.',
+      })
+    );
 
     return NextResponse.json({
       success: true,
@@ -171,15 +186,13 @@ export async function POST() {
         'Motores locais testados em runtime. Quando configurado, o Gemini tambem e validado em tempo real por esta rota administrativa.',
     });
   } catch (error) {
+    // 401/403 preservados (antes toda falha virava 500).
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao consultar motores locais.',
+        error: mensagemDeErro(error, 'Falha ao consultar os motores locais.'),
       },
-      { status: 500 }
+      { status: statusDeErro(error) }
     );
   }
 }

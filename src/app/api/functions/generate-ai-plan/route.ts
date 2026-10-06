@@ -1,20 +1,39 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
 import { generateLocalWellnessPlan } from '@/lib/ai/plan-engine';
 import { getAstrologicalContext } from '@/lib/astrology/engine';
-import { getHttpErrorStatus } from '@/lib/http-error';
+import { lerJson, respostaDeErro } from '@/lib/http/api';
+import { listaDeTextos } from '@/lib/json-values';
 import { queryRows, withTransaction } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 import { consumeUsageQuota } from '@/lib/plans/service';
 
 export const runtime = 'nodejs';
 
+// Leituras ao vivo do dispositivo (opcionais); fora das faixas fisiológicas
+// plausíveis são recusadas em vez de distorcer o plano.
+const leitura = (minimo: number, maximo: number) =>
+  z.number().finite().min(minimo).max(maximo).nullable().optional();
+
+const pedidoSchema = z.object({
+  metrics: z
+    .object({
+      hrv_ms: leitura(0, 400),
+      sleep_duration_minutes: leitura(0, 1440),
+      steps: leitura(0, 200_000),
+      blood_glucose_mgdl: leitura(10, 1000),
+      weight_kg: leitura(1, 700),
+    })
+    .optional(),
+});
+
 export async function POST(request: Request) {
   try {
     const session = await requireServerSession();
-    const payload = await request.json();
+    const payload = await lerJson(request, pedidoSchema);
     const [profile] = await queryRows<{
-      goals: string | null;
+      goals: unknown;
       birth_date: string | null;
       birth_time: string | null;
       birth_location: string | null;
@@ -44,13 +63,7 @@ export async function POST(request: Request) {
       [session.user.id]
     );
 
-    const liveMetrics = (payload?.metrics ?? {}) as Partial<{
-      hrv_ms: number | null;
-      sleep_duration_minutes: number | null;
-      steps: number | null;
-      blood_glucose_mgdl: number | null;
-      weight_kg: number | null;
-    }>;
+    const liveMetrics = payload.metrics ?? {};
 
     const plan = generateLocalWellnessPlan({
       metrics: {
@@ -67,7 +80,7 @@ export async function POST(request: Request) {
         weight_kg: liveMetrics.weight_kg ?? latestMetrics?.weight_kg ?? null,
       },
       astrology: getAstrologicalContext(new Date(), profile ?? undefined),
-      goals: profile?.goals ? JSON.parse(profile.goals) : [],
+      goals: listaDeTextos(profile?.goals),
     });
     const planId = crypto.randomUUID();
 
@@ -92,14 +105,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(plan);
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Falha ao gerar plano local.',
-      },
-      { status: getHttpErrorStatus(error) }
-    );
+    return respostaDeErro(error, 'Falha ao gerar o plano local.');
   }
 }
