@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `███████████████░░░░░` **77%** |
+| Progresso          | `████████████████░░░░` **81%** |
 | Tarefas totais     | 26                             |
-| 🟢 Finalizadas     | 20                             |
+| 🟢 Finalizadas     | 21                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 5                              |
+| ⚪ A iniciar       | 4                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-06                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (20 ÷ 26 = 76,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (21 ÷ 26 = 80,8%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa      | O que está sendo realizado                                                                                                                                                                                                                                 |
-| --- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 18  | APIs e CRUD | Mapear todas as Route Handlers (método, rota, autenticação, autorização, input, output, erros e banco); testar sucesso, validação, erro, não autenticado, sem permissão, recurso inexistente e payload inválido; QA do CRUD real com confirmação no MySQL. |
+| Nº  | Tarefa    | O que está sendo realizado                                                                                                                                                            |
+| --- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 19  | Segurança | Auditoria de autenticação, sessões, cookies, CSRF, XSS (sanitizador de rich text do SSR), headers, rate limiting, dados de saúde em logs e Sentry, Stripe e dependências vulneráveis. |
 
 ### BLOQUEADAS
 
@@ -50,22 +50,13 @@ Nenhuma tarefa bloqueada no momento.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-### 19 · Segurança
-
-_Instrução: Tarefa 17 · itens 39, 40, 41 e 42._
-
-- Auditar autenticação, autorização, sessões, cookies, CSRF, XSS, SQL injection, SSRF, open redirect, rate limiting, secrets, headers, upload, validação Zod, endpoints administrativos, IDOR, Stripe webhooks e assinatura, permissões, dados sensíveis e logging de informações pessoais.
-- Dados de saúde como sensíveis: logs, erros, armazenamento, acesso indevido, APIs, administração, autorização, cache, analytics, Sentry e integrações externas.
-- Stripe: checkout, customer portal, webhooks, planos, entitlement, roles, erros, idempotência, assinatura de webhooks e test mode, marcando a fronteira externa que exige credencial real.
-- Sentry: não quebrar build sem DSN, opcional, sem segredos, respeitando ambientes, sem dados de saúde desnecessários e compatível com o Next.js escolhido.
-- Substituir o sanitizador de rich text do servidor (`src/lib/puck/sanitization/rich-text.ts`, baseado em regex): um `href` com aspas passa pelo `hrefSeguro` e gera atributo injetável no SSR (registrado na tarefa 17).
-
 ### 20 · Performance
 
 _Instrução: Tarefa 18 · item 38._
 
 - Auditar bundle, imports, dependências pesadas, fronteiras Server/Client, re-renders, imagens, fontes, lazy loading, dynamic imports, queries SQL, conexões, caching, waterfalls, chamadas duplicadas e assets, priorizando gargalos mensuráveis.
 - Converter o `initial-data` do Puck para slots nativos (hoje em `zones`, migrado a cada carga pelo `migrate()`), registrado na tarefa 16.
+- Verificar os endpoints `/api/admin/ui-config` e `/api/public/ui-config`: nenhum chamador no cliente foi encontrado na tarefa 18 (possível código morto; remover somente com evidência).
 
 ### 21 · QA funcional com navegador
 
@@ -493,6 +484,23 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
   - **Launchers (17):** diagnóstico, URLs, versões, `.env.local` com 0600, portas ocupadas, árvore de processos com `setsid`, parser e códigos de saída do `run.py`; tradução de comandos legados, descoberta do Git Bash e delegação do `run_windows.py`.
 - **Evidências:** `pnpm test` 191/191; `pnpm test:integration` 36/36; `pnpm test:launchers` 17/17; cobertura combinada de linhas 8,6% → 25,8% (data-api 77,8%, planos 71,9%, motores 91–100%; o restante é UI, coberto pelo QA de navegador nas tarefas 21 e 22). `check:format`, `check:lint` e `check:types` com exit 0; `build` com exit 0 e zero avisos; `./run.sh up` com verificação ponta a ponta; banco de teste removido e banco de desenvolvimento com contagens idênticas.
 - **Pendências registradas para tarefas seguintes:** validação Zod nas rotas (JSON inválido em `filters` ainda vira 500) na tarefa 18; sanitizador de rich text do servidor na tarefa 19.
+
+### 18 · APIs e CRUD
+
+- **Status:** 🟢 finalizada · **Commit:** `f8e3460` · **Push:** `main -> main` (confirmado; `main...origin/main` sem divergência)
+- **Mapa:** as 32 Route Handlers documentadas em `docs/api.md` (método, rota, autenticação, autorização, entrada, saída, erros e tabelas).
+- **Contrato comum:** `src/lib/http/api.ts` (`lerJson`, `respostaDeErro`): JSON malformado e campos inválidos → 400 com os campos; `HttpError` com status próprio; chave duplicada do MySQL → 409; erro de dados → 400; qualquer outra falha → 500 genérico, com o detalhe só no log do servidor (antes, SQL e caminhos internos vazavam na resposta).
+- **Defeitos encontrados e corrigidos** (prova: 19 testes de rota falham no código anterior):
+  - **Travessia de diretório no storage:** `GET /api/storage/avatars/..%2F..%2F.env.local` devolvia o `.env.local` sem autenticação (reproduzido com curl). Agora `src/lib/storage/local.ts` aceita só buckets conhecidos, segmentos simples e caminho resolvido dentro do bucket → 404.
+  - **Upload:** aceitava qualquer conteúdo (SVG/HTML servidos como página) e qualquer caminho. Agora só PNG/JPEG/WebP/GIF identificados pelos bytes, até 5 MB, com o caminho iniciando pelo id do dono; resposta com `nosniff` e CSP `sandbox`.
+  - **Login:** mensagens distintas permitiam enumerar e-mails; agora 401 único e bcrypt de custo constante para e-mail inexistente.
+  - **Cadastro:** corrida no primeiro usuário e duplicado virando 500; agora transação com bloqueio e 409.
+  - **IA:** chave do Gemini ia na URL (vazava em logs); agora no cabeçalho `x-goog-api-key`, com timeout de 20 s e cota consumida antes da chamada externa.
+  - **Validação:** todas as rotas com Zod (UUID, cores hexadecimais, ISO 4217, faixas plausíveis de métricas, datas 1800–2200, tipos de atividade); chaves Puck/página inválidas → 404; webhook com assinatura inválida → 400 e falha interna → 5xx (a Stripe reenvia).
+  - **Admin:** troca de plano bloqueia a linha do usuário e responde 404 para usuário inexistente.
+- **Testes:** `src/app/api/{auth-storage,dados-admin,funcoes}.integration.test.ts` (29 testes) chamam as Route Handlers reais contra o MySQL de teste, cobrindo sucesso, validação, não autenticado, sem permissão, inexistente e payload inválido, com o CRUD confirmado direto no banco.
+- **Evidências:** `pnpm test` 191/191; `pnpm test:integration` 65/65; `check:format`, `check:lint` e `check:types` com exit 0; `build` com exit 0 e zero avisos. Smoke HTTP no servidor real: login admin 200, upload PNG 200 servido como `image/png` com `nosniff`, login errado 401, travessia 404 e filtros malformados 400.
+- **Encaminhado:** `ui-config` sem chamador no cliente (tarefa 20).
 
 ### 24 · Correção crítica: vazamento de conexões MySQL em produção
 
