@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `█████████████████░░░` **85%** |
+| Progresso          | `██████████████████░░` **88%** |
 | Tarefas totais     | 26                             |
-| 🟢 Finalizadas     | 22                             |
+| 🟢 Finalizadas     | 23                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 3                              |
+| ⚪ A iniciar       | 2                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-06                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (22 ÷ 26 = 84,6%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (23 ÷ 26 = 88,5%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa      | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                        |
-| --- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 20  | Performance | Auditar bundle, imports, dependências pesadas, fronteiras Server/Client, re-renders, imagens, fontes, lazy loading, dynamic imports, queries SQL, conexões, caching, waterfalls, chamadas duplicadas e assets; converter o `initial-data` do Puck para slots nativos; verificar os endpoints `ui-config` sem chamador no cliente (remover somente com evidência). |
+| Nº  | Tarefa                     | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| --- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 21  | QA funcional com navegador | Aplicação real (`pnpm build` + `pnpm start`) navegada com Playwright por todas as páginas e menus (landing, login, cadastro, onboarding, dashboard, perfil, plano, metas, chat, dispositivos, monitoramento, agenda, billing, área administrativa, editor Puck e Site Experience Builder), clicando em links, botões, tabs, selects, dialogs, dropdowns, toggles, forms e paginações; health check real. Registrado na tarefa 20: valor fixo "94.2" de "Harmonia atual" no dashboard. |
 
 ### BLOQUEADAS
 
@@ -49,14 +49,6 @@ Nenhuma tarefa bloqueada no momento.
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
-
-### 21 · QA funcional com navegador
-
-_Instrução: Tarefa 19 · itens 30, 35 e 46._
-
-- Subir a aplicação real (`pnpm build` + `pnpm start`) e navegar com Playwright por landing, login, cadastro, onboarding, dashboard, perfil, plano, metas, chat, dispositivos, saúde, billing, configurações, menus, sidebar, área administrativa, editor Puck, Site Experience Builder e demais páginas.
-- Clicar em links, botões, tabs, selects, dialogs, dropdowns, toggles, forms, paginações e cards interativos.
-- Health check real: processo Next.js, porta, HTTP, MySQL saudável, migration concluída, conexão app ↔ MySQL, página principal renderizada e login funcional; endpoint de health/readiness sem expor segredos.
 
 ### 22 · QA responsivo e acessibilidade
 
@@ -515,6 +507,23 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
 - **Testes:** `src/lib/puck/sanitization/rich-text.test.ts` (10), `src/lib/security/csrf.test.ts` (5), `src/lib/observability/log-seguro.test.ts` (3), teste de produção em `src/lib/billing/config.test.ts` e `src/app/api/seguranca.integration.test.ts` (8: bloqueio por conta com `Retry-After`, zeragem após acerto, limite por IP, limite de cadastro, 25 registros simultâneos sem perda, sessão sem JWT, admin rebaixado e conta removida).
 - **Evidências:** `pnpm test` 210/210; `pnpm test:integration` 73/73; `pnpm test:launchers` 17/17; `check:format`, `check:lint` e `check:types` com exit 0; `build` com exit 0 e zero avisos (`ƒ Proxy (Middleware)` registrado). Smoke real: cabeçalhos em `/login`, HSTS no `pnpm start`, POST cross-site 403 e same-origin 200, 10 logins errados → 401 e o 11º → 429 com `Retry-After: 897`, `/api/storage` com `default-src 'none'; sandbox`, editor Puck sem erros de console, `./run.sh up` com 14 migrations e login do admin.
 - **Encaminhado:** `maximumScale: 1` do viewport (acessibilidade) para a tarefa 22.
+
+### 20 · Performance
+
+- **Status:** 🟢 finalizada · **Commit:** `616aa53` · **Push:** `c5125ec..616aa53 main -> main` (confirmado)
+- **Método:** `pnpm build` + `pnpm start`, Chromium (Playwright) em contexto limpo e sem cache, somando os scripts transferidos (comprimidos); análise dos pacotes com `next experimental-analyze` e assinaturas dos chunks. Documento: `docs/performance.md`.
+- **Gargalos encontrados e corrigidos:**
+  - **Puck em todas as páginas (~307 KB):** cada página importava o runtime do Puck para renderizar o documento publicado da rota, mesmo vazio. O `PuckClientRenderer` agora só carrega o novo `PuckDocumentView` (via `next/dynamic`) quando há blocos (`src/lib/puck/conteudo.ts`). Defeito visual encontrado junto: com o documento vazio, o root exibia ao usuário final um cabeçalho técnico ("root app shell", "chave: patient-portal", "fonte: manual"); capturas antes e depois em `/goals`. Com um bloco publicado de teste o bloco aparece sem erros de console; o documento foi restaurado em seguida (conteúdo idêntico ao original).
+  - **Sentry sem DSN (~157 KB):** o SDK e o Replay eram baixados mesmo sem `NEXT_PUBLIC_SENTRY_DSN`. `instrumentation-client.ts` e `global-error.tsx` passaram a importar o SDK dinamicamente, só com DSN.
+  - **Zod nas páginas públicas (~90 KB):** o cliente revalidava a configuração que o servidor já entrega validada, e os padrões dividiam módulo com os schemas. Padrões movidos para `modules/lyra-customaze-ui-ux/src/site-page-config/defaults.ts` (comparados com os anteriores, idênticos nas três páginas); importações só de tipo marcadas com `import type`.
+  - **Landing e dashboard juntos em `/`:** os dois são carregados conforme a sessão (`next/dynamic`); o visitante não baixa o dashboard nem o Recharts.
+  - **Requisições duplicadas:** `src/lib/http/requisicao-compartilhada.ts` (chamadas simultâneas com a mesma chave reaproveitam a que está em andamento, sem cache além do voo) aplicado à configuração das páginas e aos recursos da conta; `/api/public/page-config/app` caiu de 4 para 1 chamada por página e `/chat` de 12 para 8 chamadas de API.
+  - **Código e assets mortos (provas de morte com `grep`):** rotas `/api/admin/ui-config` e `/api/public/ui-config` sem chamador desde o commit `6774c18` (março de 2026; a tabela `ui_config` foi mantida para não descartar dados); 5 SVGs do create-next-app; protótipo `lyra-ui-preview.html` (carregava Tailwind e `lucide@latest` de CDN na origem da aplicação) e `mockup.png` (636 KB) movidos de `public/` para `docs/design/`; 7 classes de componente e 2 utilities do `globals.css` sem uso; `getHttpErrorStatus` duplicado do `statusDeErro` (testes migrados para `src/lib/http/api.test.ts`).
+  - **Documentos iniciais do Puck:** reescritos em slots nativos; um teste temporário provou que a migração dos documentos antigos produz exatamente os novos nos 22 documentos, e os testes de migração passaram a gerar o formato legado a partir dos nativos.
+- **Resultado (JS da página):** `/` visitante 817 → 235 KB; `/login` 382 → 189 KB; `/chat` 991 → 255 KB; `/plan` 1000 → 241 KB; `/goals` 1000 → 350 KB; `/profile` 991 → 517 KB; `/appointments` 1043 → 394 KB; `/admin/dashboard` 999 → 243 KB; `/admin/puck` 1132 → 590 KB. O prefetch das rotas do menu (padrão do `<Link>`) continua após o carregamento.
+- **Verificado sem alteração:** fontes (`next/font` já serve da própria origem, subset latin), índices das consultas por usuário e pool único de conexões.
+- **Evidências:** `pnpm test` 241/241; `pnpm test:integration` 73/73; `check:format`, `check:lint` e `check:types` com exit 0; `build` com exit 0 e zero avisos; console sem erros em `/`, `/login`, `/goals`, `/chat`, `/profile` e `/admin/puck` (modo dev); `./run.sh up` com verificação ponta a ponta.
+- **Investigado e registrado:** em `/appointments` (modo dev) o React avisa "outdated JSX transform". Causa: `uncontrollable` 7.2.1, dependência do `react-big-calendar` 1.20.0 (última versão, que exige `^7.2.1`), publicado com o transform clássico (`__self`). O aviso só existe em desenvolvimento e vem de pacote de terceiro; não há versão compatível que o elimine.
 
 ### 24 · Correção crítica: vazamento de conexões MySQL em produção
 
