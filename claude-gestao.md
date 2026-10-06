@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `█████████████░░░░░░░` **65%** |
+| Progresso          | `██████████████░░░░░░` **69%** |
 | Tarefas totais     | 26                             |
-| 🟢 Finalizadas     | 17                             |
+| 🟢 Finalizadas     | 18                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 8                              |
+| ⚪ A iniciar       | 7                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-06                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (17 ÷ 26 = 65,4%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (18 ÷ 26 = 69,2%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                                                | O que está sendo realizado                                                                                                                                                                                                                                                                                         |
-| --- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 15  | Revisão do run_windows.py e eliminação de redundância | Analisar por que o `run_windows.py` existe e a sobreposição com o `run.sh`; escolher e documentar tecnicamente a arquitetura: (A) `run.sh` principal no Git Bash e `run_windows.py` alternativa PowerShell/CMD, (B) unificação com wrapper, ou (C) remoção do redundante somente se comprovadamente desnecessário. |
+| Nº  | Tarefa             | O que está sendo realizado                                                                                                                                                                                                                                                                                          |
+| --- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 16  | Migrations e banco | Validar todas as migrations (ordenação, idempotência, checksum, schema, PKs, FKs, índices, constraints, tipos, timestamps, collations, charset, defaults e tabelas); testar banco vazio → migrations → aplicação e banco existente → upgrade → aplicação sem apagar volumes; backup real com restore real validado. |
 
 ### BLOQUEADAS
 
@@ -49,14 +49,6 @@ Nenhuma tarefa bloqueada no momento.
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
-
-### 16 · Migrations e banco
-
-_Instrução: Tarefa 14 · itens 17 e 18._
-
-- Validar todas as migrations: ordenação, idempotência, checksum, schema, PKs, FKs, índices, constraints, tipos, timestamps, collations, charset, defaults e tabelas administrativas, usuários, planos, billing, perfil, dados de saúde e demais.
-- Testar banco vazio → migrations → aplicação e banco existente → upgrade → aplicação, sem apagar volumes.
-- Implementar ou corrigir backup real e validar restore real.
 
 ### 17 · Testes automatizados
 
@@ -440,6 +432,35 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
   - **Segredos:** nenhuma das quatro senhas do `.env.local` aparece nos logs.
   - **Qualidade:** `bash -n` e `shellcheck -S warning` sem achados; Prova de Morte de `kill_port`, `bar.state` e `app_stop`: nenhuma ocorrência. `check:format`, `check:lint` e `check:types` com exit 0; `test` 127/127; `build` com exit 0.
 - **Limite do ambiente:** o sandbox não tem Windows; os ramos exclusivos do Git Bash (`netstat`, `tasklist`, `taskkill`, `winpid`, `cmd.exe /c ver`) foram validados só estaticamente. O teste real deve ser feito pelo operador no Windows 11 com `./run.sh doctor`, `./run.sh up`, `./run.sh status` e `./run.sh stop`.
+
+### 15 · Revisão do run_windows.py e eliminação de redundância
+
+- **Status:** 🟢 finalizada · **Commit:** `d92005f` · **Push:** `main -> main` (confirmado; `main...origin/main` sem divergência)
+- **Por que o arquivo existia:** criado (commit `71e04a0`) porque o `run.py` da época era só para WSL/Ubuntu; virou uma segunda implementação do launcher no Windows, paralela ao `run.sh`.
+- **Divergências encontradas na versão anterior (661 linhas):**
+  - recorria ao `npm` sem `pnpm` no PATH e instalava sem `--frozen-lockfile`, fora do Corepack;
+  - `stop` com `Stop-Process` só no PID registrado (o servidor Next.js filho ficava vivo — mesma causa raiz corrigida no `run.py` e no `run.sh`);
+  - apagava o `.next` a cada subida e reiniciava a aplicação mesmo saudável;
+  - estado próprio em `.lyra-run-windows/`, invisível para os outros launchers;
+  - sem identificação de donos de portas, MySQL "pronto" só pela porta TCP, prontidão HTTP aceitando qualquer status < 500 e `doctor` que só verificava o PATH.
+- **Decisão (opção B, documentada em `docs/launchers.md`):** uma só implementação no Windows (`run.sh`) e o `run_windows.py` como wrapper fino. A opção A manteria duas implementações divergentes para o mesmo sistema; a C quebraria PowerShell/CMD e os documentos que citam `python run_windows.py`.
+- **Implementado:**
+  - Wrapper só com biblioteca padrão (Python 3.9+) que localiza o `bin\bash.exe` do Git for Windows (`LYRA_GIT_BASH`, `git.exe` do PATH, registro `GitForWindows`, pastas padrão), recusa o `bash.exe` do WSL e valida por `uname -s` (MINGW/MSYS), explicando cada recusa.
+  - Delegação ao `run.sh` com `LANG=C.UTF-8` e código de saída repassado (130 no Ctrl+C).
+  - Comandos antigos aceitos com aviso (`dev`, `prod`, `start-dev`, `start-prod`, `db-start`, `db-stop`, `stop-app`, `stop-all`, `setup-env`, `install-deps`, `health`); `build` recusado (exit 2) com orientação.
+  - Aviso sobre estado legado em `.lyra-run-windows/` (mantido no `.gitignore`, agora comentado).
+  - Manual completo (seções 10.5, 11, 25.2, 26 e 27), README e `docs/launchers.md` (decisão, funcionamento, tabela de aliases, validação e matriz de paridade) atualizados.
+- **Evidências (execução real em Linux, via delegação ao `bash` do sistema):**
+  - ajuda sem terminal e com `--help`; menu em pseudo-terminal com EOF;
+  - comando desconhecido e argumento inválido (exit 2 vindo do `run.sh`); `build` recusado (exit 2);
+  - alias `dev` com subida completa e verificação ponta a ponta; `health` (doctor saudável); `stop-all` (app e MySQL parados, nenhum processo restante);
+  - `status` pelo wrapper e pelo `run.py` mostrando a mesma aplicação;
+  - Ctrl+C em `logs --seguir` com exit 130;
+  - descoberta do Git Bash com estrutura de pastas simulada: ordem dos candidatos para `cmd\git.exe` e `mingw64\bin\git.exe`, `uname` MINGW aceito e `bash.exe` da pasta do Windows recusado como WSL;
+  - `ruff`, `ruff format`, `mypy --strict` (Linux e `--platform win32`) e sintaxe Python 3.9 sem achados;
+  - Prova de Morte de `run_windows_`, `app.meta.json`, `install.hash`, `EnvManager` e `Stop-Process`: só restam menções históricas (`TASK_MESTRA_REDIGESIGN_LYRA_METACARE_2026.md`, revisada na tarefa 23) e a descrição da versão anterior em `docs/launchers.md`;
+  - `check:format`, `check:lint` e `check:types` com exit 0; `test` 127/127; `build` com exit 0.
+- **Limite do ambiente:** sem Windows no sandbox; a execução real de `py run_windows.py doctor` e `py run_windows.py up` no Windows 11 (PowerShell) fica para o operador, junto com o teste do `run.sh` no Git Bash.
 
 ### 24 · Correção crítica: vazamento de conexões MySQL em produção
 
