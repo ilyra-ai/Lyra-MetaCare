@@ -34,7 +34,7 @@ O **Lyra MetaCare** transforma dados de wearables, hábitos e contexto pessoal e
 | 🧠 **Inteligência**      | Motores isomórficos determinísticos (testáveis) + IA configurável por documentos/skills, com opção de modelo externo via BYOK. |
 | 🔒 **Privacidade**       | Modo Privacidade real: índices calculados no navegador; conversas processadas apenas pelo motor local quando ativado.          |
 | 🎨 **Experiência**       | Design system único 2026 (tema claro, glassmorphism, gradientes suaves), 100% responsivo e em **pt-BR**.                       |
-| ⚙️ **Operação**          | Subida local de ponta a ponta com um único comando (`./run.sh`): banco, migrações e aplicação.                                 |
+| ⚙️ **Operação**          | Subida local de ponta a ponta com um único comando (`run.py` no WSL2, `run.sh` no Git Bash): banco, migrações e aplicação.     |
 
 ---
 
@@ -100,7 +100,7 @@ Cinco melhorias baseadas em tendências reais de 2026, **todas implementadas de 
 | **IA**              | Motores determinísticos próprios · Google Gemini opcional via BYOK                                          |
 | **Observabilidade** | Sentry                                                                                                      |
 | **Qualidade**       | Vitest · ESLint · Prettier · TypeScript estrito                                                             |
-| **Infra local**     | Docker Compose (MySQL) · pnpm (via Corepack) · `run.sh`                                                     |
+| **Infra local**     | Docker Compose (MySQL) · pnpm (via Corepack) · `run.py` (WSL2) · `run.sh` (Git Bash)                        |
 
 ---
 
@@ -128,17 +128,18 @@ python3 run.py status       # estado consolidado
 python3 run.py stop         # para aplicação e banco (dados preservados)
 ```
 
-**Windows 11 (Git Bash)** — `run.sh`:
+**Windows 11 (Git Bash)** — `run.sh` (mesmos comandos e garantias do `run.py`; abra o Git Bash na pasta do projeto, pois CMD e PowerShell não executam `.sh`):
 
 ```bash
-./run.sh            # menu interativo (subir tudo, banco, app, doctor, status…)
-./run.sh up         # sobe banco + migrações + app de ponta a ponta
-./run.sh doctor     # diagnóstico do ambiente (somente leitura)
-./run.sh fix        # repara o ambiente pela causa raiz
-./run.sh stop       # para aplicação e banco
+./run.sh            # menu interativo
+./run.sh up         # tudo, em desenvolvimento (use --prod para build + start)
+./run.sh doctor     # diagnóstico (somente leitura)
+./run.sh fix        # correções seguras e idempotentes
+./run.sh status     # estado consolidado
+./run.sh stop       # para aplicação e banco (dados preservados)
 ```
 
-Ao final, a aplicação responde em **http://localhost:3000** e o MySQL em **127.0.0.1:3307**.
+Ao final, a aplicação responde em **http://localhost:3000** e o MySQL em **127.0.0.1:3307**. Se uma dessas portas estiver ocupada por outro programa, os launchers não o encerram: usam a próxima porta livre e informam qual.
 
 ### Caminho manual
 
@@ -213,8 +214,9 @@ src/
    └─ site-page-config · puck   # builder visual e conteúdo dinâmico
 
 mysql/migrations/      # Migrações versionadas e idempotentes (checksum)
-scripts/               # mysql-migrate.mjs (migração + bootstrap)
-run.sh                 # Orquestrador local (preflight, portas, banco, app)
+scripts/               # migrações, env-init, upgrade/backup do MySQL e verificação da app
+run.py                 # Launcher oficial do WSL2 Ubuntu / Linux
+run.sh                 # Launcher do Windows 11 com Git Bash (mesmos comandos do run.py)
 ```
 
 **Princípio-chave:** os motores em `lib/` são puros e determinísticos. Isso os torna **testáveis** e permite que idade biológica, detecção precoce, ciclo e ações proativas rodem **no dispositivo do usuário**, sustentando o Modo Privacidade.
@@ -251,7 +253,7 @@ Política de engenharia: correção sempre pela **causa raiz**, sem placeholders
 - [x] Design system único 2026 (tema claro, responsivo, pt-BR)
 - [x] Documentos/Skills da IA configuráveis
 - [x] Inteligência Lyra 2026 (agêntico, idade biológica, detecção precoce, saúde da mulher, privacidade)
-- [x] Orquestrador local `run.sh`
+- [x] Launchers locais `run.py` (WSL2) e `run.sh` (Git Bash) com paridade de comandos
 - [ ] Registro diário de fluxo e sintomas (saúde da mulher)
 - [ ] Inferência de modelo no navegador (WebGPU) para chat 100% on-device
 - [ ] Exportação de relatórios de longevidade

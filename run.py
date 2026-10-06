@@ -54,11 +54,20 @@ import time
 import traceback
 import urllib.error
 import urllib.request
-from dataclasses import dataclass, field
-from datetime import datetime
-from pathlib import Path
 from collections.abc import Callable, Iterator
-from typing import TextIO
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, TextIO
+
+# Objeto JSON decodificado (package.json, app.json, saída do Compose).
+JsonObjeto = dict[str, Any]
+
+
+def agora() -> datetime:
+    """Hora local com fuso explícito (registrada com offset, ex.: -03:00)."""
+    return datetime.now(timezone.utc).astimezone()
+
 
 PYTHON_MINIMO = (3, 10)
 
@@ -93,6 +102,8 @@ APP_PID = ESTADO / "app.pid"
 APP_META = ESTADO / "app.json"
 
 SERVICO_DB = "mysql"
+# container_name do serviço no compose.yaml (consultável mesmo sem .env.local).
+CONTAINER_DB = "lyra-metacare-mysql"
 PORTA_APP_PADRAO = 3000
 PORTA_DB_PADRAO = 3307
 FAIXA_BUSCA_PORTA = 50
@@ -114,24 +125,37 @@ SEGREDOS = (
 CAUSAS_CONHECIDAS: tuple[tuple[str, str], ...] = (
     (
         r"permission denied.*docker\.sock",
-        "seu usuário não tem acesso ao socket do Docker. Com Docker Engine: "
-        "`sudo usermod -aG docker $USER` e reabra o terminal; com Docker "
-        "Desktop: ative a integração WSL desta distribuição.",
+        (
+            "seu usuário não tem acesso ao socket do Docker. Com Docker Engine: "
+            "`sudo usermod -aG docker $USER` e reabra o terminal; com Docker "
+            "Desktop: ative a integração WSL desta distribuição."
+        ),
     ),
     (
-        r"Cannot connect to the Docker daemon|Is the docker daemon running",
-        "o daemon do Docker não está em execução. Abra o Docker Desktop (com "
-        "integração WSL) ou inicie o Docker Engine (`sudo service docker start`).",
+        # Docker 29+: "failed to connect to the docker API at ...; check if the
+        # path is correct and if the daemon is running".
+        (
+            r"Cannot connect to the Docker daemon|Is the docker daemon running|"
+            r"failed to connect to the docker API|if the daemon is running"
+        ),
+        (
+            "o daemon do Docker não está em execução. Abra o Docker Desktop (com "
+            "integração WSL) ou inicie o Docker Engine (`sudo service docker start`)."
+        ),
     ),
     (
         r"ERR_PNPM_UNSUPPORTED_ENGINE",
-        "versão do Node.js fora do intervalo do package.json. Use a versão do "
-        ".nvmrc: `nvm install && nvm use`.",
+        (
+            "versão do Node.js fora do intervalo do package.json. Use a versão do "
+            ".nvmrc: `nvm install && nvm use`."
+        ),
     ),
     (
         r"ERR_PNPM_OUTDATED_LOCKFILE|frozen-lockfile",
-        "o pnpm-lock.yaml não corresponde ao package.json; atualize o "
-        "repositório (`git pull`) antes de instalar.",
+        (
+            "o pnpm-lock.yaml não corresponde ao package.json; atualize o "
+            "repositório (`git pull`) antes de instalar."
+        ),
     ),
     (
         r"MY-014060|Cannot upgrade from \d+ to \d+",
@@ -143,8 +167,10 @@ CAUSAS_CONHECIDAS: tuple[tuple[str, str], ...] = (
     ),
     (
         r"Access denied for user",
-        "as senhas do .env.local não correspondem às do volume do MySQL (o "
-        "MySQL só aplica as senhas na criação do volume).",
+        (
+            "as senhas do .env.local não correspondem às do volume do MySQL (o "
+            "MySQL só aplica as senhas na criação do volume)."
+        ),
     ),
     (
         r"ECONNREFUSED|connect ETIMEDOUT|Can't connect to MySQL",
@@ -164,15 +190,21 @@ CAUSAS_CONHECIDAS: tuple[tuple[str, str], ...] = (
     ),
     (
         r"429 Too Many Requests|toomanyrequests",
-        "limite de downloads do Docker Hub atingido; aguarde alguns minutos "
-        "ou faça `docker login`.",
+        (
+            "limite de downloads do Docker Hub atingido; aguarde alguns minutos "
+            "ou faça `docker login`."
+        ),
     ),
     (
         # Next.js 16 ("error TS2322", "Failed to type check") e anteriores.
-        r"error TS\d+|Failed to type check|Type error:|Failed to compile|"
-        r"Build error occurred|Module not found",
-        "erro de compilação ou de tipos no código da aplicação; rode "
-        "`pnpm check:types` e veja o arquivo e a linha no log.",
+        (
+            r"error TS\d+|Failed to type check|Type error:|Failed to compile|"
+            r"Build error occurred|Module not found"
+        ),
+        (
+            "erro de compilação ou de tipos no código da aplicação; rode "
+            "`pnpm check:types` e veja o arquivo e a linha no log."
+        ),
     ),
 )
 
@@ -301,12 +333,11 @@ class Saida:
 
     def abrir_registro(self, comando: str) -> None:
         LOGS.mkdir(parents=True, exist_ok=True)
-        carimbo = datetime.now().strftime("%Y%m%d-%H%M%S")
+        momento = agora()
+        carimbo = momento.strftime("%Y%m%d-%H%M%S")
         self.caminho_registro = LOGS / f"run-py-{carimbo}-{comando}.log"
         self.registro = self.caminho_registro.open("a", encoding="utf-8")
-        self.registrar(
-            f"# run.py {comando} · {datetime.now().isoformat(timespec='seconds')}"
-        )
+        self.registrar(f"# run.py {comando} · {momento.isoformat(timespec='seconds')}")
         antigos = sorted(LOGS.glob("run-py-*.log"))[:-LOGS_MANTIDOS]
         for antigo in antigos:
             antigo.unlink(missing_ok=True)
@@ -546,8 +577,9 @@ def node_alvo() -> str:
     return NVMRC.read_text(encoding="utf-8").strip() if NVMRC.exists() else ""
 
 
-def package_json() -> dict:
-    return json.loads(PACKAGE_JSON.read_text(encoding="utf-8"))
+def package_json() -> JsonObjeto:
+    dados: JsonObjeto = json.loads(PACKAGE_JSON.read_text(encoding="utf-8"))
+    return dados
 
 
 def node_minimo() -> tuple[int, ...]:
@@ -1018,7 +1050,7 @@ def estado_banco(consultar_sql: bool = True) -> EstadoBanco:
     if not resultado.saida.strip():
         return estado
     # Compose recente emite um objeto JSON por linha; versões anteriores, um array.
-    registros: list[dict] = []
+    registros: list[JsonObjeto] = []
     for bruta in resultado.saida.splitlines():
         linha = bruta.strip()
         try:
@@ -1082,7 +1114,7 @@ class EstadoApp:
     iniciado_em: str = ""
     log: str = ""
     origem: str = ""
-    meta: dict = field(default_factory=dict)
+    meta: JsonObjeto = field(default_factory=dict)
 
 
 def _pid_vivo(pid: int) -> bool:
@@ -1137,7 +1169,7 @@ def _porta_escutando(pid: int) -> int | None:
 
 def estado_app() -> EstadoApp:
     estado = EstadoApp()
-    meta: dict = {}
+    meta: JsonObjeto = {}
     if APP_META.exists():
         try:
             meta = json.loads(APP_META.read_text(encoding="utf-8"))
@@ -1147,23 +1179,30 @@ def estado_app() -> EstadoApp:
     if pid is None and APP_PID.exists():
         texto = APP_PID.read_text(encoding="utf-8").strip()
         pid = int(texto) if texto.isdigit() else None
-        estado.origem = "iniciada pelo run.sh"
     if not pid or not _pid_vivo(int(pid)) or not _eh_processo_da_app(int(pid)):
         return estado
     estado.pid = int(pid)
-    # Sem metadados (ex.: aplicação iniciada pelo run.sh), a porta é descoberta
-    # pelos sockets em LISTEN do próprio grupo de processos.
+    # Sem metadados (só o app.pid, ex.: launcher de versão anterior), a porta é
+    # descoberta pelos sockets em LISTEN da árvore de processos da aplicação.
     estado.porta = meta.get("porta") or _porta_escutando(int(pid))
     estado.modo = meta.get("modo", "dev")
     estado.iniciado_em = meta.get("iniciado_em", "")
     estado.log = meta.get("log", "")
-    estado.origem = estado.origem or "iniciada pelo run.py"
+    # O app.json registra qual launcher iniciou a aplicação (run.py ou run.sh).
+    origem = meta.get("origem")
+    estado.origem = (
+        f"iniciada pelo {origem}" if origem else "iniciada por outro launcher"
+    )
     estado.meta = meta
     return estado
 
 
 def consultar_http(
-    url: str, *, metodo: str = "GET", corpo: dict | None = None, timeout: float = 10
+    url: str,
+    *,
+    metodo: str = "GET",
+    corpo: JsonObjeto | None = None,
+    timeout: float = 10,
 ) -> tuple[int, str]:
     dados = json.dumps(corpo).encode() if corpo is not None else None
     requisicao = urllib.request.Request(
@@ -1248,7 +1287,7 @@ def etapa_porta_banco() -> None:
                 f"MYSQL_PORT ajustado para {desejada} (igual ao MYSQL_HOST_PORT publicado pelo Compose)."
             )
         return
-    if dono.origem.endswith("lyra-metacare-mysql"):
+    if dono.origem.endswith(CONTAINER_DB):
         return
     nova = porta_livre_a_partir(desejada + 1)
     saida.aviso(
@@ -1379,7 +1418,7 @@ def etapa_app(modo: str) -> EstadoApp:
         "pgid": os.getpgid(processo.pid),
         "porta": porta,
         "modo": modo,
-        "iniciado_em": datetime.now().isoformat(timespec="seconds"),
+        "iniciado_em": agora().isoformat(timespec="seconds"),
         "log": str(caminho_log),
         "comando": comando,
         "origem": "run.py",
@@ -1579,7 +1618,19 @@ def _arvore_de_processos(raiz: int) -> list[int]:
 def parar_banco() -> None:
     saida.etapa("Parando o MySQL (dados preservados no volume)")
     if not ENV_LOCAL.exists():
-        saida.ok("Sem .env.local: nenhum banco deste projeto configurado.")
+        # Sem .env.local o Compose não interpola o serviço; o container do
+        # projeto ainda é parado diretamente pelo nome (o volume é mantido).
+        resultado = consultar(
+            ["docker", "inspect", "--format", "{{.State.Status}}", CONTAINER_DB],
+            timeout=20,
+        )
+        if resultado.codigo == 0 and resultado.saida.strip() == "running":
+            executar(["docker", "stop", CONTAINER_DB], descricao="Parada do MySQL")
+            saida.ok("MySQL parado (sem .env.local; parado pelo nome do container).")
+        else:
+            saida.ok(
+                "Sem .env.local e sem container do MySQL deste projeto em execução."
+            )
         return
     estado = estado_banco(consultar_sql=False)
     if estado.estado != "running":

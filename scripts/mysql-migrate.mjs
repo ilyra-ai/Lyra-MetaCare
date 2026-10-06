@@ -417,7 +417,11 @@ async function main() {
         console.log(`Aplicada: ${file}`);
       } catch (error) {
         await connection.rollback();
-        throw error;
+        // Identifica a migration que falhou (a mensagem do MySQL não a cita).
+        throw new Error(
+          `Falha ao aplicar ${file}: ${error instanceof Error ? error.message : String(error)}`,
+          { cause: error }
+        );
       } finally {
         connection.release();
       }

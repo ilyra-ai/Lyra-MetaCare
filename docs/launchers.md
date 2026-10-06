@@ -5,7 +5,7 @@ Três pontos de entrada sobem o ambiente local. Todos usam a mesma configuraçã
 | Launcher         | Ambiente suportado                       | Situação                                             |
 | ---------------- | ---------------------------------------- | ---------------------------------------------------- |
 | `run.py`         | WSL2 Ubuntu 22.04+ (e Linux equivalente) | Oficial, reescrito e validado (tarefa 13)            |
-| `run.sh`         | Windows 11 com Git Bash (MINGW/MSYS)     | Em modernização (tarefa 14)                          |
+| `run.sh`         | Windows 11 com Git Bash (MINGW/MSYS)     | Reescrito (tarefa 14); validado em Linux             |
 | `run_windows.py` | Windows 11 em PowerShell/CMD             | Em revisão de redundância com o `run.sh` (tarefa 15) |
 
 ## `run.py` (WSL2 Ubuntu / Linux)
@@ -53,34 +53,70 @@ node scripts/mysql-upgrade.mjs --backup                       # cópia a frio ve
 node scripts/mysql-upgrade.mjs --restaurar <volume_de_backup> # restaura (recria o volume pelo Compose se necessário)
 ```
 
+## `run.sh` (Windows 11 com Git Bash)
+
+### Ambiente suportado
+
+- **Windows 11 com Git Bash** (Git for Windows, `uname` MINGW64/MSYS), Docker Desktop e Node.js 24 LTS para Windows. É o ambiente principal do `run.sh`. CMD e PowerShell não executam `.sh`: abra o Git Bash na pasta do projeto.
+- **Linux com bash 4+** é aceito como ambiente equivalente (no WSL2 o launcher oficial é o `run.py`).
+- **Cygwin é detectado e recusado** (`doctor` e `up` param com erro): o Node.js e o Docker Desktop do Windows esperam caminhos Win32, que o Cygwin não converte de forma confiável.
+- macOS é aceito com aviso (fora dos ambientes de referência).
+- Requer bash 4+ (o Git Bash traz o 5.x). Todos os caminhos são relativos à raiz do projeto, o que evita a conversão de caminhos `/c/...` ao chamar executáveis nativos do Windows.
+
+### Comandos
+
+Os mesmos do `run.py`, com a mesma semântica e os mesmos códigos de saída: `./run.sh` (menu com terminal; sem terminal, ajuda), `up [--prod]`, `app [--prod]`, `db`, `migrate`, `doctor`, `fix`, `repair [--sim]`, `purge --confirmar-purge`, `status`, `logs [app|db] [--seguir]`, `stop [app|db]` e `help`. Argumentos inválidos terminam com exit `2`.
+
+### Como cada garantia é implementada no Git Bash
+
+| Garantia                  | Windows (Git Bash)                                                                                                                                                                                     | Linux                                                                                                         |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| Dono de uma porta         | `docker ps` (container); `netstat -ano -p TCP` filtrando o endereço remoto `0.0.0.0:0`/`[::]:0` (independe do idioma do Windows) e `tasklist /V` para nome e usuário                                   | `docker ps`; `ss -ltnp` ou `lsof`, com a linha de comando de `/proc/<pid>/cmdline`                            |
+| Processo de terceiros     | Nunca é encerrado: a aplicação usa a próxima porta livre (`PORT`, `APP_BASE_URL` e `NEXT_PUBLIC_APP_URL` ajustados no processo) e o MySQL é realocado (`MYSQL_HOST_PORT`/`MYSQL_PORT` no `.env.local`) | Igual                                                                                                         |
+| Aplicação desacoplada     | `nohup`; o `app.json` guarda o PID do MSYS e o PID Windows (`/proc/<pid>/winpid`)                                                                                                                      | `setsid nohup` (sessão própria: o Ctrl+C no terminal não derruba a aplicação)                                 |
+| Parada                    | `taskkill /PID <pid Windows> /T /F` (somente a árvore iniciada pelo launcher) e confirmação de que a porta foi liberada                                                                                | SIGTERM para a árvore de processos capturada antes do sinal; SIGKILL após 20 s; confirmação da porta liberada |
+| Logs                      | `.logs/run-sh-<data>-<comando>.log` com comandos, saída integral e exit code; `.logs/app-<modo>.log` para a aplicação                                                                                  | Igual                                                                                                         |
+| Verificação ponta a ponta | `scripts/verificar-app.mjs <porta>`: `/api/health` com todas as migrations, `/` e `/login` com HTTP 200 e login do administrador inicial                                                               | Igual                                                                                                         |
+| Segredos                  | Senhas nunca vão para argumentos de processos (`MYSQL_PWD` herdado pelo `docker compose exec -e MYSQL_PWD`)                                                                                            | Igual                                                                                                         |
+| Interrupção (Ctrl+C)      | Exit `130`; a aplicação já iniciada continua registrada e é encerrada por `stop`                                                                                                                       | Igual                                                                                                         |
+
+### Interoperabilidade
+
+O `run.sh` e o `run.py` compartilham o `.lyra-run/app.json` (campo `origem` indica qual launcher iniciou a aplicação, e `iniciado_em` é gravado em hora local com fuso, ex.: `2026-10-06T11:59:46-03:00`). Uma aplicação iniciada por um deles aparece no `status` do outro e é encerrada pelo `stop` do outro.
+
+### O que foi validado
+
+- **Linux (bash 5.2), de forma real:** `help` sem terminal; argumentos inválidos (exit 2); `doctor`; `up` (dev) e segunda execução idempotente; `status`; `logs app`, `logs db`; `stop app`, `stop` (app + banco); restart com banco parado; `up --prod` (build + start); aplicação em outro modo já em execução (aviso, sem duplicar processo); porta 3000 ocupada por terceiro (app sobe na 3001, terceiro intacto); porta 3307 ocupada (MySQL realocado para 3308, terceiro intacto); Docker indisponível (diagnóstico com causa); `.env.local` ausente; `node_modules` ausente (reinstalado); build quebrado (causa de tipos apontada); migration inválida (arquivo e erro do MySQL apontados); `purge` sem e com confirmação, seguido de restauração com contagem de linhas idêntica (27 tabelas, 87 linhas); `repair` sem e com `--sim`; menu em pseudo-terminal (opções, opção inválida, EOF); Ctrl+C no menu, em `logs --seguir` e durante o `up` (exit 130, aplicação recuperável pelo `stop`); interoperabilidade com o `run.py` nos dois sentidos; `shellcheck -S warning` sem achados.
+- **Windows 11 / Git Bash:** os ramos específicos do Windows (`netstat`, `tasklist`, `taskkill`, `winpid`, `cmd.exe /c ver`) foram validados estaticamente (`bash -n` e `shellcheck`), porque o sandbox de desenvolvimento não dispõe de Windows. A execução real nesse ambiente permanece necessária e está registrada como limite conhecido no `claude-gestao.md`.
+
 ## Contrato comum dos launchers
 
 | Item                | Contrato                                                                                   |
 | ------------------- | ------------------------------------------------------------------------------------------ |
 | Configuração        | `.env.local` gerado por `node scripts/env-init.mjs` (nunca há valores padrão de senha)     |
 | Banco               | `docker compose --env-file .env.local` (serviço `mysql`)                                   |
-| Estado da aplicação | `.lyra-run/app.pid` (PID) e `.lyra-run/app.json` (PID, porta, modo, início, log)           |
+| Estado da aplicação | `.lyra-run/app.pid` (PID) e `.lyra-run/app.json` (PID, porta, modo, início, log, origem)   |
 | Logs                | `.logs/` (ignorado pelo Git)                                                               |
 | Saúde da aplicação  | `GET /api/health`: `200` com o número de migrations aplicadas, ou `503` sem expor detalhes |
 
 ## Matriz de paridade
 
-| Função                      | `run.py` | `run.sh` (estado atual) | `run_windows.py` (estado atual) |
-| --------------------------- | -------- | ----------------------- | ------------------------------- |
-| Menu interativo             | ✔        | ✔                       | —                               |
-| `up` (dev)                  | ✔        | ✔                       | `dev`                           |
-| `up --prod` (build + start) | ✔        | — (tarefa 14)           | `prod`                          |
-| `app`                       | ✔        | ✔                       | `start-dev` / `start-prod`      |
-| `db`                        | ✔        | ✔                       | `db-start`                      |
-| `migrate`                   | ✔        | ✔                       | `migrate`                       |
-| `doctor`                    | ✔        | ✔                       | `doctor`                        |
-| `fix`                       | ✔        | ✔                       | `setup-env` + `install-deps`    |
-| `repair`                    | ✔        | — (tarefa 14)           | —                               |
-| `purge` com backup          | ✔        | — (tarefa 14)           | —                               |
-| `status`                    | ✔        | ✔                       | `status` / `health`             |
-| `logs`                      | ✔        | ✔                       | —                               |
-| `stop`                      | ✔        | ✔                       | `stop-app` / `stop-all`         |
-| `help`                      | ✔        | ✔                       | `--help`                        |
-| Verificação ponta a ponta   | ✔        | parcial (HTTP)          | `health`                        |
+| Função                      | `run.py` | `run.sh` | `run_windows.py` (estado atual) |
+| --------------------------- | -------- | -------- | ------------------------------- |
+| Menu interativo             | ✔        | ✔        | —                               |
+| `up` (dev)                  | ✔        | ✔        | `dev`                           |
+| `up --prod` (build + start) | ✔        | ✔        | `prod`                          |
+| `app [--prod]`              | ✔        | ✔        | `start-dev` / `start-prod`      |
+| `db`                        | ✔        | ✔        | `db-start`                      |
+| `migrate`                   | ✔        | ✔        | `migrate`                       |
+| `doctor`                    | ✔        | ✔        | `doctor`                        |
+| `fix`                       | ✔        | ✔        | `setup-env` + `install-deps`    |
+| `repair`                    | ✔        | ✔        | —                               |
+| `purge` com backup          | ✔        | ✔        | —                               |
+| `status`                    | ✔        | ✔        | `status` / `health`             |
+| `logs [--seguir]`           | ✔        | ✔        | —                               |
+| `stop [app\|db]`            | ✔        | ✔        | `stop-app` / `stop-all`         |
+| `help`                      | ✔        | ✔        | `--help`                        |
+| Verificação ponta a ponta   | ✔        | ✔        | `health`                        |
 
-As colunas do `run.sh` e do `run_windows.py` serão atualizadas nas tarefas 14 e 15.
+A coluna do `run_windows.py` será atualizada na tarefa 15.
