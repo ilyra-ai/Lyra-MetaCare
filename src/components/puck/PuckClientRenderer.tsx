@@ -1,13 +1,17 @@
 'use client';
 
 import * as React from 'react';
-import { Render } from '@puckeditor/core';
+import dynamic from 'next/dynamic';
 
-import { obterConfigPuckLyra } from '@/lib/puck/config/base';
 import { getInitialPuckData } from '@/lib/puck/config/initial-data';
+import { documentoPuckTemBlocos } from '@/lib/puck/conteudo';
 import { normalizarDadosPuck } from '@/lib/puck/data-utils';
-import { aplicarResolveAllDataLyra } from '@/lib/puck/dynamic/resolve-data';
 import type { LyraPuckData, LyraPuckDocumentKey } from '@/lib/puck/types';
+
+// O runtime do Puck só é baixado quando o documento publicado tem blocos.
+const PuckDocumentView = dynamic(() => import('./PuckDocumentView'), {
+  ssr: false,
+});
 
 type PuckClientRendererProps = {
   documentKey: LyraPuckDocumentKey;
@@ -19,11 +23,10 @@ export function PuckClientRenderer({
   className,
 }: PuckClientRendererProps) {
   const [data, setData] = React.useState<LyraPuckData | null>(null);
-  const [error, setError] = React.useState<string | null>(null);
 
   // Os dados só existem após a busca no cliente; no servidor e na primeira
-  // renderização do cliente o resultado é o mesmo (placeholder), então não há
-  // divergência de hidratação e nenhuma flag "isClient" é necessária.
+  // renderização do cliente o resultado é o mesmo (nada), então não há
+  // divergência de hidratação.
   React.useEffect(() => {
     let active = true;
 
@@ -34,24 +37,22 @@ export function PuckClientRenderer({
           throw new Error('Falha ao obter documento do Puck');
         }
 
-        const json = await res.json();
-        const publishedData = json.publishedData;
-        const fallback = getInitialPuckData(documentKey);
+        const json = (await res.json()) as { publishedData?: unknown };
+        const normalized = normalizarDadosPuck(
+          json.publishedData,
+          getInitialPuckData(documentKey)
+        );
 
-        const normalized = normalizarDadosPuck(publishedData, fallback);
-        const config = obterConfigPuckLyra(documentKey);
-
-        const resolved = await aplicarResolveAllDataLyra(normalized, config);
-
-        if (active && resolved) {
-          setData(resolved);
+        if (active) {
+          setData(normalized);
         }
       } catch (err) {
         if (!active) return;
-        const message =
-          err instanceof Error ? err.message : 'Erro desconhecido.';
-        console.error(`PuckClientRenderer [${documentKey}]:`, message);
-        setError(message);
+        // Bloco opcional: a falha fica registrada e a página segue sem ele.
+        console.error(
+          `PuckClientRenderer [${documentKey}]:`,
+          err instanceof Error ? err.message : 'Erro desconhecido.'
+        );
       }
     }
 
@@ -62,25 +63,15 @@ export function PuckClientRenderer({
     };
   }, [documentKey]);
 
-  // Falha já registrada no console; o bloco opcional não é renderizado.
-  if (error) {
+  if (!data || !documentoPuckTemBlocos(data)) {
     return null;
   }
 
-  if (!data) {
-    return (
-      <div
-        className="hidden animate-pulse rounded bg-muted/20 pb-4 pt-4"
-        aria-hidden="true"
-      />
-    );
-  }
-
-  const config = obterConfigPuckLyra(documentKey);
-
   return (
-    <div className={className}>
-      <Render config={config} data={data} />
-    </div>
+    <PuckDocumentView
+      documentKey={documentKey}
+      data={data}
+      className={className}
+    />
   );
 }

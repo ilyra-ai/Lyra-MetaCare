@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 import { useAuth } from '@/context/AuthContext';
 import { useKeyedResource } from '@/hooks/use-keyed-resource';
+import { requisicaoCompartilhada } from '@/lib/http/requisicao-compartilhada';
 
 export interface UseAccountResourceResult<T> {
   data: T | null;
@@ -60,6 +61,13 @@ export function useAccountResource<T>({
     return payload;
   }, [endpoint, fallbackErrorMessage, isValid]);
 
+  // Cabeçalho, menu lateral e conteúdo pedem o mesmo recurso ao montar: a
+  // carga automática compartilha uma única chamada por usuário e rota.
+  const initialRequest = React.useCallback(
+    () => requisicaoCompartilhada(`${endpoint}:${userId ?? ''}`, request),
+    [endpoint, request, userId]
+  );
+
   const notifyError = React.useCallback(
     (error: unknown) => {
       toast.error(errorToastTitle, {
@@ -70,5 +78,11 @@ export function useAccountResource<T>({
     [errorToastTitle]
   );
 
-  return useKeyedResource<T | null>(userId, request, notifyError, null);
+  return useKeyedResource<T | null>(
+    userId,
+    request,
+    notifyError,
+    null,
+    initialRequest
+  );
 }

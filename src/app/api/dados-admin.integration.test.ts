@@ -14,7 +14,6 @@ import * as paginaAdmin from './admin/page-config/[pageKey]/route';
 import * as planoAdmin from './admin/plans/[planKey]/route';
 import * as planosAdmin from './admin/plans/route';
 import * as puckAdmin from './admin/puck/documents/[documentKey]/route';
-import * as uiConfigAdmin from './admin/ui-config/route';
 import * as assinaturaAdmin from './admin/users/[userId]/subscription/route';
 import * as usuariosAdmin from './admin/users/route';
 import * as dados from './data/[table]/route';
@@ -197,15 +196,6 @@ describe('rotas administrativas', () => {
           .status
       ).toBe(status);
       expect((await chamar(rpcSaude.GET, { usuario })).status).toBe(status);
-      expect(
-        (
-          await chamar(uiConfigAdmin.POST, {
-            method: 'POST',
-            body: { landing: {}, login: {} },
-            usuario,
-          })
-        ).status
-      ).toBe(status);
     }
   });
 

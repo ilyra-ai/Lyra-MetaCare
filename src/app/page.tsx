@@ -1,16 +1,29 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Sparkles, Waves } from 'lucide-react';
 import { SplashScreen } from '@/components/SplashScreen';
-import { Dashboard } from '@/components/dashboard/dashboard';
 import { QuickScanFAB } from '@/components/dashboard/QuickScanFAB';
-import { LandingPage } from '@/components/landing/LandingPage';
 import { AppShell } from '@/components/layout/AppShell';
 import { useAuth } from '@/context/AuthContext';
 import { HealthOrchestratorProvider } from '@/context/HealthOrchestratorContext';
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { scaleRem } from '@/lib/site-page-config/runtime';
+
+// A rota "/" serve a landing (visitante) e o dashboard (sessão ativa). Cada
+// um é carregado só quando é exibido: o visitante não baixa o dashboard e os
+// gráficos (Recharts), e quem está logado não baixa a landing.
+const LandingPage = dynamic(
+  () =>
+    import('@/components/landing/LandingPage').then(
+      (modulo) => modulo.LandingPage
+    ),
+  { loading: () => <SplashScreen /> }
+);
+const Dashboard = dynamic(() =>
+  import('@/components/dashboard/dashboard').then((modulo) => modulo.Dashboard)
+);
 
 type UserProfile = {
   first_name: string | null;
@@ -88,11 +101,13 @@ export default function Home() {
 
   const greeting = useMemo(() => getGreeting(), []);
 
+  // O AuthProvider só renderiza a página depois de resolver a sessão, então
+  // aqui ela é a sessão ativa ou `null` (visitante).
   if (!session) {
     return <LandingPage />;
   }
 
-  if (session === undefined || profileLoading || !minimumTimeElapsed) {
+  if (profileLoading || !minimumTimeElapsed) {
     return <SplashScreen />;
   }
 

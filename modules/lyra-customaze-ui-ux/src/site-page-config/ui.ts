@@ -15,7 +15,7 @@ import {
   Zap,
 } from 'lucide-react';
 
-import { BuilderIconKey, ToneKey } from './schema';
+import type { BuilderIconKey, ToneKey } from './schema';
 
 export const builderIconOptions: Array<{
   value: BuilderIconKey;

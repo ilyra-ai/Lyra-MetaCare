@@ -2,9 +2,9 @@
 
 import * as React from 'react';
 
-import {
-  getDefaultPageConfig,
-  parsePageConfig,
+import { requisicaoCompartilhada } from '@/lib/http/requisicao-compartilhada';
+import { getDefaultPageConfig } from '@/lib/site-page-config/defaults';
+import type {
   SitePageConfigMap,
   SitePageKey,
 } from '@/lib/site-page-config/schema';
@@ -13,6 +13,24 @@ type PublicPageConfigResponse<TKey extends SitePageKey> = {
   config?: SitePageConfigMap[TKey];
   error?: string;
 };
+
+async function buscarConfiguracaoPublica<TKey extends SitePageKey>(
+  pageKey: TKey
+): Promise<SitePageConfigMap[TKey]> {
+  const response = await fetch(`/api/public/page-config/${pageKey}`, {
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Falha ao carregar configuração pública de ${pageKey}.`);
+  }
+
+  // A rota pública já devolve a configuração validada pelo schema no
+  // servidor (getPublicSitePageConfig); revalidar aqui exigiria baixar o Zod
+  // em todas as páginas. Sem configuração na resposta, vale o padrão.
+  const data = (await response.json()) as PublicPageConfigResponse<TKey>;
+  return data.config ?? getDefaultPageConfig(pageKey);
+}
 
 export function usePublicSitePageConfig<TKey extends SitePageKey>(
   pageKey: TKey
@@ -23,19 +41,11 @@ export function usePublicSitePageConfig<TKey extends SitePageKey>(
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
+  // Recarga explícita: sempre uma chamada nova.
   const refresh = React.useCallback(async () => {
-    const response = await fetch(`/api/public/page-config/${pageKey}`, {
-      cache: 'no-store',
-    });
-
-    if (!response.ok) {
-      throw new Error(`Falha ao carregar configuração pública de ${pageKey}.`);
-    }
-
-    const data = (await response.json()) as PublicPageConfigResponse<TKey>;
-    const parsed = parsePageConfig(pageKey, data.config);
-    setConfig(parsed);
-    return parsed;
+    const recebida = await buscarConfiguracaoPublica(pageKey);
+    setConfig(recebida);
+    return recebida;
   }, [pageKey]);
 
   React.useEffect(() => {
@@ -45,13 +55,16 @@ export function usePublicSitePageConfig<TKey extends SitePageKey>(
       try {
         setLoading(true);
         setError(null);
-        const parsed = await refresh();
+        // Cabeçalho, menus e conteúdo montam juntos e pedem a mesma
+        // configuração: uma única chamada atende a todos.
+        const recebida = await requisicaoCompartilhada(
+          `page-config:${pageKey}`,
+          () => buscarConfiguracaoPublica(pageKey)
+        );
 
-        if (!active) {
-          return;
+        if (active) {
+          setConfig(recebida);
         }
-
-        setConfig(parsed);
       } catch (caughtError) {
         if (!active) {
           return;
@@ -76,7 +89,7 @@ export function usePublicSitePageConfig<TKey extends SitePageKey>(
     return () => {
       active = false;
     };
-  }, [pageKey, refresh]);
+  }, [pageKey]);
 
   return {
     config,

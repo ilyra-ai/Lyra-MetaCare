@@ -21,12 +21,16 @@ export interface KeyedResource<T> {
  *   descartadas.
  * - `request` deve ser estável (useCallback) e lançar erro em caso de falha;
  *   `onError` recebe o erro e o recurso passa a valer `fallback`.
+ * - `initialRequest` (opcional, também estável) substitui `request` só na
+ *   carga automática, por exemplo para compartilhar a chamada entre vários
+ *   componentes que montam juntos; `refresh` sempre usa `request`.
  */
 export function useKeyedResource<T>(
   key: string | null,
   request: () => Promise<T>,
   onError: (error: unknown) => void,
-  fallback: T
+  fallback: T,
+  initialRequest: () => Promise<T> = request
 ): KeyedResource<T> {
   const [loaded, setLoaded] = useState<{ key: string; data: T } | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -37,7 +41,7 @@ export function useKeyedResource<T>(
     }
 
     let active = true;
-    request()
+    initialRequest()
       .then((data) => {
         if (active) setLoaded({ key, data });
       })
@@ -50,7 +54,7 @@ export function useKeyedResource<T>(
     return () => {
       active = false;
     };
-  }, [fallback, key, onError, request]);
+  }, [fallback, initialRequest, key, onError]);
 
   const refresh = useCallback(async () => {
     if (key === null) {

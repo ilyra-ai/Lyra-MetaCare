@@ -18,7 +18,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, CheckCircle, XCircle, Watch, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { db } from '@/integrations/mysql/client';
-import { AppPageConfig } from '@/lib/site-page-config/schema';
+import type { AppPageConfig } from '@/lib/site-page-config/schema';
 import { scaleRem } from '@/lib/site-page-config/runtime';
 
 type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'error';

@@ -1,6 +1,5 @@
 'use client';
 
-import * as Sentry from '@sentry/nextjs';
 import { useEffect } from 'react';
 import './globals.css';
 
@@ -15,7 +14,13 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    Sentry.captureException(error);
+    // O SDK só existe no cliente quando há DSN (ver instrumentation-client.ts);
+    // o import dinâmico reaproveita a instância já inicializada.
+    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+      void import('@sentry/nextjs').then((Sentry) => {
+        Sentry.captureException(error);
+      });
+    }
   }, [error]);
 
   return (
