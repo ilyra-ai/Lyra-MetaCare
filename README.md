@@ -111,11 +111,24 @@ Cinco melhorias baseadas em tendências reais de 2026, **todas implementadas de 
 - **Node.js 24 LTS** (versão exata em `.nvmrc` e `.node-version`, hoje 24.21.0; o `pnpm install` recusa versões fora de `^24.18.1`). Com nvm: `nvm install && nvm use`; fnm e nodenv leem o `.node-version` automaticamente.
 - **Docker** (Engine/Desktop) com Docker Compose
 - **pnpm 11** via Corepack, incluído no Node.js 24: `corepack enable && corepack install` ativa a versão exata do campo `packageManager`, sem instalação global.
-- **Bash** (Linux, macOS ou Git Bash no Windows) para o orquestrador `run.sh`
+- **Python 3.10+** para o launcher `run.py` (WSL2 Ubuntu / Linux) ou **Bash** (Git Bash no Windows) para o `run.sh`
 
 ### Caminho recomendado — um único comando
 
-O projeto inclui um orquestrador real (`run.sh`) que faz **preflight de dependências com autocorreção**, **descobre portas livres**, sobe o **MySQL via Docker**, aplica **migrações + bootstrap de administradores** e inicia a **aplicação** — com menu interativo e barra de progresso fixa no terminal.
+Os launchers fazem o preflight do ambiente, preparam o `.env.local`, instalam as dependências conforme o lockfile, sobem o **MySQL via Docker Compose**, aplicam as **migrations + administrador inicial**, iniciam a **aplicação** e verificam a saúde ponta a ponta (`/api/health`, páginas e login). Comandos, garantias de segurança e matriz de paridade: [`docs/launchers.md`](./docs/launchers.md).
+
+**WSL2 Ubuntu / Linux** — `run.py`:
+
+```bash
+python3 run.py              # menu interativo
+python3 run.py up           # tudo, em desenvolvimento (use --prod para build + start)
+python3 run.py doctor       # diagnóstico (somente leitura)
+python3 run.py fix          # correções seguras e idempotentes
+python3 run.py status       # estado consolidado
+python3 run.py stop         # para aplicação e banco (dados preservados)
+```
+
+**Windows 11 (Git Bash)** — `run.sh`:
 
 ```bash
 ./run.sh            # menu interativo (subir tudo, banco, app, doctor, status…)

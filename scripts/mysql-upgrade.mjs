@@ -21,6 +21,7 @@
  *
  * Uso:
  *   node scripts/mysql-upgrade.mjs
+ *   node scripts/mysql-upgrade.mjs --backup
  *   node scripts/mysql-upgrade.mjs --restaurar <volume_de_backup>
  */
 import { execFile } from 'node:child_process';
@@ -569,18 +570,25 @@ async function restaurar(volumeBackup) {
     throw new ErroUpgrade(`Volume de backup ${volumeBackup} não encontrado.`);
   }
 
-  await garantirVolumeLivre(config.nomeVolume);
-  await removerTemporario();
-
-  // O estado atual também é preservado antes da restauração.
-  const carimbo = new Date()
-    .toISOString()
-    .replace(/[-:]/g, '')
-    .replace(/\..+/, '');
-  const volumeAtual = `${config.nomeVolume}_antes_restauracao_${carimbo}`;
   const ferramenta = CADEIA_LTS.at(-1).imagem;
-  await copiarVolume(config.nomeVolume, volumeAtual, ferramenta);
-  log(`Estado atual preservado em ${volumeAtual}.`);
+  if (await volumeExiste(config.nomeVolume)) {
+    await garantirVolumeLivre(config.nomeVolume);
+    await removerTemporario();
+
+    // O estado atual também é preservado antes da restauração.
+    const carimbo = new Date()
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+/, '');
+    const volumeAtual = `${config.nomeVolume}_antes_restauracao_${carimbo}`;
+    await copiarVolume(config.nomeVolume, volumeAtual, ferramenta);
+    log(`Estado atual preservado em ${volumeAtual}.`);
+  } else {
+    // Volume removido (ex.: após o purge): o próprio Compose o cria, com os
+    // rótulos do projeto, sem iniciar o banco.
+    await docker(['compose', 'create', SERVICO]);
+    log(`Volume ${config.nomeVolume} recriado pelo Docker Compose (vazio).`);
+  }
 
   const resumo = await copiarVolume(
     volumeBackup,
@@ -594,6 +602,41 @@ async function restaurar(volumeBackup) {
   log(
     'Suba o banco com a imagem compatível com esse backup (o compose.yaml atual usa ' +
       `${CADEIA_LTS.at(-1).imagem}); para voltar ao MySQL atual, rode o upgrade novamente.`
+  );
+}
+
+// Backup a frio avulso (usado antes de operações destrutivas, como o
+// `python3 run.py purge`). O serviço volta a subir se estava saudável.
+async function backupAvulso() {
+  const config = await lerConfiguracaoCompose();
+  if (!(await volumeExiste(config.nomeVolume))) {
+    log(`Volume ${config.nomeVolume} inexistente: não há dados para copiar.`);
+    return;
+  }
+
+  const estavaAtivo = (await versaoDoServicoAtivo(config)) !== null;
+  await garantirVolumeLivre(config.nomeVolume);
+  await removerTemporario();
+
+  const carimbo = new Date()
+    .toISOString()
+    .replace(/[-:]/g, '')
+    .replace(/\..+/, '');
+  const volumeBackup = `${config.nomeVolume}_backup_${carimbo}`;
+  const resumo = await copiarVolume(
+    config.nomeVolume,
+    volumeBackup,
+    CADEIA_LTS.at(-1).imagem
+  );
+  log(`Backup verificado (${resumo}).`);
+  // Linha estável para leitura pelos launchers.
+  log(`BACKUP_VOLUME=${volumeBackup}`);
+
+  if (estavaAtivo) {
+    await subirServicoEValidar(config);
+  }
+  log(
+    `Para restaurar: node scripts/mysql-upgrade.mjs --restaurar ${volumeBackup}`
   );
 }
 
@@ -612,6 +655,10 @@ async function main() {
       );
     }
     await restaurar(volumeBackup);
+    return;
+  }
+  if (process.argv.includes('--backup')) {
+    await backupAvulso();
     return;
   }
   await upgrade();
