@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `███████████████░░░░░` **73%** |
+| Progresso          | `███████████████░░░░░` **77%** |
 | Tarefas totais     | 26                             |
-| 🟢 Finalizadas     | 19                             |
+| 🟢 Finalizadas     | 20                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 6                              |
+| ⚪ A iniciar       | 5                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-06                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (19 ÷ 26 = 73,1%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (20 ÷ 26 = 76,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa               | O que está sendo realizado                                                                                                                                                                                                                                              |
-| --- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 17  | Testes automatizados | Revisar a suíte Vitest, identificar áreas críticas sem cobertura e adicionar testes reais para autenticação, autorização, usuários, admin, banco, plans, billing, migrations, motores de saúde, IA, APIs, launcher e configuração, sem testes falsos de mocks triviais. |
+| Nº  | Tarefa      | O que está sendo realizado                                                                                                                                                                                                                                 |
+| --- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 18  | APIs e CRUD | Mapear todas as Route Handlers (método, rota, autenticação, autorização, input, output, erros e banco); testar sucesso, validação, erro, não autenticado, sem permissão, recurso inexistente e payload inválido; QA do CRUD real com confirmação no MySQL. |
 
 ### BLOQUEADAS
 
@@ -50,14 +50,6 @@ Nenhuma tarefa bloqueada no momento.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-### 18 · APIs e CRUD
-
-_Instrução: Tarefa 16 · itens 33 e 34._
-
-- Mapear todas as Route Handlers: método, rota, autenticação, autorização, input, output, erros e database.
-- Testar GET, POST, PUT, PATCH e DELETE: sucesso, validação, erro, não autenticado, sem permissão, recurso inexistente e payload inválido.
-- QA do CRUD real (CREATE, READ, UPDATE, DELETE, LIST, SEARCH, FILTER, PAGINATION, validação, persistência no MySQL, autorização e retorno na UI), confirmando no banco.
-
 ### 19 · Segurança
 
 _Instrução: Tarefa 17 · itens 39, 40, 41 e 42._
@@ -66,6 +58,7 @@ _Instrução: Tarefa 17 · itens 39, 40, 41 e 42._
 - Dados de saúde como sensíveis: logs, erros, armazenamento, acesso indevido, APIs, administração, autorização, cache, analytics, Sentry e integrações externas.
 - Stripe: checkout, customer portal, webhooks, planos, entitlement, roles, erros, idempotência, assinatura de webhooks e test mode, marcando a fronteira externa que exige credencial real.
 - Sentry: não quebrar build sem DSN, opcional, sem segredos, respeitando ambientes, sem dados de saúde desnecessários e compatível com o Next.js escolhido.
+- Substituir o sanitizador de rich text do servidor (`src/lib/puck/sanitization/rich-text.ts`, baseado em regex): um `href` com aspas passa pelo `hrefSeguro` e gera atributo injetável no SSR (registrado na tarefa 17).
 
 ### 20 · Performance
 
@@ -479,6 +472,27 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
   - **Restore real:** restauração do backup pré-011 (12 migrations, `TIMESTAMP`) seguida de `./run.sh migrate` (011 reaplicada) com dados idênticos ao estado pós-011.
   - **Qualidade:** `docker compose config` válido; `check:format`, `check:lint` e `check:types` com exit 0; `test` 127/127; `build` com exit 0 e zero avisos; `./run.sh up` com verificação ponta a ponta.
 - **Observação registrada:** o `initial-data` do Puck (`src/lib/puck/config/initial-data.ts`) ainda usa o formato legado `zones`, convertido em tempo de execução pelo `migrate()` oficial (tarefa 25). Não é dado de banco; fica como débito de código para a tarefa 20.
+
+### 17 · Testes automatizados
+
+- **Status:** 🟢 finalizada · **Commit:** `a3bfb5b` · **Push:** `main -> main` (confirmado; `main...origin/main` sem divergência)
+- **Diagnóstico:** 127 testes unitários, sem nenhum teste contra banco real; cobertura de linhas 8,6% (data-api, planos, billing, migrations, motores de IA e de saúde com 0%).
+- **Infraestrutura:**
+  - Vitest com projetos `unit` (`pnpm test`) e `integration` (`pnpm test:integration`). O setup global cria `<MYSQL_DATABASE>_test` com o root do `.env.local`, aplica as migrations reais e remove o banco ao final; o banco de desenvolvimento e o `process.env` do processo principal não são alterados.
+  - `pnpm test:coverage` com `@vitest/coverage-v8` 5.0.3 (par exato do Vitest 5.0.3); `pnpm test:launchers` com `unittest` do Python.
+  - `closeMysqlPool()`; regras puras do runner isoladas em `scripts/lib/migrations.mjs`.
+- **Defeitos encontrados pelos testes e corrigidos** (prova: 11 testes de data-api e o de assinaturas simultâneas falham no código anterior):
+  - **data-api (autorização):** autopromoção a admin via `profiles.role`; troca do e-mail do perfil; upsert com id de outro usuário sobrescrevia a linha dele (inclusive perfis); UPDATE transferia a linha para outro usuário; UPDATE/DELETE sem filtro atingiam todas as linhas; filtros desconhecidos, OR malformado e `not` inválido ignorados em silêncio; objetos como valor viravam `coluna` = valor no SQL; LIMIT/OFFSET sem validação; ações do admin sobre perfis de outros usuários sem efeito; admin podia remover a própria conta. `stringifyObjects` no mysql2 como defesa em profundidade.
+  - **Planos:** chamadas simultâneas criavam duas assinaturas ativas; o consumo de cota abria outra conexão dentro da transação e travava o pool (20 consumos simultâneos ficavam presos). Bloqueio por usuário (`users ... FOR UPDATE`) e reuso da conexão.
+  - **Motor de score:** métrica ausente contava como 0 (pior nota) em vez de neutra; prontidão com pesos somando 1,1; pesos de configuração agora são proporções; nulos contavam como preenchidos na completude.
+  - **WHO-5 e NPS** validam a escala; **doshas** somam exatamente 100% (maior resto); **chat local** reconhece "olá" (limites de palavra Unicode).
+  - **Bootstrap admin:** e-mail e senha vazios desativam o bootstrap (o nome padrão tornava esse caminho inalcançável).
+- **Testes adicionados:**
+  - **Integração (36, MySQL real):** data-api (leitura, escopo, filtros, paginação, escrita, autorização, tipos JSON/booleano/data); planos (assinatura, troca pelo admin, matriz, recursos, cotas e concorrência); webhook Stripe com assinatura HMAC gerada e verificada localmente pela SDK (sem assinatura, forjada, corpo adulterado, ativação, reentrega idempotente, cancelamento → plano gratuito, price id desconhecido registrado como erro). O `checkout.session.completed` consulta a API da Stripe e exige credencial real: fronteira externa, não testada.
+  - **Unitários (64 novos):** WHO-5, NPS, aderência, score de longevidade, plano local, contexto astrológico (Lahiri, Lua Cheia e Nova de 2026, sankrantis), motores integrativos (propriedades de escala, nível e resposta a dados), chat local, migração de documentos Puck, senhas bcrypt e regras do runner de migrations.
+  - **Launchers (17):** diagnóstico, URLs, versões, `.env.local` com 0600, portas ocupadas, árvore de processos com `setsid`, parser e códigos de saída do `run.py`; tradução de comandos legados, descoberta do Git Bash e delegação do `run_windows.py`.
+- **Evidências:** `pnpm test` 191/191; `pnpm test:integration` 36/36; `pnpm test:launchers` 17/17; cobertura combinada de linhas 8,6% → 25,8% (data-api 77,8%, planos 71,9%, motores 91–100%; o restante é UI, coberto pelo QA de navegador nas tarefas 21 e 22). `check:format`, `check:lint` e `check:types` com exit 0; `build` com exit 0 e zero avisos; `./run.sh up` com verificação ponta a ponta; banco de teste removido e banco de desenvolvimento com contagens idênticas.
+- **Pendências registradas para tarefas seguintes:** validação Zod nas rotas (JSON inválido em `filters` ainda vira 500) na tarefa 18; sanitizador de rich text do servidor na tarefa 19.
 
 ### 24 · Correção crítica: vazamento de conexões MySQL em produção
 
