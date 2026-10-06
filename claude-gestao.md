@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `████████████░░░░░░░░` **58%** |
+| Progresso          | `████████████░░░░░░░░` **62%** |
 | Tarefas totais     | 26                             |
-| 🟢 Finalizadas     | 15                             |
+| 🟢 Finalizadas     | 16                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 10                             |
+| ⚪ A iniciar       | 9                              |
 | Branch de trabalho | `main` (única permitida)       |
-| Última atualização | 2026-10-04                     |
+| Última atualização | 2026-10-06                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (15 ÷ 26 = 57,7%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (16 ÷ 26 = 61,5%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                                     | O que está sendo realizado                                                                                                                                                                                                                                                                                                         |
-| --- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 13  | Correção e modernização completa do run.py | Orquestrador oficial do WSL2 Ubuntu sobre o Docker Compose e o `env:init`: validação completa do ambiente, venv próprio com manifesto Python, separação de `doctor`/`fix`/`repair`/`purge` sem operações destrutivas automáticas, portas sem matar processos de terceiros, logs honestos, idempotência, restart e testes de falha. |
+| Nº  | Tarefa                                     | O que está sendo realizado                                                                                                                                                                                                                                   |
+| --- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 14  | Correção e modernização completa do run.sh | Launcher do Windows 11 via Git Bash: detecção de MINGW/MSYS/CYGWIN, paridade com o `run.py` (inclusive `up --prod`, `repair` e `purge` com backup), mesmas regras de portas, processos, logs e falhas, TUI que não corrompe o terminal e degradação sem TTY. |
 
 ### BLOQUEADAS
 
@@ -49,15 +49,6 @@ Nenhuma tarefa bloqueada no momento.
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
-
-### 14 · Correção e modernização completa do run.sh
-
-_Instrução: Tarefa 12 · itens 24, 26, 27, 44, 45, 55, 56, 57 e 58._
-
-- `run.sh` funcional no Windows 11 via Git Bash (ambiente suportado claramente definido), detectando MINGW, MSYS, CYGWIN e demais ambientes.
-- Paridade com `run.py` para `up`, `app`, `db`, `migrate`, `doctor`, `fix`, `status`, `stop`, `logs` e `help`.
-- `./run.sh doctor`, `up`, `status`, `logs`, `stop` e o modo interativo `./run.sh` funcionando; TUI sem corromper o terminal e degradação para logs convencionais sem TTY.
-- Mesmas regras de portas, logs, shutdown, idempotência, restart e falhas.
 
 ### 15 · Revisão do run_windows.py e eliminação de redundância
 
@@ -371,6 +362,62 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
   - O `run.py` ainda cria o próprio container via `docker run` com `Lyra123#`/`admin123`; ele será reescrito sobre o Compose e o `env:init` na tarefa 13.
   - Variáveis sem uso no `run.sh` → tarefa 14.
   - A `INSTRUCAO_REIMPLEMENTACAO_UI_UX_LYRA_2026.md` ainda descreve o bootstrap antigo → tarefa 23.
+
+### 13 · Correção e modernização completa do run.py
+
+- **Status:** 🟢 finalizada · **Commit:** `4f1f169` · **Push:** `901a067..4f1f169 main -> main` (confirmado)
+- **Diagnóstico do `run.py` anterior (2.947 linhas):**
+  - Instalava o Rich com `pip --break-system-packages` no Python do sistema e reexecutava (item 22).
+  - Tinha remoção automática do MySQL nativo (`apt purge`, `rm -rf` de diretórios do sistema) e encerrava processos na porta 3306 (itens 23 e 27).
+  - Recriava o próprio container com `docker rm -f` e volume anônimo, perdendo os dados, e fixava senhas (`Lyra123#`, `admin123`).
+- **Implementado** (reescrita completa sobre o Docker Compose e o `env:init`):
+  - **Comandos:** `up [--prod]`, `app`, `db`, `migrate`, `doctor`, `fix`, `repair [--sim]`, `purge --confirmar-purge`, `status`, `logs [app|db] [--seguir]`, `stop [app|db]`, `help` e menu interativo (Rich). Códigos de saída 0/1/2/130.
+  - **Separação `doctor`/`fix`/`repair`/`purge`** sem `apt` nem `sudo`:
+    - `repair` recria `.next`, `node_modules` e o container, preservando o volume;
+    - `purge` exige confirmação explícita e faz backup verificado do volume antes de apagar.
+  - **Python reproduzível:** venv `.lyra-run/venv` com `requirements-run.txt` (Rich 15.0.0, markdown-it-py 4.2.0, mdurl 0.1.2, Pygments 2.21.0), hashes SHA-256 conferidos contra os digests do PyPI, `--require-hashes --only-binary=:all:`, reinstalação quando o manifesto muda e modo texto completo sem Rich. Mínimo Python 3.10, exigência do markdown-it-py.
+  - **`doctor`:** plataforma (WSL2/WSL1/Linux), Ubuntu ≥ 22.04, Python, Node contra `.nvmrc`/`engines`, Corepack/pnpm contra `packageManager`, Docker Engine ≥ 25, Compose ≥ 2.20, `.env.local` (completude e permissão), dependências (lockfile instalado idêntico ao `pnpm-lock.yaml`), portas com dono, MySQL, migrations e aplicação.
+  - **Portas:** dono identificado por `docker ps` e `/proc/net/tcp`/`fd` (PID, comando, usuário), e processos de terceiros nunca são encerrados.
+    - A aplicação sobe na próxima porta livre, com `PORT`, `APP_BASE_URL` e `NEXT_PUBLIC_APP_URL` coerentes.
+    - O MySQL é realocado com `MYSQL_HOST_PORT` e `MYSQL_PORT` atualizados juntos.
+  - **Processos:** o `stop` encerra a **árvore** da aplicação. Causa raiz encontrada: o `next dev` faz `setsid`, então o grupo do PID registrado não contém o servidor. Só grupos formados exclusivamente pela aplicação recebem sinal; há SIGTERM com espera de 20 s, depois SIGKILL, e a confirmação da porta livre. Interopera com a aplicação iniciada pelo `run.sh`, descobrindo a porta pelos sockets da árvore.
+  - **Logs:** `.logs/run-py-<data>-<comando>.log`, com cada comando, a saída integral, o exit code, a causa provável (13 padrões, incluindo os formatos do Next 16) e o caminho do log. Nenhum traceback no terminal, e subprocessos sem stdin herdado.
+  - **`GET /api/health`:** prontidão sem segredos, com número de migrations aplicadas e 503 sem detalhes internos (testado). É usado na verificação ponta a ponta do `up` junto com `/`, `/login` e o login do admin.
+  - **`mysql-upgrade.mjs`:** `--backup` avulso e restauração para volume removido, recriado pelo Compose com os rótulos do projeto.
+  - **Documentação:** `docs/launchers.md` (contrato comum e matriz de paridade) e README.
+- **Defeitos encontrados nos próprios testes e corrigidos antes do commit:**
+  - `status` mostrava "MySQL ausente" com o Docker parado (agora: "não consultável" com a causa).
+  - O padrão de erro de build não cobria o formato do Next 16.
+  - O restore após purge criaria o volume sem os rótulos do Compose.
+  - O menu tinha um traceback em EOF e subprocessos consumindo o stdin.
+  - O `stop` dependia do grupo do PID registrado.
+  - A porta da aplicação iniciada pelo `run.sh` não era descoberta.
+- **Evidências (execução real; ambiente Linux Ubuntu 24.04, não WSL):**
+  - **Bootstrap:** venv criado em 3,7 s; Rich só no venv (o Python do sistema continua sem ele).
+  - **Fluxo principal:**
+    - `doctor` com 14 verificações;
+    - `up` de ponta a ponta em 25 s, com health, `/`, `/login` e login do admin;
+    - segundo `up` idempotente (reutiliza o PID, sem processos duplicados);
+    - `stop` com zero processos restantes e porta livre;
+    - restart `up → stop → up`;
+    - `up --prod` com build e `next start` em 81 s.
+  - **Falhas controladas:**
+    - Docker parado: diagnóstico e exit 1;
+    - porta 3000 ocupada: app na 3001, ocupante intacto, URLs coerentes;
+    - porta 3307 ocupada: MySQL na 3308 com `.env.local` coerente;
+    - senha divergente e `.env.local` ausente: causa "senhas não correspondem ao volume";
+    - `node_modules` ausente: reinstalação;
+    - build com erro de tipo: arquivo, linha e causa;
+    - migration inválida: falha sem registro nem tabela criada.
+  - **Operações destrutivas:**
+    - `purge` sem confirmação: exit 2, volume intacto;
+    - `purge` confirmado seguido de restore: 27 tabelas idênticas (87 linhas);
+    - `repair` sem `--sim` sem TTY: recusado;
+    - `repair --sim`: container recriado e dados idênticos.
+  - **Interface:** menu em TTY real via `script` (sessão completa e Ctrl+D com exit 0), modo texto e `logs --seguir` com Ctrl+C sem traceback.
+  - **Qualidade:** `ruff` (E, F, W, B, UP, SIM, Pylint), `ruff format` e `mypy` sem achados. Prova de Morte de `break-system-packages`, `apt`, `rm -rf`, `fuser`, `docker run`, `Lyra123#` e `admin123`: nenhuma ocorrência executável.
+  - `check:format`, `check:lint` e `check:types` com exit 0; `test` 127/127; `build` com exit 0 e zero avisos.
+- **Limite do ambiente:** o sandbox não é WSL2, então a detecção de WSL2/WSL1 foi implementada pelo `/proc/version`, mas validada aqui só no ramo "Linux nativo". O teste em WSL2 real deve ser feito pelo operador com `python3 run.py doctor`.
 
 ### 24 · Correção crítica: vazamento de conexões MySQL em produção
 
