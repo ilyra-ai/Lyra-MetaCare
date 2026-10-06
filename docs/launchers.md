@@ -1,12 +1,12 @@
 # Launchers da Lyra MetaCare
 
-Três pontos de entrada sobem o ambiente local. Todos usam a mesma configuração (`.env.local`, criado por `pnpm env:init` a partir do `.env.example`), o mesmo banco (serviço `mysql` do `compose.yaml`, via `docker compose --env-file .env.local`) e os mesmos scripts (`scripts/mysql-migrate.mjs` e `scripts/mysql-upgrade.mjs`).
+Três pontos de entrada sobem o ambiente local, com duas implementações: `run.py` (WSL2/Linux) e `run.sh` (Git Bash); o `run_windows.py` delega ao `run.sh`. Todos usam a mesma configuração (`.env.local`, criado por `pnpm env:init` a partir do `.env.example`), o mesmo banco (serviço `mysql` do `compose.yaml`, via `docker compose --env-file .env.local`) e os mesmos scripts (`scripts/mysql-migrate.mjs` e `scripts/mysql-upgrade.mjs`).
 
-| Launcher         | Ambiente suportado                       | Situação                                             |
-| ---------------- | ---------------------------------------- | ---------------------------------------------------- |
-| `run.py`         | WSL2 Ubuntu 22.04+ (e Linux equivalente) | Oficial, reescrito e validado (tarefa 13)            |
-| `run.sh`         | Windows 11 com Git Bash (MINGW/MSYS)     | Reescrito (tarefa 14); validado em Linux             |
-| `run_windows.py` | Windows 11 em PowerShell/CMD             | Em revisão de redundância com o `run.sh` (tarefa 15) |
+| Launcher         | Ambiente suportado                       | Situação                                   |
+| ---------------- | ---------------------------------------- | ------------------------------------------ |
+| `run.py`         | WSL2 Ubuntu 22.04+ (e Linux equivalente) | Oficial, reescrito e validado (tarefa 13)  |
+| `run.sh`         | Windows 11 com Git Bash (MINGW/MSYS)     | Reescrito (tarefa 14); validado em Linux   |
+| `run_windows.py` | Windows 11 em PowerShell/CMD             | Wrapper que delega ao `run.sh` (tarefa 15) |
 
 ## `run.py` (WSL2 Ubuntu / Linux)
 
@@ -89,6 +89,50 @@ O `run.sh` e o `run.py` compartilham o `.lyra-run/app.json` (campo `origem` indi
 - **Linux (bash 5.2), de forma real:** `help` sem terminal; argumentos inválidos (exit 2); `doctor`; `up` (dev) e segunda execução idempotente; `status`; `logs app`, `logs db`; `stop app`, `stop` (app + banco); restart com banco parado; `up --prod` (build + start); aplicação em outro modo já em execução (aviso, sem duplicar processo); porta 3000 ocupada por terceiro (app sobe na 3001, terceiro intacto); porta 3307 ocupada (MySQL realocado para 3308, terceiro intacto); Docker indisponível (diagnóstico com causa); `.env.local` ausente; `node_modules` ausente (reinstalado); build quebrado (causa de tipos apontada); migration inválida (arquivo e erro do MySQL apontados); `purge` sem e com confirmação, seguido de restauração com contagem de linhas idêntica (27 tabelas, 87 linhas); `repair` sem e com `--sim`; menu em pseudo-terminal (opções, opção inválida, EOF); Ctrl+C no menu, em `logs --seguir` e durante o `up` (exit 130, aplicação recuperável pelo `stop`); interoperabilidade com o `run.py` nos dois sentidos; `shellcheck -S warning` sem achados.
 - **Windows 11 / Git Bash:** os ramos específicos do Windows (`netstat`, `tasklist`, `taskkill`, `winpid`, `cmd.exe /c ver`) foram validados estaticamente (`bash -n` e `shellcheck`), porque o sandbox de desenvolvimento não dispõe de Windows. A execução real nesse ambiente permanece necessária e está registrada como limite conhecido no `claude-gestao.md`.
 
+## `run_windows.py` (Windows 11 em PowerShell ou CMD)
+
+### Decisão de arquitetura
+
+Opção adotada: **um único launcher no Windows (`run.sh`) e o `run_windows.py` como wrapper fino** que delega a ele.
+
+A versão anterior do `run_windows.py` (661 linhas) reimplementava o launcher e divergia do `run.sh` e do `run.py` em pontos críticos:
+
+- recorria ao `npm` quando o `pnpm` não estava no PATH e instalava sem `--frozen-lockfile`, fora do Corepack;
+- o `stop` encerrava só o PID registrado (`Stop-Process`), deixando vivo o servidor Next.js filho;
+- apagava o `.next` a cada subida em desenvolvimento e reiniciava a aplicação mesmo quando já estava saudável;
+- usava estado próprio (`.lyra-run-windows/`), invisível para os outros launchers;
+- não identificava donos de portas, considerava o MySQL pronto só pela porta TCP e o `doctor` verificava apenas o PATH.
+
+Manter duas implementações para o mesmo sistema operacional duplicaria cada correção futura. Remover o arquivo (opção C) quebraria quem usa PowerShell/CMD e os documentos que citam `python run_windows.py`. Por isso o arquivo foi mantido, sem lógica de orquestração própria.
+
+### Funcionamento
+
+1. Localiza o `bin\bash.exe` do Git for Windows, nesta ordem: variável `LYRA_GIT_BASH`, pasta do `git.exe` do PATH, `InstallPath` do registro (`HKLM`/`HKCU\SOFTWARE\GitForWindows`), `%ProgramFiles%\Git`, `%ProgramW6432%\Git` e `%LOCALAPPDATA%\Programs\Git`.
+2. Recusa o `bash.exe` do WSL (pasta do Windows) e qualquer candidato cujo `uname -s` não seja MINGW/MSYS, informando o motivo.
+3. Executa `bash.exe run.sh <comando>` na raiz do projeto, com `LANG=C.UTF-8` quando não definido, e devolve o código de saída do `run.sh` (inclusive `130` no Ctrl+C, que chega ao `run.sh` pelo próprio console).
+4. Avisa se encontrar estado da versão anterior em `.lyra-run-windows/`, indicando como encerrar uma aplicação antiga ainda em execução.
+
+Requisitos: Python 3.9+ (somente biblioteca padrão) e Git for Windows. Fora do Windows, delega ao `bash` do sistema.
+
+### Comandos
+
+Todos os do `run.sh` (`py run_windows.py up`, `py run_windows.py doctor`…). Os nomes da versão anterior continuam aceitos, com aviso:
+
+| Comando anterior             | Executa                                                                |
+| ---------------------------- | ---------------------------------------------------------------------- |
+| `dev` / `prod`               | `up` / `up --prod`                                                     |
+| `start-dev` / `start-prod`   | `app` / `app --prod`                                                   |
+| `db-start` / `db-stop`       | `db` / `stop db`                                                       |
+| `stop-app` / `stop-all`      | `stop app` / `stop`                                                    |
+| `setup-env` / `install-deps` | `fix`                                                                  |
+| `health`                     | `doctor`                                                               |
+| `build`                      | recusado (exit 2) com orientação: `up --prod` ou `corepack pnpm build` |
+
+### O que foi validado
+
+- **Linux, de forma real:** ajuda sem terminal e com `--help`; menu em pseudo-terminal com EOF; comando desconhecido e argumento inválido (exit 2 vindo do `run.sh`); `build` recusado (exit 2); aliases `health`, `dev` (subida completa com verificação ponta a ponta) e `stop-all`; `status` e interoperabilidade com o `run.py`; Ctrl+C em `logs --seguir` (exit 130); `ruff`, `mypy --strict` (Linux e `--platform win32`) e sintaxe Python 3.9.
+- **Descoberta do Git Bash:** ordem dos candidatos (`cmd\git.exe` e `mingw64\bin\git.exe`), validação por `uname` e recusa do `bash.exe` do WSL testadas com uma estrutura de pastas simulada. A execução real no Windows 11 permanece necessária (mesmo limite do `run.sh`).
+
 ## Contrato comum dos launchers
 
 | Item                | Contrato                                                                                   |
@@ -101,22 +145,22 @@ O `run.sh` e o `run.py` compartilham o `.lyra-run/app.json` (campo `origem` indi
 
 ## Matriz de paridade
 
-| Função                      | `run.py` | `run.sh` | `run_windows.py` (estado atual) |
-| --------------------------- | -------- | -------- | ------------------------------- |
-| Menu interativo             | ✔        | ✔        | —                               |
-| `up` (dev)                  | ✔        | ✔        | `dev`                           |
-| `up --prod` (build + start) | ✔        | ✔        | `prod`                          |
-| `app [--prod]`              | ✔        | ✔        | `start-dev` / `start-prod`      |
-| `db`                        | ✔        | ✔        | `db-start`                      |
-| `migrate`                   | ✔        | ✔        | `migrate`                       |
-| `doctor`                    | ✔        | ✔        | `doctor`                        |
-| `fix`                       | ✔        | ✔        | `setup-env` + `install-deps`    |
-| `repair`                    | ✔        | ✔        | —                               |
-| `purge` com backup          | ✔        | ✔        | —                               |
-| `status`                    | ✔        | ✔        | `status` / `health`             |
-| `logs [--seguir]`           | ✔        | ✔        | —                               |
-| `stop [app\|db]`            | ✔        | ✔        | `stop-app` / `stop-all`         |
-| `help`                      | ✔        | ✔        | `--help`                        |
-| Verificação ponta a ponta   | ✔        | ✔        | `health`                        |
+| Função                      | `run.py` | `run.sh` | `run_windows.py`     |
+| --------------------------- | -------- | -------- | -------------------- |
+| Menu interativo             | ✔        | ✔        | ✔ (via `run.sh`)     |
+| `up` (dev)                  | ✔        | ✔        | ✔ (alias `dev`)      |
+| `up --prod` (build + start) | ✔        | ✔        | ✔ (alias `prod`)     |
+| `app [--prod]`              | ✔        | ✔        | ✔                    |
+| `db`                        | ✔        | ✔        | ✔ (alias `db-start`) |
+| `migrate`                   | ✔        | ✔        | ✔                    |
+| `doctor`                    | ✔        | ✔        | ✔ (alias `health`)   |
+| `fix`                       | ✔        | ✔        | ✔                    |
+| `repair`                    | ✔        | ✔        | ✔                    |
+| `purge` com backup          | ✔        | ✔        | ✔                    |
+| `status`                    | ✔        | ✔        | ✔                    |
+| `logs [--seguir]`           | ✔        | ✔        | ✔                    |
+| `stop [app\|db]`            | ✔        | ✔        | ✔ (alias `stop-all`) |
+| `help`                      | ✔        | ✔        | ✔ (`--help`)         |
+| Verificação ponta a ponta   | ✔        | ✔        | ✔                    |
 
-A coluna do `run_windows.py` será atualizada na tarefa 15.
+O `run_windows.py` executa o próprio `run.sh`; a paridade dele é, por construção, a do `run.sh`.

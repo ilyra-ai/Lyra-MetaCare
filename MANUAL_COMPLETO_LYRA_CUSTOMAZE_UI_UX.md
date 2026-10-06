@@ -425,31 +425,24 @@ npm run lyra-customaze:install
 
 ### 10.5. Subir o ambiente completo no Windows
 
-No projeto atual existe um orquestrador real para Windows:
-
-- `run_windows.py`
-
-Ele foi criado para:
-
-- preparar `.env.local`;
-- instalar dependências quando necessário;
-- subir o MySQL no Docker;
-- rodar as migrações;
-- subir o app.
+No Windows 11 o launcher é o `run.sh`, executado pelo **Git Bash** (Git for Windows). Para quem prefere PowerShell ou CMD, o `run_windows.py` localiza o Git Bash e delega ao mesmo `run.sh`, com os mesmos comandos (detalhes em `docs/launchers.md`).
 
 Fluxo recomendado:
 
 ```bash
-python run_windows.py dev
+./run.sh up                 # no Git Bash
+py run_windows.py up        # no PowerShell ou CMD (mesmo resultado)
 ```
 
 Esse comando faz:
 
-1. garante variáveis padrão;
-2. instala dependências se necessário;
-3. sobe o MySQL via Docker Compose;
-4. aplica as migrações reais;
-5. sobe a aplicação em modo desenvolvimento.
+1. verifica os pré-requisitos (Node.js do `.nvmrc`, Corepack/pnpm, Docker e Compose);
+2. cria ou completa o `.env.local` com segredos gerados (`pnpm env:init`);
+3. instala as dependências conforme o `pnpm-lock.yaml`, se necessário;
+4. sobe o MySQL via Docker Compose e espera o healthcheck;
+5. aplica as migrações e assegura o administrador inicial;
+6. sobe a aplicação em modo desenvolvimento (use `up --prod` para build + start);
+7. verifica `/api/health`, `/`, `/login` e o login do administrador.
 
 ### 10.6. URL padrão do app
 
@@ -467,7 +460,7 @@ Neste ambiente, o fluxo da Lyra responde corretamente em `localhost`. Em alguns 
 
 ## 11. Variáveis de ambiente importantes
 
-O `.env.local` é criado ou completado por `pnpm env:init` (os launchers `run.sh` e `run_windows.py` chamam o mesmo comando) a partir do `.env.example`, que documenta todas as variáveis.
+O `.env.local` é criado ou completado por `pnpm env:init` (os launchers `run.py` e `run.sh` — e o `run_windows.py`, que delega ao `run.sh` — chamam o mesmo comando) a partir do `.env.example`, que documenta todas as variáveis.
 
 Os principais valores não secretos são:
 
@@ -1055,59 +1048,23 @@ Verifique se:
 
 ### 25.2. Comandos úteis no Windows
 
-Preparar ambiente:
+No Git Bash, use `./run.sh <comando>`; no PowerShell ou CMD, `py run_windows.py <comando>` executa o mesmo `run.sh`.
 
-```bash
-python run_windows.py setup-env
-```
+| Objetivo                                              | Comando              |
+| ----------------------------------------------------- | -------------------- |
+| Menu interativo                                       | `./run.sh`           |
+| Diagnóstico completo (somente leitura)                | `./run.sh doctor`    |
+| Correções seguras (`.env.local`, dependências, banco) | `./run.sh fix`       |
+| Subir banco e aplicar migrações                       | `./run.sh db`        |
+| Aplicar migrações                                     | `./run.sh migrate`   |
+| Subir tudo (desenvolvimento)                          | `./run.sh up`        |
+| Subir tudo (produção: build + start)                  | `./run.sh up --prod` |
+| Estado da aplicação e do banco                        | `./run.sh status`    |
+| Logs da aplicação e do banco                          | `./run.sh logs`      |
+| Parar a aplicação                                     | `./run.sh stop app`  |
+| Parar tudo (dados preservados)                        | `./run.sh stop`      |
 
-Verificar pré-requisitos:
-
-```bash
-python run_windows.py doctor
-```
-
-Subir banco:
-
-```bash
-python run_windows.py db-start
-```
-
-Aplicar migração:
-
-```bash
-python run_windows.py migrate
-```
-
-Subir tudo:
-
-```bash
-python run_windows.py dev
-```
-
-Ver status:
-
-```bash
-python run_windows.py status
-```
-
-Ver saúde:
-
-```bash
-python run_windows.py health
-```
-
-Parar app:
-
-```bash
-python run_windows.py stop-app
-```
-
-Parar tudo:
-
-```bash
-python run_windows.py stop-all
-```
+Os nomes da versão anterior do `run_windows.py` (`dev`, `prod`, `start-dev`, `start-prod`, `db-start`, `db-stop`, `stop-app`, `stop-all`, `setup-env`, `install-deps`, `health`) continuam aceitos por ele, com aviso, e são convertidos para os comandos acima.
 
 ---
 
@@ -1117,15 +1074,17 @@ Se você não é técnica, faça exatamente assim:
 
 ### 26.1. Abrir o projeto
 
-Abra o terminal na raiz do projeto.
+Abra o Git Bash na raiz do projeto (no Explorador de Arquivos: botão direito na pasta → "Open Git Bash here").
 
 ### 26.2. Rodar o ambiente
 
 Execute:
 
 ```bash
-python run_windows.py dev
+./run.sh up
 ```
+
+No PowerShell ou CMD, o equivalente é `py run_windows.py up`.
 
 ### 26.3. Abrir o navegador
 
@@ -1202,13 +1161,13 @@ O navegador não abre o app em `localhost:3000`.
 1. rodar:
 
 ```bash
-python run_windows.py doctor
+./run.sh doctor
 ```
 
 2. depois:
 
 ```bash
-python run_windows.py dev
+./run.sh up
 ```
 
 3. se persistir, rode:
@@ -1268,8 +1227,9 @@ O container do MySQL não subiu corretamente.
 #### Como resolver
 
 ```bash
-python run_windows.py db-start
-python run_windows.py health
+./run.sh db
+./run.sh logs db
+./run.sh doctor
 ```
 
 ### 27.6. Erro: `requirements.txt` não existe

@@ -46,6 +46,7 @@ yarn-error.log*
 .pnpm-debug.log*
 pnpm-debug.log*
 .lyra-run/
+# Estado da versão anterior do run_windows.py (detectado e sinalizado por ele).
 .lyra-run-windows/
 .logs/
 /backups/mysql/

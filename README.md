@@ -139,6 +139,8 @@ python3 run.py stop         # para aplicação e banco (dados preservados)
 ./run.sh stop       # para aplicação e banco (dados preservados)
 ```
 
+No PowerShell ou CMD, `py run_windows.py <comando>` localiza o Git Bash e executa o mesmo `run.sh`.
+
 Ao final, a aplicação responde em **http://localhost:3000** e o MySQL em **127.0.0.1:3307**. Se uma dessas portas estiver ocupada por outro programa, os launchers não o encerram: usam a próxima porta livre e informam qual.
 
 ### Caminho manual
