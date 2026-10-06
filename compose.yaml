@@ -11,6 +11,10 @@ services:
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
+      # NOW()/CURRENT_TIMESTAMP em UTC de forma explícita (não depende do fuso
+      # da imagem nem do host); a aplicação envia datas em UTC (mysql2
+      # `timezone: 'Z'`).
+      - --default-time-zone=+00:00
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE:?defina MYSQL_DATABASE no .env.local (pnpm env:init) e use docker compose --env-file .env.local}
       MYSQL_USER: ${MYSQL_USER:?defina MYSQL_USER no .env.local (pnpm env:init) e use docker compose --env-file .env.local}

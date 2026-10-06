@@ -49,6 +49,11 @@ function createLyraPool(): Pool {
     namedPlaceholders: false,
     decimalNumbers: true,
     dateStrings: true,
+    // Parâmetros Date são serializados em UTC, o mesmo fuso do servidor
+    // (--default-time-zone=+00:00 no compose.yaml) e de NOW()/UTC_TIMESTAMP().
+    // Sem isso, o mysql2 usa o fuso local do Node.js (ex.: -03:00) e grava
+    // horários deslocados em relação aos gerados pelo próprio MySQL.
+    timezone: 'Z',
   });
 }
 

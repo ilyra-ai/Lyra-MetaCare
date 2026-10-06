@@ -162,6 +162,16 @@ pnpm dev                     # inicia o servidor de desenvolvimento
 > O comando é idempotente, faz backup verificado antes de qualquer alteração e informa como desfazer (`node scripts/mysql-upgrade.mjs --restaurar <volume_de_backup>`).
 
 <details>
+<summary><strong>Banco de dados: migrations, fuso e backup</strong></summary>
+
+- **Migrations** (`mysql/migrations/*.sql`, aplicadas por `pnpm db:migrate` em ordem de nome): cada arquivo é registrado em `_lyra_schema_migrations` com o SHA-256 do conteúdo (fins de linha normalizados). Uma migration já aplicada nunca é editada — o runner recusa conteúdo divergente; correções entram em um arquivo novo. Como o MySQL faz commit implícito em DDL, migrations com `ALTER` verificam o estado no `information_schema` antes de alterar, para que uma reexecução após falha parcial seja segura. Uma falha informa o arquivo e o erro do MySQL.
+- **Fuso:** o servidor roda em UTC (`--default-time-zone=+00:00` no `compose.yaml`) e a aplicação envia datas em UTC (`timezone: 'Z'` no mysql2), então `NOW()`, `UTC_TIMESTAMP()` e as datas gravadas pelo Node.js são coerentes em qualquer fuso da máquina. Em um MySQL fora do Compose, configure o mesmo `default-time-zone`.
+- **Administradores de bootstrap:** criados por `pnpm db:migrate` a partir do `.env.local`; reexecuções não alteram a linha, e a senha só é regravada quando o valor do `.env.local` muda.
+- **Backup e restauração:** `pnpm db:backup` para o MySQL, copia o volume para `lyra-metacare_mysql_data_backup_<data>`, confere a cópia e religa o banco se ele estava ativo; `pnpm db:restore <volume>` restaura (recriando o volume pelo Compose se necessário). Os volumes de backup aparecem em `docker volume ls --filter name=_backup_`. O `purge` dos launchers e o `pnpm db:upgrade` fazem esse backup antes de qualquer alteração.
+
+</details>
+
+<details>
 <summary><strong>Variáveis de ambiente (.env.local)</strong></summary>
 
 O `.env.local` é a **fonte única de configuração**, lida pelo Next.js, pelos scripts do banco, pelo Docker Compose (`--env-file .env.local`) e pelos launchers. Ele é criado ou completado por `pnpm env:init` (os launchers chamam o mesmo comando) a partir do [`.env.example`](./.env.example), que documenta cada variável:
@@ -181,16 +191,18 @@ O `.env.local` é a **fonte única de configuração**, lida pelo Next.js, pelos
 
 ## 📜 Scripts disponíveis
 
-| Comando                                              | Descrição                                                           |
-| ---------------------------------------------------- | ------------------------------------------------------------------- |
-| `pnpm dev`                                           | Servidor de desenvolvimento (Next.js)                               |
-| `pnpm build` / `pnpm start`                          | Build de produção / execução                                        |
-| `pnpm test`                                          | Suíte de testes (Vitest)                                            |
-| `pnpm check:types`                                   | Verificação de tipos (`tsc --noEmit`)                               |
-| `pnpm check:lint` / `pnpm fix:lint`                  | Lint (ESLint) — checar / corrigir                                   |
-| `pnpm check:format` / `pnpm fix:format`              | Formatação (Prettier) — checar / corrigir                           |
-| `pnpm db:start` / `pnpm db:migrate` / `pnpm db:stop` | Banco: subir+migrar / migrar / parar                                |
-| `pnpm db:upgrade`                                    | Upgrade controlado do volume MySQL (8.0 → 8.4 → 9.7 LTS) com backup |
+| Comando                                              | Descrição                                                            |
+| ---------------------------------------------------- | -------------------------------------------------------------------- |
+| `pnpm dev`                                           | Servidor de desenvolvimento (Next.js)                                |
+| `pnpm build` / `pnpm start`                          | Build de produção / execução                                         |
+| `pnpm test`                                          | Suíte de testes (Vitest)                                             |
+| `pnpm check:types`                                   | Verificação de tipos (`tsc --noEmit`)                                |
+| `pnpm check:lint` / `pnpm fix:lint`                  | Lint (ESLint) — checar / corrigir                                    |
+| `pnpm check:format` / `pnpm fix:format`              | Formatação (Prettier) — checar / corrigir                            |
+| `pnpm db:start` / `pnpm db:migrate` / `pnpm db:stop` | Banco: subir+migrar / migrar / parar                                 |
+| `pnpm db:upgrade`                                    | Upgrade controlado do volume MySQL (8.0 → 8.4 → 9.7 LTS) com backup  |
+| `pnpm db:backup`                                     | Backup a frio verificado do volume do MySQL (`BACKUP_VOLUME=<nome>`) |
+| `pnpm db:restore <volume_de_backup>`                 | Restaura o volume a partir de um backup                              |
 
 ---
 

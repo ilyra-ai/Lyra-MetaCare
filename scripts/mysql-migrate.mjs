@@ -177,29 +177,43 @@ function buildBootstrapAdmins() {
 }
 
 async function ensureBootstrapAdminUser(pool, admin) {
-  const passwordHash = await bcrypt.hash(admin.password, 10);
-
   const [userRows] = await pool.query(
-    'SELECT id FROM users WHERE email = ? LIMIT 1',
+    'SELECT id, email, password_hash FROM users WHERE email = ? LIMIT 1',
     [admin.email]
   );
   const existingUser = userRows[0];
   const userId = existingUser?.id ?? randomUUID();
+
+  // O .env.local é a fonte da senha dos administradores de bootstrap, mas o
+  // hash só é regravado quando a senha mudou: reexecutar as migrations não
+  // altera a linha (idempotência) nem gera um hash novo a cada subida.
+  const passwordMatches =
+    typeof existingUser?.password_hash === 'string' &&
+    (await bcrypt.compare(admin.password, existingUser.password_hash));
 
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
 
     if (existingUser) {
-      await connection.execute(
-        `
-          UPDATE users
-          SET email = ?, password_hash = ?
-          WHERE id = ?
-        `,
-        [admin.email, passwordHash, userId]
-      );
+      // A busca ignora maiúsculas (collation *_ci); o e-mail é gravado
+      // normalizado em minúsculas, como no login.
+      if (existingUser.email !== admin.email) {
+        await connection.execute('UPDATE users SET email = ? WHERE id = ?', [
+          admin.email,
+          userId,
+        ]);
+      }
+      if (!passwordMatches) {
+        const passwordHash = await bcrypt.hash(admin.password, 10);
+        await connection.execute(
+          'UPDATE users SET password_hash = ? WHERE id = ?',
+          [passwordHash, userId]
+        );
+        console.log(`Senha do bootstrap admin atualizada: ${admin.email}`);
+      }
     } else {
+      const passwordHash = await bcrypt.hash(admin.password, 10);
       await connection.execute(
         `
           INSERT INTO users (id, email, password_hash)
@@ -360,6 +374,9 @@ async function main() {
     password: getRequiredEnv('MYSQL_PASSWORD'),
     database: getRequiredEnv('MYSQL_DATABASE'),
     charset: 'utf8mb4',
+    // Datas do JavaScript são enviadas em UTC, o mesmo fuso do servidor
+    // (--default-time-zone=+00:00 no compose.yaml).
+    timezone: 'Z',
     decimalNumbers: true,
     multipleStatements: true,
   });
