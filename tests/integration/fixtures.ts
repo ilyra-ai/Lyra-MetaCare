@@ -35,7 +35,6 @@ export async function criarUsuario(
     email,
     role,
     session: {
-      access_token: 'token-de-teste',
       user: {
         id,
         email,

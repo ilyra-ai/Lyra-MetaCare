@@ -102,8 +102,13 @@ export async function clearSessionCookie() {
   });
 }
 
+/**
+ * Sessão exposta ao cliente e às rotas. O JWT não faz parte dela: ele vive
+ * só no cookie `httpOnly`, fora do alcance de JavaScript (antes ia também no
+ * corpo de `/api/auth/session`, o que anulava a proteção do `httpOnly` diante
+ * de um XSS).
+ */
 export function buildAppSession(
-  token: string,
   payload: SessionPayload,
   profile?: {
     first_name?: string | null;
@@ -114,7 +119,6 @@ export function buildAppSession(
   const lastName = profile?.last_name ?? null;
 
   return {
-    access_token: token,
     user: {
       id: payload.sub,
       email: payload.email,

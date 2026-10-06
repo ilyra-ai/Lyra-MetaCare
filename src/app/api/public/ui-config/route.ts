@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { queryRows } from '@/lib/mysql/pool';
+import { registrarErroInterno } from '@/lib/observability/log-seguro';
 
 export const runtime = 'nodejs';
 
@@ -31,7 +32,7 @@ export async function GET() {
     return NextResponse.json({ config: null });
   } catch (error) {
     // A falha de banco não pode ser mascarada como "configuração ausente".
-    console.error('[api/public/ui-config] Falha ao ler ui_config:', error);
+    registrarErroInterno('api/public/ui-config', error);
     return NextResponse.json(
       { error: 'Falha ao carregar a configuração de interface.' },
       { status: 500 }

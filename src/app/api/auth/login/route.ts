@@ -11,6 +11,15 @@ import {
 } from '@/lib/auth/session';
 import { lerJson, respostaDeErro } from '@/lib/http/api';
 import { queryRows } from '@/lib/mysql/pool';
+import {
+  LIMITE_LOGIN_POR_CONTA,
+  LIMITE_LOGIN_POR_IP,
+  exigirDentroDoLimite,
+  exigirLimiteDisponivel,
+  ipDoCliente,
+  registrarOcorrencia,
+  zerarLimite,
+} from '@/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -52,6 +61,12 @@ export async function POST(request: Request) {
   try {
     const payload = await lerJson(request, loginSchema);
 
+    // Força bruta: cada IP tem um teto de tentativas e cada conta um teto de
+    // falhas de senha (este último não depende de cabeçalho forjável). Com a
+    // conta bloqueada, nem a senha correta entra até a janela terminar.
+    await exigirDentroDoLimite(LIMITE_LOGIN_POR_IP, ipDoCliente(request));
+    await exigirLimiteDisponivel(LIMITE_LOGIN_POR_CONTA, payload.email);
+
     const users = await queryRows<UserRow>(
       `
         SELECT
@@ -78,11 +93,13 @@ export async function POST(request: Request) {
       user?.password_hash ?? (await obterHashDeReferencia())
     );
     if (!user || !validPassword) {
+      await registrarOcorrencia(LIMITE_LOGIN_POR_CONTA, payload.email);
       return NextResponse.json(
         { error: CREDENCIAIS_INVALIDAS },
         { status: 401 }
       );
     }
+    await zerarLimite(LIMITE_LOGIN_POR_CONTA, payload.email);
 
     const sessionOptions = { persistent: payload.remember === true };
     const token = await signSessionToken(
@@ -97,7 +114,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       session: buildAppSession(
-        token,
         { sub: user.id, email: user.email, role: user.role },
         user
       ),

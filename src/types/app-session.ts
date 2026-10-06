@@ -10,7 +10,6 @@ export interface AppUser {
 }
 
 export interface AppSession {
-  access_token: string;
   user: AppUser;
 }
 

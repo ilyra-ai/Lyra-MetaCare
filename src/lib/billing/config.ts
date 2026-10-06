@@ -27,11 +27,20 @@ export function getStripeWebhookSecret() {
   return readOptionalEnv('STRIPE_WEBHOOK_SECRET');
 }
 
+/**
+ * Origem usada nos retornos da Stripe (success, cancel e portal).
+ * A origem da requisição (derivada do cabeçalho Host, controlado pelo
+ * cliente) só serve de alternativa fora de produção; em produção a URL vem
+ * obrigatoriamente de APP_BASE_URL ou NEXT_PUBLIC_APP_URL, para que um Host
+ * forjado não redirecione o cliente para outro domínio após o pagamento.
+ */
 export function getBillingBaseUrl(fallbackOrigin?: string) {
+  const origemDaRequisicao =
+    process.env.NODE_ENV === 'production' ? undefined : fallbackOrigin;
   return (
     readOptionalEnv('APP_BASE_URL') ||
     readOptionalEnv('NEXT_PUBLIC_APP_URL') ||
-    fallbackOrigin ||
+    origemDaRequisicao ||
     null
   );
 }

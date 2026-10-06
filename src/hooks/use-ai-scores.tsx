@@ -20,7 +20,7 @@ export function useAIScores(enabled = true): UseAIScoresResult {
   const { session, db } = useAuth();
   // Os scores pertencem ao usuário autenticado; sem sessão ou com o recurso
   // desabilitado pelo plano não há cálculo.
-  const userId = enabled && session?.access_token ? session.user.id : null;
+  const userId = enabled && session ? session.user.id : null;
 
   const requestScores = useCallback(async (): Promise<AIScores | null> => {
     const response = await db.functions.invoke<AIScores>(

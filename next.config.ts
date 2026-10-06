@@ -12,7 +12,51 @@ const habilitarTaggerDyad =
   process.env.NODE_ENV === 'development' &&
   process.env.ENABLE_DYAD_COMPONENT_TAGGER === 'true';
 
+// Cabeçalhos de segurança de todas as respostas.
+// - CSP sem `script-src`: os scripts inline de hidratação do App Router
+//   exigiriam nonce por requisição (renderização dinâmica em todas as
+//   páginas). As diretivas abaixo valem sem isso: impedem que o site seja
+//   embutido por outra origem (clickjacking), bloqueiam <object>/<embed>,
+//   travam o <base> e limitam o destino de formulários.
+// - HSTS só em produção: em desenvolvimento a aplicação roda em http://.
+// - Os arquivos de /api/storage têm CSP própria, mais restrita
+//   (`default-src 'none'; sandbox`), definida na rota; um cabeçalho de
+//   next.config com a mesma chave substituiria o da rota, por isso a CSP
+//   global não se aplica a esse caminho.
+const cspDasPaginas = {
+  key: 'Content-Security-Policy',
+  value:
+    "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'",
+};
+
+const cabecalhosDeSeguranca = [
+  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  {
+    key: 'Permissions-Policy',
+    value:
+      'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()',
+  },
+  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+  ...(process.env.NODE_ENV === 'production'
+    ? [
+        {
+          key: 'Strict-Transport-Security',
+          value: 'max-age=63072000; includeSubDomains',
+        },
+      ]
+    : []),
+];
+
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+  async headers() {
+    return [
+      { source: '/:path*', headers: cabecalhosDeSeguranca },
+      { source: '/:path((?!api/storage/).*)', headers: [cspDasPaginas] },
+    ];
+  },
   ...(habilitarTaggerDyad
     ? {
         webpack: (config) => {

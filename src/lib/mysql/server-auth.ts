@@ -8,6 +8,8 @@ import { HttpError } from '@/lib/http-error';
 import { AppSession } from '@/types/app-session';
 
 interface ProfileRow {
+  email: string;
+  role: string;
   first_name: string | null;
   last_name: string | null;
 }
@@ -39,10 +41,27 @@ export async function getServerSession(): Promise<AppSession | null> {
     return null;
   }
 
+  // O papel e o e-mail valem pelo banco, não pelo token: um administrador
+  // rebaixado perde o acesso na próxima requisição (antes mantinha o papel
+  // `admin` até o JWT expirar, em até 7 dias) e uma conta removida deixa de
+  // ter sessão válida.
   const profiles = await queryRows<ProfileRow>(
-    'SELECT first_name, last_name FROM profiles WHERE id = ? LIMIT 1',
+    `
+      SELECT u.email, p.role, p.first_name, p.last_name
+      FROM users u
+      INNER JOIN profiles p ON p.id = u.id
+      WHERE u.id = ?
+      LIMIT 1
+    `,
     [payload.sub]
   );
+  const profile = profiles[0];
+  if (!profile) {
+    return null;
+  }
 
-  return buildAppSession(token, payload, profiles[0]);
+  return buildAppSession(
+    { sub: payload.sub, email: profile.email, role: profile.role },
+    profile
+  );
 }

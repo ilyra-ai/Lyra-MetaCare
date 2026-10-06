@@ -11,6 +11,11 @@ import {
 import { lerJson, respostaDeErro } from '@/lib/http/api';
 import { withTransaction } from '@/lib/mysql/pool';
 import { ensureUserSubscription } from '@/lib/plans/service';
+import {
+  LIMITE_CADASTRO_POR_IP,
+  exigirDentroDoLimite,
+  ipDoCliente,
+} from '@/lib/security/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -39,6 +44,8 @@ const registerSchema = z.object({
 export async function POST(request: Request) {
   try {
     const payload = await lerJson(request, registerSchema);
+    // Contas em massa e enumeração de e-mails pelo 409: teto por IP.
+    await exigirDentroDoLimite(LIMITE_CADASTRO_POR_IP, ipDoCliente(request));
     const passwordHash = await hashPassword(payload.password);
     const userId = crypto.randomUUID();
 
@@ -107,7 +114,6 @@ export async function POST(request: Request) {
     await setSessionCookie(token);
 
     const session = buildAppSession(
-      token,
       { sub: userId, email: payload.email, role },
       { first_name: payload.firstName, last_name: payload.lastName }
     );

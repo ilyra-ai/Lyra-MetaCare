@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
   getBillingBaseUrl,
@@ -78,6 +78,22 @@ describe('billing config', () => {
 
     expect(status.configured).toBe(true);
     expect(status.missingKeys).toEqual([]);
+  });
+
+  it('em produção nao usa a origem da requisicao (Host forjavel)', () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    try {
+      expect(getBillingBaseUrl('https://evil.example')).toBeNull();
+      expect(
+        getStripeEnvironmentStatus('https://evil.example').missingKeys
+      ).toContain('APP_BASE_URL ou NEXT_PUBLIC_APP_URL');
+      process.env.APP_BASE_URL = 'https://app.lyra.test';
+      expect(getBillingBaseUrl('https://evil.example')).toBe(
+        'https://app.lyra.test'
+      );
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 
   it('prioriza price ids persistidos no plano antes de variaveis de ambiente', () => {

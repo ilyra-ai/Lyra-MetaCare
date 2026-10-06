@@ -12,7 +12,6 @@ import { AppSession } from '@/types/app-session';
 
 describe('query-utils', () => {
   const adminSession: AppSession = {
-    access_token: 'token',
     user: {
       id: 'admin-id',
       email: 'admin@example.com',
@@ -22,7 +21,6 @@ describe('query-utils', () => {
   };
 
   const userSession: AppSession = {
-    access_token: 'token',
     user: {
       id: 'user-id',
       email: 'user@example.com',

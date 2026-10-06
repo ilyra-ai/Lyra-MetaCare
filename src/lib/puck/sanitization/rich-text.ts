@@ -1,3 +1,27 @@
+import { parseFragment, type DefaultTreeAdapterTypes } from 'parse5';
+
+/**
+ * Sanitizador do rich text do Puck (campo `richtext`), usado na renderização
+ * do servidor e do navegador.
+ *
+ * O HTML é interpretado pelo parse5, que implementa o algoritmo de parsing do
+ * padrão HTML (WHATWG), o mesmo dos navegadores; a saída é reconstruída do
+ * zero a partir de uma lista de permissões:
+ * - somente as tags de `TAGS_PERMITIDAS`, sempre sem atributos, exceto `href`
+ *   em `<a>` (http, https, mailto, tel ou relativo);
+ * - texto e atributos sempre escapados na serialização;
+ * - conteúdo de `<script>`, `<style>`, `<template>` e similares é descartado;
+ *   as demais tags não permitidas são removidas e o texto delas é mantido.
+ *
+ * Antes, o servidor usava expressões regulares e o navegador o DOMParser: um
+ * `href` com aspas (`<a href='x" onmouseover="alert(1)'>`) passava pelo filtro
+ * e virava atributo de evento no HTML do SSR, e as duas saídas podiam divergir
+ * na hidratação.
+ */
+
+type No = DefaultTreeAdapterTypes.ChildNode;
+type Elemento = DefaultTreeAdapterTypes.Element;
+
 const TAGS_PERMITIDAS = new Set([
   'a',
   'blockquote',
@@ -18,162 +42,127 @@ const TAGS_PERMITIDAS = new Set([
   'ul',
 ]);
 
-function hrefSeguro(href: string) {
-  const valor = href.trim();
+const TAGS_VAZIAS = new Set(['br']);
 
-  if (!valor) {
+// Tags cujo conteúdo nunca é texto exibível: são descartadas com tudo o que
+// contêm.
+const TAGS_DESCARTADAS_COM_CONTEUDO = new Set([
+  'embed',
+  'iframe',
+  'math',
+  'noembed',
+  'noframes',
+  'noscript',
+  'object',
+  'option',
+  'plaintext',
+  'script',
+  'select',
+  'style',
+  'svg',
+  'template',
+  'textarea',
+  'title',
+  'xmp',
+]);
+
+const ORIGEM_BASE = 'https://lyra.local';
+
+function escaparTexto(texto: string) {
+  return texto
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll(' ', '&nbsp;');
+}
+
+function escaparAtributo(valor: string) {
+  return escaparTexto(valor).replaceAll('"', '&quot;');
+}
+
+interface LinkSeguro {
+  href: string;
+  externo: boolean;
+}
+
+/**
+ * Aceita links http(s), mailto, tel e caminhos relativos. O valor é avaliado
+ * pelo mesmo parser de URL dos navegadores, depois da decodificação de
+ * entidades feita pelo parse5 (`java&#115;cript:` já chega como
+ * `javascript:` e é recusado).
+ */
+export function linkSeguro(hrefBruto: string): LinkSeguro | null {
+  const href = hrefBruto.trim();
+  if (!href) {
     return null;
   }
 
-  if (
-    valor.startsWith('/') ||
-    valor.startsWith('#') ||
-    valor.startsWith('mailto:') ||
-    valor.startsWith('tel:')
-  ) {
-    return valor;
-  }
-
+  let url: URL;
   try {
-    const url = new URL(valor, 'https://lyra.local');
-
-    if (url.protocol === 'http:' || url.protocol === 'https:') {
-      return valor;
-    }
+    url = new URL(href, ORIGEM_BASE);
   } catch {
     return null;
   }
 
-  return null;
-}
-
-function sanitizarNoDom(no: Node, documento: Document): Node | null {
-  if (no.nodeType === Node.TEXT_NODE) {
-    return documento.createTextNode(no.textContent ?? '');
+  if (url.protocol === 'mailto:' || url.protocol === 'tel:') {
+    return { href, externo: false };
   }
-
-  if (no.nodeType !== Node.ELEMENT_NODE) {
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
     return null;
   }
+  // Relativos (`/rota`, `#ancora`, `pagina`) resolvem na origem base; os
+  // absolutos e os de protocolo relativo (`//site`, `/\site`) não.
+  return { href, externo: url.origin !== ORIGEM_BASE };
+}
 
-  const elemento = no as HTMLElement;
-  const tag = elemento.tagName.toLowerCase();
-  const fragmento = documento.createDocumentFragment();
+function serializarFilhos(nos: readonly No[]): string {
+  return nos.map(serializarNo).join('');
+}
 
-  for (const filho of Array.from(elemento.childNodes)) {
-    const filhoSanitizado = sanitizarNoDom(filho, documento);
-
-    if (filhoSanitizado) {
-      fragmento.appendChild(filhoSanitizado);
-    }
+function serializarNo(no: No): string {
+  if (no.nodeName === '#text' && 'value' in no) {
+    return escaparTexto(no.value);
+  }
+  if (!('tagName' in no)) {
+    // Comentários e doctype não são exibidos.
+    return '';
   }
 
+  const elemento: Elemento = no;
+  // Conteúdo em namespace SVG/MathML não é texto exibível.
+  if (
+    TAGS_DESCARTADAS_COM_CONTEUDO.has(elemento.tagName) ||
+    elemento.namespaceURI !== 'http://www.w3.org/1999/xhtml'
+  ) {
+    return '';
+  }
+
+  const conteudo = serializarFilhos(elemento.childNodes);
+  const tag = elemento.tagName;
   if (!TAGS_PERMITIDAS.has(tag)) {
-    return fragmento;
+    return conteudo;
+  }
+  if (TAGS_VAZIAS.has(tag)) {
+    return `<${tag}>`;
+  }
+  if (tag !== 'a') {
+    return `<${tag}>${conteudo}</${tag}>`;
   }
 
-  const elementoSeguro = documento.createElement(tag);
-
-  if (tag === 'a') {
-    const href = hrefSeguro(elemento.getAttribute('href') ?? '');
-
-    if (href) {
-      elementoSeguro.setAttribute('href', href);
-
-      const isExterno =
-        href.startsWith('http://') || href.startsWith('https://');
-
-      if (isExterno) {
-        elementoSeguro.setAttribute('target', '_blank');
-        elementoSeguro.setAttribute('rel', 'noopener noreferrer');
-      }
-    }
+  const href = elemento.attrs.find((atributo) => atributo.name === 'href');
+  const link = href ? linkSeguro(href.value) : null;
+  if (!link) {
+    return `<a>${conteudo}</a>`;
   }
-
-  elementoSeguro.appendChild(fragmento);
-  return elementoSeguro;
-}
-
-function sanitizarComDomParser(html: string) {
-  const parser = new DOMParser();
-  const documento = parser.parseFromString(html, 'text/html');
-  const saida = document.implementation.createHTMLDocument('');
-  const fragmento = saida.createDocumentFragment();
-
-  for (const no of Array.from(documento.body.childNodes)) {
-    const noSanitizado = sanitizarNoDom(no, saida);
-
-    if (noSanitizado) {
-      fragmento.appendChild(noSanitizado);
-    }
-  }
-
-  const container = saida.createElement('div');
-  container.appendChild(fragmento);
-  return container.innerHTML;
-}
-
-function sanitizarFallbackNoServidor(html: string) {
-  return html
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(
-      /<\s*(script|style|iframe|object|embed|form|input|button|textarea|select|option|meta|link)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
-      ''
-    )
-    .replace(
-      /<\s*(script|style|iframe|object|embed|form|input|button|textarea|select|option|meta|link)\b[^>]*\/?>/gi,
-      ''
-    )
-    .replace(/\s+on[a-z-]+\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi, '')
-    .replace(
-      /<\/?([a-z0-9-]+)([^>]*)>/gi,
-      (tagCompleta, tagBruta: string, atributosBrutos: string) => {
-        const tag = tagBruta.toLowerCase();
-
-        if (!TAGS_PERMITIDAS.has(tag)) {
-          return '';
-        }
-
-        if (tagCompleta.startsWith('</')) {
-          return `</${tag}>`;
-        }
-
-        if (tag !== 'a') {
-          return `<${tag}>`;
-        }
-
-        const hrefMatch =
-          atributosBrutos.match(/href\s*=\s*"([^"]*)"/i) ??
-          atributosBrutos.match(/href\s*=\s*'([^']*)'/i) ??
-          atributosBrutos.match(/href\s*=\s*([^\s>]+)/i);
-        const href = hrefSeguro(hrefMatch?.[1] ?? '');
-
-        if (!href) {
-          return '<a>';
-        }
-
-        const isExterno =
-          href.startsWith('http://') || href.startsWith('https://');
-
-        return isExterno
-          ? `<a href="${href}" target="_blank" rel="noopener noreferrer">`
-          : `<a href="${href}">`;
-      }
-    );
+  const destino = escaparAtributo(link.href);
+  return link.externo
+    ? `<a href="${destino}" target="_blank" rel="noopener noreferrer">${conteudo}</a>`
+    : `<a href="${destino}">${conteudo}</a>`;
 }
 
 export function sanitizarHtmlRichTextLyra(html: string) {
   if (!html.trim()) {
     return '';
   }
-
-  if (
-    typeof DOMParser !== 'undefined' &&
-    typeof document !== 'undefined' &&
-    typeof Node !== 'undefined'
-  ) {
-    return sanitizarComDomParser(html);
-  }
-
-  return sanitizarFallbackNoServidor(html);
+  return serializarFilhos(parseFragment(html).childNodes);
 }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { ZodError, type ZodType, prettifyError } from 'zod';
 
 import { HttpError } from '@/lib/http-error';
+import { registrarErroInterno } from '@/lib/observability/log-seguro';
 
 /**
  * Utilitários comuns das Route Handlers.
@@ -89,16 +90,20 @@ export function mensagemDeErro(error: unknown, padrao: string): string {
   if (statusDeErro(error) === 400) {
     return 'Valores inválidos para os campos informados.';
   }
-  // Erro inesperado: detalhes só no log do servidor.
-  console.error(`[api] ${padrao}`, error);
+  // Erro inesperado: detalhes só no log do servidor, sem SQL nem valores.
+  registrarErroInterno(`api: ${padrao}`, error);
   return padrao;
+}
+
+function cabecalhosDeErro(error: unknown) {
+  return error instanceof HttpError ? error.headers : undefined;
 }
 
 /** Resposta de erro no formato `{ error: string }`. */
 export function respostaDeErro(error: unknown, padrao: string) {
   return NextResponse.json(
     { error: mensagemDeErro(error, padrao) },
-    { status: statusDeErro(error) }
+    { status: statusDeErro(error), headers: cabecalhosDeErro(error) }
   );
 }
 
@@ -106,6 +111,6 @@ export function respostaDeErro(error: unknown, padrao: string) {
 export function respostaDeErroDados(error: unknown, padrao: string) {
   return NextResponse.json(
     { data: null, error: { message: mensagemDeErro(error, padrao) } },
-    { status: statusDeErro(error) }
+    { status: statusDeErro(error), headers: cabecalhosDeErro(error) }
   );
 }

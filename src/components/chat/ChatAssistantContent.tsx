@@ -331,16 +331,17 @@ export function ChatAssistantContent() {
                   </div>
                   <div className="border-t border-border/60 bg-muted/10 px-5 py-4">
                     <p className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
-                      <Sparkles className="size-4 text-primary" /> BYOK
-                      (Privacidade On-Device)
+                      <Sparkles className="size-4 text-primary" /> BYOK (sua
+                      própria chave)
                     </p>
                     <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                      Insira sua chave do modelo LLM para processamento privado.
-                      A chave fica apenas no seu navegador.
+                      Use a sua chave do Google AI Studio (Gemini). Ela fica
+                      salva só neste navegador e acompanha cada pergunta até o
+                      servidor da Lyra, que a repassa ao Gemini sem gravá-la.
                     </p>
                     <Input
                       type="password"
-                      placeholder="sk-..."
+                      placeholder="AIza..."
                       aria-label="Chave da API do modelo de linguagem (BYOK)"
                       autoComplete="off"
                       value={userApiKey}
