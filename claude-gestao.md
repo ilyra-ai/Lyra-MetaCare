@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `████████████████░░░░` **81%** |
+| Progresso          | `█████████████████░░░` **85%** |
 | Tarefas totais     | 26                             |
-| 🟢 Finalizadas     | 21                             |
+| 🟢 Finalizadas     | 22                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 4                              |
+| ⚪ A iniciar       | 3                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-06                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (21 ÷ 26 = 80,8%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (22 ÷ 26 = 84,6%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa    | O que está sendo realizado                                                                                                                                                            |
-| --- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 19  | Segurança | Auditoria de autenticação, sessões, cookies, CSRF, XSS (sanitizador de rich text do SSR), headers, rate limiting, dados de saúde em logs e Sentry, Stripe e dependências vulneráveis. |
+| Nº  | Tarefa      | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                        |
+| --- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 20  | Performance | Auditar bundle, imports, dependências pesadas, fronteiras Server/Client, re-renders, imagens, fontes, lazy loading, dynamic imports, queries SQL, conexões, caching, waterfalls, chamadas duplicadas e assets; converter o `initial-data` do Puck para slots nativos; verificar os endpoints `ui-config` sem chamador no cliente (remover somente com evidência). |
 
 ### BLOQUEADAS
 
@@ -49,14 +49,6 @@ Nenhuma tarefa bloqueada no momento.
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
-
-### 20 · Performance
-
-_Instrução: Tarefa 18 · item 38._
-
-- Auditar bundle, imports, dependências pesadas, fronteiras Server/Client, re-renders, imagens, fontes, lazy loading, dynamic imports, queries SQL, conexões, caching, waterfalls, chamadas duplicadas e assets, priorizando gargalos mensuráveis.
-- Converter o `initial-data` do Puck para slots nativos (hoje em `zones`, migrado a cada carga pelo `migrate()`), registrado na tarefa 16.
-- Verificar os endpoints `/api/admin/ui-config` e `/api/public/ui-config`: nenhum chamador no cliente foi encontrado na tarefa 18 (possível código morto; remover somente com evidência).
 
 ### 21 · QA funcional com navegador
 
@@ -72,6 +64,7 @@ _Instrução: Tarefa 20 · itens 36 e 37._
 
 - Testar desktop, tablet e mobile em múltiplos viewports: overflow, cortes, truncamento, cards, tabelas, charts, modais, sidebars, menus, scroll, z-index, contraste, foco, estados hover/focus/active, loading, vazios e erros.
 - Validar HTML semântico, labels, forms, navegação por teclado, foco visível, ARIA somente quando necessário, contraste, modais, menus, landmarks, headings e alt texts.
+- Remover o `maximumScale: 1` do viewport em `src/app/layout.tsx`, que impede o zoom no celular (WCAG 1.4.4), registrado na tarefa 19.
 
 ### 23 · Documentação final
 
@@ -501,6 +494,27 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
 - **Testes:** `src/app/api/{auth-storage,dados-admin,funcoes}.integration.test.ts` (29 testes) chamam as Route Handlers reais contra o MySQL de teste, cobrindo sucesso, validação, não autenticado, sem permissão, inexistente e payload inválido, com o CRUD confirmado direto no banco.
 - **Evidências:** `pnpm test` 191/191; `pnpm test:integration` 65/65; `check:format`, `check:lint` e `check:types` com exit 0; `build` com exit 0 e zero avisos. Smoke HTTP no servidor real: login admin 200, upload PNG 200 servido como `image/png` com `nosniff`, login errado 401, travessia 404 e filtros malformados 400.
 - **Encaminhado:** `ui-config` sem chamador no cliente (tarefa 20).
+
+### 19 · Segurança
+
+- **Status:** 🟢 finalizada · **Commit:** `2b6b73a` · **Push:** `beed629..2b6b73a main -> main` (confirmado)
+- **Documentação:** novo `docs/seguranca.md` com o modelo completo (sessão, rate limiting, CSRF, cabeçalhos, XSS, upload, dados de saúde, Sentry, Stripe e dependências); `docs/api.md` e `.env.example` atualizados.
+- **Vulnerabilidades encontradas e corrigidas:**
+  - **XSS no SSR do rich text do Puck:** o sanitizador do servidor usava regex e `<a href='x" onmouseover="alert(1)'>` virava atributo de evento; `java&#115;cript:` também passava. Substituído pelo parse5 8.0.1 (parser HTML5 WHATWG) com reconstrução por lista de permissões e escape; a mesma função roda no servidor e no navegador (antes DOMParser × regex, com risco de divergência na hidratação). 6 dos 10 testes novos falham no código anterior.
+  - **JWT exposto ao JavaScript:** `/api/auth/session`, login e cadastro devolviam o `access_token`, anulando o `httpOnly`. Removido do tipo `AppSession` (prova de morte: `grep access_token` sem ocorrências no código).
+  - **Papel desatualizado na sessão:** o papel vinha do JWT (até 7 dias); agora papel e e-mail vêm do banco a cada requisição e conta removida perde a sessão. Os 2 testes falham no `server-auth.ts` anterior.
+  - **Sem limite de tentativas:** novo `src/lib/security/rate-limit.ts` com janela fixa no MySQL (migration `012_add_rate_limit_buckets.sql`, chaves SHA-256, upsert e leitura na mesma transação). Login: 10 falhas por conta (não depende de IP) e 50 tentativas por IP em 15 min; cadastro: 10 por hora por IP; 429 com `Retry-After`.
+  - **CSRF:** `src/proxy.ts` (convenção do Next.js 16) recusa escrita em `/api/*` com `Sec-Fetch-Site` cross-site/same-site ou `Origin` de outra origem; webhook da Stripe isento (assinatura própria).
+  - **Cabeçalhos ausentes:** CSP (`frame-ancestors`, `object-src`, `base-uri`, `form-action`), `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, COOP, HSTS em produção e `X-Powered-By` desligado. Encontrado no smoke: a CSP global substituía a CSP `sandbox` de `/api/storage`; o caminho foi excluído da regra global e a CSP da rota voltou a valer.
+  - **Dados de saúde em logs:** o log de erro gravava o objeto do mysql2 com o SQL interpolado; `src/lib/observability/log-seguro.ts` registra só tipo, código e pilha.
+  - **Stripe:** URLs de retorno não usam mais o `Host` da requisição em produção.
+  - **Dependências:** `pnpm update --depth Infinity --no-save` e `overrides` restritos às faixas afetadas (brace-expansion, fast-uri, browserslist, baseline-browser-mapping, source-map-js): `pnpm audit` de 75 avisos (1 crítico, 31 altos) para 1; `pnpm audit --prod` sem vulnerabilidades. O restante, `braces` (GHSA-vfj7-8cjw-p6xm), não tem versão corrigida publicada e só chega por ferramentas de desenvolvimento.
+  - **Texto do BYOK:** dizia "On-Device" e "fica apenas no seu navegador", mas a chave vai ao servidor a cada pergunta; corrigido, com placeholder de chave do Gemini.
+  - **README:** a tabela de scripts tinha sido partida em duas na tarefa 18; reunificada.
+- **Auditado sem alteração:** cookies (`httpOnly`, `SameSite=Lax`, `Secure` em produção), Sentry (opcional sem DSN, `dataCollection` sem PII, Replay mascarado), webhook da Stripe (assinatura e idempotência já cobertas na tarefa 17), SQL injection (consultas parametrizadas e identificadores validados na data-api), SSRF (somente URL fixa do Gemini) e open redirect (nenhum redirecionamento com destino vindo do cliente).
+- **Testes:** `src/lib/puck/sanitization/rich-text.test.ts` (10), `src/lib/security/csrf.test.ts` (5), `src/lib/observability/log-seguro.test.ts` (3), teste de produção em `src/lib/billing/config.test.ts` e `src/app/api/seguranca.integration.test.ts` (8: bloqueio por conta com `Retry-After`, zeragem após acerto, limite por IP, limite de cadastro, 25 registros simultâneos sem perda, sessão sem JWT, admin rebaixado e conta removida).
+- **Evidências:** `pnpm test` 210/210; `pnpm test:integration` 73/73; `pnpm test:launchers` 17/17; `check:format`, `check:lint` e `check:types` com exit 0; `build` com exit 0 e zero avisos (`ƒ Proxy (Middleware)` registrado). Smoke real: cabeçalhos em `/login`, HSTS no `pnpm start`, POST cross-site 403 e same-origin 200, 10 logins errados → 401 e o 11º → 429 com `Retry-After: 897`, `/api/storage` com `default-src 'none'; sandbox`, editor Puck sem erros de console, `./run.sh up` com 14 migrations e login do admin.
+- **Encaminhado:** `maximumScale: 1` do viewport (acessibilidade) para a tarefa 22.
 
 ### 24 · Correção crítica: vazamento de conexões MySQL em produção
 
