@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   getBillingBaseUrl,
@@ -44,8 +44,15 @@ function buildPlan(
   };
 }
 
-afterEach(() => {
+// Limpa antes e depois: só no afterEach o primeiro teste herdava o ambiente
+// do processo (ex.: APP_BASE_URL vindo do .env.local) e deixava de ser
+// hermético.
+beforeEach(() => {
   resetBillingEnv();
+});
+
+afterEach(() => {
+  process.env = { ...ORIGINAL_ENV };
 });
 
 describe('billing config', () => {

@@ -203,9 +203,9 @@ export function AssessmentCard() {
         {/* MOOD TAB */}
         {activeTab === 'mood' && (
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <h4 className="mb-4 text-sm font-semibold text-foreground">
+            <h3 className="mb-4 text-sm font-semibold text-foreground">
               Como está a sua energia e o seu humor hoje?
-            </h4>
+            </h3>
             <RadioGroup
               value={moodValue}
               onValueChange={setMoodValue}

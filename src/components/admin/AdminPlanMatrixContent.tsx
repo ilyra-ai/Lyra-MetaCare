@@ -343,9 +343,9 @@ export function AdminPlanMatrixContent() {
                     <p className="text-sm/6 uppercase tracking-[0.2em] text-white/70">
                       Preview comercial
                     </p>
-                    <h3 className="text-3xl font-semibold tracking-tight">
+                    <h2 className="text-3xl font-semibold tracking-tight">
                       {plan.name}
-                    </h3>
+                    </h2>
                     <p className="max-w-sm text-sm/7 text-white/85">
                       {plan.tagline}
                     </p>
@@ -500,6 +500,7 @@ export function AdminPlanMatrixContent() {
                     </p>
                   </div>
                   <Switch
+                    aria-label={`Plano ${plan.name} ativo`}
                     checked={plan.isActive}
                     onCheckedChange={(checked) =>
                       updatePlanField(plan.key, 'isActive', checked)
@@ -514,6 +515,7 @@ export function AdminPlanMatrixContent() {
                     </p>
                   </div>
                   <Switch
+                    aria-label={`Plano ${plan.name} público`}
                     checked={plan.isPublic}
                     onCheckedChange={(checked) =>
                       updatePlanField(plan.key, 'isPublic', checked)
@@ -608,6 +610,7 @@ export function AdminPlanMatrixContent() {
                               </p>
                             </div>
                             <Switch
+                              aria-label={`${planFeature.name} habilitado no plano ${plan.name}`}
                               checked={planFeature.enabled}
                               onCheckedChange={(checked) =>
                                 updateFeatureField(
@@ -632,6 +635,7 @@ export function AdminPlanMatrixContent() {
                                   </p>
                                 </div>
                                 <Switch
+                                  aria-label={`${planFeature.name} ilimitado no plano ${plan.name}`}
                                   checked={planFeature.quotaValue === null}
                                   onCheckedChange={(checked) =>
                                     updateFeatureField(

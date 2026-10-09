@@ -92,7 +92,9 @@ const Agenda = dynamic(
   () => import('./Agenda').then((mod) => mod.Agenda<Appointment>),
   {
     ssr: false,
-    loading: () => <Skeleton className="h-[300px] w-full rounded-[24px]" />,
+    loading: () => (
+      <Skeleton className="h-[520px] w-full rounded-[24px] md:h-[640px]" />
+    ),
   }
 );
 

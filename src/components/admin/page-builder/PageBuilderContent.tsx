@@ -53,7 +53,7 @@ export function PageBuilderContent() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header />
-        <main className="flex-1 p-4 sm:p-6 md:p-8">
+        <main id="conteudo-principal" className="flex-1 p-4 sm:p-6 md:p-8">
           <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-6">
             <Card className="overflow-hidden border-border/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(249,248,252,0.84),rgba(255,255,255,0.96))]">
               <CardHeader className="gap-4">

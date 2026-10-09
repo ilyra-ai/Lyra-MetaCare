@@ -1,20 +1,33 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
-const Table = React.forwardRef<
-  HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-  <div className="overflow-hidden rounded-[20px] border border-border bg-card/92 shadow-sm">
-    <div className="relative w-full overflow-auto">
-      <table
-        ref={ref}
-        className={cn('w-full caption-bottom text-sm', className)}
-        {...props}
-      />
+type TableProps = React.HTMLAttributes<HTMLTableElement> & {
+  /**
+   * Para tabelas que podem rolar na horizontal: o contêiner de rolagem vira
+   * uma região focável com este nome, para quem navega pelo teclado
+   * (WCAG 2.1.1).
+   */
+  scrollLabel?: string;
+};
+
+const Table = React.forwardRef<HTMLTableElement, TableProps>(
+  ({ className, scrollLabel, ...props }, ref) => (
+    <div className="overflow-hidden rounded-[20px] border border-border bg-card/92 shadow-sm">
+      <div
+        className="relative w-full overflow-auto"
+        {...(scrollLabel
+          ? { tabIndex: 0, role: 'region', 'aria-label': scrollLabel }
+          : {})}
+      >
+        <table
+          ref={ref}
+          className={cn('w-full caption-bottom text-sm', className)}
+          {...props}
+        />
+      </div>
     </div>
-  </div>
-));
+  )
+);
 
 Table.displayName = 'Table';
 

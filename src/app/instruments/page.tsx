@@ -1,5 +1,5 @@
 import { createServerDatabaseClient } from '@/integrations/mysql/server';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 
 export default async function InstrumentsPage() {
@@ -10,16 +10,16 @@ export default async function InstrumentsPage() {
     .select();
 
   return (
-    <div className="page-shell min-h-screen p-8">
+    <main id="conteudo-principal" className="page-shell min-h-screen p-8">
       <PuckClientRenderer
         documentKey="instruments"
         className="w-full shrink-0"
       />
       <Card className="max-w-3xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl">
+          <h1 className="font-display text-2xl font-semibold leading-none tracking-tight">
             Demonstração de Consulta SSR (Server Component)
-          </CardTitle>
+          </h1>
         </CardHeader>
         <CardContent>
           <p className="mb-4 text-muted-foreground">
@@ -37,6 +37,6 @@ export default async function InstrumentsPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </main>
   );
 }

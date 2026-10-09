@@ -594,6 +594,7 @@ export function OnboardingForm() {
                         </FormLabel>
                         <FormControl>
                           <Slider
+                            aria-label="Nível de atividade, de 1 (sedentário) a 5 (muito ativo)"
                             min={1}
                             max={5}
                             step={1}

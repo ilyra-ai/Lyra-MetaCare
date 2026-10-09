@@ -50,14 +50,14 @@ export default function AIPlanPage() {
               {appConfig.aiPlan.pageEyebrow}
             </p>
             <div className="space-y-2">
-              <h1
+              <h2
                 className="font-display font-semibold tracking-tight text-foreground md:text-4xl"
                 style={{
                   fontSize: scaleRem(2, appConfig.typography.pageTitle),
                 }}
               >
                 {appConfig.aiPlan.pageTitle}
-              </h1>
+              </h2>
               <p
                 className="max-w-3xl text-sm leading-7 text-muted-foreground md:text-base"
                 style={{

@@ -47,7 +47,7 @@ export function QuickScanFAB() {
             variant="accent"
             size="lg"
             className="h-14 rounded-full px-5 shadow-coral animate-fade-in-up"
-            aria-label="Abrir ações rápidas da Lyra"
+            aria-label="Ações rápidas da Lyra"
           >
             <WandSparkles />
             <span className="hidden text-sm font-semibold md:inline">

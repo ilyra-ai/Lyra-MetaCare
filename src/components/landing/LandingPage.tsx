@@ -691,18 +691,21 @@ export function LandingPage({
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className="flex items-center gap-3 rounded-full px-1 py-1 text-left"
-            aria-label="Voltar ao topo da landing"
           >
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-teal text-white shadow-teal">
+            <span
+              className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-teal text-white shadow-teal"
+              aria-hidden="true"
+            >
               <Sparkles className="h-5 w-5" />
             </span>
             <span>
               <span className="block font-display text-lg font-bold lowercase text-gradient-hero">
-                lyra
+                lyra{' '}
               </span>
               <span className="block text-xs uppercase tracking-[0.28em] text-muted-foreground">
                 astrologia + IA
               </span>
+              <span className="sr-only">: voltar ao topo</span>
             </span>
           </button>
 
@@ -755,7 +758,7 @@ export function LandingPage({
         </div>
       </header>
 
-      <main>
+      <main id={previewMode ? undefined : 'conteudo-principal'}>
         <section className="relative overflow-hidden px-4 pb-18 pt-10 sm:px-6 lg:px-8 lg:pb-24 lg:pt-14">
           <div className="pointer-events-none absolute inset-0">
             <div className="orchestrated-orb -left-32 -top-8 h-80 w-80 bg-primary/16" />

@@ -616,7 +616,10 @@ export function Dashboard() {
                   8h por noite
                 </span>
               </div>
-              <Progress value={sleepProgress} />
+              <Progress
+                aria-label="Sono em relação à meta de 8 horas"
+                value={sleepProgress}
+              />
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">

@@ -455,7 +455,11 @@ export function GoalTrackingContent() {
                       {formatMetricValue(goal.target_value, goal.unit)}
                     </span>
                   </div>
-                  <Progress value={progressPercentage} className="mt-4 h-3" />
+                  <Progress
+                    aria-label={`Progresso da meta ${goal.title}`}
+                    value={progressPercentage}
+                    className="mt-4 h-3"
+                  />
                 </div>
 
                 <UpdateGoalProgressModal goal={goal} onUpdate={fetchGoals}>

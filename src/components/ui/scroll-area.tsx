@@ -7,14 +7,25 @@ import { cn } from '@/lib/utils';
 
 const ScrollArea = React.forwardRef<
   React.ComponentRef<typeof ScrollAreaPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root> & {
+    /**
+     * Nome da área rolável quando o conteúdo não tem nada focável: a
+     * viewport passa a receber foco e rolar pelo teclado (WCAG 2.1.1).
+     */
+    viewportLabel?: string;
+  }
+>(({ className, children, viewportLabel, ...props }, ref) => (
   <ScrollAreaPrimitive.Root
     ref={ref}
     className={cn('relative overflow-hidden', className)}
     {...props}
   >
-    <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit]">
+    <ScrollAreaPrimitive.Viewport
+      className="h-full w-full rounded-[inherit] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+      {...(viewportLabel
+        ? { tabIndex: 0, role: 'region', 'aria-label': viewportLabel }
+        : {})}
+    >
       {children}
     </ScrollAreaPrimitive.Viewport>
     <ScrollBar />

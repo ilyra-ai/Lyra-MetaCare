@@ -138,7 +138,7 @@ export default function Home() {
                   <Sparkles className="h-3.5 w-3.5" />
                   {dashboardConfig.heroEyebrow}
                 </span>
-                <h1
+                <h2
                   className="mt-4 font-display font-bold tracking-tight text-foreground"
                   style={{
                     fontSize: scaleRem(2.65, appConfig.typography.pageTitle),
@@ -147,7 +147,7 @@ export default function Home() {
                 >
                   {greeting},{' '}
                   <span className="text-gradient-hero">{firstName}</span>
-                </h1>
+                </h2>
                 <p
                   className="mt-3 max-w-2xl text-muted-foreground"
                   style={{

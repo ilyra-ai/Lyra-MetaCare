@@ -264,7 +264,11 @@ export function VedicDashboard({ featureEnabled = true }: VedicDashboardProps) {
                       {dosha.percentages[d]}%
                     </span>
                   </div>
-                  <Progress value={dosha.percentages[d]} className="h-2" />
+                  <Progress
+                    aria-label={`Dosha ${d}`}
+                    value={dosha.percentages[d]}
+                    className="h-2"
+                  />
                 </div>
               ))}
             </div>
@@ -390,6 +394,7 @@ export function VedicDashboard({ featureEnabled = true }: VedicDashboardProps) {
                     </span>
                   </div>
                   <Progress
+                    aria-label={`${k.name}: ${k.score} de 100`}
                     value={k.score}
                     className="h-1.5 [&>div]:bg-cosmic"
                   />
@@ -488,7 +493,11 @@ export function VedicDashboard({ featureEnabled = true }: VedicDashboardProps) {
                       {v.score}
                     </span>
                   </div>
-                  <Progress value={v.score} className="h-1.5" />
+                  <Progress
+                    aria-label={`${v.name}: ${v.score} de 100`}
+                    value={v.score}
+                    className="h-1.5"
+                  />
                   <p className="text-[10px] text-muted-foreground">
                     {v.domain}
                   </p>

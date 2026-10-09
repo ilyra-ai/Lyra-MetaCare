@@ -117,7 +117,11 @@ export function UpdateGoalProgressModal({
                 </span>
                 <span>Progresso: {progressPercentage.toFixed(0)}%</span>
               </div>
-              <Progress value={progressPercentage} className="h-2" />
+              <Progress
+                aria-label={`Progresso da meta ${goal.title}`}
+                value={progressPercentage}
+                className="h-2"
+              />
             </div>
           )}
         </div>

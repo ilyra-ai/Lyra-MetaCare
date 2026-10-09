@@ -46,7 +46,7 @@ export default function AdminUsersPage() {
           documentKey="admin-users"
           className="w-full shrink-0"
         />
-        <main className="flex-1 p-4 sm:p-6 md:p-8">
+        <main id="conteudo-principal" className="flex-1 p-4 sm:p-6 md:p-8">
           <UserManagementContent />
         </main>
         <MadeWithIlyra />

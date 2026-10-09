@@ -218,7 +218,11 @@ describe('webhook Stripe (rota)', () => {
     });
     expect(semAssinatura.status).toBe(400);
 
-    process.env.STRIPE_SECRET_KEY ??= 'sk_test_somente_assinatura_local';
+    // `||=` e não `??=`: com o `.env.local` carregado a chave existe, mas
+    // vazia ("não configurada"), e a rota responderia 503 antes de checar a
+    // assinatura.
+    const chaveOriginal = process.env.STRIPE_SECRET_KEY;
+    process.env.STRIPE_SECRET_KEY ||= 'sk_test_somente_assinatura_local';
     const assinaturaFalsa = await chamar(webhook.POST, {
       method: 'POST',
       rawBody: '{}',
@@ -233,6 +237,11 @@ describe('webhook Stripe (rota)', () => {
       delete process.env.STRIPE_WEBHOOK_SECRET;
     } else {
       process.env.STRIPE_WEBHOOK_SECRET = original;
+    }
+    if (chaveOriginal === undefined) {
+      delete process.env.STRIPE_SECRET_KEY;
+    } else {
+      process.env.STRIPE_SECRET_KEY = chaveOriginal;
     }
   });
 });

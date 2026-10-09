@@ -31,11 +31,14 @@ export default function AdminPlansPage() {
             documentKey="admin-plans"
             className="w-full shrink-0"
           />
-          <main className="flex flex-1 items-center justify-center p-6 md:p-10">
+          <main
+            id="conteudo-principal"
+            className="flex flex-1 items-center justify-center p-6 md:p-10"
+          >
             <div className="max-w-xl rounded-3xl border border-border/70 bg-card/85 p-8 text-center shadow-xl backdrop-blur-sm">
-              <h1 className="text-2xl font-semibold tracking-tight">
+              <h2 className="text-2xl font-semibold tracking-tight">
                 Acesso restrito
-              </h1>
+              </h2>
               <p className="mt-3 text-sm leading-7 text-muted-foreground">
                 Você não tem permissão para acessar a gestão premium de planos.
               </p>
@@ -52,7 +55,7 @@ export default function AdminPlansPage() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header />
-        <main className="flex-1 p-4 sm:p-6 md:p-8">
+        <main id="conteudo-principal" className="flex-1 p-4 sm:p-6 md:p-8">
           <AdminPlanMatrixContent />
         </main>
         <MadeWithIlyra />

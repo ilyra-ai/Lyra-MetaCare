@@ -70,7 +70,10 @@ export function Agenda<TResource extends object>({
   >;
 
   return (
-    <div className="h-[300px]">
+    // Com 300px a barra de ferramentas quebrava em várias linhas no celular e
+    // sobravam ~150px para as seis semanas do mês: linhas de 20px, números
+    // dos dias cobertos pelo cabeçalho e nenhum espaço para os eventos.
+    <div className="h-[520px] md:h-[640px]">
       <TypedCalendar
         localizer={localizer}
         events={events}

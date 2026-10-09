@@ -35,11 +35,14 @@ const Alert = React.forwardRef<
 
 Alert.displayName = 'Alert';
 
+// Título do alerta como texto em destaque (padrão atual do shadcn), e não
+// como <h5>: um alerta não abre seção, e um h5 solto quebrava a hierarquia de
+// títulos das páginas (WCAG 1.3.1).
 const AlertTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <h5
+  <div
     ref={ref}
     className={cn('mb-1 font-semibold leading-none tracking-tight', className)}
     {...props}

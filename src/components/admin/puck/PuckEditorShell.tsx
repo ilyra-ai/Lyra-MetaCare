@@ -301,7 +301,7 @@ export function PuckEditorShell({
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header />
-        <main className="flex-1 p-4 sm:p-6 md:p-8">
+        <main id="conteudo-principal" className="flex-1 p-4 sm:p-6 md:p-8">
           <div className="mx-auto flex w-full max-w-[1800px] flex-col gap-6">
             <Card className="overflow-hidden border-border/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(249,248,252,0.92),rgba(237,233,254,0.24),rgba(255,255,255,0.96))]">
               <CardHeader className="gap-4">
@@ -312,7 +312,11 @@ export function PuckEditorShell({
 
                 <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
                   <div className="max-w-4xl space-y-3">
-                    <CardTitle className="text-3xl">
+                    <CardTitle
+                      className="text-3xl"
+                      role="heading"
+                      aria-level={2}
+                    >
                       Lyra Customaze UI UX — Editor Visual
                     </CardTitle>
                     <CardDescription className="text-sm leading-7">
@@ -328,7 +332,13 @@ export function PuckEditorShell({
                       value={documentKey}
                       onValueChange={handleTrocaDocumento}
                     >
-                      <SelectTrigger className="min-w-[240px] bg-white/90">
+                      <label htmlFor="puck-superficie" className="sr-only">
+                        Superfície em edição
+                      </label>
+                      <SelectTrigger
+                        id="puck-superficie"
+                        className="min-w-[240px] bg-white/90"
+                      >
                         <SelectValue placeholder="Escolha a superfície" />
                       </SelectTrigger>
                       <SelectContent>

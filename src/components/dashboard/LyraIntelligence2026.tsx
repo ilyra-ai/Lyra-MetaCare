@@ -259,7 +259,10 @@ function BiologicalAgeCard({ result }: { result: BiologicalAgeResult | null }) {
               {result.vitalityScore}/100
             </span>
           </div>
-          <Progress value={result.vitalityScore} />
+          <Progress
+            aria-label="Vitalidade fenotípica"
+            value={result.vitalityScore}
+          />
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Ritmo de envelhecimento</span>
             <span className="font-mono text-foreground">
@@ -423,6 +426,7 @@ function CycleCard({ result }: { result: MenstrualCycleResult }) {
                 )}
               </div>
               <Progress
+                aria-label={`Dia ${result.cycleDay} de ${result.cycleLength} do ciclo`}
                 value={Math.round((result.cycleDay / result.cycleLength) * 100)}
               />
             </div>

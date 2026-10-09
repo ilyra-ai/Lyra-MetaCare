@@ -32,7 +32,10 @@ export default function ChatPage() {
       <div className="flex flex-col flex-1 min-w-0">
         <Header />
         <PuckClientRenderer documentKey="chat" className="w-full shrink-0" />
-        <main className="flex flex-1 items-stretch justify-center p-4 animate-in fade-in duration-500 md:p-6">
+        <main
+          id="conteudo-principal"
+          className="flex flex-1 items-stretch justify-center p-4 animate-in fade-in duration-500 md:p-6"
+        >
           <div className="h-full w-full max-w-384">
             {chatEnabled ? (
               <ChatAssistantContent />

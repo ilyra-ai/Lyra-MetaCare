@@ -135,7 +135,11 @@ export function AccountSubscriptionCard() {
                     </div>
                   </div>
                   {percentage !== null ? (
-                    <Progress value={percentage} className="mt-3 h-2.5" />
+                    <Progress
+                      aria-label={`Uso de ${feature.name}`}
+                      value={percentage}
+                      className="mt-3 h-2.5"
+                    />
                   ) : null}
                 </div>
               );

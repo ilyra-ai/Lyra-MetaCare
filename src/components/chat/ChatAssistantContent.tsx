@@ -299,9 +299,9 @@ export function ChatAssistantContent() {
                 </PopoverTrigger>
                 <PopoverContent className="w-88 border-border/70 bg-white/92 p-0 backdrop-blur-xl">
                   <div className="border-b border-border/60 px-5 py-4">
-                    <h4 className="text-base font-semibold text-foreground">
+                    <h2 className="text-base font-semibold text-foreground">
                       {chatConfig.integrationsTitle}
-                    </h4>
+                    </h2>
                     <p className="mt-1 text-sm leading-6 text-muted-foreground">
                       {chatConfig.integrationsDescription}
                     </p>
@@ -380,14 +380,14 @@ export function ChatAssistantContent() {
               </div>
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
-                  <h3
+                  <h2
                     className="font-semibold text-foreground"
                     style={{
                       fontSize: scaleRem(1.12, appConfig.typography.cardTitle),
                     }}
                   >
                     {chatConfig.assistantTitle}
-                  </h3>
+                  </h2>
                   <Sparkles className="h-4 w-4 text-cosmic" />
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">

@@ -4,24 +4,43 @@ import * as React from 'react';
 import * as SliderPrimitive from '@radix-ui/react-slider';
 import { cn } from '@/lib/utils';
 
+/**
+ * O elemento focável com `role="slider"` é o Thumb, não a raiz: o nome
+ * acessível (`aria-label`/`aria-labelledby`) recebido pelo Slider vai para o
+ * Thumb, senão o leitor de tela anuncia só "controle deslizante".
+ */
 const Slider = React.forwardRef<
   React.ComponentRef<typeof SliderPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <SliderPrimitive.Root
-    ref={ref}
-    className={cn(
-      'relative flex w-full touch-none select-none items-center',
-      className
-    )}
-    {...props}
-  >
-    <SliderPrimitive.Track className="relative h-2.5 w-full grow overflow-hidden rounded-full bg-muted">
-      <SliderPrimitive.Range className="absolute h-full bg-gradient-aurora bg-size-[160%_160%] animate-aurora" />
-    </SliderPrimitive.Track>
-    <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-white bg-primary shadow-teal transition-transform duration-200 hover:scale-105 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-primary/12 disabled:pointer-events-none disabled:opacity-50" />
-  </SliderPrimitive.Root>
-));
+>(
+  (
+    {
+      className,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledby,
+      ...props
+    },
+    ref
+  ) => (
+    <SliderPrimitive.Root
+      ref={ref}
+      className={cn(
+        'relative flex w-full touch-none select-none items-center',
+        className
+      )}
+      {...props}
+    >
+      <SliderPrimitive.Track className="relative h-2.5 w-full grow overflow-hidden rounded-full bg-muted">
+        <SliderPrimitive.Range className="absolute h-full bg-gradient-aurora bg-size-[160%_160%] animate-aurora" />
+      </SliderPrimitive.Track>
+      <SliderPrimitive.Thumb
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledby}
+        className="block h-5 w-5 rounded-full border-2 border-white bg-primary shadow-teal transition-transform duration-200 hover:scale-105 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-primary/12 disabled:pointer-events-none disabled:opacity-50"
+      />
+    </SliderPrimitive.Root>
+  )
+);
 
 Slider.displayName = SliderPrimitive.Root.displayName;
 

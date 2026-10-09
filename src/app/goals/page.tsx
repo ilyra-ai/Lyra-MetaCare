@@ -43,9 +43,9 @@ export default function GoalTrackingPage() {
               Ritmo e consistência
             </p>
             <div className="space-y-2">
-              <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+              <h2 className="font-display text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
                 Suas metas
-              </h1>
+              </h2>
               <p className="max-w-3xl text-sm leading-7 text-muted-foreground md:text-base">
                 Evolução diária com progresso real, acompanhamento visual claro
                 e atualização individual de cada objetivo.

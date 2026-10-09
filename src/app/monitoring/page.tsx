@@ -45,19 +45,19 @@ export default function MonitoringPage() {
           documentKey="monitoring"
           className="w-full shrink-0"
         />
-        <main className="flex-1 p-4 sm:p-6 md:p-8">
+        <main id="conteudo-principal" className="flex-1 p-4 sm:p-6 md:p-8">
           <div className="mb-8 flex flex-col gap-2">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
               {monitoringConfig.pageEyebrow}
             </p>
-            <h1
+            <h2
               className="font-display font-bold text-foreground"
               style={{
                 fontSize: scaleRem(1.875, appConfig.typography.pageTitle),
               }}
             >
               {monitoringConfig.pageTitle}
-            </h1>
+            </h2>
             <p
               className="max-w-3xl leading-7 text-muted-foreground"
               style={{

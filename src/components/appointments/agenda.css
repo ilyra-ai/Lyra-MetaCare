@@ -92,3 +92,12 @@
 .rbc-slot-selection {
   background: hsl(var(--primary) / 0.16);
 }
+
+/*
+ * Número do dia no mês: no celular o botão ficava com ~19px de largura.
+ * Área mínima de toque de 24×24px (WCAG 2.5.8).
+ */
+.rbc-date-cell > .rbc-button-link {
+  min-width: 24px;
+  min-height: 24px;
+}

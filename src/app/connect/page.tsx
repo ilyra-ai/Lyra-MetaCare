@@ -37,7 +37,7 @@ export default function DataConnectionPage() {
       <div className="flex min-w-0 flex-1 flex-col">
         <Header />
         <PuckClientRenderer documentKey="connect" className="w-full shrink-0" />
-        <main className="flex-1 p-4 sm:p-6 md:p-8">
+        <main id="conteudo-principal" className="flex-1 p-4 sm:p-6 md:p-8">
           <section className="mx-auto flex max-w-6xl flex-col gap-6">
             <div className="space-y-3">
               <p
@@ -48,14 +48,14 @@ export default function DataConnectionPage() {
               >
                 {appConfig.connect.pageEyebrow}
               </p>
-              <h1
+              <h2
                 className="text-center font-bold text-foreground md:text-left"
                 style={{
                   fontSize: scaleRem(2, appConfig.typography.pageTitle),
                 }}
               >
                 {appConfig.connect.pageTitle}
-              </h1>
+              </h2>
               <p
                 className="max-w-4xl text-center leading-7 text-muted-foreground md:text-left"
                 style={{

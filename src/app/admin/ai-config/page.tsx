@@ -59,11 +59,14 @@ export default function AIConfigPage() {
           documentKey="admin-ai-config"
           className="w-full shrink-0"
         />
-        <main className="flex-1 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto w-full">
+        <main
+          id="conteudo-principal"
+          className="flex-1 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto w-full"
+        >
           <div className="mb-10 text-center sm:text-left">
-            <h1 className="font-display text-4xl font-bold tracking-tight text-foreground">
+            <h2 className="font-display text-4xl font-bold tracking-tight text-foreground">
               Modelos de IA
-            </h1>
+            </h2>
             <p className="mt-2 text-lg text-muted-foreground">
               Gerencie a configuração central, comportamento e pesos do motor de
               IA da Lyra.

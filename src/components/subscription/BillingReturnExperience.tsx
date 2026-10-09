@@ -130,7 +130,7 @@ export function BillingReturnExperience({
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header />
-        <main className="flex-1 p-4 sm:p-6 md:p-8">
+        <main id="conteudo-principal" className="flex-1 p-4 sm:p-6 md:p-8">
           <div className="mx-auto grid w-full max-w-7xl gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
             <div className="space-y-6">
               <Card className="overflow-hidden border-0 shadow-xl ring-1 ring-border/70">

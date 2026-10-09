@@ -221,8 +221,13 @@ export function DataHealthContent() {
               Completude e distribuição de cada métrica coletada.
             </CardDescription>
           </CardHeader>
-          <CardContent className="max-h-[600px] overflow-y-auto">
-            <Table>
+          <CardContent
+            className="max-h-[600px] overflow-y-auto"
+            tabIndex={0}
+            role="region"
+            aria-label="Análise de métricas (rolável)"
+          >
+            <Table scrollLabel="Tabela de métricas (rolável na horizontal)">
               <TableHeader>
                 <TableRow>
                   <TableHead>Métrica</TableHead>
@@ -268,7 +273,12 @@ export function DataHealthContent() {
               Usuários sem sincronização de dados há mais de 7 dias.
             </CardDescription>
           </CardHeader>
-          <CardContent className="max-h-[600px] overflow-y-auto">
+          <CardContent
+            className="max-h-[600px] overflow-y-auto"
+            tabIndex={0}
+            role="region"
+            aria-label="Usuários inativos (rolável)"
+          >
             {staleUsers.length > 0 ? (
               <ul className="space-y-3">
                 {staleUsers.map((user) => (

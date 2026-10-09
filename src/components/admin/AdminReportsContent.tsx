@@ -95,7 +95,7 @@ export function AdminReportsContent() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between rounded-[18px] border border-border/70 bg-secondary/60 p-4">
             <div>
-              <h4 className="font-semibold">Exportar Todos os Usuários</h4>
+              <h3 className="font-semibold">Exportar Todos os Usuários</h3>
               <p className="text-sm text-muted-foreground">
                 Gera um arquivo CSV com todos os dados da tabela de perfis.
               </p>

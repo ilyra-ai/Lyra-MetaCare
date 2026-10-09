@@ -4,9 +4,19 @@ import * as React from 'react';
 import * as ProgressPrimitive from '@radix-ui/react-progress';
 import { cn } from '@/lib/utils';
 
+type ProgressProps = React.ComponentPropsWithoutRef<
+  typeof ProgressPrimitive.Root
+> & {
+  /**
+   * Nome acessível obrigatório: uma barra `role="progressbar"` sem nome é
+   * anunciada só como "barra de progresso" (WCAG 4.1.2).
+   */
+  'aria-label': string;
+};
+
 const Progress = React.forwardRef<
   React.ComponentRef<typeof ProgressPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
+  ProgressProps
 >(({ className, value, ...props }, ref) => (
   <ProgressPrimitive.Root
     ref={ref}
@@ -14,6 +24,7 @@ const Progress = React.forwardRef<
       'relative h-3 w-full overflow-hidden rounded-full bg-muted',
       className
     )}
+    value={value}
     {...props}
   >
     <ProgressPrimitive.Indicator

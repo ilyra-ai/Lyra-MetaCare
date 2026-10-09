@@ -134,7 +134,7 @@ export function LoginExperience({
 
   return (
     <main
-      id="conteudo-principal"
+      id={previewMode ? undefined : 'conteudo-principal'}
       className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[#eaf4f4] font-sans"
     >
       {/* Fundo decorativo */}

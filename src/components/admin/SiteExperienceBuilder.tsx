@@ -32,7 +32,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -205,11 +204,14 @@ function FieldBlock({
   label: string;
   children: React.ReactNode;
 }) {
+  // <label> envolvendo o campo: o controle recebe o nome sem depender de id
+  // (antes o rótulo ficava solto e 100+ campos do construtor não tinham nome
+  // acessível).
   return (
-    <div className="flex flex-col gap-2">
-      <Label>{label}</Label>
+    <label className="flex flex-col gap-2">
+      <span className="text-sm font-medium leading-none">{label}</span>
       {children}
-    </div>
+    </label>
   );
 }
 
@@ -237,6 +239,7 @@ function TypographySliderField({
       </div>
       <div className="mt-4 flex flex-col gap-3">
         <Slider
+          aria-label={label}
           min={0.8}
           max={1.4}
           step={0.05}
@@ -270,7 +273,11 @@ function SwitchRow({
         <p className="text-sm font-medium text-foreground">{title}</p>
         <p className="text-xs leading-6 text-muted-foreground">{description}</p>
       </div>
-      <Switch checked={checked} onCheckedChange={onCheckedChange} />
+      <Switch
+        aria-label={title}
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+      />
     </div>
   );
 }
@@ -298,7 +305,13 @@ function ItemShell({
           </CardDescription>
         </div>
         <div className="flex items-center gap-2">
-          <Button type="button" variant="ghost" size="icon" onClick={onMoveUp}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onMoveUp}
+            aria-label={`Mover ${title} para cima`}
+          >
             <ArrowUp className="h-4 w-4" />
           </Button>
           <Button
@@ -306,10 +319,17 @@ function ItemShell({
             variant="ghost"
             size="icon"
             onClick={onMoveDown}
+            aria-label={`Mover ${title} para baixo`}
           >
             <ArrowDown className="h-4 w-4" />
           </Button>
-          <Button type="button" variant="ghost" size="icon" onClick={onRemove}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onRemove}
+            aria-label={`Remover ${title}`}
+          >
             <Plus className="h-4 w-4 rotate-45" />
           </Button>
         </div>
@@ -1527,6 +1547,7 @@ export function SiteExperienceBuilder() {
                         onClick={() =>
                           moveListItem(['sectionOrder'], index, -1)
                         }
+                        aria-label={`Mover seção ${sectionKey} para cima`}
                       >
                         <ArrowUp className="h-4 w-4" />
                       </Button>
@@ -1535,6 +1556,7 @@ export function SiteExperienceBuilder() {
                         variant="ghost"
                         size="icon"
                         onClick={() => moveListItem(['sectionOrder'], index, 1)}
+                        aria-label={`Mover seção ${sectionKey} para baixo`}
                       >
                         <ArrowDown className="h-4 w-4" />
                       </Button>
@@ -2280,6 +2302,7 @@ export function SiteExperienceBuilder() {
               </div>
               <div className="mt-4 space-y-3">
                 <Slider
+                  aria-label="Largura da navegação lateral"
                   min={240}
                   max={360}
                   step={4}
@@ -4120,7 +4143,7 @@ export function SiteExperienceBuilder() {
               editor premium da experiencia web
             </Badge>
             <div className="flex flex-col gap-2">
-              <CardTitle className="text-3xl">
+              <CardTitle className="text-3xl" role="heading" aria-level={2}>
                 Superfícies editáveis do módulo Lyra Customaze UI UX
               </CardTitle>
               <CardDescription className="max-w-3xl text-sm leading-7">
@@ -4279,8 +4302,13 @@ export function SiteExperienceBuilder() {
           <ResizableHandle withHandle />
 
           <ResizablePanel defaultSize="56%" minSize="40%">
-            <div className="h-[980px] bg-[linear-gradient(180deg,rgba(249,248,252,0.96),rgba(255,255,255,0.98))] p-6">
-              <div className="mb-4 flex items-center justify-between rounded-[24px] border border-border/70 bg-white/82 px-5 py-4">
+            {/*
+              Coluna com altura fixa em flex: a prévia ocupa só o espaço
+              restante, sem transbordar o painel (que viraria uma região
+              rolável sem foco de teclado).
+            */}
+            <div className="flex h-[980px] flex-col bg-[linear-gradient(180deg,rgba(249,248,252,0.96),rgba(255,255,255,0.98))] p-6">
+              <div className="mb-4 flex shrink-0 items-center justify-between rounded-[24px] border border-border/70 bg-white/82 px-5 py-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.26em] text-muted-foreground">
                     preview administrativo
@@ -4295,8 +4323,21 @@ export function SiteExperienceBuilder() {
                 </Badge>
               </div>
 
-              <div className="h-[900px] overflow-hidden rounded-[32px] border border-border/70 bg-white shadow-[0_30px_90px_-46px_rgba(22,21,48,0.34)]">
-                <ScrollArea className="h-full">{preview}</ScrollArea>
+              <div className="min-h-0 flex-1 overflow-hidden rounded-[32px] border border-border/70 bg-white shadow-[0_30px_90px_-46px_rgba(22,21,48,0.34)]">
+                {/*
+                  A prévia é só visual (os controles ficam desativados em
+                  previewMode): fica fora da árvore de acessibilidade e do
+                  foco, para não duplicar landmarks, títulos e botões da
+                  página real. O conteúdo editável está no formulário ao lado.
+                */}
+                <ScrollArea
+                  className="h-full"
+                  viewportLabel="Prévia visual do rascunho (rolável)"
+                >
+                  <div inert aria-hidden="true">
+                    {preview}
+                  </div>
+                </ScrollArea>
               </div>
             </div>
           </ResizablePanel>

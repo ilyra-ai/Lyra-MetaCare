@@ -162,7 +162,7 @@ export function Header() {
               type="button"
               onClick={() => setCommandOpen(true)}
               className="command-surface w-full max-w-xl justify-between hover:border-primary/20 hover:bg-white"
-              aria-label="Abrir busca global"
+              aria-keyshortcuts="Control+K"
             >
               <span className="flex items-center gap-3">
                 <Search
@@ -225,17 +225,20 @@ export function Header() {
                   type="button"
                   variant="ghost"
                   className="h-12 rounded-full px-2 md:px-3"
-                  aria-label="Abrir menu do usuário"
                 >
                   <Avatar className="h-10 w-10 border border-white shadow-sm">
                     <AvatarImage
                       src={profile?.avatar_url || undefined}
                       alt={`Avatar de ${firstName}`}
                     />
-                    <AvatarFallback className="bg-gradient-teal text-white">
+                    <AvatarFallback
+                      className="bg-gradient-teal text-white"
+                      aria-hidden="true"
+                    >
                       {initial}
                     </AvatarFallback>
                   </Avatar>
+                  <span className="sr-only">Abrir menu do usuário </span>
                   <div className="hidden min-w-0 text-left md:block">
                     <p className="truncate text-sm font-semibold text-foreground">
                       {firstName}

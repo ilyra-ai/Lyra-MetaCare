@@ -68,7 +68,17 @@ export function PuckPreviewRenderer({
             </div>
           </div>
         ) : null}
-        <div className="rounded-[28px] border border-border/70 bg-white p-4 shadow-[0_24px_80px_-48px_rgba(22,21,48,0.34)]">
+        {/*
+          Prévia só visual: o mesmo documento aparece no canvas do editor e
+          nas duas prévias (rascunho e publicado). Fora da árvore de
+          acessibilidade e do foco, para não triplicar títulos, regiões e
+          botões para quem usa leitor de tela ou teclado.
+        */}
+        <div
+          className="rounded-[28px] border border-border/70 bg-white p-4 shadow-[0_24px_80px_-48px_rgba(22,21,48,0.34)]"
+          inert
+          aria-hidden="true"
+        >
           <Render config={obterConfigPuckLyra(documentKey)} data={data} />
         </div>
       </CardContent>
