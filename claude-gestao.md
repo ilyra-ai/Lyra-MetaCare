@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `██████████████████░░` **88%** |
-| Tarefas totais     | 26                             |
-| 🟢 Finalizadas     | 23                             |
+| Progresso          | `██████████████████░░` **89%** |
+| Tarefas totais     | 27                             |
+| 🟢 Finalizadas     | 24                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
 | ⚪ A iniciar       | 2                              |
 | Branch de trabalho | `main` (única permitida)       |
-| Última atualização | 2026-10-06                     |
+| Última atualização | 2026-10-09                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (23 ÷ 26 = 88,5%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (24 ÷ 27 = 88,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                     | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| --- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 21  | QA funcional com navegador | Aplicação real (`pnpm build` + `pnpm start`) navegada com Playwright por todas as páginas e menus (landing, login, cadastro, onboarding, dashboard, perfil, plano, metas, chat, dispositivos, monitoramento, agenda, billing, área administrativa, editor Puck e Site Experience Builder), clicando em links, botões, tabs, selects, dialogs, dropdowns, toggles, forms e paginações; health check real. Registrado na tarefa 20: valor fixo "94.2" de "Harmonia atual" no dashboard. |
+| Nº  | Tarefa                                                         | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                           |
+| --- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 27  | Simplificação visual premium (pedido do usuário em 2026-10-09) | Proposta de design mais simples, moderna e premium, sem perder funções: pesquisa de referências de 2026 e protótipo das telas-chave (login, dashboard e página interna) comparado ao visual atual, **enviado para aprovação do usuário antes de qualquer alteração no código**. Após aprovado: aplicação nos tokens e componentes compartilhados, com QA visual de todas as páginas. |
 
 ### BLOQUEADAS
 
@@ -57,6 +57,7 @@ _Instrução: Tarefa 20 · itens 36 e 37._
 - Testar desktop, tablet e mobile em múltiplos viewports: overflow, cortes, truncamento, cards, tabelas, charts, modais, sidebars, menus, scroll, z-index, contraste, foco, estados hover/focus/active, loading, vazios e erros.
 - Validar HTML semântico, labels, forms, navegação por teclado, foco visível, ARIA somente quando necessário, contraste, modais, menus, landmarks, headings e alt texts.
 - Remover o `maximumScale: 1` do viewport em `src/app/layout.tsx`, que impede o zoom no celular (WCAG 1.4.4), registrado na tarefa 19.
+- Registrado na tarefa 21: botões só com ícone sem nome acessível (ações da tabela de usuários e de conteúdo); duas `<h1>` por página (cabeçalho do app e título do conteúdo); `/instruments` sem `<h1>`; navegação da landing feita com `<button>` em vez de links.
 
 ### 23 · Documentação final
 
@@ -523,7 +524,49 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
 - **Resultado (JS da página):** `/` visitante 817 → 235 KB; `/login` 382 → 189 KB; `/chat` 991 → 255 KB; `/plan` 1000 → 241 KB; `/goals` 1000 → 350 KB; `/profile` 991 → 517 KB; `/appointments` 1043 → 394 KB; `/admin/dashboard` 999 → 243 KB; `/admin/puck` 1132 → 590 KB. O prefetch das rotas do menu (padrão do `<Link>`) continua após o carregamento.
 - **Verificado sem alteração:** fontes (`next/font` já serve da própria origem, subset latin), índices das consultas por usuário e pool único de conexões.
 - **Evidências:** `pnpm test` 241/241; `pnpm test:integration` 73/73; `check:format`, `check:lint` e `check:types` com exit 0; `build` com exit 0 e zero avisos; console sem erros em `/`, `/login`, `/goals`, `/chat`, `/profile` e `/admin/puck` (modo dev); `./run.sh up` com verificação ponta a ponta.
-- **Investigado e registrado:** em `/appointments` (modo dev) o React avisa "outdated JSX transform". Causa: `uncontrollable` 7.2.1, dependência do `react-big-calendar` 1.20.0 (última versão, que exige `^7.2.1`), publicado com o transform clássico (`__self`). O aviso só existe em desenvolvimento e vem de pacote de terceiro; não há versão compatível que o elimine.
+- **Investigado e registrado (aviso de terceiro):** em `/appointments` (modo dev) o React avisa "outdated JSX transform". Causa: `uncontrollable` 7.2.1, dependência do `react-big-calendar` 1.20.0 (última versão, que exige `^7.2.1`), publicado com o transform clássico (`__self`). O aviso só existe em desenvolvimento e vem de pacote de terceiro; não há versão compatível que o elimine.
+
+### 21 · QA funcional com navegador
+
+- **Status:** 🟢 finalizada · **Commit:** `ce81722` · **Push:** `e2dbaaa..ce81722 main -> main` (confirmado)
+- **Ambiente:** `pnpm build` + `pnpm start` (porta 3100) com MySQL 9.7.2; Chromium via Playwright, 1440×900.
+- **Health check real:** processo `next-server` ativo, porta respondendo, `/api/health` com `status: ok`, `database: ok` e 14 migrations (sem segredos na resposta), página principal renderizada e login funcional.
+- **Navegação:** 4 rotas como visitante (`/goals` e `/admin/dashboard` redirecionam para `/login`) e 21 como administrador, todas sem erro de console, sem resposta 4xx/5xx e com capturas.
+- **Fluxos percorridos clicando na interface (todos aprovados):**
+  - **Visitante:** botão para a seção de planos e CTA para o login.
+  - **Cadastro e onboarding:** cadastro pela tela de login, depois onboarding em 5 passos (data por digitação, select de gênero, slider de atividade, checkbox de meta, consentimento) e dashboard. O MySQL confirmou o perfil completo (UTF-8 correto em "São Paulo"), o plano `free` e a assinatura ativa.
+  - **Login e navegação do administrador:**
+    - Login com "Lembrar-me": cookie `httpOnly` de 7 dias.
+    - Cartão de harmonia com valor calculado.
+    - Busca global (Ctrl K) até Metas.
+  - **Metas:** criação e atualização de progresso no modal.
+  - **Agenda:** novo profissional e consulta agendada (select, data e horário).
+  - **Chat:** envio de mensagem com resposta 200.
+  - **Plano de IA:** geração do plano.
+  - **Perfil:** "Perfil atualizado com sucesso!".
+  - **Dispositivos:** estado sem Bluetooth explicado.
+  - **Monitoramento:** controles presentes.
+  - **Sair:** menu do usuário e "Sair" removem o cookie, e as rotas protegidas voltam ao login.
+  - **Área administrativa:**
+    - Usuários: busca, ordenação, paginação e troca de plano no modal (PATCH 200 e evento de auditoria).
+    - Matriz de planos salva.
+    - Insight de IA e hábito sugerido criados nas abas de Conteúdo.
+    - Configuração de IA salva e "Escanear Rede".
+    - Exportação CSV de usuários baixada.
+    - Saúde dos dados.
+    - Construtor de UI e editor Puck: "Salvar rascunho".
+  - Cada gravação foi confirmada direto no MySQL (metas, consulta, profissional, insight, hábito, assinatura e perfil).
+- **Defeitos encontrados e corrigidos:**
+  - **Valor fixo no dashboard:** "Harmonia atual" mostrava 94.2 para qualquer pessoa. O novo `HarmoniaAtualCard` exibe o ICQ real do `coherence-engine` (63/100 na sessão testada), com estados de carregamento e de plano sem acesso. A nota padrão deixou de afirmar "recuperação alta" sem dados. Prova de morte: `grep 94.2` só encontra o comentário histórico.
+  - **Estouro horizontal:** em 11 páginas a coluna principal (`flex-1` sem `min-w-0`) crescia até a largura do conteúdo. Em `/admin/content` isso cortava a aba "Insights de IA", a prévia e o cabeçalho (capturas antes e depois). Causa encontrada medindo o elemento raiz do estouro; corrigida com `min-w-0`, como já fazia o `AppShell`.
+- **Limpeza:** os dados de QA (contas `qa-*`, metas, profissionais, consulta, insight, hábito, rascunho de página, janelas de rate limit e local de nascimento do admin) foram removidos do banco de desenvolvimento ao final.
+- **Evidências:** `pnpm test` 241/241; `pnpm test:integration` 73/73; `check:format`, `check:lint` e `check:types` com exit 0; `build` com exit 0 e zero avisos.
+- **Encaminhado:**
+  - **Tarefa 22 (acessibilidade):** botões só com ícone sem nome acessível; duas `<h1>` por página; `/instruments` sem `<h1>`; navegação da landing feita com botões.
+  - **Tarefa 27 (redesign):**
+    - "Atualizado por" no construtor de UI mostra o UUID do administrador.
+    - Muitas páginas repetem a estrutura de Sidebar e Header em vez de usar o `AppShell`.
+  - **Para decisão do usuário:** `/instruments` é uma página de demonstração herdada do template (lista a tabela `instruments` em JSON). Está ligada ao documento Puck `instruments`, então não foi removida.
 
 ### 24 · Correção crítica: vazamento de conexões MySQL em produção
 
