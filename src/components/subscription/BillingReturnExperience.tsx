@@ -128,7 +128,7 @@ export function BillingReturnExperience({
   return (
     <div className="page-shell flex min-h-screen">
       <Sidebar />
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <Header />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           <div className="mx-auto grid w-full max-w-7xl gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">

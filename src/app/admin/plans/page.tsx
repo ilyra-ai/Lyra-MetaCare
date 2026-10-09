@@ -25,7 +25,7 @@ export default function AdminPlansPage() {
     return (
       <div className="page-shell flex min-h-screen">
         <Sidebar />
-        <div className="flex flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col">
           <Header />
           <PuckClientRenderer
             documentKey="admin-plans"
@@ -50,7 +50,7 @@ export default function AdminPlansPage() {
   return (
     <div className="page-shell flex min-h-screen">
       <Sidebar />
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <Header />
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           <AdminPlanMatrixContent />

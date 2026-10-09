@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Sparkles, Waves } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { SplashScreen } from '@/components/SplashScreen';
 import { QuickScanFAB } from '@/components/dashboard/QuickScanFAB';
 import { AppShell } from '@/components/layout/AppShell';
@@ -23,6 +23,11 @@ const LandingPage = dynamic(
 );
 const Dashboard = dynamic(() =>
   import('@/components/dashboard/dashboard').then((modulo) => modulo.Dashboard)
+);
+const HarmoniaAtualCard = dynamic(() =>
+  import('@/components/dashboard/HarmoniaAtualCard').then(
+    (modulo) => modulo.HarmoniaAtualCard
+  )
 );
 
 type UserProfile = {
@@ -116,87 +121,52 @@ export default function Home() {
 
   return (
     <AppShell>
-      <div className="flex flex-col gap-8">
-        <section className="surface-panel relative overflow-hidden px-6 py-7 md:px-8 md:py-8">
-          <div className="orchestrated-orb -left-16 top-0 h-36 w-36 bg-primary" />
-          <div className="orchestrated-orb bottom-0 right-0 h-32 w-32 bg-cosmic" />
+      <HealthOrchestratorProvider>
+        <div className="flex flex-col gap-8">
+          <section className="surface-panel relative overflow-hidden px-6 py-7 md:px-8 md:py-8">
+            <div className="orchestrated-orb -left-16 top-0 h-36 w-36 bg-primary" />
+            <div className="orchestrated-orb bottom-0 right-0 h-32 w-32 bg-cosmic" />
 
-          <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-3xl">
-              <span
-                className="eyebrow"
-                style={{
-                  fontSize: scaleRem(0.72, appConfig.typography.cardBody),
-                }}
-              >
-                <Sparkles className="h-3.5 w-3.5" />
-                {dashboardConfig.heroEyebrow}
-              </span>
-              <h1
-                className="mt-4 font-display font-bold tracking-tight text-foreground"
-                style={{
-                  fontSize: scaleRem(2.65, appConfig.typography.pageTitle),
-                  lineHeight: 1.05,
-                }}
-              >
-                {greeting},{' '}
-                <span className="text-gradient-hero">{firstName}</span>
-              </h1>
-              <p
-                className="mt-3 max-w-2xl text-muted-foreground"
-                style={{
-                  fontSize: scaleRem(0.98, appConfig.typography.pageBody),
-                  lineHeight: 1.7,
-                }}
-              >
-                {dashboardConfig.heroDescription}
-              </p>
-            </div>
-
-            <div
-              className="glass-card flex max-w-sm items-center gap-4 rounded-[24px] px-5 py-4"
-              style={{
-                transform: `scale(${appConfig.sizing.cardScale})`,
-                transformOrigin: 'top right',
-              }}
-            >
-              <div
-                className="flex items-center justify-center rounded-full bg-gradient-cosmic text-white shadow-cosmic"
-                style={{
-                  width: scaleRem(3, appConfig.sizing.iconScale),
-                  height: scaleRem(3, appConfig.sizing.iconScale),
-                }}
-              >
-                <Waves className="h-5 w-5" />
-              </div>
-              <div>
-                <p
-                  className="font-semibold uppercase tracking-[0.22em] text-muted-foreground"
+            <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div className="max-w-3xl">
+                <span
+                  className="eyebrow"
                   style={{
                     fontSize: scaleRem(0.72, appConfig.typography.cardBody),
                   }}
                 >
-                  {dashboardConfig.harmonyEyebrow}
-                </p>
-                <p className="metric-display text-gradient-aurora">94.2</p>
-                <p
-                  className="text-muted-foreground"
+                  <Sparkles className="h-3.5 w-3.5" />
+                  {dashboardConfig.heroEyebrow}
+                </span>
+                <h1
+                  className="mt-4 font-display font-bold tracking-tight text-foreground"
                   style={{
-                    fontSize: scaleRem(0.76, appConfig.typography.cardBody),
+                    fontSize: scaleRem(2.65, appConfig.typography.pageTitle),
+                    lineHeight: 1.05,
                   }}
                 >
-                  {dashboardConfig.harmonyNote}
+                  {greeting},{' '}
+                  <span className="text-gradient-hero">{firstName}</span>
+                </h1>
+                <p
+                  className="mt-3 max-w-2xl text-muted-foreground"
+                  style={{
+                    fontSize: scaleRem(0.98, appConfig.typography.pageBody),
+                    lineHeight: 1.7,
+                  }}
+                >
+                  {dashboardConfig.heroDescription}
                 </p>
               </div>
-            </div>
-          </div>
-        </section>
 
-        <HealthOrchestratorProvider>
+              <HarmoniaAtualCard appConfig={appConfig} />
+            </div>
+          </section>
+
           <Dashboard />
           <QuickScanFAB />
-        </HealthOrchestratorProvider>
-      </div>
+        </div>
+      </HealthOrchestratorProvider>
     </AppShell>
   );
 }

@@ -3,6 +3,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { useCallback } from 'react';
 import { useKeyedResource } from '@/hooks/use-keyed-resource';
+import { requisicaoCompartilhada } from '@/lib/http/requisicao-compartilhada';
 import { toast } from 'sonner';
 import { format, subDays } from 'date-fns';
 
@@ -242,6 +243,16 @@ export function useDailyMetrics(
     [requestMetrics, userId]
   );
 
+  // Dashboard, insights védicos e o cartão de harmonia montam juntos e pedem a
+  // mesma janela: a carga automática compartilha uma única consulta.
+  const requestInicial = useCallback(
+    () =>
+      requisicaoCompartilhada(`daily-metrics:${requestKey ?? ''}`, () =>
+        requestCurrent()
+      ),
+    [requestCurrent, requestKey]
+  );
+
   const {
     data: metrics,
     loading,
@@ -250,7 +261,8 @@ export function useDailyMetrics(
     requestKey,
     requestCurrent,
     notifyError,
-    EMPTY_METRICS
+    EMPTY_METRICS,
+    requestInicial
   );
   const todayMetrics = metrics.length > 0 ? metrics[metrics.length - 1] : null;
 

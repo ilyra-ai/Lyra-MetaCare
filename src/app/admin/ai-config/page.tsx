@@ -53,7 +53,7 @@ export default function AIConfigPage() {
 
       {/* A Sidebar no Lyra geralmente não recebe props, vamos assegurar que ela tenha z-index por css global se necessário, mas removemos a prop que não existe */}
       <Sidebar />
-      <div className="flex flex-col flex-1 z-10 relative">
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col">
         <Header />
         <PuckClientRenderer
           documentKey="admin-ai-config"

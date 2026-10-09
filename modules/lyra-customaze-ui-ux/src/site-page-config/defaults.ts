@@ -466,7 +466,7 @@ const defaultAppPageConfig: AppPageConfig = {
     heroDescription:
       'Sua leitura do dia reúne biometria, sono, energia, astrologia védica e protocolos orientados por IA em uma visão premium, clara e acionável.',
     harmonyEyebrow: 'Harmonia atual',
-    harmonyNote: 'Janela de recuperação alta nas últimas 24 horas',
+    harmonyNote: 'Sinais do dia em relação ao ciclo do momento.',
     pulseBadge: 'Pulso do dia',
     pulseTitle: 'Sua cadência corporal está em foco.',
     pulseDescription:

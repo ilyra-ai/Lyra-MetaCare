@@ -31,7 +31,7 @@ export default function GoalTrackingPage() {
   return (
     <div className="flex min-h-screen bg-gradient-surface text-foreground">
       <Sidebar />
-      <div className="flex flex-col flex-1">
+      <div className="flex min-w-0 flex-1 flex-col">
         <Header />
         <PuckClientRenderer documentKey="goals" className="w-full shrink-0" />
         <main
