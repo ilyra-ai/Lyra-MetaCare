@@ -25,8 +25,8 @@
 | Tarefas totais     | 27                             |
 | 🟢 Finalizadas     | 24                             |
 | 🔵 Em andamento    | 1                              |
-| 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 2                              |
+| 🔴 Bloqueadas      | 1                              |
+| ⚪ A iniciar       | 1                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-09                     |
 
@@ -38,26 +38,19 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                                                         | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                           |
-| --- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 27  | Simplificação visual premium (pedido do usuário em 2026-10-09) | Proposta de design mais simples, moderna e premium, sem perder funções: pesquisa de referências de 2026 e protótipo das telas-chave (login, dashboard e página interna) comparado ao visual atual, **enviado para aprovação do usuário antes de qualquer alteração no código**. Após aprovado: aplicação nos tokens e componentes compartilhados, com QA visual de todas as páginas. |
+| Nº  | Tarefa                         | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                                                         |
+| --- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 22  | QA responsivo e acessibilidade | Desktop, tablet e mobile em múltiplos viewports (overflow, cortes, menus, modais, tabelas, foco); HTML semântico, labels, teclado, foco visível, ARIA, contraste, landmarks, headings e alt texts. Pendências registradas: `maximumScale: 1` no viewport (tarefa 19); botões só com ícone sem nome acessível, duas `<h1>` por página, `/instruments` sem `<h1>` e navegação da landing com `<button>` (tarefa 21). |
 
 ### BLOQUEADAS
 
-Nenhuma tarefa bloqueada no momento.
+| Nº  | Tarefa                                                         | Bloqueio                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| --- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 27  | Simplificação visual premium (pedido do usuário em 2026-10-09) | **Aguardando aprovação do usuário.** A pedido dele ("me mostra antes o design para eu aprovar"), a proposta foi publicada em 2026-10-09 no quadro de design "Lyra MetaCare · Proposta visual 2026": sistema visual, login, dashboard e Metas, ao lado de capturas reais do visual atual, após pesquisa de referências de 2026. Nenhum código visual muda antes do "aprovado". Depois: aplicação nos tokens e componentes compartilhados e QA visual de todas as páginas. |
 
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
-
-### 22 · QA responsivo e acessibilidade
-
-_Instrução: Tarefa 20 · itens 36 e 37._
-
-- Testar desktop, tablet e mobile em múltiplos viewports: overflow, cortes, truncamento, cards, tabelas, charts, modais, sidebars, menus, scroll, z-index, contraste, foco, estados hover/focus/active, loading, vazios e erros.
-- Validar HTML semântico, labels, forms, navegação por teclado, foco visível, ARIA somente quando necessário, contraste, modais, menus, landmarks, headings e alt texts.
-- Remover o `maximumScale: 1` do viewport em `src/app/layout.tsx`, que impede o zoom no celular (WCAG 1.4.4), registrado na tarefa 19.
-- Registrado na tarefa 21: botões só com ícone sem nome acessível (ações da tabela de usuários e de conteúdo); duas `<h1>` por página (cabeçalho do app e título do conteúdo); `/instruments` sem `<h1>`; navegação da landing feita com `<button>` em vez de links.
 
 ### 23 · Documentação final
 
