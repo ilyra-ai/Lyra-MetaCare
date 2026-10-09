@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `██████████████████░░` **89%** |
+| Progresso          | `███████████████████░` **93%** |
 | Tarefas totais     | 27                             |
-| 🟢 Finalizadas     | 24                             |
+| 🟢 Finalizadas     | 25                             |
 | 🔵 Em andamento    | 1                              |
-| 🔴 Bloqueadas      | 1                              |
+| 🔴 Bloqueadas      | 0                              |
 | ⚪ A iniciar       | 1                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-09                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (24 ÷ 27 = 88,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (25 ÷ 27 = 92,6%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,15 +38,13 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                         | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                                                         |
-| --- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 22  | QA responsivo e acessibilidade | Desktop, tablet e mobile em múltiplos viewports (overflow, cortes, menus, modais, tabelas, foco); HTML semântico, labels, teclado, foco visível, ARIA, contraste, landmarks, headings e alt texts. Pendências registradas: `maximumScale: 1` no viewport (tarefa 19); botões só com ícone sem nome acessível, duas `<h1>` por página, `/instruments` sem `<h1>` e navegação da landing com `<button>` (tarefa 21). |
+| Nº  | Tarefa                                                         | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| --- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 27  | Simplificação visual premium (pedido do usuário em 2026-10-09) | **Design aprovado pelo usuário em 2026-10-09** ("Aprovado design"). Aplicação do sistema "Lyra Clean" (fundo #F7F7F9, cartões brancos com borda de 1px, teal #1D7F74 como cor principal, violeta só para conteúdo astral e de IA, Space Grotesk nos títulos e Inter no texto, sem orbes, gradientes ou vidro) nos tokens do `globals.css`, no layout (sidebar, header e `AppShell` em todas as páginas) e nos componentes compartilhados, sem perder nenhuma função. Inclui o contraste de cores pendente da tarefa 22, o UUID em "Atualizado por" do construtor e QA visual em desktop, tablet e celular. |
 
 ### BLOQUEADAS
 
-| Nº  | Tarefa                                                         | Bloqueio                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| --- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 27  | Simplificação visual premium (pedido do usuário em 2026-10-09) | **Aguardando aprovação do usuário.** A pedido dele ("me mostra antes o design para eu aprovar"), a proposta foi publicada em 2026-10-09 no quadro de design "Lyra MetaCare · Proposta visual 2026": sistema visual, login, dashboard e Metas, ao lado de capturas reais do visual atual, após pesquisa de referências de 2026. Nenhum código visual muda antes do "aprovado". Depois: aplicação nos tokens e componentes compartilhados e QA visual de todas as páginas. |
+Nenhuma tarefa bloqueada.
 
 ---
 
@@ -560,6 +558,37 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
     - "Atualizado por" no construtor de UI mostra o UUID do administrador.
     - Muitas páginas repetem a estrutura de Sidebar e Header em vez de usar o `AppShell`.
   - **Para decisão do usuário:** `/instruments` é uma página de demonstração herdada do template (lista a tabela `instruments` em JSON). Está ligada ao documento Puck `instruments`, então não foi removida.
+
+### 22 · QA responsivo e acessibilidade
+
+- **Status:** 🟢 finalizada · **Commit:** `3a4b137` · **Push:** `8ea5ba2..3a4b137 main -> main` (confirmado)
+- **Método:** axe-core 4 (WCAG 2.0/2.1/2.2 A e AA e boas práticas) no build de produção, com Playwright/Chromium em 1440px e 390px. Foram auditadas 2 rotas como visitante e 19 como administrador. Detalhes em `docs/acessibilidade.md`.
+- **Corrigido:**
+  - **Zoom:** removido `maximumScale: 1` do viewport, que bloqueava o zoom no celular.
+  - **Títulos:**
+    - O título do cabeçalho é o único `<h1>`; os títulos de conteúdo de 11 páginas viraram `<h2>`.
+    - `h3`/`h4`/`h5` que pulavam níveis foram corrigidos (dashboard, chat, planos, relatórios).
+    - `AlertTitle` deixou de ser `<h5>`.
+    - `/instruments` ganhou `<main>` e `<h1>`.
+  - **"Pular para o conteúdo":** `#conteudo-principal` em todas as páginas.
+  - **Nomes acessíveis:**
+    - Campos do construtor de UI viraram `<label>`.
+    - Switches, sliders (nome repassado ao thumb), botões de ícone (mover, remover, ações de usuário, hábitos e dicas) e as 9 barras de progresso (`aria-label` agora obrigatório na tipagem) ganharam nome.
+    - `Progress` passou a expor `aria-valuenow`.
+    - Menu do usuário, logo da landing e busca Ctrl K agora têm o nome acessível igual ao texto visível.
+  - **Teclado:**
+    - Regiões roláveis ficaram focáveis (`Table.scrollLabel`, `ScrollArea.viewportLabel`).
+    - Causa raiz do painel da prévia do construtor: a coluna tinha altura fixa e o conteúdo, de 900px mais o cabeçalho, transbordava. A coluna passou a usar flex.
+  - **Prévias visuais:** o construtor e as duas prévias do Puck repetiam títulos, regiões e botões da página. Agora usam `inert` + `aria-hidden`.
+  - **Agenda no celular:** o calendário tinha 300px de altura e as semanas ficavam com 20px, com os números dos dias cobertos pelo cabeçalho. Passou para 520px no celular e 640px a partir de `md`, com alvo de toque de 24×24px.
+  - **Rodapé "feito com":** virou `<footer>`.
+- **Testes:** dois testes deixavam de ser herméticos quando o `.env.local` estava carregado:
+  - `billing/config.test.ts` só limpava o ambiente depois de cada teste; agora limpa antes também.
+  - O teste do webhook Stripe usava `??=` com a chave presente, mas vazia; agora usa `||=` e restaura o valor original.
+- **Resultado axe:** zero violações em todas as rotas, exceto:
+  - `color-contrast` (cores de estado `warning`, `cosmic` e `info`), que é resolvido pelos novos tokens da tarefa 27;
+  - 3 itens internos do `@puckeditor/core` 0.23.0, sem API para ajuste e só na tela de administrador: `frame-title` do iframe, `select-name` do zoom e `aria-prohibited-attr` do loader.
+- **Evidências:** `pnpm test` 241/241 (com e sem `.env.local`); `pnpm test:integration` 73/73 (com e sem `.env.local`); `check:format`, `check:lint` e `check:types` com exit 0; `build` com exit 0.
 
 ### 24 · Correção crítica: vazamento de conexões MySQL em produção
 
