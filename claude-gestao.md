@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `███████████████░░░░░` **74%** |
+| Progresso          | `███████████████░░░░░` **76%** |
 | Tarefas totais     | 38                             |
-| 🟢 Finalizadas     | 28                             |
-| 🔵 Em andamento    | 2                              |
+| 🟢 Finalizadas     | 29                             |
+| 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
 | ⚪ A iniciar       | 8                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-10                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (28 ÷ 38 = 73,7%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (29 ÷ 38 = 76,3%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -45,10 +45,9 @@
 
 _Prioridade definida pelo usuário em 2026-10-10: tarefas 37 e 38 antes das demais._
 
-| Nº  | Tarefa                                  | O que está sendo realizado                                                                                                                                                                                                             |
-| --- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 37  | Administrador `admin@admin.com`         | Criar o usuário `admin@admin.com` com perfil de administrador total e a senha definida pelo usuário, pelo bootstrap de administradores do `.env.local` (a senha não é versionada nem escrita no código, conforme a regra de segredos). |
-| 38  | Isolamento das funções de administrador | Verificar de forma real que usuários comuns não acessam recursos, funcionalidades, alterações nem funções exclusivas do administrador (páginas, menus, APIs, dados e ações), corrigindo pela causa raiz o que vazar.                   |
+| Nº  | Tarefa                                  | O que está sendo realizado                                                                                                                                                                                           |
+| --- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 38  | Isolamento das funções de administrador | Verificar de forma real que usuários comuns não acessam recursos, funcionalidades, alterações nem funções exclusivas do administrador (páginas, menus, APIs, dados e ações), corrigindo pela causa raiz o que vazar. |
 
 ### BLOQUEADAS
 
@@ -732,3 +731,13 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
   - Override restrito ao plugin do Next: `fast-glob` resolvido para o `tinyglobby` (fdir + picomatch, sem `braces`), que exporta o mesmo `globSync` com `onlyDirectories`, a única função usada pelo plugin.
   - `scripts/verificar-glob-eslint-next.mjs` chama a função real do plugin e confirma os mesmos diretórios do sistema de arquivos.
 - **Evidências:** `pnpm audit` e `pnpm audit --prod` com "No known vulnerabilities found"; `pnpm why braces` sem resultado; lint, format e types com exit 0; `test` 241/241; `test:integration` 73/73; `test:launchers` 17/17; `build` com exit 0.
+
+### 37 · Administrador `admin@admin.com`
+
+- **Status:** 🟢 finalizada · **Commit:** sem alteração de código versionado (o registro é este painel) · **Push:** do painel (confirmado)
+- **Implementado:** o usuário foi criado pelo bootstrap oficial de administradores (`ADMIN_BOOTSTRAP_ADDITIONAL_ADMINS` no `.env.local`, que é ignorado pelo Git). A senha definida pelo usuário não foi escrita em nenhum arquivo versionado, conforme a regra de segredos; o banco guarda só o hash bcrypt. O mecanismo é idempotente: cada `pnpm db:migrate` (e o `up` dos launchers) assegura o usuário, e a senha só é regravada quando o valor do `.env.local` muda.
+- **Evidências reais:**
+  - `pnpm db:migrate`: "Bootstrap admin assegurado: admin@admin.com".
+  - MySQL: `admin@admin.com` com `role = admin`, nome "Administrador Total", onboarding concluído, plano `care` ativo (todas as capacidades) e senha em hash bcrypt.
+  - `POST /api/auth/login` com o e-mail e a senha informados: 200; `/api/auth/session` retorna `role: "admin"`; `/api/admin/users`, `/api/admin/plans`, `/api/admin/page-config/app` e `/api/admin/puck/documents/landing-home`: 200.
+- **Recomendação:** a senha pedida segue um padrão comum; antes de publicar em produção, troque-a no `.env.local` (o próximo `pnpm db:migrate` regrava o hash).
