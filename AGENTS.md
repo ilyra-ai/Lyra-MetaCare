@@ -35,6 +35,7 @@ CAUSA RAIZ:
 PARTE VISUAL DO APP (DESIGN / LAYOUT / UI UX / CSS / COMPONENTE / CHARTS / CARDS / TABLES / ETC)
 
 - Sempre quando implementar, redesenhar ou arrumar a parte visual web grafico css ui ux do app voce deverá implementar todos os requerimentos, recursos, funcionalidades, componentes, charts, cards, tables e etc focando em qualidade PREMIUM e que seja tendencia para o ano de 2026, mas focando em cores clares e não escuras como thema
+- O sistema visual vigente é o "Lyra Clean", aprovado pelo usuário: siga [`docs/design-system.md`](./docs/design-system.md) (tokens de `globals.css`, `AppShell`, `PageIntro`, primitivos de `src/components/ui`). Não reintroduza orbes, gradientes decorativos, vidro fosco, sombras coloridas nem caixa alta espaçada, e mantenha contraste WCAG 2.2 AA ([`docs/acessibilidade.md`](./docs/acessibilidade.md)).
 
 PROIBIÇÕES:
 
@@ -63,6 +64,7 @@ pnpm check:lint
 pnpm check:format
 pnpm check:types
 pnpm test
+pnpm test:integration (com o MySQL do projeto em execução: `pnpm db:start`)
 pnpm build
 
 - Entregar relatório final com status e correções.

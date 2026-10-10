@@ -11,7 +11,7 @@
 [![MySQL](https://img.shields.io/badge/MySQL-9.7_LTS-4479A1?style=flat-square&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-24_LTS-5FA04E?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Stripe](https://img.shields.io/badge/Stripe-Billing-635BFF?style=flat-square&logo=stripe&logoColor=white)](https://stripe.com/)
-[![Vitest](https://img.shields.io/badge/Vitest-112_testes-6E9F18?style=flat-square&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-314_testes-6E9F18?style=flat-square&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![pnpm](https://img.shields.io/badge/pnpm-workspace-F69220?style=flat-square&logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![Licença](https://img.shields.io/badge/Licença-MIT-22C55E?style=flat-square)](#-licença)
 
@@ -33,7 +33,7 @@ O **Lyra MetaCare** transforma dados de wearables, hábitos e contexto pessoal e
 | 🎯 **Proposta de valor** | Converter sinais fisiológicos dispersos em ações diárias priorizadas, com idade biológica, detecção precoce e saúde da mulher. |
 | 🧠 **Inteligência**      | Motores isomórficos determinísticos (testáveis) + IA configurável por documentos/skills, com opção de modelo externo via BYOK. |
 | 🔒 **Privacidade**       | Modo Privacidade real: índices calculados no navegador; conversas processadas apenas pelo motor local quando ativado.          |
-| 🎨 **Experiência**       | Design system único 2026 (tema claro, glassmorphism, gradientes suaves), 100% responsivo e em **pt-BR**.                       |
+| 🎨 **Experiência**       | Sistema visual "Lyra Clean" (tema claro, cartões brancos, teal + violeta astral, WCAG 2.2 AA), responsivo e em **pt-BR**.      |
 | ⚙️ **Operação**          | Subida local de ponta a ponta com um único comando (`run.py` no WSL2, `run.sh` no Git Bash): banco, migrações e aplicação.     |
 
 ---
@@ -211,6 +211,8 @@ O `.env.local` é a **fonte única de configuração**, lida pelo Next.js, pelos
 - Mapa das rotas da API (autenticação, entrada, saída, erros e tabelas): [`docs/api.md`](./docs/api.md).
 - Modelo de segurança (sessão, CSRF, limites de tentativa, cabeçalhos, XSS, dados de saúde, Stripe e Sentry): [`docs/seguranca.md`](./docs/seguranca.md).
 - Performance (medições por rota, gargalos corrigidos e como medir): [`docs/performance.md`](./docs/performance.md).
+- Acessibilidade (auditoria axe, correções e limitações conhecidas): [`docs/acessibilidade.md`](./docs/acessibilidade.md).
+- Sistema visual "Lyra Clean" (tokens, forma, tipografia e estrutura das telas): [`docs/design-system.md`](./docs/design-system.md).
 
 ---
 
@@ -247,13 +249,14 @@ run.sh                 # Launcher do Windows 11 com Git Bash (mesmos comandos do
 
 ## 🧪 Testes & Qualidade
 
-- **82 testes** automatizados (Vitest), incluindo cobertura dos novos motores (idade biológica, detecção precoce, ciclo e assistente agêntico).
+- **241 testes unitários** (motores de domínio, autenticação, segurança, sanitização, Puck, configuração) e **73 testes de integração** contra um MySQL real isolado (API de dados, rotas administrativas, planos, billing e webhook da Stripe), além dos testes dos launchers (`pnpm test:launchers`).
 - Portões de qualidade obrigatórios antes de cada entrega:
 
 ```bash
 pnpm fix:format && pnpm fix:lint
 pnpm check:lint && pnpm check:format && pnpm check:types
-pnpm test
+pnpm test && pnpm test:integration   # integração exige o MySQL do projeto em execução
+pnpm build
 ```
 
 Política de engenharia: correção sempre pela **causa raiz**, sem placeholders, sem hardcode e sem cortes de código.
@@ -264,15 +267,16 @@ Política de engenharia: correção sempre pela **causa raiz**, sem placeholders
 
 - **Modo Privacidade:** índices de inteligência calculados no navegador; com o modo ativo, o chat é atendido **apenas pelo motor local**, sem enviar dados a modelos externos.
 - **BYOK (Bring Your Own Key):** a chave do modelo externo (Gemini) permanece no dispositivo do usuário; o app nunca a persiste.
-- **Autenticação:** sessão via cookie assinado; rotas administrativas protegidas por papel (`role = 'admin'`).
-- **Dados sensíveis:** segredos ficam em `.env.local` (fora do versionamento); migrações idempotentes com verificação de checksum.
-- **Observabilidade:** Sentry para rastreamento de erros.
+- **Autenticação:** sessão via cookie `httpOnly` assinado; papel e e-mail relidos do banco a cada requisição; rotas administrativas protegidas por papel (`role = 'admin'`); limite de tentativas de login e cadastro; proteção CSRF por origem nas rotas `/api`.
+- **Dados sensíveis:** segredos ficam em `.env.local` (fora do versionamento); logs sem dados pessoais nem de saúde; cabeçalhos de segurança (CSP, HSTS, `frame-ancestors`); rich text sanitizado com allowlist.
+- **Observabilidade:** Sentry opcional (carregado só com DSN configurado), sem enviar dados de saúde.
+- Detalhes: [`docs/seguranca.md`](./docs/seguranca.md).
 
 ---
 
 ## 🗺️ Roadmap
 
-- [x] Design system único 2026 (tema claro, responsivo, pt-BR)
+- [x] Sistema visual "Lyra Clean" (tema claro, responsivo, acessível, pt-BR)
 - [x] Documentos/Skills da IA configuráveis
 - [x] Inteligência Lyra 2026 (agêntico, idade biológica, detecção precoce, saúde da mulher, privacidade)
 - [x] Launchers locais `run.py` (WSL2) e `run.sh` (Git Bash) com paridade de comandos
@@ -284,10 +288,10 @@ Política de engenharia: correção sempre pela **causa raiz**, sem placeholders
 
 ## 🤝 Contribuição
 
-1. Crie uma branch a partir de `main`.
-2. Garanta os portões de qualidade verdes (`check:types`, `check:lint`, `check:format`, `test`).
+1. Leia o [`AGENTS.md`](./AGENTS.md) e o [`CLAUDE.md`](./CLAUDE.md): o trabalho é feito diretamente na `main`, em tarefas atômicas (um commit e um push por tarefa, sem force-push), com o andamento registrado no [`claude-gestao.md`](./claude-gestao.md).
+2. Garanta os portões de qualidade verdes (`check:types`, `check:lint`, `check:format`, `test`, `test:integration`, `build`).
 3. Escreva no mesmo padrão do código existente, em **pt-BR**, sem placeholders.
-4. Abra um Pull Request descrevendo a mudança e as evidências de validação.
+4. Descreva na mensagem de commit a mudança e as evidências de validação.
 
 ---
 
