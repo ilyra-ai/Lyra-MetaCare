@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `███████████████████░` **93%** |
+| Progresso          | `███████████████████░` **96%** |
 | Tarefas totais     | 27                             |
-| 🟢 Finalizadas     | 25                             |
+| 🟢 Finalizadas     | 26                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 1                              |
+| ⚪ A iniciar       | 0                              |
 | Branch de trabalho | `main` (única permitida)       |
-| Última atualização | 2026-10-09                     |
+| Última atualização | 2026-10-10                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (25 ÷ 27 = 92,6%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (26 ÷ 27 = 96,3%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                                                         | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| --- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 27  | Simplificação visual premium (pedido do usuário em 2026-10-09) | **Design aprovado pelo usuário em 2026-10-09** ("Aprovado design"). Aplicação do sistema "Lyra Clean" (fundo #F7F7F9, cartões brancos com borda de 1px, teal #1D7F74 como cor principal, violeta só para conteúdo astral e de IA, Space Grotesk nos títulos e Inter no texto, sem orbes, gradientes ou vidro) nos tokens do `globals.css`, no layout (sidebar, header e `AppShell` em todas as páginas) e nos componentes compartilhados, sem perder nenhuma função. Inclui o contraste de cores pendente da tarefa 22, o UUID em "Atualizado por" do construtor e QA visual em desktop, tablet e celular. |
+| Nº  | Tarefa             | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| --- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 23  | Documentação final | Atualizar `README.md`, `AGENTS.md`, `.env.example`, instalação, dependências, Node, pnpm, Docker, MySQL, `run.py`, `run.sh` e `run_windows.py` (só o que foi testado, sem textos antigos); instalação limpa; validação final integral (`pnpm install --frozen-lockfile`, gates, Docker, migrations, páginas, APIs, CRUD, autenticação, admin, shutdown e restart); teste final dos launchers; revisão Git final; relatório final (item 74). Instrução: itens 29, 47, 48, 60, 71, 72, 73, 74 e 75. |
 
 ### BLOQUEADAS
 
@@ -50,13 +50,7 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-### 23 · Documentação final
-
-_Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
-
-- Atualizar `README.md`, `AGENTS.md`, `.env.example`, instalação, dependências, Node, pnpm, Docker, MySQL, `run.py`, `run.sh` e `run_windows.py`, documentando somente o que foi testado e removendo textos antigos.
-- Teste de instalação completamente limpa, validação final integral (`pnpm install --frozen-lockfile`, gates, Docker, migrations, páginas, APIs, CRUD, autenticação, admin, shutdown e restart), teste final dos launchers e revisão Git final.
-- Relatório final obrigatório (ambiente, dependências, erros, run.py, run.sh, MySQL, testes, segurança, commits e pendências).
+Nenhuma tarefa a iniciar.
 
 ---
 
@@ -631,3 +625,36 @@ _Instrução: Tarefa 21 · itens 29, 47, 48, 60, 71, 72, 73, 74 e 75._
   - Zero avisos ou erros de console em `/`, `/goals`, `/profile`, `/chat`, `/admin/dashboard` e `/admin/puck`.
   - O chunk com `.rbc-btn` é requisitado somente em `/appointments`, onde o calendário renderiza com 35 células, em pt-BR e com as personalizações Lyra aplicadas (raio de 24 px, botão ativo com gradiente).
   - `check:format`, `check:lint` e `check:types` com exit 0; `test` 112/112; `build` com exit 0 e zero avisos.
+
+### 27 · Simplificação visual premium ("Lyra Clean")
+
+- **Status:** 🟢 finalizada · **Commit:** `551b2ef` · **Push:** `86a6b25..551b2ef main -> main` (confirmado)
+- **Origem:** pedido do usuário em 2026-10-09 (layout mais simples e moderno, premium, sem perder funções). A proposta foi publicada como artefato de design e aprovada ("Aprovado design").
+- **Implementado:**
+  - **Tokens (`globals.css`):**
+    - Fundo #F7F7F9, cartões brancos com borda #E6E6EC, teal #187268 para ações, violeta #6A4BD6 só para conteúdo astral e de IA.
+    - Estados recalculados para passar de 4,5:1 sobre branco e sobre o próprio tom claro.
+    - Novos tokens `--control` (3,3:1), `--cosmic-strong`, `--primary-hover`, `--accent-hover`, `--destructive-hover` e `--destructive-light` (antes sem utilitário).
+    - Raios de 10 a 20 px.
+    - Removidos (prova de morte por grep): gradientes, sombras coloridas, as classes `glass`, `glass-card`, `surface-panel`, `surface-soft`, `orchestrated-orb`, `aurora-border`, `text-gradient-*`, `interactive-lift`, `eyebrow`, `page-title` e `soft-divider`, sete animações decorativas e as funções de tom com gradiente do módulo `lyra-customaze-ui-ux`.
+  - **Primitivos shadcn:** botão, card, badge, inputs, select, abas, dialog (com rolagem no celular), sheet, menus, popover, progress (tom `astral`), switch, checkbox, skeleton, avatar, tabela, acordeão, alerta, calendário, toggle, command e sonner.
+  - **Layout:**
+    - `AppShell` em todas as páginas autenticadas, com slot do documento Puck. Antes, 17 telas repetiam a estrutura de sidebar e header.
+    - Sidebar de 248 px (configurável) sem descrições, com usuário e plano no rodapé.
+    - Cabeçalho de 64 px com busca Ctrl K, notificações, Chat IA e menu do usuário.
+    - Novos `PageIntro` e `AccessDenied` compartilhados.
+  - **Telas:** dashboard, metas (layout aprovado), login (duas colunas), landing, onboarding, chat, agenda, monitoramento, dispositivos, perfil, assinatura, administração, construtor de UI, editor e blocos Puck. Os valores de opção persistidos dos blocos foram mantidos, e documentos salvos continuam válidos.
+  - **Backend primeiro:**
+    - "Atualizado por" (construtor e Puck) passou a mostrar o nome de quem salvou, via `LEFT JOIN profiles`, no lugar do UUID.
+    - A rota pública do Puck deixou de expor o ID do administrador.
+    - Teste de integração novo cobre as duas coisas.
+  - **Textos padrão:** o `statusTitle` deixou de afirmar "recuperação alta" sem dados.
+- **Defeitos encontrados no QA e corrigidos:**
+  - O chat usava `scrollIntoView`, que rolava a janela inteira e escondia o topo da página. Agora rola só a lista de mensagens.
+  - Estouro horizontal de 158 px em Saúde dos Dados no celular (item da grade sem `min-w-0`).
+  - Dias de outro mês do calendário com #999 (2,6:1).
+- **Evidências:**
+  - Capturas de 18 rotas autenticadas e 2 públicas em 1440, 820 e 390 px, sem erros de console e sem estouro horizontal.
+  - axe sem violações de contraste nas telas da Lyra. Restam só itens internos do `@puckeditor/core` no editor (documentados em `docs/acessibilidade.md`).
+  - `pnpm test` 241/241; `pnpm test:integration` 73/73; `check:format`, `check:lint` e `check:types` com exit 0; `build` com exit 0.
+- **Execução:** os lotes de telas foram divididos entre subagentes com um guia único de regras; as camadas compartilhadas (tokens, primitivos, layout, páginas, metas e backend) e a revisão final foram feitas diretamente.
