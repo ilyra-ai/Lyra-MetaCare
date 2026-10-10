@@ -19,18 +19,18 @@
 
 ## Tópico 1 · Andamento Geral
 
-| Indicador          | Valor                          |
-| ------------------ | ------------------------------ |
-| Progresso          | `███████████████████░` **96%** |
-| Tarefas totais     | 27                             |
-| 🟢 Finalizadas     | 26                             |
-| 🔵 Em andamento    | 1                              |
-| 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 0                              |
-| Branch de trabalho | `main` (única permitida)       |
-| Última atualização | 2026-10-10                     |
+| Indicador          | Valor                           |
+| ------------------ | ------------------------------- |
+| Progresso          | `████████████████████` **100%** |
+| Tarefas totais     | 27                              |
+| 🟢 Finalizadas     | 27                              |
+| 🔵 Em andamento    | 0                               |
+| 🔴 Bloqueadas      | 0                               |
+| ⚪ A iniciar       | 0                               |
+| Branch de trabalho | `main` (única permitida)        |
+| Última atualização | 2026-10-10                      |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (26 ÷ 27 = 96,3%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (27 ÷ 27 = 100%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 ---
 
@@ -38,9 +38,7 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa             | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| --- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 23  | Documentação final | Atualizar `README.md`, `AGENTS.md`, `.env.example`, instalação, dependências, Node, pnpm, Docker, MySQL, `run.py`, `run.sh` e `run_windows.py` (só o que foi testado, sem textos antigos); instalação limpa; validação final integral (`pnpm install --frozen-lockfile`, gates, Docker, migrations, páginas, APIs, CRUD, autenticação, admin, shutdown e restart); teste final dos launchers; revisão Git final; relatório final (item 74). Instrução: itens 29, 47, 48, 60, 71, 72, 73, 74 e 75. |
+Nenhuma tarefa em andamento.
 
 ### BLOQUEADAS
 
@@ -583,6 +581,28 @@ Nenhuma tarefa a iniciar.
   - `color-contrast` (cores de estado `warning`, `cosmic` e `info`), que é resolvido pelos novos tokens da tarefa 27;
   - 3 itens internos do `@puckeditor/core` 0.23.0, sem API para ajuste e só na tela de administrador: `frame-title` do iframe, `select-name` do zoom e `aria-prohibited-attr` do loader.
 - **Evidências:** `pnpm test` 241/241 (com e sem `.env.local`); `pnpm test:integration` 73/73 (com e sem `.env.local`); `check:format`, `check:lint` e `check:types` com exit 0; `build` com exit 0.
+
+### 23 · Documentação final e validação integral
+
+- **Status:** 🟢 finalizada · **Commit:** `a4ee832` · **Push:** `a5a18ad..a4ee832 main -> main` (confirmado)
+- **Documentação:**
+  - `README.md`: contagem real de testes (241 unitários e 73 de integração), portões completos (`test:integration` e `build`), segurança atual, links para `docs/acessibilidade.md` e `docs/design-system.md`, e contribuição direto na `main`.
+  - `AGENTS.md`: sistema visual vigente e `test:integration` nos portões obrigatórios.
+  - Novo `docs/design-system.md` (tokens, forma, tipografia e estrutura das telas do "Lyra Clean").
+  - Removido `docs/REDESIGN_PROMPT_2026.md`, que descrevia o visual anterior (vidro, orbes, gradientes) e contradizia o sistema aprovado. Prova de morte: `grep -rn REDESIGN_PROMPT` sem ocorrências.
+  - `.env.example`, `docs/launchers.md`, `docs/api.md`, `docs/seguranca.md` e `docs/performance.md` conferidos: sem versões antigas (Next 15, Tailwind 3, MySQL 8.0 como alvo, `mysql_native_password`, Node 20/22).
+- **Instalação limpa:** `rm -rf node_modules .next` seguido de `pnpm install --frozen-lockfile` (pnpm 11.28.4 via Corepack, 13 s, sem avisos de peer ou deprecação).
+- **Validação final:**
+  - `check:lint`, `check:format` e `check:types` com exit 0.
+  - `test` 241/241; `test:integration` 73/73; `test:launchers` 17/17.
+  - `build` com exit 0 e zero avisos.
+  - `pnpm audit --prod`: "No known vulnerabilities found".
+  - Varredura de segredos no repositório e no histórico (tokens do GitHub, chaves Stripe live, AWS, chaves privadas): nenhuma ocorrência. `.env.local` e `.logs/` fora do versionamento.
+- **Launchers:**
+  - `python3 run.py`: `doctor` (14 verificações ok), `up --prod` (build, MySQL saudável, 14 migrations, `/api/health`, `/`, `/login` e login do admin), `status`, segundo `up` reaproveitando a aplicação em execução (sem processo duplicado) e `stop`.
+  - `./run.sh`: `bash -n` e `shellcheck -S warning` limpos; `doctor`, `up --prod` com banco já existente (restart), `status`, `logs` e `stop`.
+  - Depois do `stop`: porta 3000 sem resposta, 3307 fechada e nenhum processo `next` restante.
+- **Limite do ambiente (registrado desde as tarefas 14 e 15):** o sandbox não tem Windows. O `run.sh` foi executado de verdade no bash do Linux, e os ramos exclusivos do Git Bash e o `run_windows.py` foram cobertos por testes e por validação estática. O teste no Windows 11 real (`./run.sh doctor/up/status/stop` no Git Bash e `py run_windows.py up` no PowerShell) fica para o operador.
 
 ### 24 · Correção crítica: vazamento de conexões MySQL em produção
 
