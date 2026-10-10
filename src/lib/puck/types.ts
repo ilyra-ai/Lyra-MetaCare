@@ -234,6 +234,8 @@ export type LyraPuckDocumentMeta = {
   createdAt: string | null;
   updatedAt: string | null;
   updatedByUserId: string | null;
+  /** Nome (ou e-mail) de quem salvou por último; só nas rotas de admin. */
+  updatedByName: string | null;
 };
 
 export type LyraPuckDocumentRecord = LyraPuckDocumentMeta & {

@@ -133,32 +133,32 @@ export function RealTimeMonitoringContent({
 
   return (
     <div className="flex flex-col gap-6">
-      <Card className="relative overflow-hidden border-primary/15 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.15)_0%,hsl(var(--card))_48%,hsl(var(--card))_100%)]">
-        <div className="orchestrated-orb -left-12 top-2 h-32 w-32 bg-primary/60" />
-        <div className="orchestrated-orb right-0 top-0 h-28 w-28 bg-cosmic/35" />
-
-        <CardHeader className="relative gap-5">
+      <Card className="min-w-0">
+        <CardHeader className="gap-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="max-w-3xl">
+            <div className="min-w-0 max-w-3xl">
               <Badge variant="secondary">{monitoringConfig.pageEyebrow}</Badge>
-              <CardTitle className="mt-4" style={titleStyle}>
+              <CardTitle className="mt-4 tracking-[-0.02em]" style={titleStyle}>
                 {monitoringConfig.pageTitle}
               </CardTitle>
-              <CardDescription className="mt-2 max-w-2xl" style={bodyStyle}>
+              <CardDescription
+                className="mt-2 max-w-2xl leading-relaxed text-foreground/80"
+                style={bodyStyle}
+              >
                 {monitoringConfig.pageDescription}
               </CardDescription>
             </div>
 
             <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-end gap-2">
+              <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                 <Badge variant={hasLiveData ? 'success' : 'secondary'}>
                   {hasLiveData ? 'fluxo ativo' : 'sem pacote ainda'}
                 </Badge>
-                <Badge variant="cosmic">plano {currentPlanKey}</Badge>
+                <Badge variant="outline">plano {currentPlanKey}</Badge>
               </div>
-              <div className="rounded-full border border-border bg-white/80 px-4 py-2 text-sm text-muted-foreground shadow-sm">
+              <div className="rounded-[10px] border border-border bg-background px-4 py-2 text-sm text-muted-foreground">
                 Última sincronização:{' '}
-                <span className="font-medium text-foreground">
+                <span className="font-display font-medium tabular-nums text-foreground">
                   {lastSyncLabel}
                 </span>
               </div>
@@ -166,14 +166,14 @@ export function RealTimeMonitoringContent({
           </div>
         </CardHeader>
 
-        <CardContent className="relative flex flex-col gap-5">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <CardContent className="flex flex-col gap-4">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <RealTimeMetricCard
               icon={HeartPulse}
               label="Batimentos"
               value={liveData.heartRate ?? 0}
               unit="BPM"
-              accent="accent"
+              accent="primary"
               isActive={hasLiveData}
             />
             <RealTimeMetricCard
@@ -181,7 +181,7 @@ export function RealTimeMonitoringContent({
               label="HRV"
               value={liveData.hrv ?? 0}
               unit="ms"
-              accent="cosmic"
+              accent="info"
               isActive={hasLiveData}
             />
             <RealTimeMetricCard
@@ -203,24 +203,24 @@ export function RealTimeMonitoringContent({
           </div>
 
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
-            <Alert className="border-cosmic/20 bg-cosmic-light/60 text-foreground">
-              <Sparkles className="text-cosmic" />
+            <Alert className="rounded-md border-border bg-background text-foreground shadow-none">
+              <Sparkles className="text-primary" aria-hidden="true" />
               <AlertTitle>{monitoringConfig.infoTitle}</AlertTitle>
-              <AlertDescription className="leading-7">
+              <AlertDescription className="leading-6 text-foreground/80">
                 {monitoringConfig.infoDescription}
               </AlertDescription>
             </Alert>
 
-            <div className="rounded-[28px] border border-border/70 bg-white/78 p-5 shadow-sm backdrop-blur-xl">
+            <div className="rounded-md border border-border bg-background p-5">
               <div className="flex items-center gap-3">
-                <div className="flex size-11 items-center justify-center rounded-2xl bg-primary/12 text-primary shadow-sm">
-                  <Orbit className="animate-spin-slow" />
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-sidebar-accent text-primary">
+                  <Orbit className="size-5" aria-hidden="true" />
                 </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-muted-foreground">
                     {monitoringConfig.heroBadge}
                   </p>
-                  <p className="mt-1 text-sm leading-6 text-foreground">
+                  <p className="mt-1 text-sm leading-6 text-foreground/80">
                     {hasLiveData
                       ? monitoringConfig.heroTitle
                       : monitoringConfig.heroDescription}
@@ -241,7 +241,7 @@ export function RealTimeMonitoringContent({
         </div>
       </div>
 
-      <Card className="border-border/70 bg-card/90 backdrop-blur-xl">
+      <Card className="min-w-0">
         <CardHeader className="gap-3">
           <CardTitle style={cardTitleStyle}>
             {monitoringConfig.controlsTitle}
@@ -269,7 +269,7 @@ export function RealTimeMonitoringContent({
                 disabled={isSpeaking}
                 style={buttonStyle}
               >
-                <Mic data-icon="inline-start" />
+                <Mic data-icon="inline-start" aria-hidden="true" />
                 {isSpeaking
                   ? 'Falando agora'
                   : voiceUpdatesEnabled
@@ -287,7 +287,7 @@ export function RealTimeMonitoringContent({
                   })
                 }
               >
-                <Bell data-icon="inline-start" />
+                <Bell data-icon="inline-start" aria-hidden="true" />
                 Conferir alertas
               </Button>
             ) : null}
@@ -295,10 +295,10 @@ export function RealTimeMonitoringContent({
         </CardContent>
       </Card>
 
-      <Alert className="border-warning/20 bg-warning-light/65 text-foreground">
-        <ShieldAlert className="text-warning" />
+      <Alert className="rounded-xl border-warning/30 bg-warning-light text-foreground shadow-none">
+        <ShieldAlert className="text-warning" aria-hidden="true" />
         <AlertTitle>{monitoringConfig.alertsTitle}</AlertTitle>
-        <AlertDescription className="leading-7">
+        <AlertDescription className="leading-6">
           {monitoringConfig.alertsDescription}
         </AlertDescription>
       </Alert>

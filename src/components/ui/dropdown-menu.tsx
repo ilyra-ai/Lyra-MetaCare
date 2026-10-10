@@ -21,7 +21,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      'flex cursor-default select-none items-center gap-2 rounded-[14px] px-3 py-3 text-sm outline-hidden transition-colors focus:bg-muted data-[state=open]:bg-muted',
+      'flex cursor-default select-none items-center gap-2 rounded-sm px-3 py-2.5 text-sm outline-hidden transition-colors focus:bg-muted data-[state=open]:bg-muted',
       inset && 'pl-8',
       className
     )}
@@ -42,7 +42,7 @@ const DropdownMenuSubContent = React.forwardRef<
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
-      'z-50 min-w-48 overflow-hidden rounded-[20px] border border-white/85 bg-card/95 p-2 text-popover-foreground shadow-xl backdrop-blur-xl data-[state=open]:animate-scale-in',
+      'z-50 min-w-48 overflow-hidden rounded-md border border-border bg-popover p-1.5 text-popover-foreground shadow-lg data-[state=open]:animate-scale-in',
       className
     )}
     {...props}
@@ -61,7 +61,7 @@ const DropdownMenuContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        'z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-48 overflow-y-auto overflow-x-hidden rounded-[24px] border border-white/85 bg-card/95 p-2 text-popover-foreground shadow-xl backdrop-blur-xl data-[state=open]:animate-scale-in',
+        'z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-48 overflow-y-auto overflow-x-hidden rounded-md border border-border bg-popover p-1.5 text-popover-foreground shadow-lg data-[state=open]:animate-scale-in',
         className
       )}
       {...props}
@@ -80,7 +80,7 @@ const DropdownMenuItem = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex cursor-default select-none items-center gap-2 rounded-[14px] px-3 py-3 text-sm outline-hidden transition-colors focus:bg-muted data-disabled:pointer-events-none data-disabled:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0',
+      'relative flex cursor-default select-none items-center gap-2 rounded-sm px-3 py-2.5 text-sm outline-hidden transition-colors focus:bg-muted data-disabled:pointer-events-none data-disabled:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0',
       inset && 'pl-8',
       className
     )}
@@ -98,7 +98,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
     ref={ref}
     checked={checked}
     className={cn(
-      'relative flex cursor-default select-none items-center rounded-[14px] py-3 pl-9 pr-3 text-sm outline-hidden transition-colors focus:bg-muted data-disabled:pointer-events-none data-disabled:opacity-50',
+      'relative flex cursor-default select-none items-center rounded-sm py-2.5 pl-9 pr-3 text-sm outline-hidden transition-colors focus:bg-muted data-disabled:pointer-events-none data-disabled:opacity-50',
       className
     )}
     {...props}
@@ -122,7 +122,7 @@ const DropdownMenuRadioItem = React.forwardRef<
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
-      'relative flex cursor-default select-none items-center rounded-[14px] py-3 pl-9 pr-3 text-sm outline-hidden transition-colors focus:bg-muted data-disabled:pointer-events-none data-disabled:opacity-50',
+      'relative flex cursor-default select-none items-center rounded-sm py-2.5 pl-9 pr-3 text-sm outline-hidden transition-colors focus:bg-muted data-disabled:pointer-events-none data-disabled:opacity-50',
       className
     )}
     {...props}
@@ -147,7 +147,7 @@ const DropdownMenuLabel = React.forwardRef<
   <DropdownMenuPrimitive.Label
     ref={ref}
     className={cn(
-      'px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground',
+      'px-3 py-2 text-xs font-medium text-muted-foreground',
       inset && 'pl-8',
       className
     )}
@@ -175,10 +175,7 @@ const DropdownMenuShortcut = ({
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>) => (
   <span
-    className={cn(
-      'ml-auto text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground',
-      className
-    )}
+    className={cn('ml-auto text-xs text-muted-foreground', className)}
     {...props}
   />
 );

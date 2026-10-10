@@ -29,14 +29,46 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type {
   LandingSectionKey,
   LandingPageConfig,
+  ToneKey,
 } from '@/lib/site-page-config/schema';
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
-import {
-  getBuilderIcon,
-  getToneNumberClass,
-  getToneSurfaceClass,
-} from '@/lib/site-page-config/ui';
+import { getBuilderIcon } from '@/lib/site-page-config/ui';
 import { cn } from '@/lib/utils';
+
+// Visual "Lyra Clean": fundo suave chapado para o ícone de cada item. O
+// violeta fica reservado ao tom astral/IA ("cosmic"); os demais usam o teal
+// da marca, o dourado ou o neutro.
+function corDoIconeTonal(tone: ToneKey): string {
+  switch (tone) {
+    case 'cosmic':
+      return 'bg-cosmic-light text-cosmic-strong';
+    case 'golden':
+      return 'bg-golden-light text-golden';
+    case 'soft':
+      return 'bg-muted text-foreground';
+    case 'primary':
+    case 'accent':
+      return 'bg-sidebar-accent text-sidebar-accent-foreground';
+  }
+}
+
+// Cor do número de métrica, seguindo a mesma regra de tons.
+function corDoNumero(tone: ToneKey): string {
+  switch (tone) {
+    case 'cosmic':
+      return 'text-cosmic-strong';
+    case 'golden':
+      return 'text-golden';
+    case 'soft':
+      return 'text-foreground';
+    case 'primary':
+    case 'accent':
+      return 'text-primary';
+  }
+}
+
+// Rótulo curto acima do título de cada seção (sem caixa alta espaçada).
+const rotuloDeSecaoClass = 'text-sm font-medium text-primary';
 
 type PublicPlansPayload = {
   plans: PlanMatrixPlan[];
@@ -86,16 +118,16 @@ export function LandingPage({
 
   const textStyles = {
     heroTitle: {
-      fontSize: buildFluidFontSize(2.9, 4.3, 6.2, config.typography.heroTitle),
+      fontSize: buildFluidFontSize(2.25, 3.25, 4, config.typography.heroTitle),
     } satisfies CSSProperties,
     heroBody: {
       fontSize: buildFluidFontSize(1.0, 1.08, 1.18, config.typography.heroBody),
     } satisfies CSSProperties,
     sectionTitle: {
       fontSize: buildFluidFontSize(
-        1.85,
-        2.35,
-        3.1,
+        1.5,
+        1.875,
+        2.25,
         config.typography.sectionTitle
       ),
     } satisfies CSSProperties,
@@ -109,9 +141,9 @@ export function LandingPage({
     } satisfies CSSProperties,
     cardTitle: {
       fontSize: buildFluidFontSize(
-        1.05,
-        1.2,
-        1.45,
+        1.0,
+        1.125,
+        1.25,
         config.typography.cardTitle
       ),
     } satisfies CSSProperties,
@@ -248,40 +280,37 @@ export function LandingPage({
           >
             <div className="mx-auto max-w-7xl">
               <div className="max-w-3xl">
-                <Badge className="rounded-full border-cosmic/20 bg-cosmic/10 px-4 py-1.5 text-cosmic">
+                <p className={rotuloDeSecaoClass}>
                   {config.features.badgeText}
-                </Badge>
+                </p>
                 <h2
-                  className="mt-5 font-display font-bold tracking-tight text-foreground"
+                  className="mt-3 font-display font-semibold tracking-[-0.02em] text-foreground"
                   style={textStyles.sectionTitle}
                 >
                   {config.features.title}
                 </h2>
                 <p
-                  className="mt-4 leading-8 text-muted-foreground"
+                  className="mt-4 leading-relaxed text-muted-foreground"
                   style={textStyles.sectionBody}
                 >
                   {config.features.description}
                 </p>
               </div>
 
-              <div className="mt-10 grid gap-5 lg:grid-cols-3">
+              <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
                 {config.features.items.map((feature) => {
                   const FeatureIcon = getBuilderIcon(feature.icon);
 
                   return (
-                    <Card
-                      key={feature.id}
-                      className="border-border/80 bg-[linear-gradient(145deg,rgba(255,255,255,0.94),rgba(255,255,255,0.78))]"
-                    >
+                    <Card key={feature.id} className="min-w-0">
                       <CardHeader>
                         <div
                           className={cn(
-                            'flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br shadow-sm',
-                            getToneSurfaceClass(feature.tone)
+                            'mb-2 flex h-11 w-11 items-center justify-center rounded-md',
+                            corDoIconeTonal(feature.tone)
                           )}
                         >
-                          <FeatureIcon className="h-5 w-5" />
+                          <FeatureIcon className="h-5 w-5" aria-hidden />
                         </div>
                         <CardTitle style={textStyles.cardTitle}>
                           {feature.title}
@@ -303,34 +332,32 @@ export function LandingPage({
         }
 
         return (
-          <section className="border-y border-border/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.86),rgba(248,247,255,0.96))] px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+          <section className="border-y border-border bg-card px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
             <div className="mx-auto max-w-7xl">
               <div className="mb-10 max-w-3xl">
-                <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary">
-                  {config.metrics.badgeText}
-                </Badge>
+                <p className={rotuloDeSecaoClass}>{config.metrics.badgeText}</p>
                 <h2
-                  className="mt-5 font-display font-bold tracking-tight text-foreground"
+                  className="mt-3 font-display font-semibold tracking-[-0.02em] text-foreground"
                   style={textStyles.sectionTitle}
                 >
                   {config.metrics.title}
                 </h2>
                 <p
-                  className="mt-4 leading-8 text-muted-foreground"
+                  className="mt-4 leading-relaxed text-muted-foreground"
                   style={textStyles.sectionBody}
                 >
                   {config.metrics.description}
                 </p>
               </div>
 
-              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 lg:gap-6">
                 {plansStatus === 'loading'
                   ? Array.from({ length: 4 }).map((_, index) => (
                       <Card
                         key={`metric-skeleton-${index}`}
-                        className="border-border/70 bg-white/88"
+                        className="bg-background"
                       >
-                        <CardContent className="space-y-4 px-6 py-6">
+                        <CardContent className="space-y-4 p-6">
                           <Skeleton className="h-4 w-24" />
                           <Skeleton className="h-10 w-20" />
                           <Skeleton className="h-4 w-full" />
@@ -338,18 +365,15 @@ export function LandingPage({
                       </Card>
                     ))
                   : config.metrics.items.map((item) => (
-                      <Card
-                        key={item.id}
-                        className="border-border/70 bg-white/88"
-                      >
+                      <Card key={item.id} className="min-w-0 bg-background">
                         <CardHeader>
-                          <p className="text-xs font-semibold uppercase tracking-[0.26em] text-muted-foreground">
+                          <p className="text-sm font-medium text-muted-foreground">
                             {item.label}
                           </p>
                           <CardTitle
                             className={cn(
-                              'font-mono text-4xl',
-                              getToneNumberClass(item.tone)
+                              'font-display text-4xl font-semibold',
+                              corDoNumero(item.tone)
                             )}
                           >
                             {resolveMetricValue(item.source, item.customValue)}
@@ -373,39 +397,34 @@ export function LandingPage({
           <section id="fluxo" className="px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
             <div className="mx-auto max-w-7xl">
               <div className="max-w-3xl">
-                <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary">
-                  {config.flow.badgeText}
-                </Badge>
+                <p className={rotuloDeSecaoClass}>{config.flow.badgeText}</p>
                 <h2
-                  className="mt-5 font-display font-bold tracking-tight text-foreground"
+                  className="mt-3 font-display font-semibold tracking-[-0.02em] text-foreground"
                   style={textStyles.sectionTitle}
                 >
                   {config.flow.title}
                 </h2>
                 <p
-                  className="mt-4 leading-8 text-muted-foreground"
+                  className="mt-4 leading-relaxed text-muted-foreground"
                   style={textStyles.sectionBody}
                 >
                   {config.flow.description}
                 </p>
               </div>
 
-              <div className="mt-10 grid gap-5 lg:grid-cols-3">
+              <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
                 {config.flow.items.map((step) => {
                   const StepIcon = getBuilderIcon(step.icon);
 
                   return (
-                    <Card
-                      key={step.id}
-                      className="border-border/80 bg-white/90"
-                    >
+                    <Card key={step.id} className="min-w-0">
                       <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <span className="font-mono text-sm font-semibold text-muted-foreground">
+                        <div className="mb-2 flex items-center justify-between">
+                          <span className="font-display text-sm font-semibold text-primary">
                             {step.step}
                           </span>
-                          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-muted text-foreground">
-                            <StepIcon className="h-5 w-5" />
+                          <span className="flex h-11 w-11 items-center justify-center rounded-md bg-muted text-foreground">
+                            <StepIcon className="h-5 w-5" aria-hidden />
                           </span>
                         </div>
                         <CardTitle style={textStyles.cardTitle}>
@@ -430,33 +449,31 @@ export function LandingPage({
         return (
           <section
             id="planos"
-            className="border-y border-border/70 bg-[linear-gradient(180deg,#ffffff,rgba(249,248,252,0.96))] px-4 py-20 sm:px-6 lg:px-8 lg:py-24"
+            className="border-y border-border bg-card px-4 py-20 sm:px-6 lg:px-8 lg:py-24"
           >
             <div className="mx-auto max-w-7xl">
               <div className="max-w-3xl">
-                <Badge className="rounded-full border-accent/20 bg-accent/10 px-4 py-1.5 text-accent">
-                  {config.plans.badgeText}
-                </Badge>
+                <p className={rotuloDeSecaoClass}>{config.plans.badgeText}</p>
                 <h2
-                  className="mt-5 font-display font-bold tracking-tight text-foreground"
+                  className="mt-3 font-display font-semibold tracking-[-0.02em] text-foreground"
                   style={textStyles.sectionTitle}
                 >
                   {config.plans.title}
                 </h2>
                 <p
-                  className="mt-4 leading-8 text-muted-foreground"
+                  className="mt-4 leading-relaxed text-muted-foreground"
                   style={textStyles.sectionBody}
                 >
                   {config.plans.description}
                 </p>
               </div>
 
-              <div className="mt-10 grid gap-6 lg:grid-cols-3">
+              <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
                 {plansStatus === 'loading'
                   ? Array.from({ length: 3 }).map((_, index) => (
                       <Card
                         key={`plan-skeleton-${index}`}
-                        className="border-border/80 bg-white/92"
+                        className="bg-background"
                       >
                         <CardHeader className="space-y-4">
                           <Skeleton className="h-2 w-full rounded-full" />
@@ -474,21 +491,22 @@ export function LandingPage({
                   : plans.map((plan) => (
                       <Card
                         key={plan.key}
-                        className={
-                          plan.key === 'meta'
-                            ? 'border-primary/30 ring-1 ring-primary/12 bg-white/92'
-                            : 'border-border/80 bg-white/92'
-                        }
+                        className={cn(
+                          'flex min-w-0 flex-col overflow-hidden bg-background',
+                          plan.key === 'meta' &&
+                            'border-primary ring-1 ring-primary'
+                        )}
                       >
+                        {/* Faixa com a cor de destaque cadastrada no plano
+                            (cor chapada, sem gradiente). */}
                         <div
-                          className="h-1.5 w-full"
-                          style={{
-                            backgroundImage: `linear-gradient(135deg, ${plan.accentFrom}, ${plan.accentTo})`,
-                          }}
+                          aria-hidden="true"
+                          className="h-1 w-full"
+                          style={{ backgroundColor: plan.accentFrom }}
                         />
                         <CardHeader>
                           {plan.highlightText ? (
-                            <Badge className="w-fit rounded-full border-border bg-white/88 px-3 py-1 text-foreground">
+                            <Badge className="w-fit">
                               {plan.highlightText}
                             </Badge>
                           ) : null}
@@ -505,9 +523,9 @@ export function LandingPage({
                             {plan.description}
                           </p>
                         </CardHeader>
-                        <CardContent className="space-y-5">
-                          <div className="rounded-[24px] border border-border/70 bg-muted/45 p-5">
-                            <p className="font-display text-4xl font-bold text-foreground">
+                        <CardContent className="flex-1 space-y-5">
+                          <div className="rounded-md border border-border bg-card p-5">
+                            <p className="font-display text-4xl font-semibold tracking-tight text-foreground">
                               {formatCurrency(
                                 plan.monthlyPrice,
                                 plan.currencyCode
@@ -533,8 +551,11 @@ export function LandingPage({
                                   key={`${plan.key}-${feature.key}`}
                                   className="flex items-start gap-3 text-sm text-foreground"
                                 >
-                                  <span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary/12 text-primary">
-                                    <Check className="h-3.5 w-3.5" />
+                                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-sidebar-accent text-primary">
+                                    <Check
+                                      className="h-3.5 w-3.5"
+                                      aria-hidden
+                                    />
                                   </span>
                                   <span className="leading-6">
                                     {feature.name}
@@ -556,7 +577,7 @@ export function LandingPage({
                             disabled={previewMode}
                           >
                             {config.plans.ctaLabel}
-                            <ArrowRight className="h-4 w-4" />
+                            <ArrowRight className="h-4 w-4" aria-hidden />
                           </Button>
                         </CardFooter>
                       </Card>
@@ -564,7 +585,7 @@ export function LandingPage({
               </div>
 
               {plansStatus === 'error' ? (
-                <Card className="mt-6 border-destructive/20 bg-destructive/5 shadow-none">
+                <Card className="mt-6 border-destructive/20 bg-destructive-light">
                   <CardContent className="px-6 py-5">
                     <p className="text-sm font-medium text-destructive">
                       Falha ao sincronizar o catalogo publico agora.
@@ -586,25 +607,27 @@ export function LandingPage({
         return (
           <section id="faq" className="px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
             <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.92fr_1.08fr]">
-              <div>
-                <Badge className="rounded-full border-cosmic/20 bg-cosmic/10 px-4 py-1.5 text-cosmic">
-                  {config.faq.badgeText}
-                </Badge>
+              <div className="min-w-0">
+                <p className={rotuloDeSecaoClass}>{config.faq.badgeText}</p>
                 <h2
-                  className="mt-5 font-display font-bold tracking-tight text-foreground"
+                  className="mt-3 font-display font-semibold tracking-[-0.02em] text-foreground"
                   style={textStyles.sectionTitle}
                 >
                   {config.faq.title}
                 </h2>
                 <p
-                  className="mt-4 leading-8 text-muted-foreground"
+                  className="mt-4 leading-relaxed text-muted-foreground"
                   style={textStyles.sectionBody}
                 >
                   {config.faq.description}
                 </p>
               </div>
 
-              <Accordion type="single" collapsible className="space-y-4">
+              <Accordion
+                type="single"
+                collapsible
+                className="min-w-0 space-y-3"
+              >
                 {config.faq.items.map((item) => (
                   <AccordionItem key={item.id} value={item.id}>
                     <AccordionTrigger>{item.question}</AccordionTrigger>
@@ -622,19 +645,19 @@ export function LandingPage({
 
         return (
           <section className="px-4 pb-24 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-6xl overflow-hidden rounded-[36px] border border-border/80 bg-[linear-gradient(135deg,rgba(49,155,142,0.12),rgba(139,92,246,0.16),rgba(240,101,67,0.12))] p-8 shadow-[0_26px_80px_-42px_rgba(22,21,48,0.32)] sm:p-10 lg:p-12">
+            <div className="mx-auto max-w-7xl rounded-xl border border-border bg-card p-6 sm:p-10 lg:p-12">
               <div className="max-w-3xl">
-                <Badge className="rounded-full border-white/70 bg-white/78 px-4 py-1.5 text-foreground">
+                <p className={rotuloDeSecaoClass}>
                   {config.finalCta.badgeText}
-                </Badge>
+                </p>
                 <h2
-                  className="mt-5 font-display font-bold tracking-tight text-foreground"
+                  className="mt-3 font-display font-semibold tracking-[-0.02em] text-foreground"
                   style={textStyles.sectionTitle}
                 >
                   {config.finalCta.title}
                 </h2>
                 <p
-                  className="mt-4 leading-8 text-foreground/80"
+                  className="mt-4 leading-relaxed text-foreground/80"
                   style={textStyles.sectionBody}
                 >
                   {config.finalCta.description}
@@ -642,15 +665,17 @@ export function LandingPage({
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <Button
                     size="xl"
+                    className="h-auto min-h-12 whitespace-normal py-3 text-center"
                     style={textStyles.buttonLabel}
                     onClick={() => navigateTo(config.finalCta.primaryHref)}
                   >
                     {config.finalCta.primaryLabel}
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-4 w-4" aria-hidden />
                   </Button>
                   <Button
                     size="xl"
                     variant="secondary"
+                    className="h-auto min-h-12 whitespace-normal py-3 text-center"
                     style={textStyles.buttonLabel}
                     onClick={() => navigateTo(config.finalCta.secondaryHref)}
                   >
@@ -679,9 +704,9 @@ export function LandingPage({
   );
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,hsl(var(--background)),#ffffff_42%,#fbfbff_100%)] text-foreground">
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-white/80 backdrop-blur-2xl">
-        <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="sticky top-0 z-50 border-b border-border bg-card">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
           <button
             type="button"
             onClick={() => {
@@ -690,19 +715,19 @@ export function LandingPage({
               }
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex items-center gap-3 rounded-full px-1 py-1 text-left"
+            className="flex min-w-0 items-center gap-2.5 rounded-[10px] px-1 py-1 text-left focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span
-              className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-teal text-white shadow-teal"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary text-primary-foreground"
               aria-hidden="true"
             >
               <Sparkles className="h-5 w-5" />
             </span>
-            <span>
-              <span className="block font-display text-lg font-bold lowercase text-gradient-hero">
+            <span className="min-w-0">
+              <span className="block font-display text-xl font-semibold lowercase leading-tight tracking-tight text-foreground">
                 lyra{' '}
               </span>
-              <span className="block text-xs uppercase tracking-[0.28em] text-muted-foreground">
+              <span className="hidden text-xs font-medium text-muted-foreground sm:block">
                 astrologia + IA
               </span>
               <span className="sr-only">: voltar ao topo</span>
@@ -740,7 +765,7 @@ export function LandingPage({
             </Button>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <Button
               variant="ghost"
               style={textStyles.buttonLabel}
@@ -759,32 +784,26 @@ export function LandingPage({
       </header>
 
       <main id={previewMode ? undefined : 'conteudo-principal'}>
-        <section className="relative overflow-hidden px-4 pb-18 pt-10 sm:px-6 lg:px-8 lg:pb-24 lg:pt-14">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="orchestrated-orb -left-32 -top-8 h-80 w-80 bg-primary/16" />
-            <div className="orchestrated-orb -right-20 top-16 h-80 w-80 bg-cosmic/16" />
-            <div className="orchestrated-orb -bottom-20 left-1/3 h-72 w-72 bg-accent/10" />
-          </div>
-
-          <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.06fr_0.94fr] lg:items-start">
-            <div className="relative z-10">
-              <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary shadow-sm">
-                <Sparkles className="mr-2 h-3.5 w-3.5" />
-                {config.hero.badgeText}
+        <section className="px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pb-24 lg:pt-16">
+          <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1.06fr)_minmax(0,0.94fr)] lg:items-start lg:gap-12">
+            <div className="min-w-0">
+              <Badge className="max-w-full px-3 py-1 text-sm">
+                <Sparkles className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                <span className="min-w-0">{config.hero.badgeText}</span>
               </Badge>
 
               <h1
-                className="mt-6 max-w-4xl font-display font-bold leading-[1.02] tracking-tight text-foreground"
+                className="mt-6 max-w-4xl break-words font-display font-semibold leading-[1.08] tracking-[-0.03em] text-foreground"
                 style={textStyles.heroTitle}
               >
                 {config.hero.title}
-                <span className="block text-gradient-aurora">
+                <span className="block text-primary">
                   {config.hero.accentTitle}
                 </span>
               </h1>
 
               <p
-                className="mt-6 max-w-2xl leading-8 text-muted-foreground"
+                className="mt-6 max-w-2xl leading-relaxed text-muted-foreground"
                 style={textStyles.heroBody}
               >
                 {config.hero.description}
@@ -793,15 +812,17 @@ export function LandingPage({
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button
                   size="xl"
+                  className="h-auto min-h-12 whitespace-normal py-3 text-center"
                   style={textStyles.buttonLabel}
                   onClick={() => navigateTo(config.hero.primaryCtaHref)}
                 >
                   {config.hero.primaryCtaLabel}
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4" aria-hidden />
                 </Button>
                 <Button
                   size="xl"
                   variant="secondary"
+                  className="h-auto min-h-12 whitespace-normal py-3 text-center"
                   style={textStyles.buttonLabel}
                   onClick={() => navigateTo(config.hero.secondaryCtaHref)}
                 >
@@ -810,10 +831,10 @@ export function LandingPage({
               </div>
             </div>
 
-            <div className="relative z-10 grid gap-4">
-              <Card className="glass-card border-white/80 bg-white/76">
+            <div className="grid min-w-0 gap-4">
+              <Card>
                 <CardHeader>
-                  <Badge className="w-fit rounded-full border-cosmic/20 bg-cosmic/10 px-3 py-1 text-cosmic">
+                  <Badge variant="cosmic" className="w-fit">
                     {config.hero.quickAuthBadge}
                   </Badge>
                   <CardTitle style={textStyles.cardTitle}>
@@ -845,7 +866,7 @@ export function LandingPage({
                           autoComplete="current-password"
                           value={password}
                           onChange={(event) => setPassword(event.target.value)}
-                          className="pr-12"
+                          className="pr-11"
                           disabled={previewMode}
                         />
                         <button
@@ -855,12 +876,12 @@ export function LandingPage({
                           }
                           onClick={() => setShowPassword((current) => !current)}
                           disabled={previewMode}
-                          className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+                          className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-[10px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                         >
                           {showPassword ? (
-                            <EyeOff className="h-4 w-4" />
+                            <EyeOff className="h-[18px] w-[18px]" aria-hidden />
                           ) : (
-                            <Eye className="h-4 w-4" />
+                            <Eye className="h-[18px] w-[18px]" aria-hidden />
                           )}
                         </button>
                       </div>
@@ -880,7 +901,7 @@ export function LandingPage({
                         {submitting
                           ? 'Entrando...'
                           : config.hero.quickAuthSubmitLabel}
-                        <ArrowRight className="h-4 w-4" />
+                        <ArrowRight className="h-4 w-4" aria-hidden />
                       </Button>
                       <Button
                         type="button"
@@ -897,9 +918,9 @@ export function LandingPage({
                 </CardContent>
               </Card>
 
-              <Card className="border-border/80 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,255,255,0.78))]">
+              <Card>
                 <CardHeader>
-                  <Badge className="w-fit rounded-full border-border bg-white/85 px-3 py-1 text-foreground">
+                  <Badge variant="outline" className="w-fit">
                     {config.hero.previewBadge}
                   </Badge>
                   <CardTitle style={textStyles.cardTitle}>
@@ -909,22 +930,22 @@ export function LandingPage({
                     {config.hero.previewDescription}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="grid gap-4 px-6 py-6 sm:grid-cols-3">
+                <CardContent className="grid gap-4 px-6 pb-6 sm:grid-cols-3">
                   {config.hero.previewItems.map((item) => {
                     const ItemIcon = getBuilderIcon(item.icon);
 
                     return (
                       <div
                         key={item.id}
-                        className="rounded-[24px] border border-border/70 bg-white/82 p-4 shadow-sm"
+                        className="min-w-0 rounded-md border border-border bg-background p-4"
                       >
                         <div
                           className={cn(
-                            'flex h-10 w-10 items-center justify-center rounded-2xl bg-linear-to-br shadow-sm',
-                            getToneSurfaceClass(item.tone)
+                            'flex h-10 w-10 items-center justify-center rounded-md',
+                            corDoIconeTonal(item.tone)
                           )}
                         >
-                          <ItemIcon className="h-4.5 w-4.5" />
+                          <ItemIcon className="h-[18px] w-[18px]" aria-hidden />
                         </div>
                         <p
                           className="mt-4 font-display font-semibold text-foreground"
@@ -952,22 +973,28 @@ export function LandingPage({
         ))}
       </main>
 
-      <footer className="border-t border-border/70 bg-white/88 px-4 py-10 backdrop-blur-xl sm:px-6 lg:px-8">
+      <footer className="border-t border-border bg-card px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-teal text-white shadow-teal">
-              <Sparkles className="h-4 w-4" />
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary text-primary-foreground"
+              aria-hidden="true"
+            >
+              <Sparkles className="h-[18px] w-[18px]" />
             </span>
-            <div>
-              <p className="font-display text-lg font-bold lowercase text-gradient-hero">
+            <div className="min-w-0">
+              <p className="font-display text-lg font-semibold lowercase tracking-tight text-foreground">
                 {config.footer.brandLine}
               </p>
-              <p className="text-xs uppercase tracking-[0.28em] text-muted-foreground">
+              <p className="text-xs font-medium text-muted-foreground">
                 landing editavel
               </p>
             </div>
           </div>
-          <p className="text-muted-foreground" style={textStyles.cardBody}>
+          <p
+            className="min-w-0 leading-relaxed text-muted-foreground md:max-w-xl"
+            style={textStyles.cardBody}
+          >
             {config.footer.note}
           </p>
         </div>

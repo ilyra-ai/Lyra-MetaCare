@@ -30,11 +30,11 @@ function LyraCTAButtonBlock({
       >
         <a href={href}>
           {label}
-          <ArrowUpRight className="h-4 w-4" />
+          <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
         </a>
       </Button>
       {supportingText ? (
-        <p className="max-w-xl text-sm leading-7 text-muted-foreground">
+        <p className="max-w-xl text-sm leading-6 text-muted-foreground">
           {supportingText}
         </p>
       ) : null}

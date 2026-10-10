@@ -68,40 +68,48 @@ const CATEGORY_STYLE: Record<
 > = {
   alerta: {
     label: 'Alerta',
-    badge: 'bg-destructive/10 text-destructive',
+    badge: 'bg-destructive-light text-destructive',
     icon: AlertTriangle,
   },
   recuperacao: {
     label: 'Recuperação',
-    badge: 'bg-accent/10 text-accent',
+    badge: 'bg-sidebar-accent text-primary',
     icon: HeartPulse,
   },
   movimento: {
     label: 'Movimento',
-    badge: 'bg-accent/10 text-accent',
+    badge: 'bg-warning-light text-warning',
     icon: Activity,
   },
-  sono: { label: 'Sono', badge: 'bg-info/10 text-info', icon: Moon },
+  sono: { label: 'Sono', badge: 'bg-info-light text-info', icon: Moon },
   nutricao: {
     label: 'Nutrição',
-    badge: 'bg-golden/10 text-golden',
+    badge: 'bg-golden-light text-golden',
     icon: Sparkles,
   },
   hidratacao: {
     label: 'Hidratação',
-    badge: 'bg-info/10 text-info',
+    badge: 'bg-info-light text-info',
     icon: Droplets,
   },
-  mente: { label: 'Mente', badge: 'bg-cosmic/10 text-cosmic', icon: Waves },
-  ciclo: { label: 'Ciclo', badge: 'bg-cosmic/10 text-cosmic', icon: Moon },
+  mente: {
+    label: 'Mente',
+    badge: 'bg-cosmic-light text-cosmic-strong',
+    icon: Waves,
+  },
+  ciclo: {
+    label: 'Ciclo',
+    badge: 'bg-cosmic-light text-cosmic-strong',
+    icon: Moon,
+  },
   longevidade: {
     label: 'Longevidade',
-    badge: 'bg-primary/10 text-primary',
+    badge: 'bg-sidebar-accent text-primary',
     icon: Hourglass,
   },
   equilibrio: {
     label: 'Equilíbrio',
-    badge: 'bg-success/10 text-success',
+    badge: 'bg-success-light text-success',
     icon: ShieldCheck,
   },
 };
@@ -125,13 +133,13 @@ function toEarlyWarningMetric(metric: DailyMetric | null): EarlyWarningMetric {
 /* ============================ Cartão: Ações proativas (M1) =================== */
 function ProactiveActionsCard({ actions }: { actions: AgentAction[] }) {
   return (
-    <Card className="flex h-full flex-col border-primary/15 bg-[radial-gradient(circle_at_top_left,hsl(var(--cosmic)/0.10)_0%,hsl(var(--card))_45%)] lg:col-span-2">
+    <Card className="flex h-full min-w-0 flex-col lg:col-span-2">
       <CardHeader className="gap-2">
         <div className="flex items-center justify-between gap-3">
           <Badge variant="cosmic" className="w-fit">
             Assistente proativo
           </Badge>
-          <BrainCircuit className="h-5 w-5 text-cosmic" />
+          <BrainCircuit aria-hidden="true" className="h-5 w-5 text-cosmic" />
         </div>
         <CardTitle className="text-2xl">Ações da Lyra para hoje</CardTitle>
         <CardDescription>
@@ -147,18 +155,19 @@ function ProactiveActionsCard({ actions }: { actions: AgentAction[] }) {
             <div
               key={action.id}
               className={cn(
-                'flex flex-col gap-2 rounded-2xl border border-border/60 bg-card/70 p-4 shadow-sm transition-colors sm:flex-row sm:items-start sm:gap-4',
-                action.severity === 'critico' && 'border-destructive/30',
-                action.severity === 'atencao' && 'border-accent/30'
+                'flex flex-col gap-2 rounded-md border border-border p-4 transition-colors sm:flex-row sm:items-start sm:gap-4',
+                action.severity === 'critico' && 'border-destructive/40',
+                action.severity === 'atencao' && 'border-warning/40'
               )}
             >
               <div
+                aria-hidden="true"
                 className={cn(
-                  'flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl',
+                  'flex h-9 w-9 shrink-0 items-center justify-center rounded-full',
                   style.badge
                 )}
               >
-                <Icon className="h-5 w-5" />
+                <Icon className="h-4 w-4" />
               </div>
               <div className="min-w-0 flex-1 space-y-1.5">
                 <div className="flex flex-wrap items-center gap-2">
@@ -167,7 +176,10 @@ function ProactiveActionsCard({ actions }: { actions: AgentAction[] }) {
                   </p>
                   <Badge
                     variant="outline"
-                    className={cn('rounded-full text-[11px]', style.badge)}
+                    className={cn(
+                      'rounded-full border-transparent text-xs',
+                      style.badge
+                    )}
                   >
                     {style.label}
                   </Badge>
@@ -180,7 +192,7 @@ function ProactiveActionsCard({ actions }: { actions: AgentAction[] }) {
                     asChild
                     variant="ghost"
                     size="sm"
-                    className="h-8 px-2 text-primary hover:bg-primary/10"
+                    className="h-8 px-2 text-primary hover:bg-sidebar-accent"
                   >
                     <Link href={action.cta.href}>{action.cta.label} →</Link>
                   </Button>
@@ -198,12 +210,12 @@ function ProactiveActionsCard({ actions }: { actions: AgentAction[] }) {
 function BiologicalAgeCard({ result }: { result: BiologicalAgeResult | null }) {
   if (!result) {
     return (
-      <Card className="flex h-full flex-col border-border/70 bg-card/80">
+      <Card className="flex h-full min-w-0 flex-col">
         <CardHeader className="gap-2">
           <Badge variant="default" className="w-fit">
             Idade biológica
           </Badge>
-          <CardTitle className="text-xl">Aguardando idade</CardTitle>
+          <CardTitle>Aguardando idade</CardTitle>
           <CardDescription>
             Informe sua idade ou data de nascimento no perfil para estimar sua
             idade biológica.
@@ -222,27 +234,27 @@ function BiologicalAgeCard({ result }: { result: BiologicalAgeResult | null }) {
   const DeltaIcon = younger ? ArrowDownRight : ArrowUpRight;
 
   return (
-    <Card className="flex h-full flex-col border-primary/15 bg-card/85">
+    <Card className="flex h-full min-w-0 flex-col">
       <CardHeader className="gap-2">
         <div className="flex items-center justify-between gap-3">
           <Badge variant="default" className="w-fit">
             Idade biológica
           </Badge>
-          <Hourglass className="h-5 w-5 text-primary" />
+          <Hourglass aria-hidden="true" className="h-5 w-5 text-primary" />
         </div>
-        <div className="flex items-end gap-2">
-          <span className="font-mono text-4xl font-semibold tracking-tight text-foreground">
+        <div className="flex items-end gap-1">
+          <span className="font-display text-4xl font-semibold tracking-[-0.03em] text-foreground">
             {result.biologicalAge.toFixed(0)}
           </span>
-          <span className="pb-1 text-sm text-muted-foreground">anos</span>
+          <span className="pb-1 text-base text-muted-foreground">anos</span>
         </div>
         <div
           className={cn(
-            'flex items-center gap-1.5 text-sm font-medium',
-            younger ? 'text-success' : 'text-accent'
+            'flex flex-wrap items-center gap-1.5 text-sm font-medium',
+            younger ? 'text-success' : 'text-warning'
           )}
         >
-          <DeltaIcon className="h-4 w-4" />
+          <DeltaIcon aria-hidden="true" className="h-4 w-4" />
           {younger
             ? `${Math.abs(result.ageDelta).toFixed(1)} ano(s) mais jovem`
             : `${result.ageDelta.toFixed(1)} ano(s) acima`}{' '}
@@ -253,19 +265,20 @@ function BiologicalAgeCard({ result }: { result: BiologicalAgeResult | null }) {
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-4">
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center justify-between text-[13px] text-muted-foreground">
             <span>Vitalidade fenotípica</span>
-            <span className="font-mono text-foreground">
+            <span className="font-display font-semibold text-foreground">
               {result.vitalityScore}/100
             </span>
           </div>
           <Progress
             aria-label="Vitalidade fenotípica"
             value={result.vitalityScore}
+            className="h-1.5"
           />
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center justify-between text-[13px] text-muted-foreground">
             <span>Ritmo de envelhecimento</span>
-            <span className="font-mono text-foreground">
+            <span className="font-display font-semibold text-foreground">
               {result.paceOfAging.toFixed(2)}×
             </span>
           </div>
@@ -273,7 +286,7 @@ function BiologicalAgeCard({ result }: { result: BiologicalAgeResult | null }) {
 
         {result.drivers.length > 0 ? (
           <div className="space-y-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-sm font-medium text-muted-foreground">
               Principais fatores
             </p>
             {result.drivers.slice(0, 3).map((driver) => (
@@ -284,8 +297,8 @@ function BiologicalAgeCard({ result }: { result: BiologicalAgeResult | null }) {
                 <span className="truncate text-foreground">{driver.label}</span>
                 <span
                   className={cn(
-                    'font-mono text-xs',
-                    driver.impactYears < 0 ? 'text-success' : 'text-accent'
+                    'shrink-0 font-display text-[13px] font-semibold',
+                    driver.impactYears < 0 ? 'text-success' : 'text-warning'
                   )}
                 >
                   {driver.impactYears > 0 ? '+' : ''}
@@ -296,7 +309,7 @@ function BiologicalAgeCard({ result }: { result: BiologicalAgeResult | null }) {
           </div>
         ) : null}
 
-        <p className="mt-auto text-[11px] leading-5 text-muted-foreground">
+        <p className="mt-auto text-xs leading-5 text-muted-foreground">
           {result.methodology} Confiança: {result.confidence} (
           {result.availableMarkers} biomarcadores).
         </p>
@@ -308,13 +321,13 @@ function BiologicalAgeCard({ result }: { result: BiologicalAgeResult | null }) {
 /* ============================ Cartão: Detecção precoce (M2) ================== */
 function EarlyWarningCard({ result }: { result: EarlyWarningResult }) {
   const severityStyle: Record<string, string> = {
-    alerta: 'border-destructive/30 bg-destructive/5',
-    atencao: 'border-accent/30 bg-accent/5',
-    info: 'border-info/30 bg-info/5',
+    alerta: 'border-destructive/30 bg-destructive-light',
+    atencao: 'border-warning/30 bg-warning-light',
+    info: 'border-info/30 bg-info-light',
   };
 
   return (
-    <Card className="flex h-full flex-col border-border/70 bg-card/85">
+    <Card className="flex h-full min-w-0 flex-col">
       <CardHeader className="gap-2">
         <div className="flex items-center justify-between gap-3">
           <Badge
@@ -323,9 +336,9 @@ function EarlyWarningCard({ result }: { result: EarlyWarningResult }) {
           >
             Detecção precoce
           </Badge>
-          <HeartPulse className="h-5 w-5 text-accent" />
+          <HeartPulse aria-hidden="true" className="h-5 w-5 text-primary" />
         </div>
-        <CardTitle className="text-xl">
+        <CardTitle>
           {result.overall === 'estavel'
             ? 'Sinais estáveis'
             : result.overall === 'observar'
@@ -344,8 +357,8 @@ function EarlyWarningCard({ result }: { result: EarlyWarningResult }) {
             os sinais precoces estarão ativos.
           </p>
         ) : result.signals.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-2xl border border-success/20 bg-success/5 p-5 text-center">
-            <ShieldCheck className="h-8 w-8 text-success" />
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-background p-5 text-center">
+            <ShieldCheck aria-hidden="true" className="h-7 w-7 text-success" />
             <p className="text-sm font-medium text-foreground">
               Tudo dentro do seu padrão
             </p>
@@ -358,23 +371,26 @@ function EarlyWarningCard({ result }: { result: EarlyWarningResult }) {
             <div
               key={signal.key}
               className={cn(
-                'rounded-2xl border p-3.5',
+                'rounded-md border p-4',
                 severityStyle[signal.severity] ?? severityStyle.info
               )}
             >
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-foreground">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="min-w-0 text-sm font-semibold text-foreground">
                   {signal.title}
                 </p>
-                <Badge variant="outline" className="rounded-full text-[10px]">
+                <Badge
+                  variant="outline"
+                  className="rounded-full bg-card text-xs"
+                >
                   {signal.actionLabel}
                 </Badge>
               </div>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">
+              <p className="mt-1 text-[13px] leading-5 text-foreground/80">
                 {signal.detail}
               </p>
               {signal.contributors.length ? (
-                <p className="mt-1.5 font-mono text-[11px] text-muted-foreground">
+                <p className="mt-1.5 text-xs text-foreground/80">
                   {signal.contributors.join(' • ')}
                 </p>
               ) : null}
@@ -389,15 +405,15 @@ function EarlyWarningCard({ result }: { result: EarlyWarningResult }) {
 /* ============================ Cartão: Ciclo / Saúde da mulher (M4) =========== */
 function CycleCard({ result }: { result: MenstrualCycleResult }) {
   return (
-    <Card className="flex h-full flex-col border-cosmic/15 bg-[radial-gradient(circle_at_top_right,hsl(var(--cosmic)/0.10)_0%,hsl(var(--card))_45%)]">
+    <Card className="flex h-full min-w-0 flex-col">
       <CardHeader className="gap-2">
         <div className="flex items-center justify-between gap-3">
           <Badge variant="cosmic" className="w-fit">
             Saúde da mulher
           </Badge>
-          <Moon className="h-5 w-5 text-cosmic" />
+          <Moon aria-hidden="true" className="h-5 w-5 text-cosmic" />
         </div>
-        <CardTitle className="text-xl">
+        <CardTitle>
           {result.trackable
             ? `${result.phaseEmoji} ${result.phaseLabel}`
             : 'Ciclo & vitalidade'}
@@ -412,12 +428,14 @@ function CycleCard({ result }: { result: MenstrualCycleResult }) {
         {result.trackable && result.cycleDay ? (
           <>
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-[13px] text-muted-foreground">
                 <span>
                   Dia {result.cycleDay} de {result.cycleLength}
                 </span>
                 {result.isFertileToday ? (
-                  <span className="font-medium text-cosmic">Janela fértil</span>
+                  <span className="font-medium text-cosmic-strong">
+                    Janela fértil
+                  </span>
                 ) : (
                   <span>
                     Próxima em {result.daysUntilNextPeriod} dia
@@ -428,22 +446,24 @@ function CycleCard({ result }: { result: MenstrualCycleResult }) {
               <Progress
                 aria-label={`Dia ${result.cycleDay} de ${result.cycleLength} do ciclo`}
                 value={Math.round((result.cycleDay / result.cycleLength) * 100)}
+                tone="astral"
+                className="h-1.5"
               />
             </div>
             <div className="grid grid-cols-1 gap-2 text-sm">
-              <div className="rounded-xl border border-border/60 bg-card/70 p-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              <div className="rounded-md border border-border p-4">
+                <p className="text-sm font-medium text-muted-foreground">
                   Treino
                 </p>
-                <p className="mt-0.5 text-foreground">
+                <p className="mt-0.5 leading-6 text-foreground/80">
                   {result.recommendation.training}
                 </p>
               </div>
-              <div className="rounded-xl border border-border/60 bg-card/70 p-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              <div className="rounded-md border border-border p-4">
+                <p className="text-sm font-medium text-muted-foreground">
                   Nutrição
                 </p>
-                <p className="mt-0.5 text-foreground">
+                <p className="mt-0.5 leading-6 text-foreground/80">
                   {result.recommendation.nutrition}
                 </p>
               </div>
@@ -470,21 +490,21 @@ function PrivacyCard({
   onToggle: (value: boolean) => void;
 }) {
   return (
-    <Card className="flex h-full flex-col border-border/70 bg-card/85">
+    <Card className="flex h-full min-w-0 flex-col">
       <CardHeader className="gap-2">
         <div className="flex items-center justify-between gap-3">
           <Badge variant="default" className="w-fit">
             Privacidade
           </Badge>
-          <Lock className="h-5 w-5 text-primary" />
+          <Lock aria-hidden="true" className="h-5 w-5 text-primary" />
         </div>
-        <CardTitle className="text-xl">IA no seu dispositivo</CardTitle>
+        <CardTitle>IA no seu dispositivo</CardTitle>
         <CardDescription>
           Os índices desta seção são calculados localmente, no seu navegador.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-4">
-        <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card/70 p-4">
+        <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-background p-4">
           <div className="space-y-0.5">
             <p className="text-sm font-semibold text-foreground">
               Modo Privacidade
@@ -501,13 +521,19 @@ function PrivacyCard({
             aria-label="Alternar modo privacidade"
           />
         </div>
-        <ul className="mt-auto space-y-2 text-xs leading-5 text-muted-foreground">
+        <ul className="mt-auto space-y-2 text-[13px] leading-5 text-muted-foreground">
           <li className="flex items-start gap-2">
-            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-success" />
+            <ShieldCheck
+              aria-hidden="true"
+              className="mt-0.5 h-4 w-4 shrink-0 text-success"
+            />
             Idade biológica, detecção precoce, ciclo e ações: 100% on-device.
           </li>
           <li className="flex items-start gap-2">
-            <Lock className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <Lock
+              aria-hidden="true"
+              className="mt-0.5 h-4 w-4 shrink-0 text-primary"
+            />
             Com o modo ativo, nada do chat é enviado a modelos externos.
           </li>
         </ul>
@@ -588,18 +614,18 @@ export function LyraIntelligence2026({
   return (
     <section className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h2 className="font-display text-2xl font-bold tracking-tight text-gradient-hero">
+        <div className="flex min-w-0 flex-col gap-1">
+          <h2 className="font-display text-2xl font-semibold tracking-[-0.02em] text-foreground">
             Inteligência Lyra 2026
           </h2>
-          <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+          <p className="max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
             Assistente proativo, idade biológica, detecção precoce e saúde da
             mulher — calculados no seu dispositivo a partir de dados reais.
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-full border border-border/70 bg-card/80 px-4 py-2">
-          <Settings2 className="h-4 w-4 text-primary" />
-          <span className="text-xs font-medium text-muted-foreground">
+        <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2">
+          <Settings2 aria-hidden="true" className="h-4 w-4 text-primary" />
+          <span className="text-[13px] font-medium text-muted-foreground">
             Modo Privacidade
           </span>
           <Switch

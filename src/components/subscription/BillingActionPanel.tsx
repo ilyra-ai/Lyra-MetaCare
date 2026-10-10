@@ -84,11 +84,11 @@ export function BillingActionPanel({
 
   if (loading) {
     return compact ? (
-      <Skeleton className="h-10 w-full rounded-full" />
+      <Skeleton className="h-10 w-full rounded-[10px]" />
     ) : (
       <div className="space-y-3">
-        <Skeleton className="h-10 w-full rounded-full" />
-        <Skeleton className="h-10 w-full rounded-full" />
+        <Skeleton className="h-10 w-full rounded-[10px]" />
+        <Skeleton className="h-10 w-full rounded-[10px]" />
       </div>
     );
   }
@@ -99,10 +99,10 @@ export function BillingActionPanel({
 
   if (!data.environment.configured) {
     return (
-      <Alert>
-        <Settings2 className="h-4 w-4" />
+      <Alert className="rounded-md border-border bg-card shadow-none">
+        <Settings2 className="h-4 w-4" aria-hidden="true" />
         <AlertTitle>Billing externo ainda não configurado</AlertTitle>
-        <AlertDescription>
+        <AlertDescription className="break-words">
           O app já possui a camada Stripe pronta, mas este ambiente ainda não
           recebeu: {data.environment.missingKeys.join(', ')}.
         </AlertDescription>
@@ -136,8 +136,8 @@ export function BillingActionPanel({
 
   if (!portalEligible && commercialPlans.length === 0) {
     return (
-      <Alert>
-        <Settings2 className="h-4 w-4" />
+      <Alert className="rounded-md border-border bg-card shadow-none">
+        <Settings2 className="h-4 w-4" aria-hidden="true" />
         <AlertTitle>Nenhuma ação comercial disponível agora</AlertTitle>
         <AlertDescription>
           {currentPlanKey === 'care'
@@ -153,14 +153,14 @@ export function BillingActionPanel({
       {portalEligible ? (
         <Button
           variant="outline"
-          className="w-full rounded-full"
+          className="w-full"
           onClick={() => handleRedirectAction('/api/billing/portal')}
           disabled={actionKey === '/api/billing/portal{}'}
         >
           {actionKey === '/api/billing/portal{}' ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
           ) : (
-            <CreditCard className="mr-2 h-4 w-4" />
+            <CreditCard className="mr-2 h-4 w-4" aria-hidden="true" />
           )}
           Gerenciar cobrança no portal
         </Button>
@@ -173,7 +173,9 @@ export function BillingActionPanel({
           <div
             key={plan.key}
             className={
-              compact ? 'space-y-2' : 'space-y-3 rounded-2xl border p-4'
+              compact
+                ? 'space-y-2'
+                : 'space-y-3 rounded-md border border-border bg-card p-4'
             }
           >
             {!compact ? (
@@ -192,7 +194,7 @@ export function BillingActionPanel({
             <div className="grid gap-2 sm:grid-cols-2">
               {plan.availableIntervals.includes('monthly') ? (
                 <Button
-                  className="rounded-full"
+                  className="h-auto min-h-10 whitespace-normal"
                   onClick={() =>
                     handleRedirectAction('/api/billing/checkout', {
                       planKey: plan.key,
@@ -210,9 +212,12 @@ export function BillingActionPanel({
                   '/api/billing/checkout{"planKey":"' +
                     plan.key +
                     '","billingInterval":"monthly"}' ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2
+                      className="mr-2 h-4 w-4 animate-spin"
+                      aria-hidden="true"
+                    />
                   ) : (
-                    <ArrowUpRight className="mr-2 h-4 w-4" />
+                    <ArrowUpRight className="mr-2 h-4 w-4" aria-hidden="true" />
                   )}
                   {isCurrentPlanCheckout
                     ? `Ativar cobrança ${plan.name} mensal`
@@ -222,7 +227,7 @@ export function BillingActionPanel({
               {plan.availableIntervals.includes('annual') ? (
                 <Button
                   variant="outline"
-                  className="rounded-full"
+                  className="h-auto min-h-10 whitespace-normal"
                   onClick={() =>
                     handleRedirectAction('/api/billing/checkout', {
                       planKey: plan.key,
@@ -240,9 +245,12 @@ export function BillingActionPanel({
                   '/api/billing/checkout{"planKey":"' +
                     plan.key +
                     '","billingInterval":"annual"}' ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2
+                      className="mr-2 h-4 w-4 animate-spin"
+                      aria-hidden="true"
+                    />
                   ) : (
-                    <ArrowUpRight className="mr-2 h-4 w-4" />
+                    <ArrowUpRight className="mr-2 h-4 w-4" aria-hidden="true" />
                   )}
                   {isCurrentPlanCheckout
                     ? `Ativar cobrança ${plan.name} anual`

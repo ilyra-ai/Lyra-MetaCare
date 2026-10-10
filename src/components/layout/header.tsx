@@ -4,7 +4,6 @@ import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Bell,
-  ChevronRight,
   LogOut,
   MessageCircleHeart,
   Search,
@@ -37,7 +36,6 @@ import {
 import { PlanBadge } from '@/components/subscription/PlanBadge';
 import { MobileSidebar } from './MobileSidebar';
 import {
-  buildBreadcrumb,
   getPageMeta,
   getVisibleNavigation,
   groupNavigation,
@@ -60,7 +58,6 @@ export function Header() {
   const [commandOpen, setCommandOpen] = React.useState(false);
 
   const pageMeta = getPageMeta(pathname, appConfig);
-  const breadcrumbs = buildBreadcrumb(pathname, appConfig);
   const navigation = groupNavigation(getVisibleNavigation(isAdmin, appConfig));
 
   React.useEffect(() => {
@@ -120,100 +117,96 @@ export function Header() {
 
   return (
     <>
-      <header className="glass sticky top-0 z-40 border-b border-border/80">
-        <div className="section-shell flex min-h-[88px] items-center gap-4 py-4">
-          <div className="flex min-w-0 flex-1 items-center gap-3">
-            <MobileSidebar />
+      <header className="sticky top-0 z-40 border-b border-border bg-card">
+        <div className="flex min-h-16 items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+          <MobileSidebar />
 
-            <div className="min-w-0">
-              <div className="mb-1 hidden items-center gap-2 md:flex">
-                {breadcrumbs.map((crumb, index) => (
-                  <React.Fragment key={`${crumb}-${index}`}>
-                    {index > 0 ? (
-                      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
-                    ) : null}
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-                      {crumb}
-                    </span>
-                  </React.Fragment>
-                ))}
-              </div>
-              <h1
-                className="truncate font-display font-bold tracking-tight text-foreground"
-                style={{
-                  fontSize: scaleRem(1.5, appConfig.typography.pageTitle),
-                }}
-              >
-                {pageMeta.title}
-              </h1>
-              <p
-                className="hidden truncate text-muted-foreground md:block"
-                style={{
-                  fontSize: scaleRem(0.875, appConfig.typography.pageBody),
-                }}
-              >
-                {pageMeta.description}
-              </p>
-            </div>
-          </div>
-
-          <div className="hidden flex-1 items-center justify-center lg:flex">
-            <button
-              type="button"
-              onClick={() => setCommandOpen(true)}
-              className="command-surface w-full max-w-xl justify-between hover:border-primary/20 hover:bg-white"
-              aria-keyshortcuts="Control+K"
+          <div className="min-w-0 flex-1">
+            <h1
+              className="truncate font-display font-semibold tracking-tight text-foreground"
+              style={{
+                fontSize: scaleRem(1.125, appConfig.typography.pageTitle),
+              }}
             >
-              <span className="flex items-center gap-3">
-                <Search
-                  className="h-[18px] w-[18px] text-muted-foreground"
-                  strokeWidth={1.8}
-                  style={{
-                    height: scalePx(18, appConfig.sizing.iconScale),
-                    width: scalePx(18, appConfig.sizing.iconScale),
-                  }}
-                />
-                <span>{appConfig.header.commandPlaceholder}</span>
-              </span>
-              <span className="rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm">
-                {appConfig.header.commandShortcutLabel}
-              </span>
-            </button>
+              {pageMeta.title}
+            </h1>
+            <p
+              className="hidden truncate text-muted-foreground xl:block"
+              style={{
+                fontSize: scaleRem(0.8125, appConfig.typography.pageBody),
+              }}
+            >
+              {pageMeta.description}
+            </p>
           </div>
 
-          <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setCommandOpen(true)}
+            className="command-surface hidden w-[280px] shrink-0 transition-colors hover:border-input md:flex"
+            aria-keyshortcuts="Control+K"
+          >
+            <Search
+              aria-hidden="true"
+              className="shrink-0"
+              strokeWidth={1.9}
+              style={{
+                height: scalePx(16, appConfig.sizing.iconScale),
+                width: scalePx(16, appConfig.sizing.iconScale),
+              }}
+            />
+            <span className="flex-1 truncate text-left">
+              {appConfig.header.commandPlaceholder}
+            </span>
+            <kbd className="rounded-[6px] border border-border bg-card px-1.5 py-0.5 font-sans text-xs text-muted-foreground">
+              {appConfig.header.commandShortcutLabel}
+            </kbd>
+          </button>
+
+          <div className="flex shrink-0 items-center gap-2">
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="relative h-11 w-11 rounded-full"
+              className="md:hidden"
+              onClick={() => setCommandOpen(true)}
+              aria-label={appConfig.header.commandPlaceholder}
+            >
+              <Search className="h-[18px] w-[18px]" strokeWidth={1.9} />
+            </Button>
+
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon"
               aria-label="Notificações"
             >
               <Bell
-                className="h-[18px] w-[18px] text-foreground"
-                strokeWidth={1.8}
+                className="text-foreground"
+                strokeWidth={1.9}
                 style={{
                   height: scalePx(18, appConfig.sizing.iconScale),
                   width: scalePx(18, appConfig.sizing.iconScale),
                 }}
               />
-              <span className="absolute right-2.5 top-2.5 h-2.5 w-2.5 rounded-full bg-accent shadow-coral animate-pulse-slow" />
             </Button>
 
             <Button
               type="button"
-              className="hidden rounded-full bg-gradient-coral px-5 text-white shadow-coral hover:brightness-105 md:inline-flex"
+              variant="secondary"
+              className="hidden md:inline-flex"
               onClick={() => router.push('/chat')}
               style={{
                 fontSize: scaleRem(0.875, appConfig.typography.buttonLabel),
               }}
             >
               <MessageCircleHeart
-                className="mr-2 h-[18px] w-[18px]"
-                strokeWidth={1.8}
+                aria-hidden="true"
+                className="text-cosmic"
+                strokeWidth={1.9}
                 style={{
-                  height: scalePx(18, appConfig.sizing.iconScale),
-                  width: scalePx(18, appConfig.sizing.iconScale),
+                  height: scalePx(16, appConfig.sizing.iconScale),
+                  width: scalePx(16, appConfig.sizing.iconScale),
                 }}
               />
               {appConfig.header.assistantLabel}
@@ -224,46 +217,30 @@ export function Header() {
                 <Button
                   type="button"
                   variant="ghost"
-                  className="h-12 rounded-full px-2 md:px-3"
+                  className="h-10 gap-2 rounded-full px-1"
                 >
-                  <Avatar className="h-10 w-10 border border-white shadow-sm">
+                  <Avatar className="h-8 w-8">
                     <AvatarImage
                       src={profile?.avatar_url || undefined}
                       alt={`Avatar de ${firstName}`}
                     />
-                    <AvatarFallback
-                      className="bg-gradient-teal text-white"
-                      aria-hidden="true"
-                    >
+                    <AvatarFallback aria-hidden="true">
                       {initial}
                     </AvatarFallback>
                   </Avatar>
                   <span className="sr-only">Abrir menu do usuário </span>
-                  <div className="hidden min-w-0 text-left md:block">
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {firstName}
-                    </p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {userEmail}
-                    </p>
-                  </div>
                 </Button>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent
-                align="end"
-                className="w-[320px] rounded-[24px] border-white/85 bg-card/95 p-2 shadow-xl backdrop-blur-xl"
-              >
+              <DropdownMenuContent align="end" className="w-[300px]">
                 <DropdownMenuLabel className="px-3 py-3">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12 border border-white shadow-sm">
+                    <Avatar className="h-11 w-11">
                       <AvatarImage
                         src={profile?.avatar_url || undefined}
                         alt={`Avatar de ${firstName}`}
                       />
-                      <AvatarFallback className="bg-gradient-cosmic text-white">
-                        {initial}
-                      </AvatarFallback>
+                      <AvatarFallback>{initial}</AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-foreground">
@@ -281,26 +258,20 @@ export function Header() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="rounded-2xl px-3 py-3"
-                  onClick={() => router.push('/profile')}
-                >
-                  <UserRound className="mr-2 h-[18px] w-[18px]" />
+                <DropdownMenuItem onClick={() => router.push('/profile')}>
+                  <UserRound />
                   {appConfig.header.profileMenuLabel}
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="rounded-2xl px-3 py-3"
-                  onClick={() => router.push('/profile')}
-                >
-                  <Settings2 className="mr-2 h-[18px] w-[18px]" />
+                <DropdownMenuItem onClick={() => router.push('/profile')}>
+                  <Settings2 />
                   Preferências
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  className="rounded-2xl px-3 py-3 text-destructive focus:text-destructive"
+                  className="text-destructive focus:text-destructive"
                   onClick={handleSignOut}
                 >
-                  <LogOut className="mr-2 h-[18px] w-[18px]" />
+                  <LogOut />
                   Sair
                 </DropdownMenuItem>
               </DropdownMenuContent>

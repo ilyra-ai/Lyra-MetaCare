@@ -1,15 +1,11 @@
 'use client';
 
-import { MadeWithIlyra } from '@/components/made-with-ilyra';
-import { Sidebar } from '@/components/layout/sidebar';
-import { Header } from '@/components/layout/header';
+import { AppShell } from '@/components/layout/AppShell';
+import { AccessDenied } from '@/components/layout/AccessDenied';
 import { useAuth } from '@/context/AuthContext';
 import { SplashScreen } from '@/components/SplashScreen';
 import { useIsAdmin } from '@/hooks/use-is-admin';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle } from 'lucide-react';
 import { UserManagementContent } from '@/components/admin/UserManagementContent';
-import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 
 export default function AdminUsersPage() {
   const { session } = useAuth();
@@ -20,37 +16,12 @@ export default function AdminUsersPage() {
   }
 
   if (!session || !isAdmin) {
-    return (
-      <div className="page-shell flex min-h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-md text-center border-destructive/40">
-          <CardHeader>
-            <AlertTriangle className="h-10 w-10 text-destructive mx-auto mb-2" />
-            <CardTitle>Acesso Negado</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Você não tem permissão para acessar esta página.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <AccessDenied />;
   }
 
   return (
-    <div className="page-shell flex min-h-screen">
-      <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Header />
-        <PuckClientRenderer
-          documentKey="admin-users"
-          className="w-full shrink-0"
-        />
-        <main id="conteudo-principal" className="flex-1 p-4 sm:p-6 md:p-8">
-          <UserManagementContent />
-        </main>
-        <MadeWithIlyra />
-      </div>
-    </div>
+    <AppShell puckDocumentKey="admin-users">
+      <UserManagementContent />
+    </AppShell>
   );
 }

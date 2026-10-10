@@ -28,7 +28,7 @@ export function AccountSubscriptionCard() {
   const { data, loading } = useAccountSubscription();
 
   if (loading) {
-    return <Skeleton className="h-80 w-full rounded-3xl" />;
+    return <Skeleton className="h-80 w-full rounded-xl" />;
   }
 
   if (!data) {
@@ -52,33 +52,36 @@ export function AccountSubscriptionCard() {
   );
 
   return (
-    <Card className="overflow-hidden border-border/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(249,248,255,0.88))] shadow-[0_24px_60px_-34px_rgba(22,21,48,0.24)]">
+    <Card className="min-w-0 overflow-hidden">
+      {/*
+        Faixa com a cor de destaque configurada no plano (dado do catálogo),
+        agora chapada: o visual "Lyra Clean" não usa gradientes decorativos.
+      */}
       <div
-        className="h-2 w-full"
-        style={{
-          background: `linear-gradient(90deg, ${data.plan.accentFrom}, ${data.plan.accentTo})`,
-        }}
+        className="h-1 w-full"
+        style={{ backgroundColor: data.plan.accentFrom }}
+        aria-hidden="true"
       />
-      <CardHeader className="space-y-4 bg-[radial-gradient(circle_at_top_left,rgba(49,155,142,0.14),transparent_35%),radial-gradient(circle_at_top_right,rgba(139,92,246,0.12),transparent_35%)]">
-        <div className="flex items-center justify-between gap-4">
-          <div className="space-y-2">
+      <CardHeader className="space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 space-y-2">
             <PlanBadge planKey={data.plan.key} />
-            <CardTitle className="text-2xl font-semibold tracking-tight">
+            <CardTitle className="text-xl font-semibold tracking-tight">
               {data.plan.name}
             </CardTitle>
-            <CardDescription className="text-sm leading-7">
+            <CardDescription className="text-sm leading-6">
               {data.plan.tagline}
             </CardDescription>
           </div>
-          <div className="rounded-2xl bg-[linear-gradient(135deg,rgba(240,101,67,0.12),rgba(139,92,246,0.16),rgba(255,255,255,0.94))] p-3 text-foreground shadow-sm">
-            <Crown className="h-5 w-5" />
+          <div className="shrink-0 rounded-md bg-sidebar-accent p-2.5 text-primary">
+            <Crown className="h-5 w-5" aria-hidden="true" />
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-border/70 bg-white/84 p-4 backdrop-blur-sm">
-            <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-              <Wallet className="h-3.5 w-3.5" />
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+          <div className="rounded-md border border-border bg-background p-4">
+            <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+              <Wallet className="h-3.5 w-3.5" aria-hidden="true" />
               Ciclo atual
             </div>
             <p className="text-sm font-semibold">
@@ -88,9 +91,9 @@ export function AccountSubscriptionCard() {
               Vigente até {formatDate(data.currentPeriodEnd)}
             </p>
           </div>
-          <div className="rounded-2xl border border-border/70 bg-white/84 p-4 backdrop-blur-sm">
-            <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-              <CalendarClock className="h-3.5 w-3.5" />
+          <div className="rounded-md border border-border bg-background p-4">
+            <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+              <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" />
               Status
             </div>
             <p className="text-sm font-semibold capitalize">{data.status}</p>
@@ -101,10 +104,10 @@ export function AccountSubscriptionCard() {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-5 p-6">
+      <CardContent className="space-y-5">
         <div className="space-y-2">
           <p className="text-sm font-semibold">Descrição do plano</p>
-          <p className="text-sm leading-7 text-muted-foreground">
+          <p className="text-sm leading-6 text-foreground/80">
             {data.plan.description}
           </p>
         </div>
@@ -112,7 +115,7 @@ export function AccountSubscriptionCard() {
         {quotaFeatures.length > 0 ? (
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-primary" />
+              <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
               <p className="text-sm font-semibold">Consumo monitorado</p>
             </div>
             {quotaFeatures.map((feature) => {
@@ -120,16 +123,16 @@ export function AccountSubscriptionCard() {
               return (
                 <div
                   key={feature.key}
-                  className="rounded-2xl border border-border/70 bg-white/84 p-4 backdrop-blur-sm"
+                  className="rounded-md border border-border bg-background p-4"
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
                       <p className="text-sm font-medium">{feature.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs leading-5 text-muted-foreground">
                         {feature.description}
                       </p>
                     </div>
-                    <div className="text-right text-xs text-muted-foreground">
+                    <div className="shrink-0 text-right font-display text-xs font-medium tabular-nums text-foreground">
                       {feature.usedValue ?? 0}/{feature.quotaValue}{' '}
                       {feature.unit || ''}
                     </div>
@@ -138,7 +141,7 @@ export function AccountSubscriptionCard() {
                     <Progress
                       aria-label={`Uso de ${feature.name}`}
                       value={percentage}
-                      className="mt-3 h-2.5"
+                      className="mt-3 h-2"
                     />
                   ) : null}
                 </div>
@@ -146,14 +149,14 @@ export function AccountSubscriptionCard() {
             })}
           </div>
         ) : (
-          <div className="rounded-2xl border border-border/70 bg-white/84 p-4 text-sm text-muted-foreground backdrop-blur-sm">
+          <div className="rounded-md border border-border bg-background p-4 text-sm text-muted-foreground">
             Seu plano atual não possui quotas numéricas expostas nesta tela.
           </div>
         )}
 
-        <div className="space-y-3 rounded-2xl border border-border/70 bg-white/84 p-4 backdrop-blur-sm">
+        <div className="space-y-3 rounded-md border border-border bg-background p-4">
           <p className="text-sm font-semibold">Ações comerciais</p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm leading-6 text-muted-foreground">
             Checkout e portal de cobrança ficam disponíveis aqui quando o
             ambiente Stripe estiver configurado com chaves e webhook reais.
           </p>

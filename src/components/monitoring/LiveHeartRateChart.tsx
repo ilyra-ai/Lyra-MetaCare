@@ -21,7 +21,7 @@ interface WearableRealtimePayload {
 const chartConfig = {
   heartRate: {
     label: 'BPM',
-    color: 'hsl(var(--destructive))',
+    color: 'hsl(var(--primary))',
   },
 };
 
@@ -52,22 +52,34 @@ export function LiveHeartRateChart({ initialData }: { initialData: number }) {
   }, [initialData]);
 
   return (
-    <Card className="flex h-full flex-col border-border/70 bg-card/90 backdrop-blur-xl">
-      <CardHeader className="gap-3">
-        <div className="flex items-center justify-between gap-3">
-          <CardTitle className="text-xl">Frequência cardíaca ao vivo</CardTitle>
-          <Badge variant="info">linha contínua</Badge>
+    <Card className="flex h-full min-w-0 flex-col">
+      <CardHeader className="gap-3 p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <CardTitle>Frequência cardíaca ao vivo</CardTitle>
+          <Badge variant="secondary">linha contínua</Badge>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 rounded-b-[24px] bg-[linear-gradient(180deg,rgba(255,255,255,0.84),rgba(245,247,255,0.66))] p-5">
-        <ChartContainer config={chartConfig} className="h-full w-full">
+      <CardContent className="min-h-64 flex-1 px-5 pb-5">
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-full min-h-60 w-full border-0 p-0"
+        >
           <LineChart
             data={data}
             margin={{ top: 5, right: 20, left: -10, bottom: 0 }}
           >
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+            <CartesianGrid
+              vertical={false}
+              strokeDasharray="3 3"
+              stroke="hsl(var(--border))"
+            />
             <XAxis dataKey="time" tick={false} axisLine={false} />
-            <YAxis domain={[40, 160]} />
+            <YAxis
+              domain={[40, 160]}
+              axisLine={false}
+              tickLine={false}
+              width={36}
+            />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
@@ -76,7 +88,7 @@ export function LiveHeartRateChart({ initialData }: { initialData: number }) {
               dataKey="heartRate"
               type="monotone"
               stroke="var(--color-heartRate)"
-              strokeWidth={3}
+              strokeWidth={2}
               dot={false}
               isAnimationActive={false}
             />

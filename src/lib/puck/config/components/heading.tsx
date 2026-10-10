@@ -23,11 +23,11 @@ function LyraHeadingBlock({
     >
       <Tag
         className={juntarClasses(
-          'max-w-4xl text-balance font-display font-bold tracking-tight',
-          level === 'h1' && 'text-4xl leading-[1.05] md:text-5xl',
-          level === 'h2' && 'text-3xl leading-[1.08] md:text-4xl',
-          level === 'h3' && 'text-2xl leading-[1.12] md:text-3xl',
-          level === 'h4' && 'text-xl leading-[1.2] md:text-2xl',
+          'max-w-4xl text-balance break-words font-display font-semibold tracking-tight',
+          level === 'h1' && 'text-3xl leading-tight md:text-4xl',
+          level === 'h2' && 'text-2xl leading-tight md:text-3xl',
+          level === 'h3' && 'text-xl leading-snug md:text-2xl',
+          level === 'h4' && 'text-lg leading-snug md:text-xl',
           obterClasseTomHeading(tone)
         )}
       >

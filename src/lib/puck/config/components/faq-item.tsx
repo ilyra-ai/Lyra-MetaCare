@@ -23,28 +23,25 @@ function LyraFaqItemBlock({
   return (
     <div className="w-full">
       <Accordion type="single" collapsible defaultValue="faq-item">
-        <AccordionItem
-          value="faq-item"
-          className="border-border/70 bg-white/90 px-5"
-        >
+        <AccordionItem value="faq-item">
           <div ref={triggerRef}>
             <AccordionTrigger className="gap-4 py-5">
-              <div className="flex flex-col items-start gap-3 text-left">
+              <div className="flex min-w-0 flex-col items-start gap-2 text-left">
                 {eyebrow ? (
-                  <Badge variant="cosmic" className="w-fit">
+                  <Badge variant="secondary" className="w-fit">
                     {eyebrow}
                   </Badge>
                 ) : null}
-                <span className="font-display text-lg font-semibold text-foreground">
+                <span className="break-words font-display text-base font-semibold tracking-tight text-foreground">
                   {question}
                 </span>
               </div>
             </AccordionTrigger>
           </div>
-          <AccordionContent className="leading-7 text-muted-foreground">
+          <AccordionContent className="leading-6 text-muted-foreground">
             <LyraRichTextRenderer
               value={answer}
-              className="text-sm leading-7 text-muted-foreground"
+              className="text-sm leading-6 text-muted-foreground"
             />
           </AccordionContent>
         </AccordionItem>

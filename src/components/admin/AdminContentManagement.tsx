@@ -206,22 +206,25 @@ export function AdminContentManagement() {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="experience">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="flex h-auto w-full flex-wrap justify-start sm:grid sm:grid-cols-3">
               <TabsTrigger value="experience">
-                <Sparkles className="mr-2 h-4 w-4" /> Experiência Web
+                <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />{' '}
+                Experiência Web
               </TabsTrigger>
               <TabsTrigger value="habits">
-                <ListChecks className="mr-2 h-4 w-4" /> Hábitos Sugeridos
+                <ListChecks className="mr-2 h-4 w-4" aria-hidden="true" />{' '}
+                Hábitos Sugeridos
               </TabsTrigger>
               <TabsTrigger value="tips">
-                <Lightbulb className="mr-2 h-4 w-4" /> Insights de IA
+                <Lightbulb className="mr-2 h-4 w-4" aria-hidden="true" />{' '}
+                Insights de IA
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="experience" className="mt-4">
+            <TabsContent value="experience" className="mt-6">
               <SiteExperienceBuilder />
             </TabsContent>
-            <TabsContent value="habits" className="mt-4">
-              <div className="flex justify-end mb-4">
+            <TabsContent value="habits" className="mt-6">
+              <div className="mb-4 flex justify-end">
                 <Button
                   size="sm"
                   onClick={() => {
@@ -251,12 +254,7 @@ export function AdminContentManagement() {
                         <TableCell>{habit.frequency}</TableCell>
                         <TableCell>
                           <Badge
-                            variant={habit.is_active ? 'default' : 'secondary'}
-                            className={
-                              habit.is_active
-                                ? 'border-success/20 bg-success/10 text-success'
-                                : 'border-border bg-muted text-muted-foreground'
-                            }
+                            variant={habit.is_active ? 'success' : 'secondary'}
                           >
                             {habit.is_active ? 'Ativo' : 'Inativo'}
                           </Badge>
@@ -303,8 +301,8 @@ export function AdminContentManagement() {
                 </Table>
               )}
             </TabsContent>
-            <TabsContent value="tips" className="mt-4">
-              <div className="flex justify-end mb-4">
+            <TabsContent value="tips" className="mt-6">
+              <div className="mb-4 flex justify-end">
                 <Button
                   size="sm"
                   onClick={() => {
@@ -334,12 +332,7 @@ export function AdminContentManagement() {
                         <TableCell>{tip.category || 'Geral'}</TableCell>
                         <TableCell>
                           <Badge
-                            variant={tip.is_active ? 'default' : 'secondary'}
-                            className={
-                              tip.is_active
-                                ? 'border-success/20 bg-success/10 text-success'
-                                : 'border-border bg-muted text-muted-foreground'
-                            }
+                            variant={tip.is_active ? 'success' : 'secondary'}
                           >
                             {tip.is_active ? 'Ativo' : 'Inativo'}
                           </Badge>

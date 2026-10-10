@@ -22,19 +22,19 @@ function LyraStackContainerBlock({
   return (
     <div
       className={juntarClasses(
-        'w-full rounded-[24px] p-5 sm:p-6',
+        'w-full min-w-0 rounded-xl p-5 sm:p-6',
         obterClasseSurfaceStack(surface)
       )}
     >
       {title || description ? (
-        <div className="mb-5 flex flex-col gap-2">
+        <div className="mb-5 flex flex-col gap-1.5">
           {title ? (
-            <h3 className="font-display text-xl font-semibold tracking-tight text-foreground">
+            <h3 className="break-words font-display text-lg font-semibold tracking-tight text-foreground">
               {title}
             </h3>
           ) : null}
           {description ? (
-            <p className="text-sm leading-7 text-muted-foreground">
+            <p className="text-sm leading-6 text-muted-foreground">
               {description}
             </p>
           ) : null}

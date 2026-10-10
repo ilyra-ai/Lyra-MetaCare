@@ -324,7 +324,7 @@ const defaultAppPageConfig: AppPageConfig = {
     navLabel: 1,
   },
   sizing: {
-    sidebarWidth: 288,
+    sidebarWidth: 248,
     cardScale: 1,
     iconScale: 1,
     tableScale: 1,
@@ -334,13 +334,14 @@ const defaultAppPageConfig: AppPageConfig = {
     brandTitle: 'lyra',
     brandEyebrow: 'metacare 2026',
     statusEyebrow: 'Estado do dia',
-    statusTitle: 'Janela de foco, leveza e recuperação alta',
+    // Texto neutro: o padrão não pode afirmar um estado de saúde sem dados.
+    statusTitle: 'Acompanhe seus sinais e os próximos passos do dia.',
     preferencesTitle: 'Preferências e acesso',
     preferencesDescription:
       'Ajuste perfil, hábitos e configurações do ambiente.',
     sectionLabels: {
       principal: 'Principal',
-      guidedFlow: 'Fluxo Guiado',
+      guidedFlow: 'Fluxo guiado',
       personal: 'Pessoal',
       admin: 'Administração',
     },

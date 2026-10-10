@@ -39,10 +39,8 @@ export function OnboardingNavigationDots({
     <div
       key={index}
       className={cn(
-        'h-2 rounded-full transition-all duration-300',
-        index === current - 1
-          ? 'bg-primary w-6'
-          : 'bg-muted w-2 hover:bg-muted-foreground/30'
+        'h-2 rounded-full transition-[width,background-color] duration-200',
+        index === current - 1 ? 'w-6 bg-primary' : 'w-2 bg-control'
       )}
     />
   ));

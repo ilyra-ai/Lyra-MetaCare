@@ -35,11 +35,17 @@ const iconRegistry: Record<LyraDecorativeIcon, LucideIcon> = {
   activity: Activity,
 };
 
+/*
+ * Os valores de tom (`cosmic`, `teal`, `coral`) fazem parte dos documentos
+ * publicados e não podem mudar. No visual Lyra Clean o `accent` passou a ser
+ * violeta (reservado ao conteúdo astral/IA) e não existe mais token coral, por
+ * isso o tom "coral" é renderizado com o dourado quente acessível (`golden`).
+ */
 const headingToneClasses: Record<LyraHeadingTone, string> = {
   default: 'text-foreground',
-  cosmic: 'text-cosmic',
+  cosmic: 'text-cosmic-strong',
   teal: 'text-primary',
-  coral: 'text-accent',
+  coral: 'text-golden',
 };
 
 const textAlignClasses: Record<LyraTextAlign, string> = {
@@ -48,19 +54,22 @@ const textAlignClasses: Record<LyraTextAlign, string> = {
   right: 'items-end text-right',
 };
 
+/*
+ * As chaves abaixo são valores persistidos nos documentos do Puck e foram
+ * mantidas; apenas a renderização mudou para superfícies chapadas com borda.
+ * A borda (`border`) vem do bloco que consome estas classes.
+ */
 const sectionSurfaceClasses: Record<LyraSurfaceVariant, string> = {
-  glass: 'surface-panel',
-  surface: 'surface-soft',
-  cosmic:
-    'surface-soft border-cosmic/20 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(237,233,254,0.72))]',
-  aurora:
-    'surface-panel aurora-border bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(237,233,254,0.62),rgba(224,231,255,0.5))]',
+  glass: 'border-border bg-card',
+  surface: 'border-border bg-card',
+  cosmic: 'border-cosmic/20 bg-cosmic-light',
+  aurora: 'border-cosmic/30 bg-card',
 };
 
 const stackSurfaceClasses: Record<LyraStackSurface, string> = {
   transparent: 'border-none bg-transparent shadow-none',
-  soft: 'surface-soft',
-  glass: 'surface-panel',
+  soft: 'border border-border bg-background',
+  glass: 'border border-border bg-card',
 };
 
 const stackGapClasses: Record<LyraStackGap, string> = {
@@ -104,12 +113,10 @@ const columnAlignClasses: Record<LyraColumnsVerticalAlign, string> = {
 };
 
 const tileToneClasses: Record<LyraGridTileTone, string> = {
-  default: 'surface-soft border-border/70 text-foreground',
-  cosmic:
-    'border-cosmic/25 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(237,233,254,0.78))] text-foreground shadow-[0_20px_44px_-26px_rgba(139,92,246,0.42)]',
-  teal: 'border-primary/20 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(236,253,250,0.78))] text-foreground shadow-[0_20px_44px_-26px_rgba(49,155,142,0.38)]',
-  coral:
-    'border-accent/20 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(255,237,231,0.76))] text-foreground shadow-[0_20px_44px_-26px_rgba(240,101,67,0.34)]',
+  default: 'border-border bg-card text-foreground',
+  cosmic: 'border-cosmic/20 bg-cosmic-light text-foreground',
+  teal: 'border-primary/20 bg-sidebar-accent text-foreground',
+  coral: 'border-golden/20 bg-golden-light text-foreground',
 };
 
 /**

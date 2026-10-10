@@ -12,23 +12,31 @@ type ProgressProps = React.ComponentPropsWithoutRef<
    * anunciada só como "barra de progresso" (WCAG 4.1.2).
    */
   'aria-label': string;
+  /**
+   * `astral` usa o violeta reservado a conteúdo astral e de IA; o padrão é
+   * o teal das métricas de saúde.
+   */
+  tone?: 'default' | 'astral';
 };
 
 const Progress = React.forwardRef<
   React.ComponentRef<typeof ProgressPrimitive.Root>,
   ProgressProps
->(({ className, value, ...props }, ref) => (
+>(({ className, value, tone = 'default', ...props }, ref) => (
   <ProgressPrimitive.Root
     ref={ref}
     className={cn(
-      'relative h-3 w-full overflow-hidden rounded-full bg-muted',
+      'relative h-2 w-full overflow-hidden rounded-full bg-muted',
       className
     )}
     value={value}
     {...props}
   >
     <ProgressPrimitive.Indicator
-      className="h-full w-full rounded-full bg-gradient-aurora bg-size-[160%_160%] animate-aurora transition-transform duration-300"
+      className={cn(
+        'h-full w-full rounded-full transition-transform duration-300',
+        tone === 'astral' ? 'bg-cosmic' : 'bg-primary'
+      )}
       style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
     />
   </ProgressPrimitive.Root>

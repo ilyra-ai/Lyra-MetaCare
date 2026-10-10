@@ -267,8 +267,14 @@ export function AdminPlanMatrixContent() {
   if (loading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="flex items-center gap-3 rounded-full bg-card/75 px-6 py-3 shadow-xl ring-1 ring-border/70 backdrop-blur-sm">
-          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+        <div
+          className="flex items-center gap-3 rounded-full border border-border bg-card px-6 py-3"
+          role="status"
+        >
+          <Loader2
+            className="h-5 w-5 animate-spin text-primary"
+            aria-hidden="true"
+          />
           <span className="text-sm font-medium text-muted-foreground">
             Carregando matriz real de capacidades...
           </span>
@@ -278,34 +284,26 @@ export function AdminPlanMatrixContent() {
   }
 
   return (
-    <div className="space-y-8">
-      <Card className="overflow-hidden border-0 shadow-2xl ring-1 ring-border/70">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.14),transparent_35%),radial-gradient(circle_at_top_right,hsl(var(--cosmic)/0.14),transparent_32%),radial-gradient(circle_at_bottom_right,hsl(var(--accent)/0.16),transparent_32%)]" />
-        <CardHeader className="relative">
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="space-y-3">
-              <Badge
-                variant="outline"
-                className="border-border/80 bg-card/75 text-foreground backdrop-blur-sm"
-              >
-                <ShieldCheck className="mr-1.5 h-3.5 w-3.5" />
+            <div className="min-w-0 space-y-3">
+              <Badge variant="outline">
+                <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
                 Administração premium de planos
               </Badge>
-              <CardTitle className="text-3xl font-semibold tracking-tight">
+              <CardTitle className="text-xl">
                 Matriz real de capacidades
               </CardTitle>
-              <CardDescription className="max-w-3xl text-sm leading-7">
+              <CardDescription className="max-w-3xl">
                 Esta central controla o catálogo comercial, os entitlements e os
                 limites reais do produto. Tudo o que está aqui é aplicado no
                 MySQL, refletido na API e respeitado na interface do app.
               </CardDescription>
             </div>
-            <Button
-              variant="outline"
-              onClick={handleReload}
-              className="rounded-full bg-card/85 backdrop-blur-sm"
-            >
-              <RefreshCw className="mr-2 h-4 w-4" />
+            <Button variant="outline" onClick={handleReload}>
+              <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />
               Recarregar matriz
             </Button>
           </div>
@@ -314,60 +312,61 @@ export function AdminPlanMatrixContent() {
 
       <div className="grid gap-6 xl:grid-cols-3">
         {plans.map((plan) => (
-          <Card
-            key={plan.key}
-            className="overflow-hidden border-0 shadow-xl ring-1 ring-border/70"
-          >
+          <Card key={plan.key} className="min-w-0 overflow-hidden">
+            {/* Faixa chapada com a cor principal configurada para o plano (dado do banco). */}
             <div
-              className="h-2 w-full"
-              style={{
-                background: `linear-gradient(90deg, ${plan.accentFrom}, ${plan.accentTo})`,
-              }}
+              className="h-1.5 w-full"
+              style={{ backgroundColor: plan.accentFrom }}
+              aria-hidden="true"
             />
             <CardHeader className="space-y-5">
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <PlanBadge planKey={plan.key} />
-                <Badge variant="secondary" className="rounded-full">
-                  {planDescriptions[plan.key]}
-                </Badge>
+                <Badge variant="secondary">{planDescriptions[plan.key]}</Badge>
               </div>
 
-              <div
-                className="rounded-3xl p-5 text-white shadow-2xl"
-                style={{
-                  background: `linear-gradient(135deg, ${plan.accentFrom}, ${plan.accentTo})`,
-                }}
-              >
+              <div className="rounded-md border border-border bg-background p-5">
                 <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-2">
-                    <p className="text-sm/6 uppercase tracking-[0.2em] text-white/70">
+                  <div className="min-w-0 space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">
                       Preview comercial
                     </p>
-                    <h2 className="text-3xl font-semibold tracking-tight">
+                    <h2 className="break-words font-display text-2xl font-semibold tracking-tight text-foreground">
                       {plan.name}
                     </h2>
-                    <p className="max-w-sm text-sm/7 text-white/85">
+                    <p className="max-w-sm text-sm leading-6 text-foreground/80">
                       {plan.tagline}
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-white/15 p-3 backdrop-blur-sm">
-                    <Palette className="h-5 w-5" />
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <Palette
+                      className="h-4 w-4 text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                    <span
+                      className="h-4 w-4 rounded-full border border-border"
+                      style={{ backgroundColor: plan.accentFrom }}
+                      title={`Cor inicial ${plan.accentFrom}`}
+                      aria-hidden="true"
+                    />
+                    <span
+                      className="h-4 w-4 rounded-full border border-border"
+                      style={{ backgroundColor: plan.accentTo }}
+                      title={`Cor final ${plan.accentTo}`}
+                      aria-hidden="true"
+                    />
                   </div>
                 </div>
-                <div className="mt-6 flex items-end justify-between gap-4">
+                <div className="mt-5 flex flex-wrap items-end justify-between gap-4 border-t border-border pt-4">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-white/60">
-                      Mensal
-                    </p>
-                    <p className="text-3xl font-semibold">
+                    <p className="text-sm text-muted-foreground">Mensal</p>
+                    <p className="font-display text-3xl font-semibold tracking-tight text-foreground">
                       {plan.currencyCode} {plan.monthlyPrice.toFixed(2)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs uppercase tracking-[0.2em] text-white/60">
-                      Anual
-                    </p>
-                    <p className="text-xl font-semibold">
+                    <p className="text-sm text-muted-foreground">Anual</p>
+                    <p className="font-display text-xl font-semibold tracking-tight text-foreground">
                       {plan.currencyCode} {plan.annualPrice.toFixed(2)}
                     </p>
                   </div>
@@ -492,8 +491,8 @@ export function AdminPlanMatrixContent() {
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="flex items-center justify-between rounded-2xl border p-4">
-                  <div className="space-y-1">
+                <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-background p-4">
+                  <div className="min-w-0 space-y-1">
                     <p className="text-sm font-medium">Plano ativo</p>
                     <p className="text-xs text-muted-foreground">
                       Disponível para atribuição e uso.
@@ -507,8 +506,8 @@ export function AdminPlanMatrixContent() {
                     }
                   />
                 </div>
-                <div className="flex items-center justify-between rounded-2xl border p-4">
-                  <div className="space-y-1">
+                <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-background p-4">
+                  <div className="min-w-0 space-y-1">
                     <p className="text-sm font-medium">Plano público</p>
                     <p className="text-xs text-muted-foreground">
                       Exibido para escolha comercial.
@@ -526,17 +525,20 @@ export function AdminPlanMatrixContent() {
 
               <Button
                 onClick={() => savePlan(plan.key)}
-                className="w-full rounded-full"
+                className="w-full"
                 disabled={savingPlanKey === plan.key}
               >
                 {savingPlanKey === plan.key ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2
+                      className="mr-2 h-4 w-4 animate-spin"
+                      aria-hidden="true"
+                    />
                     Salvando plano
                   </>
                 ) : (
                   <>
-                    <Sparkles className="mr-2 h-4 w-4" />
+                    <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />
                     Salvar {plan.name}
                   </>
                 )}
@@ -546,7 +548,7 @@ export function AdminPlanMatrixContent() {
         ))}
       </div>
 
-      <Card className="overflow-hidden border-0 shadow-xl ring-1 ring-border/70">
+      <Card className="min-w-0 overflow-hidden">
         <CardHeader>
           <CardTitle>Matriz editável de entitlements</CardTitle>
           <CardDescription>
@@ -555,8 +557,8 @@ export function AdminPlanMatrixContent() {
             `Care`.
           </CardDescription>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <Table>
+        <CardContent>
+          <Table scrollLabel="Matriz de entitlements por plano">
             <TableHeader>
               <TableRow>
                 <TableHead className="min-w-[320px]">Capacidade</TableHead>
@@ -577,14 +579,14 @@ export function AdminPlanMatrixContent() {
                 <TableRow key={feature.key}>
                   <TableCell className="align-top">
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <p className="font-medium">{feature.name}</p>
                         <Badge variant="secondary">{feature.category}</Badge>
                       </div>
                       <p className="text-sm leading-6 text-muted-foreground">
                         {feature.description}
                       </p>
-                      <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground">
+                      <p className="text-xs font-medium text-muted-foreground">
                         {feature.featureType === 'boolean'
                           ? 'Toggle'
                           : `${feature.meterKind} ${feature.unit ? `• ${feature.unit}` : ''}`}
@@ -601,8 +603,8 @@ export function AdminPlanMatrixContent() {
 
                     return (
                       <TableCell key={plan.key} className="align-top">
-                        <div className="space-y-4 rounded-2xl border border-border/70 bg-secondary/60 p-4">
-                          <div className="flex items-center justify-between">
+                        <div className="space-y-4 rounded-md border border-border bg-background p-4">
+                          <div className="flex items-center justify-between gap-3">
                             <div>
                               <p className="text-sm font-medium">Habilitado</p>
                               <p className="text-xs text-muted-foreground">
@@ -625,7 +627,7 @@ export function AdminPlanMatrixContent() {
 
                           {planFeature.featureType === 'quota' ? (
                             <div className="space-y-3">
-                              <div className="flex items-center justify-between rounded-xl border border-border/70 bg-card/85 p-3">
+                              <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-card p-3">
                                 <div>
                                   <p className="text-sm font-medium">
                                     Ilimitado

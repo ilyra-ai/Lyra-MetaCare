@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/card';
 import {
   IconeDecorativo,
+  juntarClasses,
   obterClasseTomHeading,
 } from '@/lib/puck/config/components/helpers';
 import { fetchListPlanos } from '@/lib/puck/data-sources/plans';
@@ -20,6 +21,17 @@ import type {
   LyraExternalPlanData,
   LyraFeatureCardBlockProps,
 } from '@/lib/puck/types';
+
+/*
+ * Fundo do ícone acompanha o tom do título: violeta apenas no tom cósmico
+ * (conteúdo astral/IA), teal para os demais e dourado para o tom "coral".
+ */
+const classesIconePorTom: Record<LyraFeatureCardBlockProps['tone'], string> = {
+  default: 'bg-sidebar-accent text-primary',
+  cosmic: 'bg-cosmic-light text-cosmic',
+  teal: 'bg-sidebar-accent text-primary',
+  coral: 'bg-golden-light text-golden',
+};
 
 function LyraFeatureCardBlock({
   externalPlan,
@@ -35,25 +47,38 @@ function LyraFeatureCardBlock({
   const descricaoExibida = externalPlan ? externalPlan.tagline : description;
 
   return (
-    <Card className="h-full border-border/70 bg-white/92">
+    <Card className="h-full">
       <CardHeader className="gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-aurora text-primary shadow-glass">
+        <div
+          className={juntarClasses(
+            'flex h-11 w-11 shrink-0 items-center justify-center rounded-md',
+            classesIconePorTom[tone] ?? classesIconePorTom.default
+          )}
+        >
           <IconeDecorativo icone={icon} className="h-5 w-5" />
         </div>
-        <div className="space-y-3">
-          <Badge variant="info" className="w-fit">
-            {seloExibido}
-          </Badge>
-          {externalPlan ? (
-            <Badge variant="cosmic" className="ml-2 w-fit text-xs">
-              {externalPlan.currencyCode} {externalPlan.monthlyPrice.toFixed(2)}
-              /mês
+        <div className="min-w-0 space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary" className="w-fit">
+              {seloExibido}
             </Badge>
-          ) : null}
-          <CardTitle className={obterClasseTomHeading(tone)}>{title}</CardTitle>
-          <CardDescription className="leading-7">
-            {descricaoExibida}
-          </CardDescription>
+            {externalPlan ? (
+              <Badge variant="outline" className="w-fit">
+                {externalPlan.currencyCode}{' '}
+                {externalPlan.monthlyPrice.toFixed(2)}
+                /mês
+              </Badge>
+            ) : null}
+          </div>
+          <CardTitle
+            className={juntarClasses(
+              'break-words',
+              obterClasseTomHeading(tone)
+            )}
+          >
+            {title}
+          </CardTitle>
+          <CardDescription>{descricaoExibida}</CardDescription>
         </div>
       </CardHeader>
       <CardContent />
@@ -62,7 +87,7 @@ function LyraFeatureCardBlock({
           <Button asChild variant="ghost">
             <a href={ctaHref}>
               {ctaLabel}
-              <ArrowUpRight className="h-4 w-4" />
+              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </Button>
         </CardFooter>

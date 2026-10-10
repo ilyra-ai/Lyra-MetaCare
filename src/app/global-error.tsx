@@ -28,31 +28,33 @@ export default function GlobalError({
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <main
           id="conteudo-principal"
-          className="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center gap-6 px-6 text-center"
+          className="flex min-h-screen items-center justify-center px-4 py-10"
         >
-          <p className="rounded-full border border-border bg-card px-4 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Lyra MetaCare
-          </p>
-          <h1 className="font-display text-3xl font-semibold tracking-tight">
-            Algo saiu do ritmo por aqui.
-          </h1>
-          <p className="text-base text-muted-foreground">
-            Encontramos um erro inesperado ao carregar a aplicação. Você pode
-            tentar novamente agora; se o problema continuar, volte em alguns
-            minutos.
-          </p>
-          {error.digest ? (
-            <p className="font-mono text-xs text-muted-foreground">
-              Código de referência: {error.digest}
+          <div className="flex w-full max-w-xl flex-col items-center gap-5 rounded-xl border border-border bg-card p-6 text-center sm:p-10">
+            <p className="text-sm font-medium text-muted-foreground">
+              Lyra MetaCare
             </p>
-          ) : null}
-          <button
-            type="button"
-            onClick={reset}
-            className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:brightness-105 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            Tentar novamente
-          </button>
+            <h1 className="font-display text-3xl font-semibold tracking-tight">
+              Algo saiu do ritmo por aqui.
+            </h1>
+            <p className="text-base leading-relaxed text-muted-foreground">
+              Encontramos um erro inesperado ao carregar a aplicação. Você pode
+              tentar novamente agora; se o problema continuar, volte em alguns
+              minutos.
+            </p>
+            {error.digest ? (
+              <p className="break-all font-mono text-xs text-muted-foreground">
+                Código de referência: {error.digest}
+              </p>
+            ) : null}
+            <button
+              type="button"
+              onClick={reset}
+              className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-5 text-[15px] font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              Tentar novamente
+            </button>
+          </div>
         </main>
       </body>
     </html>

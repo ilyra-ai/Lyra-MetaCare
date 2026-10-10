@@ -135,11 +135,11 @@ export function MenstrualCycleSettings() {
   const isRegular = state.menstrual_life_stage === 'ciclo_regular';
 
   return (
-    <Card className="border-cosmic/15 bg-card/85">
+    <Card>
       <CardHeader className="gap-2">
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-cosmic/10 text-cosmic">
-            <Moon className="h-5 w-5" />
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-sidebar-accent text-primary">
+            <Moon className="h-5 w-5" aria-hidden="true" />
           </div>
           <CardTitle className="text-lg">Saúde da mulher e ciclo</CardTitle>
         </div>
@@ -153,8 +153,8 @@ export function MenstrualCycleSettings() {
           <p className="text-sm text-muted-foreground">Carregando…</p>
         ) : (
           <>
-            <div className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card/70 p-4">
-              <div className="space-y-0.5">
+            <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-background p-4">
+              <div className="min-w-0 space-y-0.5">
                 <p className="text-sm font-semibold text-foreground">
                   Rastrear ciclo
                 </p>
@@ -172,14 +172,17 @@ export function MenstrualCycleSettings() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-foreground">
+              <label
+                htmlFor="menstrual-life-stage"
+                className="text-sm font-medium text-foreground"
+              >
                 Fase de vida
               </label>
               <Select
                 value={state.menstrual_life_stage}
                 onValueChange={(value) => update('menstrual_life_stage', value)}
               >
-                <SelectTrigger>
+                <SelectTrigger id="menstrual-life-stage">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
@@ -250,15 +253,22 @@ export function MenstrualCycleSettings() {
                 </div>
               </div>
             ) : (
-              <p className="rounded-2xl border border-border/60 bg-muted/40 p-4 text-sm text-muted-foreground">
+              <p className="rounded-md border border-border bg-background p-4 text-sm leading-6 text-muted-foreground">
                 Nesta fase de vida o cálculo de fase do ciclo não se aplica. O
                 acompanhamento foca em sintomas, energia, sono e longevidade.
               </p>
             )}
 
-            <Button onClick={() => void handleSave()} disabled={saving}>
+            <Button
+              onClick={() => void handleSave()}
+              disabled={saving}
+              className="w-full sm:w-auto"
+            >
               {saving ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2
+                  className="mr-2 h-4 w-4 animate-spin"
+                  aria-hidden="true"
+                />
               ) : null}
               Salvar configurações do ciclo
             </Button>

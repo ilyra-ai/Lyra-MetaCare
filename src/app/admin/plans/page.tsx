@@ -1,13 +1,11 @@
 'use client';
 
-import { MadeWithIlyra } from '@/components/made-with-ilyra';
-import { Sidebar } from '@/components/layout/sidebar';
-import { Header } from '@/components/layout/header';
+import { AppShell } from '@/components/layout/AppShell';
+import { AccessDenied } from '@/components/layout/AccessDenied';
 import { SplashScreen } from '@/components/SplashScreen';
 import { useAuth } from '@/context/AuthContext';
 import { useIsAdmin } from '@/hooks/use-is-admin';
 import { AdminPlanMatrixContent } from '@/components/admin/AdminPlanMatrixContent';
-import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 
 export default function AdminPlansPage() {
   const { session } = useAuth();
@@ -22,44 +20,12 @@ export default function AdminPlansPage() {
   }
 
   if (!isAdmin) {
-    return (
-      <div className="page-shell flex min-h-screen">
-        <Sidebar />
-        <div className="flex min-w-0 flex-1 flex-col">
-          <Header />
-          <PuckClientRenderer
-            documentKey="admin-plans"
-            className="w-full shrink-0"
-          />
-          <main
-            id="conteudo-principal"
-            className="flex flex-1 items-center justify-center p-6 md:p-10"
-          >
-            <div className="max-w-xl rounded-3xl border border-border/70 bg-card/85 p-8 text-center shadow-xl backdrop-blur-sm">
-              <h2 className="text-2xl font-semibold tracking-tight">
-                Acesso restrito
-              </h2>
-              <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                Você não tem permissão para acessar a gestão premium de planos.
-              </p>
-            </div>
-          </main>
-          <MadeWithIlyra />
-        </div>
-      </div>
-    );
+    return <AccessDenied />;
   }
 
   return (
-    <div className="page-shell flex min-h-screen">
-      <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Header />
-        <main id="conteudo-principal" className="flex-1 p-4 sm:p-6 md:p-8">
-          <AdminPlanMatrixContent />
-        </main>
-        <MadeWithIlyra />
-      </div>
-    </div>
+    <AppShell puckDocumentKey="admin-plans">
+      <AdminPlanMatrixContent />
+    </AppShell>
   );
 }

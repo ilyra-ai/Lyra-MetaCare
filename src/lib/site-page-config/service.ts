@@ -21,23 +21,31 @@ interface SitePageConfigRow {
   draft_config: string | Record<string, unknown>;
   published_config: string | Record<string, unknown>;
   updated_by_user_id: string | null;
+  updated_by_name: string | null;
   created_at: string;
   updated_at: string;
 }
 
 async function getSitePageConfigRow(pageKey: SitePageKey) {
+  // Nome legível de quem salvou por último (nome completo ou, sem nome,
+  // e-mail), para o construtor de UI não exibir um UUID.
   const rows = await queryRows<SitePageConfigRow>(
     `
       SELECT
-        id,
-        page_key,
-        draft_config,
-        published_config,
-        updated_by_user_id,
-        created_at,
-        updated_at
-      FROM site_page_configs
-      WHERE page_key = ?
+        c.id,
+        c.page_key,
+        c.draft_config,
+        c.published_config,
+        c.updated_by_user_id,
+        COALESCE(
+          NULLIF(TRIM(CONCAT_WS(' ', p.first_name, p.last_name)), ''),
+          p.email
+        ) AS updated_by_name,
+        c.created_at,
+        c.updated_at
+      FROM site_page_configs c
+      LEFT JOIN profiles p ON p.id = c.updated_by_user_id
+      WHERE c.page_key = ?
       LIMIT 1
     `,
     [pageKey]
@@ -65,6 +73,7 @@ export async function getAdminSitePageConfig<TKey extends SitePageKey>(
     draftConfig: row?.draft_config ?? null,
     publishedConfig: row?.published_config ?? null,
     updatedByUserId: row?.updated_by_user_id ?? null,
+    updatedByName: row?.updated_by_name ?? null,
     createdAt: row?.created_at ?? null,
     updatedAt: row?.updated_at ?? null,
   });

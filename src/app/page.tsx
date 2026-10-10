@@ -122,45 +122,42 @@ export default function Home() {
   return (
     <AppShell>
       <HealthOrchestratorProvider>
-        <div className="flex flex-col gap-8">
-          <section className="surface-panel relative overflow-hidden px-6 py-7 md:px-8 md:py-8">
-            <div className="orchestrated-orb -left-16 top-0 h-36 w-36 bg-primary" />
-            <div className="orchestrated-orb bottom-0 right-0 h-32 w-32 bg-cosmic" />
-
-            <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <div className="max-w-3xl">
-                <span
-                  className="eyebrow"
-                  style={{
-                    fontSize: scaleRem(0.72, appConfig.typography.cardBody),
-                  }}
-                >
-                  <Sparkles className="h-3.5 w-3.5" />
-                  {dashboardConfig.heroEyebrow}
-                </span>
-                <h2
-                  className="mt-4 font-display font-bold tracking-tight text-foreground"
-                  style={{
-                    fontSize: scaleRem(2.65, appConfig.typography.pageTitle),
-                    lineHeight: 1.05,
-                  }}
-                >
-                  {greeting},{' '}
-                  <span className="text-gradient-hero">{firstName}</span>
-                </h2>
-                <p
-                  className="mt-3 max-w-2xl text-muted-foreground"
-                  style={{
-                    fontSize: scaleRem(0.98, appConfig.typography.pageBody),
-                    lineHeight: 1.7,
-                  }}
-                >
-                  {dashboardConfig.heroDescription}
-                </p>
-              </div>
-
-              <HarmoniaAtualCard appConfig={appConfig} />
+        <div className="flex flex-col gap-6">
+          <section className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="min-w-0 max-w-3xl">
+              <p
+                className="flex items-center gap-1.5 text-muted-foreground"
+                style={{
+                  fontSize: scaleRem(0.875, appConfig.typography.cardBody),
+                }}
+              >
+                <Sparkles
+                  className="h-3.5 w-3.5 text-cosmic"
+                  aria-hidden="true"
+                />
+                {dashboardConfig.heroEyebrow}
+              </p>
+              <h2
+                className="mt-1 font-display font-semibold tracking-[-0.02em] text-foreground"
+                style={{
+                  fontSize: scaleRem(2, appConfig.typography.pageTitle),
+                  lineHeight: 1.15,
+                }}
+              >
+                {greeting}, {firstName}
+              </h2>
+              <p
+                className="mt-2 max-w-2xl text-muted-foreground"
+                style={{
+                  fontSize: scaleRem(0.9375, appConfig.typography.pageBody),
+                  lineHeight: 1.6,
+                }}
+              >
+                {dashboardConfig.heroDescription}
+              </p>
             </div>
+
+            <HarmoniaAtualCard appConfig={appConfig} />
           </section>
 
           <Dashboard />

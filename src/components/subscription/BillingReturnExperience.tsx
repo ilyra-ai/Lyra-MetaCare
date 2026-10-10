@@ -14,9 +14,7 @@ import {
 import { toast } from 'sonner';
 
 import { SplashScreen } from '@/components/SplashScreen';
-import { Header } from '@/components/layout/header';
-import { Sidebar } from '@/components/layout/sidebar';
-import { MadeWithIlyra } from '@/components/made-with-ilyra';
+import { AppShell } from '@/components/layout/AppShell';
 import { AccountSubscriptionCard } from '@/components/subscription/AccountSubscriptionCard';
 import { BillingActionPanel } from '@/components/subscription/BillingActionPanel';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -126,130 +124,116 @@ export function BillingReturnExperience({
     subscription?.source !== 'stripe';
 
   return (
-    <div className="page-shell flex min-h-screen">
-      <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Header />
-        <main id="conteudo-principal" className="flex-1 p-4 sm:p-6 md:p-8">
-          <div className="mx-auto grid w-full max-w-7xl gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
-            <div className="space-y-6">
-              <Card className="overflow-hidden border-0 shadow-xl ring-1 ring-border/70">
-                <div className="h-2 w-full bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--cosmic)),hsl(var(--accent)))]" />
-                <CardHeader className="space-y-4 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.12),transparent_45%),radial-gradient(circle_at_top_right,hsl(var(--accent)/0.12),transparent_40%)]">
-                  <Badge
-                    variant="secondary"
-                    className="w-fit rounded-full px-3 py-1 text-xs uppercase tracking-[0.2em]"
+    <AppShell>
+      <div className="grid w-full gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="space-y-6">
+          <Card className="overflow-hidden">
+            <CardHeader className="space-y-4">
+              <Badge variant="secondary" className="w-fit">
+                {copy.badge}
+              </Badge>
+              <div className="flex items-start gap-4">
+                <div
+                  aria-hidden="true"
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-md border ${copy.tone}`}
+                >
+                  <Icon className="h-6 w-6" />
+                </div>
+                <div className="space-y-2">
+                  <CardTitle
+                    className="text-2xl font-semibold tracking-tight"
+                    role="heading"
+                    aria-level={2}
                   >
-                    {copy.badge}
-                  </Badge>
-                  <div className="flex items-start gap-4">
-                    <div
-                      className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border ${copy.tone}`}
-                    >
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <div className="space-y-2">
-                      <CardTitle className="text-3xl font-semibold tracking-tight">
-                        {copy.title}
-                      </CardTitle>
-                      <CardDescription className="max-w-3xl text-sm leading-7">
-                        {copy.description}
-                      </CardDescription>
-                    </div>
+                    {copy.title}
+                  </CardTitle>
+                  <CardDescription className="max-w-3xl text-sm leading-7">
+                    {copy.description}
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-5 p-6">
+              <Alert className={copy.alertVariant}>
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>{copy.alertTitle}</AlertTitle>
+                <AlertDescription>{copy.alertDescription}</AlertDescription>
+              </Alert>
+
+              {checkoutSessionId ? (
+                <Card className="border-dashed bg-background">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">
+                      Referência do checkout
+                    </CardTitle>
+                    <CardDescription>
+                      Guarde este identificador apenas para auditoria
+                      operacional.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <code className="break-all rounded-xl bg-foreground px-3 py-2 text-xs text-background">
+                      {checkoutSessionId}
+                    </code>
+                  </CardContent>
+                </Card>
+              ) : null}
+
+              {stripePending ? (
+                <Alert className="border-info/30 bg-info-light/80">
+                  <CreditCard className="h-4 w-4" />
+                  <AlertTitle>Sincronização pendente</AlertTitle>
+                  <AlertDescription>
+                    O checkout retornou, mas a assinatura local ainda não
+                    aparece com origem Stripe. Isso normalmente indica que o
+                    webhook ainda está em trânsito ou aguardando processamento.
+                  </AlertDescription>
+                </Alert>
+              ) : null}
+
+              {mode === 'cancel' ? (
+                <div className="rounded-md border border-border bg-background p-5">
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold">Retomar assinatura</p>
+                    <p className="text-sm text-muted-foreground">
+                      Se o catálogo estiver pronto neste ambiente, você pode
+                      reiniciar o fluxo comercial sem sair desta tela.
+                    </p>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-5 p-6">
-                  <Alert className={copy.alertVariant}>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>{copy.alertTitle}</AlertTitle>
-                    <AlertDescription>{copy.alertDescription}</AlertDescription>
-                  </Alert>
-
-                  {checkoutSessionId ? (
-                    <Card className="border-dashed bg-card/80">
-                      <CardHeader className="pb-3">
-                        <CardTitle className="text-base">
-                          Referência do checkout
-                        </CardTitle>
-                        <CardDescription>
-                          Guarde este identificador apenas para auditoria
-                          operacional.
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <code className="break-all rounded-xl bg-foreground px-3 py-2 text-xs text-background">
-                          {checkoutSessionId}
-                        </code>
-                      </CardContent>
-                    </Card>
-                  ) : null}
-
-                  {stripePending ? (
-                    <Alert className="border-info/30 bg-info-light/80">
-                      <CreditCard className="h-4 w-4" />
-                      <AlertTitle>Sincronização pendente</AlertTitle>
-                      <AlertDescription>
-                        O checkout retornou, mas a assinatura local ainda não
-                        aparece com origem Stripe. Isso normalmente indica que o
-                        webhook ainda está em trânsito ou aguardando
-                        processamento.
-                      </AlertDescription>
-                    </Alert>
-                  ) : null}
-
-                  {mode === 'cancel' ? (
-                    <div className="rounded-3xl border border-border/70 bg-card/80 p-5 backdrop-blur-sm">
-                      <div className="space-y-2">
-                        <p className="text-sm font-semibold">
-                          Retomar assinatura
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Se o catálogo estiver pronto neste ambiente, você pode
-                          reiniciar o fluxo comercial sem sair desta tela.
-                        </p>
-                      </div>
-                      <div className="mt-4">
-                        <BillingActionPanel
-                          currentPlanKey={currentPlanKey}
-                          preferredPlanKey={preferredPlanKey}
-                        />
-                      </div>
-                    </div>
-                  ) : null}
-
-                  <div className="flex flex-wrap gap-3">
-                    <Button
-                      className="rounded-full"
-                      onClick={handleRefreshStatus}
-                      disabled={refreshing}
-                    >
-                      {refreshing ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      ) : (
-                        <RotateCw className="mr-2 h-4 w-4" />
-                      )}
-                      Atualizar assinatura
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="rounded-full"
-                      onClick={() => router.push('/profile')}
-                    >
-                      <ArrowLeft className="mr-2 h-4 w-4" />
-                      Voltar para minha conta
-                    </Button>
+                  <div className="mt-4">
+                    <BillingActionPanel
+                      currentPlanKey={currentPlanKey}
+                      preferredPlanKey={preferredPlanKey}
+                    />
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              ) : null}
 
-            <div className="space-y-6">
-              <AccountSubscriptionCard />
-            </div>
-          </div>
-        </main>
-        <MadeWithIlyra />
+              <div className="flex flex-wrap gap-3">
+                <Button onClick={handleRefreshStatus} disabled={refreshing}>
+                  {refreshing ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RotateCw className="h-4 w-4" />
+                  )}
+                  Atualizar assinatura
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => router.push('/profile')}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Voltar para minha conta
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <AccountSubscriptionCard />
+        </div>
       </div>
-    </div>
+    </AppShell>
   );
 }

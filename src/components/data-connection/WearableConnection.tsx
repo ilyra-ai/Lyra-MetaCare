@@ -209,12 +209,16 @@ export function WearableConnection({
     switch (status) {
       case 'idle':
         return (
-          <div className="text-center space-y-4">
-            <Watch className="h-16 w-16 text-muted-foreground mx-auto" />
-            <p className="text-muted-foreground">{config.idleDescription}</p>
+          <div className="space-y-4 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sidebar-accent text-primary">
+              <Watch className="h-8 w-8" aria-hidden="true" />
+            </div>
+            <p className="leading-relaxed text-foreground/80">
+              {config.idleDescription}
+            </p>
             {bluetoothSupported === false ? (
-              <Alert className="border-warning/50 bg-warning-light text-left">
-                <XCircle className="h-4 w-4 text-warning" />
+              <Alert className="rounded-md border-warning/30 bg-warning-light text-left shadow-none">
+                <XCircle className="h-4 w-4 text-warning" aria-hidden="true" />
                 <AlertTitle>{config.unsupportedTitle}</AlertTitle>
                 <AlertDescription>
                   {errorMessage || config.unsupportedDescription}
@@ -234,9 +238,13 @@ export function WearableConnection({
         );
       case 'connecting':
         return (
-          <div className="text-center space-y-4">
-            <Loader2 className="h-16 w-16 text-info mx-auto animate-spin" />
-            <p className="text-lg font-semibold">{config.connectingTitle}</p>
+          <div className="space-y-4 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-info-light text-info">
+              <Loader2 className="h-8 w-8 animate-spin" aria-hidden="true" />
+            </div>
+            <p className="font-display text-lg font-semibold tracking-tight">
+              {config.connectingTitle}
+            </p>
             <p className="text-sm text-muted-foreground">
               {config.connectingDescription}
             </p>
@@ -247,17 +255,19 @@ export function WearableConnection({
         );
       case 'connected':
         return (
-          <div className="text-center space-y-4">
-            <CheckCircle className="h-16 w-16 text-success mx-auto" />
-            <p className="text-lg font-semibold text-success">
+          <div className="space-y-4 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success-light text-success">
+              <CheckCircle className="h-8 w-8" aria-hidden="true" />
+            </div>
+            <p className="font-display text-lg font-semibold tracking-tight text-success">
               {config.connectedTitle}
             </p>
-            <p className="text-muted-foreground">
+            <p className="break-words text-muted-foreground">
               {config.connectedDescription}:{' '}
               <span className="font-medium text-foreground">{deviceName}</span>
             </p>
-            <Alert className="border-success/50 bg-success-light">
-              <Zap className="h-4 w-4 text-success" />
+            <Alert className="rounded-md border-success/30 bg-success-light text-left shadow-none">
+              <Zap className="h-4 w-4 text-success" aria-hidden="true" />
               <AlertTitle>{config.connectedAlertTitle}</AlertTitle>
               <AlertDescription>
                 {config.connectedAlertDescription}
@@ -274,12 +284,14 @@ export function WearableConnection({
         );
       case 'error':
         return (
-          <div className="text-center space-y-4">
-            <XCircle className="h-16 w-16 text-destructive mx-auto" />
-            <p className="text-lg font-semibold text-destructive">
+          <div className="space-y-4 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive-light text-destructive">
+              <XCircle className="h-8 w-8" aria-hidden="true" />
+            </div>
+            <p className="font-display text-lg font-semibold tracking-tight text-destructive">
               {config.errorTitle}
             </p>
-            <p className="text-muted-foreground">
+            <p className="break-words text-muted-foreground">
               {errorMessage || config.errorDescription}
             </p>
             <Button onClick={handleConnect} className="w-full">
@@ -293,10 +305,10 @@ export function WearableConnection({
   };
 
   return (
-    <Card className="mx-auto max-w-3xl border-border/70 bg-white/88 shadow-sm">
+    <Card className="mx-auto w-full max-w-3xl">
       <CardHeader className="text-center">
         <CardTitle
-          className="text-2xl"
+          className="text-2xl tracking-[-0.02em]"
           style={{
             fontSize: scaleRem(1.5, typography.pageTitle),
           }}
@@ -311,7 +323,9 @@ export function WearableConnection({
           {config.cardDescription}
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-6">{renderStatusContent()}</CardContent>
+      <CardContent className="p-5 pt-0 sm:p-6 sm:pt-0">
+        {renderStatusContent()}
+      </CardContent>
     </Card>
   );
 }

@@ -178,7 +178,10 @@ export function ProfessionalFormModal({
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2
+                    className="mr-2 h-4 w-4 animate-spin"
+                    aria-hidden="true"
+                  />
                 )}
                 {professionalToEdit ? 'Salvar Alterações' : 'Cadastrar'}
               </Button>

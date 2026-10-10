@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 import { Activity, CheckCircle, Zap, Clock } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -64,15 +63,15 @@ const StatCard = ({
   value: string;
   description: string;
 }) => (
-  <Card>
-    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-      <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      <Icon className="h-4 w-4 text-muted-foreground" />
-    </CardHeader>
-    <CardContent>
-      <div className="text-2xl font-bold">{value}</div>
-      <p className="text-xs text-muted-foreground">{description}</p>
-    </CardContent>
+  <Card className="p-5">
+    <div className="flex items-start justify-between gap-3">
+      <p className="text-sm font-medium text-muted-foreground">{title}</p>
+      <Icon className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+    </div>
+    <p className="mt-3 font-display text-3xl font-semibold tracking-tight text-foreground">
+      {value}
+    </p>
+    <p className="mt-1 text-sm text-muted-foreground">{description}</p>
   </Card>
 );
 
@@ -168,23 +167,25 @@ export function DataHealthContent() {
     fetchData();
   }, [db]);
 
-  const getFillRateBadge = (rate: number) => {
-    if (rate > 80) return 'bg-success';
-    if (rate > 50) return 'bg-warning';
-    return 'bg-destructive';
+  const getFillRateVariant = (
+    rate: number
+  ): 'success' | 'warning' | 'destructive' => {
+    if (rate > 80) return 'success';
+    if (rate > 50) return 'warning';
+    return 'destructive';
   };
 
   if (loading) {
     return (
       <div className="space-y-6">
         <div className="grid gap-4 md:grid-cols-3">
-          <Skeleton className="h-28 w-full" />
-          <Skeleton className="h-28 w-full" />
-          <Skeleton className="h-28 w-full" />
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl" />
         </div>
         <div className="grid gap-6 md:grid-cols-2">
-          <Skeleton className="h-96 w-full" />
-          <Skeleton className="h-96 w-full" />
+          <Skeleton className="h-96 w-full rounded-xl" />
+          <Skeleton className="h-96 w-full rounded-xl" />
         </div>
       </div>
     );
@@ -214,7 +215,8 @@ export function DataHealthContent() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+        {/* `min-w-0`: sem ele a tabela alarga o item da grade no celular. */}
+        <Card className="min-w-0">
           <CardHeader>
             <CardTitle>Análise de Métricas</CardTitle>
             <CardDescription>
@@ -245,12 +247,7 @@ export function DataHealthContent() {
                         {m.metric_name}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          className={cn(
-                            'text-white',
-                            getFillRateBadge(m.fill_rate)
-                          )}
-                        >
+                        <Badge variant={getFillRateVariant(m.fill_rate)}>
                           {m.fill_rate.toFixed(1)}%
                         </Badge>
                       </TableCell>
@@ -266,7 +263,7 @@ export function DataHealthContent() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="min-w-0">
           <CardHeader>
             <CardTitle>Usuários Inativos</CardTitle>
             <CardDescription>
@@ -280,17 +277,17 @@ export function DataHealthContent() {
             aria-label="Usuários inativos (rolável)"
           >
             {staleUsers.length > 0 ? (
-              <ul className="space-y-3">
+              <ul className="divide-y divide-border">
                 {staleUsers.map((user) => (
                   <li
                     key={user.id}
-                    className="flex items-center justify-between"
+                    className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-3 first:pt-0 last:pb-0"
                   >
-                    <div>
-                      <p className="font-semibold">
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-foreground">
                         {user.first_name || 'Usuário Anônimo'}
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="truncate text-sm text-muted-foreground">
                         {user.email}
                       </p>
                     </div>
@@ -303,9 +300,14 @@ export function DataHealthContent() {
                 ))}
               </ul>
             ) : (
-              <div className="flex flex-col items-center justify-center h-full text-center p-8">
-                <CheckCircle className="h-12 w-12 text-success mb-4" />
-                <p className="font-semibold">Excelente!</p>
+              <div className="flex h-full flex-col items-center justify-center rounded-md border border-dashed border-border bg-background p-8 text-center">
+                <span
+                  className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-success-light text-success"
+                  aria-hidden="true"
+                >
+                  <CheckCircle className="h-6 w-6" />
+                </span>
+                <p className="font-semibold text-foreground">Excelente!</p>
                 <p className="text-sm text-muted-foreground">
                   Nenhum usuário inativo encontrado.
                 </p>

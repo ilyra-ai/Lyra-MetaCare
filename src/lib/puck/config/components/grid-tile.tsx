@@ -35,7 +35,7 @@ function LyraGridTileBlock({
     <article
       ref={dragRef}
       className={juntarClasses(
-        'group min-h-[196px] rounded-[24px] border p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_-28px_rgba(15,23,42,0.28)] sm:p-6',
+        'min-h-[196px] min-w-0 rounded-xl border p-5 transition-colors duration-150 sm:p-6',
         obterClasseTomTile(tone)
       )}
       style={{
@@ -46,21 +46,21 @@ function LyraGridTileBlock({
       }}
     >
       <div className="flex h-full flex-col gap-4">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="min-w-0 text-sm font-medium text-muted-foreground">
             {eyebrow}
           </p>
           {badgeLabel ? (
-            <span className="rounded-full border border-white/70 bg-white/70 px-3 py-1 text-[11px] font-semibold text-foreground shadow-sm">
+            <span className="rounded-full border border-border bg-card px-2.5 py-0.5 text-xs font-medium text-foreground">
               {badgeLabel}
             </span>
           ) : null}
         </div>
-        <div className="space-y-3">
-          <h4 className="text-balance font-display text-xl font-semibold tracking-tight text-foreground">
+        <div className="space-y-2">
+          <h4 className="text-balance break-words font-display text-lg font-semibold tracking-tight text-foreground">
             {title}
           </h4>
-          <p className="text-sm leading-7 text-muted-foreground">
+          <p className="text-sm leading-6 text-muted-foreground">
             {description}
           </p>
         </div>

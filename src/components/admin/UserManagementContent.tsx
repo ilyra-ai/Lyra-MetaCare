@@ -202,12 +202,16 @@ export function UserManagementContent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="relative mb-4">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <div className="relative mb-4 w-full md:w-1/3">
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
+            />
             <Input
               type="search"
+              aria-label="Buscar usuários por nome ou email"
               placeholder="Buscar por nome ou email..."
-              className="w-full pl-8 md:w-1/3"
+              className="w-full pl-9"
               value={searchTerm}
               onChange={(event) => {
                 setSearchTerm(event.target.value);
@@ -215,8 +219,8 @@ export function UserManagementContent() {
               }}
             />
           </div>
-          <div className="rounded-md border">
-            <Table>
+          <div className="min-w-0">
+            <Table scrollLabel="Tabela de usuários">
               <TableHeader>
                 <TableRow>
                   <TableHead>
@@ -224,7 +228,11 @@ export function UserManagementContent() {
                       variant="ghost"
                       onClick={() => handleSort('first_name')}
                     >
-                      Usuário <ArrowUpDown className="ml-2 h-4 w-4" />
+                      Usuário{' '}
+                      <ArrowUpDown
+                        className="ml-2 h-4 w-4"
+                        aria-hidden="true"
+                      />
                     </Button>
                   </TableHead>
                   <TableHead>Plano</TableHead>
@@ -234,7 +242,11 @@ export function UserManagementContent() {
                       variant="ghost"
                       onClick={() => handleSort('created_at')}
                     >
-                      Data de Cadastro <ArrowUpDown className="ml-2 h-4 w-4" />
+                      Data de Cadastro{' '}
+                      <ArrowUpDown
+                        className="ml-2 h-4 w-4"
+                        aria-hidden="true"
+                      />
                     </Button>
                   </TableHead>
                   <TableHead className="text-right">Ações</TableHead>
@@ -265,17 +277,17 @@ export function UserManagementContent() {
                   users.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>
-                        <div className="flex items-center gap-3">
+                        <div className="flex min-w-[200px] items-center gap-3">
                           <Avatar>
                             <AvatarImage src={user.avatarUrl || undefined} />
                             <AvatarFallback>
                               {user.firstName?.charAt(0) || (
-                                <User className="h-4 w-4" />
+                                <User className="h-4 w-4" aria-hidden="true" />
                               )}
                             </AvatarFallback>
                           </Avatar>
-                          <div>
-                            <p className="font-medium">
+                          <div className="min-w-0">
+                            <p className="font-medium text-foreground">
                               {user.firstName || 'Usuário'}{' '}
                               {user.lastName || ''}
                             </p>
@@ -302,12 +314,7 @@ export function UserManagementContent() {
                       <TableCell>
                         <div className="flex flex-wrap gap-2">
                           {user.onboardingCompleted ? (
-                            <Badge
-                              variant="default"
-                              className="bg-success text-success-foreground hover:brightness-95"
-                            >
-                              Completo
-                            </Badge>
+                            <Badge variant="success">Completo</Badge>
                           ) : (
                             <Badge variant="secondary">Pendente</Badge>
                           )}
@@ -329,7 +336,10 @@ export function UserManagementContent() {
                               size="icon"
                               aria-label={`Ações para ${user.email}`}
                             >
-                              <MoreHorizontal className="h-4 w-4" />
+                              <MoreHorizontal
+                                className="h-4 w-4"
+                                aria-hidden="true"
+                              />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
@@ -366,7 +376,10 @@ export function UserManagementContent() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
+                    <TableCell
+                      colSpan={5}
+                      className="h-24 text-center text-muted-foreground"
+                    >
                       Nenhum usuário encontrado.
                     </TableCell>
                   </TableRow>
@@ -374,7 +387,7 @@ export function UserManagementContent() {
               </TableBody>
             </Table>
           </div>
-          <div className="flex items-center justify-end space-x-2 py-4">
+          <div className="flex items-center justify-end gap-2 pt-4">
             <Button
               variant="outline"
               size="sm"
@@ -422,7 +435,7 @@ export function UserManagementContent() {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteUser}
-              className="bg-destructive hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive-hover"
             >
               Deletar
             </AlertDialogAction>

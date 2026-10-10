@@ -22,23 +22,22 @@ export function RealTimeMetricCard({
   accent = 'primary',
   isActive = false,
 }: RealTimeMetricCardProps) {
+  // Fundos suaves chapados por tom (o violeta segue o token `cosmic`).
   const accentStyles = {
-    primary: 'bg-primary/12 text-primary',
-    accent: 'bg-accent/12 text-accent',
-    cosmic: 'bg-cosmic/12 text-cosmic',
-    info: 'bg-info/12 text-info',
+    primary: 'bg-sidebar-accent text-primary',
+    accent: 'bg-cosmic-light text-cosmic-strong',
+    cosmic: 'bg-cosmic-light text-cosmic-strong',
+    info: 'bg-info-light text-info',
   };
 
   return (
-    <Card className="border-border/70 bg-card/90 backdrop-blur-xl">
-      <CardContent className="flex flex-col gap-5 p-5">
+    <Card className="min-w-0">
+      <CardContent className="flex flex-col gap-4 p-5">
         <div className="flex items-start justify-between gap-3">
-          <div className="flex flex-col gap-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              {label}
-            </p>
-            <div className="flex items-end gap-2">
-              <span className="font-mono text-3xl font-semibold tracking-tight text-foreground">
+          <div className="flex min-w-0 flex-col gap-2">
+            <p className="text-sm font-medium text-muted-foreground">{label}</p>
+            <div className="flex flex-wrap items-end gap-x-2">
+              <span className="font-display text-3xl font-semibold tracking-[-0.02em] text-foreground">
                 {value}
               </span>
               <span className="pb-1 text-sm text-muted-foreground">{unit}</span>
@@ -46,23 +45,23 @@ export function RealTimeMetricCard({
           </div>
           <div
             className={cn(
-              'flex size-11 items-center justify-center rounded-2xl shadow-sm',
+              'flex size-10 shrink-0 items-center justify-center rounded-md',
               accentStyles[accent]
             )}
           >
-            <Icon />
+            <Icon className="size-5" aria-hidden="true" />
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Activity className="size-4" />
+            <Activity className="size-4" aria-hidden="true" />
             <span>Atualização contínua</span>
           </div>
           <Badge variant={isActive ? 'success' : 'secondary'}>
             {isActive ? (
               <>
-                <ArrowUpRight />
+                <ArrowUpRight aria-hidden="true" />
                 ao vivo
               </>
             ) : (

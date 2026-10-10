@@ -162,8 +162,8 @@ export function HabitList() {
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle className="flex items-center">
-          <ListChecks className="h-5 w-5 mr-2 text-success" />
+        <CardTitle className="flex items-center gap-2">
+          <ListChecks className="h-5 w-5 text-primary" aria-hidden="true" />
           Hábitos de Longevidade
         </CardTitle>
         <CardDescription>
@@ -172,7 +172,7 @@ export function HabitList() {
       </CardHeader>
       <CardContent className="space-y-4">
         {habits.length === 0 ? (
-          <div className="text-center p-4 space-y-4">
+          <div className="space-y-4 rounded-md border border-dashed border-border bg-background p-5 text-center">
             <p className="text-muted-foreground">Nenhum hábito encontrado.</p>
             <Button
               onClick={handleInitializeHabits}
@@ -180,27 +180,31 @@ export function HabitList() {
               className="w-full"
             >
               {isInitializing ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2
+                  className="mr-2 h-4 w-4 animate-spin"
+                  aria-hidden="true"
+                />
               ) : (
                 <>
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
                   Adicionar Hábitos Sugeridos
                 </>
               )}
             </Button>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-1">
             {habits.map((habit, index) => (
               <React.Fragment key={habit.id}>
-                <div className="flex items-center justify-between rounded-[18px] p-2.5 transition-colors hover:bg-secondary/70">
-                  <div className="flex flex-col">
-                    <p className="font-medium">{habit.name}</p>
+                <div className="flex items-center justify-between gap-3 rounded-md px-2.5 py-2.5 transition-colors hover:bg-muted">
+                  <div className="flex min-w-0 flex-col">
+                    <p className="break-words font-medium">{habit.name}</p>
                     <span className="text-xs text-muted-foreground">
                       {habit.frequency}
                     </span>
                   </div>
                   <Switch
+                    aria-label={`Monitorar o hábito ${habit.name}`}
                     checked={habit.is_active}
                     onCheckedChange={(checked) =>
                       handleToggleHabit(habit, checked)

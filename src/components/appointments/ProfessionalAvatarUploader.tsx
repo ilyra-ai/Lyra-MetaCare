@@ -87,33 +87,43 @@ export function ProfessionalAvatarUploader({
         disabled={uploading}
       />
 
-      <div
-        className="relative group cursor-pointer"
+      {/* Botão nativo: o seletor de arquivo também abre pelo teclado. */}
+      <button
+        type="button"
+        className="group relative cursor-pointer rounded-full disabled:cursor-not-allowed"
         onClick={() => fileInputRef.current?.click()}
+        disabled={uploading}
+        aria-label="Alterar foto do profissional"
       >
-        <Avatar className="h-24 w-24 border-2 border-primary/20">
+        <Avatar className="h-24 w-24 border border-border">
           <AvatarImage
             src={currentAvatarUrl || undefined}
             alt={professionalName}
           />
-          <AvatarFallback className="text-3xl bg-primary/10 text-primary">
-            {uploading ? <Loader2 className="h-6 w-6 animate-spin" /> : initial}
+          <AvatarFallback className="bg-sidebar-accent font-display text-3xl font-semibold text-primary">
+            {uploading ? (
+              <Loader2 className="h-6 w-6 animate-spin" aria-hidden="true" />
+            ) : (
+              initial
+            )}
           </AvatarFallback>
         </Avatar>
 
         <div
           className={cn(
-            'absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 transition-opacity duration-300',
-            !uploading && 'group-hover:opacity-100'
+            'absolute inset-0 flex items-center justify-center rounded-full bg-foreground/60 opacity-0 transition-opacity duration-200',
+            !uploading &&
+              'group-hover:opacity-100 group-focus-visible:opacity-100'
           )}
+          aria-hidden="true"
         >
           {uploading ? (
-            <Loader2 className="h-6 w-6 text-white animate-spin" />
+            <Loader2 className="h-6 w-6 animate-spin text-white" />
           ) : (
             <Camera className="h-6 w-6 text-white" />
           )}
         </div>
-      </div>
+      </button>
       <span className="text-xs text-muted-foreground">Clique para alterar</span>
     </div>
   );

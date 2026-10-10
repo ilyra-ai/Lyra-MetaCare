@@ -10,6 +10,7 @@ export interface SitePageStorageRecord {
   draftConfig: string | Record<string, unknown> | null;
   publishedConfig: string | Record<string, unknown> | null;
   updatedByUserId: string | null;
+  updatedByName: string | null;
   createdAt: string | null;
   updatedAt: string | null;
 }
@@ -21,6 +22,8 @@ export type StoredPageConfig<TKey extends SitePageKey> = {
   createdAt: string | null;
   updatedAt: string | null;
   updatedByUserId: string | null;
+  /** Nome (ou e-mail) de quem salvou por último. */
+  updatedByName: string | null;
 };
 
 export function parseStoredJson(
@@ -55,6 +58,7 @@ export function buildEmptyStoredPageConfig<TKey extends SitePageKey>(
     createdAt: null,
     updatedAt: null,
     updatedByUserId: null,
+    updatedByName: null,
   };
 }
 
@@ -76,6 +80,7 @@ export function normalizeStoredPageConfig<TKey extends SitePageKey>(
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     updatedByUserId: row.updatedByUserId,
+    updatedByName: row.updatedByName,
   };
 }
 

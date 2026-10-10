@@ -38,15 +38,15 @@ const StatCard = ({
   description: string;
   color: string;
 }) => (
-  <Card>
-    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-      <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      <Icon className={`h-4 w-4 text-muted-foreground ${color}`} />
-    </CardHeader>
-    <CardContent>
-      <div className="text-2xl font-bold">{value}</div>
-      <p className="text-xs text-muted-foreground">{description}</p>
-    </CardContent>
+  <Card className="p-5">
+    <div className="flex items-start justify-between gap-3">
+      <p className="text-sm font-medium text-muted-foreground">{title}</p>
+      <Icon className={`h-4 w-4 shrink-0 ${color}`} aria-hidden="true" />
+    </div>
+    <p className="mt-3 font-display text-3xl font-semibold tracking-tight text-foreground">
+      {value}
+    </p>
+    <p className="mt-1 text-sm text-muted-foreground">{description}</p>
   </Card>
 );
 
@@ -121,11 +121,11 @@ export function AdminDashboardContent() {
     return (
       <div className="space-y-6">
         <div className="grid gap-4 md:grid-cols-3">
-          <Skeleton className="h-28 w-full" />
-          <Skeleton className="h-28 w-full" />
-          <Skeleton className="h-28 w-full" />
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl" />
         </div>
-        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-64 w-full rounded-xl" />
       </div>
     );
   }
@@ -152,7 +152,7 @@ export function AdminDashboardContent() {
           title="Taxa de Onboarding"
           value={`${stats?.onboardingCompletionRate.toFixed(1) || '0'}%`}
           description="Usuários que completaram o perfil."
-          color="text-cosmic"
+          color="text-primary"
         />
       </div>
       <Card>
@@ -160,27 +160,30 @@ export function AdminDashboardContent() {
           <CardTitle>Usuários Recentes</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="divide-y divide-border">
             {recentUsers.map((user) => (
-              <div key={user.id} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+              <div
+                key={user.id}
+                className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-3 first:pt-0 last:pb-0"
+              >
+                <div className="flex min-w-0 items-center gap-3">
                   <Avatar>
                     <AvatarImage src={user.avatar_url || undefined} />
                     <AvatarFallback>
                       {user.first_name?.charAt(0) || 'U'}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <p className="font-medium">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-foreground">
                       {user.first_name || 'Usuário'} {user.last_name || ''}
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="truncate text-sm text-muted-foreground">
                       {user.email}
                     </p>
                   </div>
                 </div>
-                <div className="text-sm text-muted-foreground flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
+                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <Clock className="h-3 w-3" aria-hidden="true" />
                   {formatDistanceToNow(new Date(user.created_at), {
                     addSuffix: true,
                     locale: ptBR,

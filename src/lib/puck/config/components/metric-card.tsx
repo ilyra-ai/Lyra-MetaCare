@@ -97,35 +97,35 @@ function LyraMetricCardBlock({
   const trend = obterApresentacaoTrend(trendDirection);
 
   return (
-    <Card className="h-full border-border/70 bg-white/90">
+    <Card className="h-full">
       <CardHeader className="gap-4">
         <div className="flex items-start justify-between gap-4">
-          <div className="space-y-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
+          <div className="min-w-0 space-y-2">
+            <p className="text-sm font-medium text-muted-foreground">
               {eyebrow}
             </p>
-            <CardTitle className="metric-display flex items-end gap-2 text-foreground">
-              <span>{value}</span>
+            <CardTitle className="flex flex-wrap items-baseline gap-x-2 gap-y-1 font-display text-3xl font-semibold tracking-[-0.02em] text-foreground md:text-4xl">
+              <span className="min-w-0 break-words">{value}</span>
               {unit ? (
-                <span className="pb-1 text-sm font-medium tracking-normal text-muted-foreground">
+                <span className="text-sm font-medium tracking-normal text-muted-foreground">
                   {unit}
                 </span>
               ) : null}
             </CardTitle>
           </div>
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-teal text-white shadow-teal">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-sidebar-accent text-primary">
             <IconeDecorativo icone={icon} className="h-5 w-5" />
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <CardDescription className="leading-7">{description}</CardDescription>
+        <CardDescription>{description}</CardDescription>
         <div className="flex flex-wrap items-center gap-3">
-          {badgeLabel ? <Badge variant="cosmic">{badgeLabel}</Badge> : null}
+          {badgeLabel ? <Badge variant="default">{badgeLabel}</Badge> : null}
           <div
-            className={`inline-flex items-center gap-2 text-sm font-medium ${trend.classe}`}
+            className={`inline-flex min-w-0 items-center gap-2 text-sm font-medium ${trend.classe}`}
           >
-            <trend.Icone className="h-4 w-4" />
+            <trend.Icone className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span>{trendLabel || trend.texto}</span>
           </div>
         </div>

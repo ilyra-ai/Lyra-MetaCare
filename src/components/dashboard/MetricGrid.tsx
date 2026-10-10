@@ -22,14 +22,10 @@ import {
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
+// Tons de estado do Lyra Clean. O violeta (cosmic) fica reservado a
+// conteúdo astral/IA, por isso os pilares fisiológicos não o usam.
 type ToneKey =
-  | 'primary'
-  | 'accent'
-  | 'info'
-  | 'destructive'
-  | 'golden'
-  | 'cosmic'
-  | 'success';
+  'primary' | 'warning' | 'info' | 'destructive' | 'golden' | 'success';
 
 interface PillarMetric {
   title: string;
@@ -49,66 +45,33 @@ const toneStyles: Record<
   ToneKey,
   {
     badge:
-      | 'default'
-      | 'warning'
-      | 'destructive'
-      | 'info'
-      | 'golden'
-      | 'cosmic'
-      | 'success';
+      'default' | 'warning' | 'destructive' | 'info' | 'golden' | 'success';
     icon: string;
-    shell: string;
-    metricGlow: string;
   }
 > = {
   primary: {
     badge: 'default',
-    icon: 'bg-primary/12 text-primary',
-    shell:
-      'border-primary/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.12)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
-    metricGlow: 'border-primary/12',
+    icon: 'bg-sidebar-accent text-primary',
   },
-  accent: {
+  warning: {
     badge: 'warning',
-    icon: 'bg-accent/12 text-accent',
-    shell:
-      'border-accent/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--accent)/0.12)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
-    metricGlow: 'border-accent/12',
+    icon: 'bg-warning-light text-warning',
   },
   info: {
     badge: 'info',
-    icon: 'bg-info/12 text-info',
-    shell:
-      'border-info/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--info)/0.12)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
-    metricGlow: 'border-info/12',
+    icon: 'bg-info-light text-info',
   },
   destructive: {
     badge: 'destructive',
-    icon: 'bg-destructive/10 text-destructive',
-    shell:
-      'border-destructive/10 bg-[radial-gradient(circle_at_top_right,hsl(var(--destructive)/0.08)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
-    metricGlow: 'border-destructive/10',
+    icon: 'bg-destructive-light text-destructive',
   },
   golden: {
     badge: 'golden',
-    icon: 'bg-golden/12 text-golden',
-    shell:
-      'border-golden/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--golden)/0.12)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
-    metricGlow: 'border-golden/12',
-  },
-  cosmic: {
-    badge: 'cosmic',
-    icon: 'bg-cosmic/12 text-cosmic',
-    shell:
-      'border-cosmic/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--cosmic)/0.12)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
-    metricGlow: 'border-cosmic/12',
+    icon: 'bg-golden-light text-golden',
   },
   success: {
     badge: 'success',
-    icon: 'bg-success/12 text-success',
-    shell:
-      'border-success/12 bg-[radial-gradient(circle_at_top_right,hsl(var(--success)/0.12)_0%,rgba(255,255,255,0.96)_36%,rgba(255,255,255,0.92)_100%)]',
-    metricGlow: 'border-success/12',
+    icon: 'bg-success-light text-success',
   },
 };
 
@@ -148,24 +111,19 @@ const formatScore = (
   digits = 0
 ) => formatNumber(value, (input) => `${input.toFixed(digits)}/${total}`);
 
-function MetricTile({ metric, tone }: { metric: PillarMetric; tone: ToneKey }) {
+function MetricTile({ metric }: { metric: PillarMetric }) {
   return (
-    <div
-      className={cn(
-        'rounded-[22px] border bg-white/78 p-4 shadow-[0_12px_40px_-28px_rgba(22,21,48,0.45)] backdrop-blur-xs transition-transform duration-200 hover:-translate-y-0.5',
-        toneStyles[tone].metricGlow
-      )}
-    >
-      <div className="flex h-full flex-col gap-3">
-        <div className="flex flex-col gap-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+    <div className="min-w-0 rounded-md border border-border bg-background p-4">
+      <div className="flex h-full flex-col gap-2">
+        <div className="flex min-w-0 flex-col gap-1">
+          <p className="text-sm font-medium text-muted-foreground">
             {metric.title}
           </p>
-          <p className="font-mono text-2xl font-semibold tracking-[-0.03em] text-foreground">
+          <p className="break-words font-display text-2xl font-semibold tracking-[-0.03em] text-foreground">
             {metric.value}
           </p>
         </div>
-        <p className="text-sm leading-6 text-muted-foreground">
+        <p className="text-[13px] leading-5 text-muted-foreground">
           {metric.description}
         </p>
       </div>
@@ -178,24 +136,22 @@ function PillarCard({ pillar }: { pillar: PillarConfig }) {
   const tone = toneStyles[pillar.tone];
 
   return (
-    <Card
-      className={cn(
-        'overflow-hidden rounded-[30px] border-white/70 shadow-[0_22px_60px_-32px_rgba(22,21,48,0.32)] backdrop-blur-xl',
-        tone.shell
-      )}
-    >
-      <CardHeader className="gap-4 pb-4">
+    <Card className="min-w-0">
+      <CardHeader className="gap-4 p-5 pb-4">
         <div className="flex items-start justify-between gap-4">
-          <div className="flex flex-col gap-3">
-            <Badge variant={tone.badge}>Pilar vivo</Badge>
-            <div className="space-y-2">
-              <CardTitle className="text-xl">{pillar.title}</CardTitle>
+          <div className="flex min-w-0 flex-col gap-3">
+            <Badge variant={tone.badge} className="self-start">
+              Pilar vivo
+            </Badge>
+            <div className="space-y-1.5">
+              <CardTitle>{pillar.title}</CardTitle>
               <CardDescription>{pillar.description}</CardDescription>
             </div>
           </div>
           <div
+            aria-hidden="true"
             className={cn(
-              'flex size-12 shrink-0 items-center justify-center rounded-[18px] shadow-sm',
+              'flex size-10 shrink-0 items-center justify-center rounded-full',
               tone.icon
             )}
           >
@@ -203,13 +159,9 @@ function PillarCard({ pillar }: { pillar: PillarConfig }) {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="grid gap-4 md:grid-cols-2">
+      <CardContent className="grid gap-3 px-5 pb-5 sm:grid-cols-2">
         {pillar.metrics.map((metric) => (
-          <MetricTile
-            key={`${pillar.title}-${metric.title}`}
-            metric={metric}
-            tone={pillar.tone}
-          />
+          <MetricTile key={`${pillar.title}-${metric.title}`} metric={metric} />
         ))}
       </CardContent>
     </Card>
@@ -352,7 +304,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
       description:
         'Gasto energético, aptidão e intensidade acumulada para manter ritmo com clareza.',
       icon: Activity,
-      tone: 'accent',
+      tone: 'warning',
       metrics: [
         {
           title: 'VO₂max',
@@ -512,7 +464,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
       description:
         'Clareza cognitiva, carga emocional, vigilância e estabilidade do sistema nervoso.',
       icon: Brain,
-      tone: 'cosmic',
+      tone: 'info',
       metrics: [
         {
           title: 'Reação (PVT)',
@@ -601,7 +553,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
   ];
 
   return (
-    <div className="grid gap-5 xl:grid-cols-2 2xl:grid-cols-3">
+    <div className="grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
       {pillars.map((pillar) => (
         <PillarCard key={pillar.title} pillar={pillar} />
       ))}

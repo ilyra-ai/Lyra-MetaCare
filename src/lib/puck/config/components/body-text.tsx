@@ -8,15 +8,15 @@ import { LyraRichTextRenderer } from '@/lib/puck/render/rich-text-renderer';
 import type { LyraBodyTextBlockProps } from '@/lib/puck/types';
 
 const toneClasses: Record<LyraBodyTextBlockProps['tone'], string> = {
-  default: 'text-foreground/88',
+  default: 'text-foreground/80',
   muted: 'text-muted-foreground',
-  cosmic: 'text-cosmic/90',
+  cosmic: 'text-cosmic-strong',
 };
 
 const sizeClasses: Record<LyraBodyTextBlockProps['size'], string> = {
   sm: 'text-sm leading-6',
-  md: 'text-base leading-8',
-  lg: 'text-lg leading-9',
+  md: 'text-base leading-relaxed',
+  lg: 'text-lg leading-relaxed',
 };
 
 function LyraBodyTextBlock({
@@ -34,7 +34,7 @@ function LyraBodyTextBlock({
     >
       <div
         className={juntarClasses(
-          'max-w-3xl text-pretty',
+          'min-w-0 max-w-3xl text-pretty break-words',
           sizeClasses[size],
           toneClasses[tone]
         )}

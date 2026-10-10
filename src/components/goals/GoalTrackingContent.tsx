@@ -1,26 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import {
-  CheckCircle2,
-  Clock3,
-  Plus,
-  Target,
-  TrendingUp,
-  Trophy,
-  XCircle,
-} from 'lucide-react';
+import { CheckCircle2, Clock3, Plus, Target, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
@@ -43,26 +28,22 @@ const statusMap: Record<
   string,
   {
     icon: React.ElementType;
-    badge: 'success' | 'info' | 'warning' | 'destructive';
     label: string;
     tone: string;
   }
 > = {
   completed: {
     icon: CheckCircle2,
-    badge: 'success',
     label: 'Concluída',
     tone: 'text-success',
   },
   in_progress: {
     icon: Clock3,
-    badge: 'info',
     label: 'Em progresso',
-    tone: 'text-info',
+    tone: 'text-muted-foreground',
   },
   missed: {
     icon: XCircle,
-    badge: 'destructive',
     label: 'Em atraso',
     tone: 'text-destructive',
   },
@@ -87,51 +68,39 @@ const formatMetricValue = (value: number | null, unit: string | null) => {
   return `${value.toLocaleString('pt-BR')} ${unit ?? ''}`.trim();
 };
 
-function GoalProgressRing({
-  progress,
-  label,
-}: {
-  progress: number;
-  label: string;
-}) {
-  const safeProgress = Math.max(0, Math.min(100, progress));
-
+function StatTile({ label, value }: { label: string; value: string }) {
   return (
-    <div
-      className="relative flex size-24 shrink-0 items-center justify-center rounded-full shadow-[0_18px_40px_-28px_rgba(22,21,48,0.4)]"
-      style={{
-        background: `conic-gradient(hsl(var(--primary)) ${safeProgress * 3.6}deg, hsl(var(--muted)) ${safeProgress * 3.6}deg 360deg)`,
-      }}
-      aria-label={label}
-    >
-      <div className="flex size-[4.6rem] flex-col items-center justify-center rounded-full border border-white/70 bg-white text-center shadow-inner">
-        <span className="font-mono text-xl font-semibold tracking-[-0.04em] text-foreground">
-          {safeProgress.toFixed(0)}%
-        </span>
-        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          atual
-        </span>
-      </div>
+    <div className="rounded-xl border border-border bg-card p-5">
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+      <p className="mt-1.5 font-display text-[32px] font-semibold leading-tight tracking-[-0.02em] text-foreground">
+        {value}
+      </p>
     </div>
   );
 }
 
 function LoadingGoals() {
   return (
-    <div className="space-y-6">
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_24rem]">
-        <Skeleton className="h-72 rounded-[32px]" />
-        <Skeleton className="h-72 rounded-[32px]" />
+    <div className="flex flex-col gap-6" role="status">
+      <span className="sr-only">Carregando metas</span>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Skeleton className="h-28 rounded-xl" />
+        <Skeleton className="h-28 rounded-xl" />
+        <Skeleton className="h-28 rounded-xl" />
       </div>
-      <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
-        <Skeleton className="h-72 rounded-[28px]" />
-        <Skeleton className="h-72 rounded-[28px]" />
-        <Skeleton className="h-72 rounded-[28px]" />
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <Skeleton className="h-64 rounded-xl" />
+        <Skeleton className="h-64 rounded-xl" />
       </div>
     </div>
   );
 }
 
+/*
+  Metas no layout "Lyra Clean" aprovado: três indicadores, cartões de meta
+  com barra de progresso e "Atualizar progresso", e um cartão tracejado
+  para criar outra meta. O título da página vem do `PageIntro`.
+*/
 export function GoalTrackingContent() {
   const { db, session } = useAuth();
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -187,290 +156,136 @@ export function GoalTrackingContent() {
     return <LoadingGoals />;
   }
 
-  const completedGoals = goals.filter(
-    (goal) => goal.status === 'completed'
-  ).length;
-  const inProgressGoals = goals.filter(
-    (goal) => goal.status === 'in_progress'
-  ).length;
-  const averageProgress =
-    goals.length > 0
-      ? goals.reduce((sum, goal) => sum + clampProgress(goal), 0) / goals.length
-      : 0;
-
   if (goals.length === 0) {
     return (
-      <div className="space-y-6">
-        <section className="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_23rem]">
-          <Card className="border-primary/12 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.12)_0%,rgba(255,255,255,0.98)_34%,rgba(255,255,255,0.94)_100%)]">
-            <CardHeader className="gap-5">
-              <Badge variant="cosmic">Ciclo de evolução pessoal</Badge>
-              <div className="space-y-3">
-                <CardTitle className="text-3xl md:text-4xl">
-                  Seu mapa de metas ainda está vazio.
-                </CardTitle>
-                <CardDescription className="max-w-3xl text-base leading-7">
-                  Quando você criar a primeira meta, esta visão passará a
-                  acompanhar progresso, conclusão e ritmo real de evolução sem
-                  depender de dados simulados.
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent className="flex flex-wrap gap-4">
-              <CreateGoalModal onCreated={fetchGoals}>
-                <Button size="lg">
-                  <Plus />
-                  Criar primeira meta
-                </Button>
-              </CreateGoalModal>
-              <div className="rounded-full border border-border/70 bg-white/78 px-4 py-3 text-sm text-muted-foreground">
-                A criação manual grava diretamente em `goals`.
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-cosmic/12 bg-[radial-gradient(circle_at_top,hsl(var(--cosmic)/0.12)_0%,rgba(255,255,255,0.98)_40%,rgba(255,255,255,0.94)_100%)]">
-            <CardHeader className="gap-4">
-              <Badge variant="info">Pronto para uso real</Badge>
-              <div className="space-y-2">
-                <CardTitle className="text-2xl">
-                  Como esta tela funciona
-                </CardTitle>
-                <CardDescription>
-                  Nada aqui depende de placeholder visual.
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-[24px] border border-white/75 bg-white/78 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  Origem
-                </p>
-                <p className="mt-2 text-sm leading-7 text-foreground">
-                  As metas podem nascer do seu plano de IA ou da criação manual.
-                </p>
-              </div>
-              <div className="rounded-[24px] border border-white/75 bg-white/78 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  Persistência
-                </p>
-                <p className="mt-2 text-sm leading-7 text-foreground">
-                  Os registros são lidos e escritos na tabela `goals` desta
-                  instância.
-                </p>
-              </div>
-              <div className="rounded-[24px] border border-white/75 bg-white/78 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  Evolução
-                </p>
-                <p className="mt-2 text-sm leading-7 text-foreground">
-                  Assim que existir pelo menos uma meta, a página passa a
-                  mostrar progresso percentual, status e atualização individual.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-      </div>
+      <section className="flex flex-col items-center rounded-xl border border-dashed border-control/50 bg-card px-6 py-14 text-center">
+        <span
+          aria-hidden="true"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-sidebar-accent text-primary"
+        >
+          <Target className="h-6 w-6" />
+        </span>
+        <h3 className="mt-4 font-display text-xl font-semibold text-foreground">
+          Seu mapa de metas ainda está vazio
+        </h3>
+        <p className="mt-2 max-w-md text-[15px] leading-relaxed text-muted-foreground">
+          Crie a primeira meta para acompanhar progresso, conclusão e ritmo de
+          evolução. Você também pode gerar metas pelo Plano de IA.
+        </p>
+        <CreateGoalModal onCreated={fetchGoals}>
+          <Button size="lg" className="mt-6">
+            <Plus />
+            Criar primeira meta
+          </Button>
+        </CreateGoalModal>
+      </section>
     );
   }
 
+  const completedGoals = goals.filter(
+    (goal) => goal.status === 'completed'
+  ).length;
+  const averageProgress =
+    goals.reduce((sum, goal) => sum + clampProgress(goal), 0) / goals.length;
+
   return (
-    <div className="space-y-6">
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_23rem]">
-        <Card className="border-primary/12 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.12)_0%,rgba(255,255,255,0.98)_34%,rgba(255,255,255,0.94)_100%)]">
-          <CardHeader className="gap-5">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="space-y-4">
-                <Badge variant="success">Acompanhamento vivo</Badge>
-                <div className="space-y-3">
-                  <CardTitle className="text-3xl md:text-4xl">
-                    Seu ciclo de metas já está em movimento.
-                  </CardTitle>
-                  <CardDescription className="max-w-3xl text-base leading-7">
-                    Aqui ficam metas reais com atualização real de progresso,
-                    para sustentar foco, leveza e consistência sem ruído visual.
-                  </CardDescription>
-                </div>
-              </div>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-end gap-3">
+        <CreateGoalModal onCreated={fetchGoals}>
+          <Button size="lg">
+            <Plus />
+            Nova meta
+          </Button>
+        </CreateGoalModal>
+      </div>
 
-              <CreateGoalModal onCreated={fetchGoals}>
-                <Button size="lg">
-                  <Plus />
-                  Nova meta
-                </Button>
-              </CreateGoalModal>
-            </div>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-[24px] border border-white/80 bg-white/78 p-4 shadow-sm backdrop-blur-md">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                Total de metas
-              </p>
-              <p className="mt-3 font-mono text-4xl font-semibold tracking-[-0.04em] text-foreground">
-                {goals.length}
-              </p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Metas carregadas desta conta.
-              </p>
-            </div>
-
-            <div className="rounded-[24px] border border-white/80 bg-white/78 p-4 shadow-sm backdrop-blur-md">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                Concluídas
-              </p>
-              <p className="mt-3 font-mono text-4xl font-semibold tracking-[-0.04em] text-foreground">
-                {completedGoals}
-              </p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Entregas já finalizadas neste ciclo.
-              </p>
-            </div>
-
-            <div className="rounded-[24px] border border-white/80 bg-white/78 p-4 shadow-sm backdrop-blur-md">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                Progresso médio
-              </p>
-              <p className="mt-3 font-mono text-4xl font-semibold tracking-[-0.04em] text-foreground">
-                {averageProgress.toFixed(0)}%
-              </p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Média real calculada a partir do progresso atual.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-accent/12 bg-[radial-gradient(circle_at_top,hsl(var(--accent)/0.12)_0%,rgba(255,255,255,0.98)_40%,rgba(255,255,255,0.94)_100%)]">
-          <CardHeader className="gap-4">
-            <Badge variant="warning">Leitura rápida</Badge>
-            <div className="space-y-2">
-              <CardTitle className="text-2xl">Panorama do momento</CardTitle>
-              <CardDescription>
-                Um recorte simples e objetivo da sua evolução atual.
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="rounded-[24px] border border-white/75 bg-white/78 p-4">
-              <div className="flex items-center gap-3">
-                <Target className="h-5 w-5 text-primary" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    Em progresso
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {inProgressGoals} metas pedindo continuidade gentil.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-[24px] border border-white/75 bg-white/78 p-4">
-              <div className="flex items-center gap-3">
-                <Trophy className="h-5 w-5 text-golden" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    Concluídas
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {completedGoals} metas já atingiram o alvo.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-[24px] border border-white/75 bg-white/78 p-4">
-              <div className="flex items-center gap-3">
-                <TrendingUp className="h-5 w-5 text-info" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    Ritmo médio
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {averageProgress.toFixed(0)}% de avanço consolidado.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <section
+        aria-label="Resumo das metas"
+        className="grid gap-4 sm:grid-cols-3"
+      >
+        <StatTile label="Total de metas" value={String(goals.length)} />
+        <StatTile label="Concluídas" value={String(completedGoals)} />
+        <StatTile
+          label="Progresso médio"
+          value={`${averageProgress.toFixed(0)}%`}
+        />
       </section>
 
-      <section className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
+      <section
+        aria-label="Lista de metas"
+        className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+      >
         {goals.map((goal) => {
           const statusKey =
             goal.status in statusMap ? goal.status : 'in_progress';
-          const { icon: StatusIcon, badge, label, tone } = statusMap[statusKey];
+          const { icon: StatusIcon, label, tone } = statusMap[statusKey];
           const progressPercentage = clampProgress(goal);
 
           return (
-            <Card
+            <article
               key={goal.id}
-              className="overflow-hidden border-border/70 bg-white/90 shadow-[0_20px_60px_-34px_rgba(22,21,48,0.35)] backdrop-blur-xl"
+              className="flex min-w-0 flex-col gap-4 rounded-xl border border-border bg-card p-6"
             >
-              <CardHeader className="gap-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-2">
-                    <Badge variant={badge}>{label}</Badge>
-                    <div className="space-y-2">
-                      <CardTitle className="text-2xl">{goal.title}</CardTitle>
-                      <CardDescription>
-                        {goal.description ||
-                          'Meta cadastrada sem descrição adicional.'}
-                      </CardDescription>
-                    </div>
-                  </div>
-                  <GoalProgressRing
-                    progress={progressPercentage}
-                    label={`Progresso da meta ${goal.title}`}
-                  />
-                </div>
-              </CardHeader>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <Badge>{goal.category || 'Geral'}</Badge>
+                <span
+                  className={cn(
+                    'flex items-center gap-1.5 text-[13px] font-medium',
+                    tone
+                  )}
+                >
+                  <StatusIcon className="h-4 w-4" aria-hidden="true" />
+                  {label}
+                </span>
+              </div>
 
-              <CardContent className="space-y-5">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Badge variant="outline">{goal.category || 'Geral'}</Badge>
-                  <div
-                    className={cn(
-                      'flex items-center gap-2 text-sm font-medium',
-                      tone
-                    )}
-                  >
-                    <StatusIcon className="h-4 w-4" />
-                    {label}
-                  </div>
-                </div>
+              <div className="min-w-0">
+                <h3 className="break-words font-display text-xl font-semibold tracking-tight text-foreground">
+                  {goal.title}
+                </h3>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  {goal.description ||
+                    'Meta cadastrada sem descrição adicional.'}
+                </p>
+              </div>
 
-                <div className="rounded-[24px] border border-border/70 bg-muted/30 p-4">
-                  <div className="flex items-center justify-between gap-3 text-sm">
-                    <span className="text-muted-foreground">
-                      Progresso atual
-                    </span>
-                    <span className="font-semibold text-foreground">
-                      {formatMetricValue(goal.current_value, goal.unit)}
-                    </span>
-                  </div>
-                  <div className="mt-3 flex items-center justify-between gap-3 text-sm">
-                    <span className="text-muted-foreground">Alvo</span>
-                    <span className="font-semibold text-foreground">
-                      {formatMetricValue(goal.target_value, goal.unit)}
-                    </span>
-                  </div>
-                  <Progress
-                    aria-label={`Progresso da meta ${goal.title}`}
-                    value={progressPercentage}
-                    className="mt-4 h-3"
-                  />
+              <div className="mt-auto flex flex-col gap-2">
+                <div className="flex flex-wrap items-baseline justify-between gap-2 text-sm">
+                  <span className="text-muted-foreground">
+                    {formatMetricValue(goal.current_value, goal.unit)} de{' '}
+                    {formatMetricValue(goal.target_value, goal.unit)}
+                  </span>
+                  <strong className="font-semibold text-foreground">
+                    {progressPercentage.toFixed(0)}%
+                  </strong>
                 </div>
+                <Progress
+                  aria-label={`Progresso da meta ${goal.title}`}
+                  value={progressPercentage}
+                />
+              </div>
 
-                <UpdateGoalProgressModal goal={goal} onUpdate={fetchGoals}>
-                  <Button variant="secondary" className="w-full">
-                    Atualizar progresso
-                  </Button>
-                </UpdateGoalProgressModal>
-              </CardContent>
-            </Card>
+              <UpdateGoalProgressModal goal={goal} onUpdate={fetchGoals}>
+                <Button variant="secondary" size="lg" className="w-full">
+                  Atualizar progresso
+                </Button>
+              </UpdateGoalProgressModal>
+            </article>
           );
         })}
+
+        <CreateGoalModal onCreated={fetchGoals}>
+          <button
+            type="button"
+            className="flex min-h-60 flex-col items-center justify-center gap-2.5 rounded-xl border border-dashed border-control/50 bg-transparent px-6 text-center text-[15px] font-medium text-foreground/80 transition-colors hover:border-primary hover:bg-card focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <Plus className="h-5 w-5 text-primary" aria-hidden="true" />
+            Criar outra meta
+            <span className="text-[13px] font-normal text-muted-foreground">
+              Ou gere metas pelo Plano de IA
+            </span>
+          </button>
+        </CreateGoalModal>
       </section>
     </div>
   );

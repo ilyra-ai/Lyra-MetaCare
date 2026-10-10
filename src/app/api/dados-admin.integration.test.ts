@@ -391,6 +391,21 @@ describe('rotas administrativas', () => {
       "SELECT draft_data FROM puck_documents WHERE document_key = 'landing-home'"
     );
     expect(JSON.stringify(linha[0]?.draft_data)).toContain('h-teste');
+
+    // O admin vê o nome legível de quem salvou (e não só o UUID)…
+    expect(salvo.json).toMatchObject({
+      updatedByUserId: admin.id,
+      updatedByName: 'Admin Teste',
+    });
+    // …e a rota pública não identifica o administrador.
+    const publico = await chamar(puckPublico.GET, {
+      params: { documentKey: 'landing-home' },
+    });
+    expect(publico.status).toBe(200);
+    expect(publico.json).toMatchObject({
+      updatedByUserId: null,
+      updatedByName: null,
+    });
   });
 
   it('catálogo público só traz planos ativos e públicos', async () => {

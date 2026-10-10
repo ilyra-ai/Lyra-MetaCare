@@ -32,31 +32,32 @@ export function HarmoniaAtualCard({ appConfig }: { appConfig: AppPageConfig }) {
 
   return (
     <div
-      className="glass-card flex max-w-sm items-center gap-4 rounded-[24px] px-5 py-4"
+      className="flex w-full max-w-sm shrink-0 items-center gap-4 rounded-xl border border-border bg-card px-5 py-4"
       style={{
         transform: `scale(${appConfig.sizing.cardScale})`,
         transformOrigin: 'top right',
       }}
     >
       <div
-        className="flex items-center justify-center rounded-full bg-gradient-cosmic text-white shadow-cosmic"
+        aria-hidden="true"
+        className="flex shrink-0 items-center justify-center rounded-full bg-cosmic-light text-cosmic-strong"
         style={{
-          width: scaleRem(3, appConfig.sizing.iconScale),
-          height: scaleRem(3, appConfig.sizing.iconScale),
+          width: scaleRem(2.75, appConfig.sizing.iconScale),
+          height: scaleRem(2.75, appConfig.sizing.iconScale),
         }}
       >
-        <Waves className="h-5 w-5" aria-hidden="true" />
+        <Waves className="h-5 w-5" />
       </div>
-      <div aria-live="polite">
+      <div aria-live="polite" className="min-w-0">
         <p
-          className="font-semibold uppercase tracking-[0.22em] text-muted-foreground"
+          className="font-medium text-muted-foreground"
           style={{
-            fontSize: scaleRem(0.72, appConfig.typography.cardBody),
+            fontSize: scaleRem(0.8125, appConfig.typography.cardBody),
           }}
         >
           {dashboardConfig.harmonyEyebrow}
         </p>
-        <p className="metric-display text-gradient-aurora">
+        <p className="metric-display text-cosmic-strong">
           {valor}
           {valor !== '—' ? (
             <span className="ml-1 text-sm font-medium text-muted-foreground">

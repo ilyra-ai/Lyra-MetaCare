@@ -16,7 +16,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      'flex h-12 w-full items-center justify-between rounded-[14px] border border-input bg-card/96 px-4 py-3 text-sm text-foreground shadow-sm transition-all duration-200 data-placeholder:text-muted-foreground focus:outline-hidden focus:ring-4 focus:ring-primary/12 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
+      'flex h-11 w-full items-center justify-between rounded-[10px] border border-input bg-card px-3.5 py-2 text-sm text-foreground transition-colors duration-150 data-placeholder:text-muted-foreground focus:border-primary focus:outline-hidden focus:ring-3 focus:ring-primary/15 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
       className
     )}
     {...props}
@@ -76,7 +76,7 @@ const SelectContent = React.forwardRef<
       ref={ref}
       position={position}
       className={cn(
-        'relative z-50 max-h-[400px] min-w-40 overflow-hidden rounded-[20px] border border-white/85 bg-card/95 text-popover-foreground shadow-xl backdrop-blur-xl data-[state=open]:animate-scale-in',
+        'relative z-50 max-h-[400px] min-w-40 overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-lg data-[state=open]:animate-scale-in',
         position === 'popper' &&
           'data-[side=bottom]:translate-y-2 data-[side=left]:-translate-x-2 data-[side=right]:translate-x-2 data-[side=top]:-translate-y-2',
         className
@@ -106,7 +106,7 @@ const SelectLabel = React.forwardRef<
   <SelectPrimitive.Label
     ref={ref}
     className={cn(
-      'px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground',
+      'px-3 py-2 text-xs font-medium text-muted-foreground',
       className
     )}
     {...props}
@@ -122,7 +122,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex w-full cursor-default select-none items-center rounded-[14px] py-3 pl-3 pr-9 text-sm text-foreground outline-hidden transition-colors focus:bg-muted data-disabled:pointer-events-none data-disabled:opacity-50',
+      'relative flex w-full cursor-default select-none items-center rounded-sm py-2.5 pl-3 pr-9 text-sm text-foreground outline-hidden transition-colors focus:bg-muted data-disabled:pointer-events-none data-disabled:opacity-50',
       className
     )}
     {...props}

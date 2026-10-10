@@ -11,7 +11,6 @@ import {
   Droplets,
   HeartPulse,
   MoonStar,
-  Orbit,
   Sparkles,
   TimerReset,
   Waves,
@@ -56,7 +55,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 const pulseChartConfig = {
   pulso: {
     label: 'Pulso harmônico',
-    color: 'hsl(var(--accent))',
+    color: 'hsl(var(--primary))',
   },
 } satisfies ChartConfig;
 
@@ -123,8 +122,9 @@ function LoadingDashboard() {
     <div className="flex flex-col gap-6">
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <Skeleton className="h-80 md:col-span-2" />
-        <Skeleton className="h-80" />
-        <Skeleton className="h-80" />
+        <Skeleton className="h-80 md:col-span-2" />
+        <Skeleton className="h-72 xl:col-span-2" />
+        <Skeleton className="h-72 xl:col-span-2" />
         <Skeleton className="h-72 md:col-span-2 xl:col-span-4" />
       </div>
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -143,10 +143,19 @@ interface MiniMetricCardProps {
   title: string;
   value: string;
   description: string;
-  tone: 'primary' | 'accent' | 'cosmic' | 'info' | 'success' | 'golden';
+  tone: 'primary' | 'warning' | 'info' | 'success' | 'golden';
   icon: React.ElementType;
   delta: number;
 }
+
+/** Fundo suave + ícone de cada tom (violeta fica só para astral/IA). */
+const miniMetricToneStyles: Record<MiniMetricCardProps['tone'], string> = {
+  primary: 'bg-sidebar-accent text-primary',
+  warning: 'bg-warning-light text-warning',
+  info: 'bg-info-light text-info',
+  success: 'bg-success-light text-success',
+  golden: 'bg-golden-light text-golden',
+};
 
 function MiniMetricCard({
   title,
@@ -156,49 +165,43 @@ function MiniMetricCard({
   icon: Icon,
   delta,
 }: MiniMetricCardProps) {
-  const toneStyles = {
-    primary: 'bg-primary/12 text-primary',
-    accent: 'bg-accent/12 text-accent',
-    cosmic: 'bg-cosmic/12 text-cosmic',
-    info: 'bg-info/12 text-info',
-    success: 'bg-success/12 text-success',
-    golden: 'bg-golden/12 text-golden',
-  };
-
   const deltaVisual = getDeltaVisual(delta);
   const DeltaIcon = deltaVisual.icon;
 
   return (
-    <Card className="border-border/70 bg-card/90 backdrop-blur-xl">
-      <CardContent className="flex h-full flex-col gap-5 p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex flex-col gap-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              {title}
-            </p>
-            <p className="font-mono text-3xl font-semibold tracking-tight text-foreground">
-              {value}
-            </p>
-          </div>
+    <Card className="min-w-0">
+      <CardContent className="flex h-full flex-col gap-3 p-5">
+        <div className="flex items-start justify-between gap-3">
+          <p className="min-w-0 text-sm font-medium text-muted-foreground">
+            {title}
+          </p>
           <div
+            aria-hidden="true"
             className={cn(
-              'flex size-11 items-center justify-center rounded-2xl shadow-sm',
-              toneStyles[tone]
+              'flex size-9 shrink-0 items-center justify-center rounded-full',
+              miniMetricToneStyles[tone]
             )}
           >
-            <Icon />
+            <Icon className="size-4" />
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-sm leading-6 text-muted-foreground">
+        <p className="break-words font-display text-4xl font-semibold tracking-[-0.03em] text-foreground">
+          {value}
+        </p>
+
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          <p className="min-w-0 text-[13px] leading-5 text-muted-foreground">
             {description}
           </p>
           <div
-            className={cn('flex items-center gap-1.5', deltaVisual.className)}
+            className={cn(
+              'flex shrink-0 items-center gap-1',
+              deltaVisual.className
+            )}
           >
-            <DeltaIcon />
-            <span className="text-xs font-semibold uppercase tracking-[0.16em]">
+            <DeltaIcon aria-hidden="true" className="size-4" />
+            <span className="text-[13px] font-medium">
               {formatDelta(delta)}
             </span>
           </div>
@@ -296,7 +299,7 @@ export function Dashboard() {
       title: 'Passos do dia',
       value: (todayMetrics?.steps ?? 0).toLocaleString('pt-BR'),
       description: 'Ritmo corporal e constância do movimento.',
-      tone: 'accent',
+      tone: 'primary',
       icon: Activity,
       delta: stepsDelta,
     },
@@ -312,7 +315,7 @@ export function Dashboard() {
       title: 'Meditação',
       value: `${todayMetrics?.meditation_minutes ?? 0} min`,
       description: 'Espaço de regulação e foco suave.',
-      tone: 'cosmic',
+      tone: 'success',
       icon: Waves,
       delta: meditationDelta,
     },
@@ -372,20 +375,19 @@ export function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    // `pb-24`: espaço no fim da página para o botão flutuante "Ações rápidas"
+    // (QuickScanFAB) não cobrir o último cartão, sobretudo no celular.
+    <div className="flex flex-col gap-6 pb-24">
       <div className="w-full relative z-20">
         <PuckClientRenderer documentKey="dashboard" />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <Card className="relative overflow-hidden border-primary/15 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.15)_0%,hsl(var(--card))_42%,hsl(var(--card))_100%)] md:col-span-2">
-          <div className="orchestrated-orb -left-14 top-0 h-32 w-32 bg-primary/70" />
-          <div className="orchestrated-orb bottom-0 right-0 h-28 w-28 bg-accent/45" />
-
-          <CardHeader className="relative gap-5">
+        <Card className="min-w-0 md:col-span-2">
+          <CardHeader className="gap-5">
             <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="flex flex-col gap-3">
-                <Badge variant="default">
+              <div className="flex min-w-0 flex-col gap-3">
+                <Badge variant="default" className="self-start">
                   {appConfig.dashboard.pulseBadge}
                 </Badge>
                 <div className="flex flex-col gap-1">
@@ -408,7 +410,7 @@ export function Dashboard() {
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"
                   className={cn(
@@ -439,146 +441,154 @@ export function Dashboard() {
             </div>
           </CardHeader>
 
-          <CardContent className="relative flex flex-col gap-6">
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
-              <div className="flex flex-col gap-5">
-                <div className="flex flex-wrap items-end gap-3">
-                  <span className="font-mono text-6xl font-semibold tracking-[-0.04em] text-foreground">
-                    {pulseValue ? Math.round(pulseValue) : 'N/A'}
+          <CardContent className="flex flex-col gap-5">
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-medium text-muted-foreground">
+                {pulseLabel}
+              </p>
+              <p className="font-display text-4xl font-semibold tracking-[-0.03em] text-foreground">
+                {pulseValue ? Math.round(pulseValue) : 'N/A'}
+                {pulseValue ? (
+                  <span className="ml-1 text-base font-medium text-muted-foreground">
+                    {pulseUnit}
                   </span>
-                  <span className="pb-2 font-mono text-xl text-muted-foreground">
-                    {pulseValue ? pulseUnit : ''}
+                ) : null}
+              </p>
+              {pulseValue && pulseUnit === '/100' ? (
+                <Progress
+                  aria-label="Prontidão geral de 0 a 100"
+                  value={Math.min(100, Math.round(pulseValue))}
+                  className="h-1.5"
+                />
+              ) : null}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <div className="rounded-full border border-border bg-background px-3 py-1.5 text-[13px] text-foreground">
+                FC repouso:{' '}
+                <span className="font-semibold">
+                  {todayMetrics?.resting_heart_rate
+                    ? `${todayMetrics.resting_heart_rate} bpm`
+                    : vitals?.heartRate
+                      ? `${Math.round(vitals.heartRate)} bpm`
+                      : 'Sem leitura'}
+                </span>
+              </div>
+              <div className="rounded-full border border-border bg-background px-3 py-1.5 text-[13px] text-foreground">
+                Longevidade:{' '}
+                <span className="font-semibold">
+                  {longevityScore ? longevityScore.toFixed(1) : 'Bloqueado'}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 rounded-md border border-border bg-background p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <HeartPulse
+                    aria-hidden="true"
+                    className="size-4 text-primary"
+                  />
+                  <span className="text-sm font-semibold text-foreground">
+                    Estado atual
                   </span>
                 </div>
-
-                <div className="flex flex-wrap gap-3">
-                  <div className="rounded-full border border-primary/15 bg-primary/8 px-4 py-2 text-sm text-primary">
-                    {pulseLabel}
-                  </div>
-                  <div className="rounded-full border border-border bg-card/80 px-4 py-2 text-sm text-foreground">
-                    FC repouso:{' '}
-                    <span className="font-semibold">
-                      {todayMetrics?.resting_heart_rate
-                        ? `${todayMetrics.resting_heart_rate} bpm`
-                        : vitals?.heartRate
-                          ? `${Math.round(vitals.heartRate)} bpm`
-                          : 'Sem leitura'}
-                    </span>
-                  </div>
-                  <div className="rounded-full border border-border bg-card/80 px-4 py-2 text-sm text-foreground">
-                    Longevidade:{' '}
-                    <span className="font-semibold">
-                      {longevityScore ? longevityScore.toFixed(1) : 'Bloqueado'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2 rounded-[24px] border border-white/75 bg-white/75 p-4 shadow-sm backdrop-blur-md">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <HeartPulse className="text-accent" />
-                      <span className="text-sm font-semibold text-foreground">
-                        Estado atual
-                      </span>
-                    </div>
-                    <Badge variant={syncBadgeVariant}>{syncBadgeLabel}</Badge>
-                  </div>
-                  <p className="text-sm leading-7 text-muted-foreground">
-                    {syncSummary}
-                  </p>
-                </div>
+                <Badge variant={syncBadgeVariant}>{syncBadgeLabel}</Badge>
               </div>
-
-              <div className="flex flex-col gap-3 rounded-[28px] border border-border/70 bg-card/85 p-4 backdrop-blur-xl">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-                  Trajetória recente
-                </p>
-                <ChartContainer
-                  config={pulseChartConfig}
-                  className="min-h-48 border-none bg-transparent p-0 shadow-none"
-                >
-                  <AreaChart accessibilityLayer data={pulseTrendData}>
-                    <defs>
-                      <linearGradient
-                        id="fillPulse"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="5%"
-                          stopColor="var(--color-pulso)"
-                          stopOpacity={0.35}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="var(--color-pulso)"
-                          stopOpacity={0.02}
-                        />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                      dataKey="dia"
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={12}
-                    />
-                    <ChartTooltip
-                      cursor={false}
-                      content={<ChartTooltipContent />}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="pulso"
-                      stroke="var(--color-pulso)"
-                      fill="url(#fillPulse)"
-                      strokeWidth={3}
-                    />
-                  </AreaChart>
-                </ChartContainer>
-              </div>
+              <p className="text-sm leading-6 text-muted-foreground">
+                {syncSummary}
+              </p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="relative overflow-hidden border-cosmic/15 bg-[radial-gradient(circle_at_top_right,hsl(var(--cosmic)/0.14)_0%,hsl(var(--card))_45%,hsl(var(--card))_100%)]">
-          <div className="absolute right-4 top-4 text-cosmic/20">
-            <Orbit className="size-28 animate-spin-slow" />
-          </div>
+        <Card className="flex min-w-0 flex-col md:col-span-2">
+          <CardHeader className="gap-1">
+            <CardTitle>Trajetória recente</CardTitle>
+            <CardDescription>{pulseChartConfig.pulso.label}</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-1 flex-col">
+            {pulseTrendData.length > 0 ? (
+              <ChartContainer
+                config={pulseChartConfig}
+                className="aspect-auto h-64 w-full border-none bg-transparent p-0"
+              >
+                <AreaChart accessibilityLayer data={pulseTrendData}>
+                  <CartesianGrid vertical={false} stroke="hsl(var(--border))" />
+                  <XAxis
+                    dataKey="dia"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={12}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent />}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="pulso"
+                    stroke="var(--color-pulso)"
+                    fill="var(--color-pulso)"
+                    fillOpacity={0.1}
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ChartContainer>
+            ) : (
+              <div className="flex min-h-48 flex-1 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-background p-6 text-center">
+                <Activity
+                  aria-hidden="true"
+                  className="size-6 text-muted-foreground"
+                />
+                <p className="text-sm text-muted-foreground">
+                  Ainda não há leituras suficientes para desenhar a trajetória.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-          <CardHeader className="relative gap-5">
+        <Card className="min-w-0 xl:col-span-2">
+          <CardHeader className="gap-4">
             <div className="flex items-center justify-between gap-3">
-              <Badge variant="cosmic">{appConfig.dashboard.astroBadge}</Badge>
-              <div className="flex size-11 items-center justify-center rounded-2xl bg-cosmic-light text-cosmic shadow-cosmic">
-                <MoonStar />
+              <div className="flex min-w-0 items-center gap-2">
+                <MoonStar
+                  aria-hidden="true"
+                  className="size-5 shrink-0 text-cosmic"
+                />
+                <Badge variant="cosmic">{appConfig.dashboard.astroBadge}</Badge>
               </div>
             </div>
             <div className="flex flex-col gap-2">
               <CardTitle className="text-2xl">{astroTitle}</CardTitle>
-              <CardDescription>{astroDetail}</CardDescription>
+              <p className="text-[15px] leading-relaxed text-foreground/80">
+                {astroDetail}
+              </p>
             </div>
           </CardHeader>
 
-          <CardContent className="relative flex flex-col gap-4">
-            <div className="flex flex-wrap gap-2">
-              {astrology?.nakshatra ? (
-                <Badge variant="secondary">{astrology.nakshatra}</Badge>
-              ) : null}
-              {astrology?.paksha ? (
-                <Badge variant="cosmic">{astrology.paksha}</Badge>
-              ) : null}
-              {astrology?.tithi ? (
-                <Badge variant="info">{astrology.tithi}</Badge>
-              ) : null}
-            </div>
+          <CardContent className="flex flex-col gap-4">
+            {astrology?.nakshatra || astrology?.paksha || astrology?.tithi ? (
+              <div className="flex flex-wrap gap-2">
+                {[astrology?.nakshatra, astrology?.paksha, astrology?.tithi]
+                  .filter((chip): chip is string => Boolean(chip))
+                  .map((chip, index) => (
+                    <span
+                      key={`${index}-${chip}`}
+                      className="rounded-full bg-cosmic-light px-2.5 py-1 text-[13px] font-medium text-cosmic-strong"
+                    >
+                      {chip}
+                    </span>
+                  ))}
+              </div>
+            ) : null}
 
-            <div className="rounded-[24px] border border-white/80 bg-white/80 p-4 shadow-sm backdrop-blur-md">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            <div className="rounded-md border border-border bg-background p-4">
+              <p className="text-sm font-medium text-muted-foreground">
                 {appConfig.dashboard.astroInsightLabel}
               </p>
-              <p className="mt-3 text-sm leading-7 text-foreground">
+              <p className="mt-2 text-[15px] leading-relaxed text-foreground/80">
                 {astrology?.impactOnHealth.stress ??
                   appConfig.dashboard.astroInsightFallback}
               </p>
@@ -586,16 +596,19 @@ export function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden border-info/15 bg-[radial-gradient(circle_at_bottom_left,hsl(var(--info)/0.16)_0%,hsl(var(--card))_48%,hsl(var(--card))_100%)]">
-          <CardHeader className="gap-5">
+        <Card className="min-w-0 xl:col-span-2">
+          <CardHeader className="gap-4">
             <div className="flex items-center justify-between gap-3">
               <Badge variant="info">{appConfig.dashboard.sleepBadge}</Badge>
-              <div className="flex size-11 items-center justify-center rounded-2xl bg-info-light text-info shadow-md">
-                <BedDouble />
+              <div
+                aria-hidden="true"
+                className="flex size-9 items-center justify-center rounded-full bg-info-light text-info"
+              >
+                <BedDouble className="size-4" />
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <CardTitle className="text-2xl">
+              <CardTitle className="text-4xl tracking-[-0.03em]">
                 {sleepMinutes > 0 ? formatMinutes(sleepMinutes) : 'Sem dados'}
               </CardTitle>
               <CardDescription>
@@ -608,7 +621,7 @@ export function Dashboard() {
 
           <CardContent className="flex flex-col gap-5">
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between gap-3 text-sm">
+              <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
                 <span className="text-muted-foreground">
                   {appConfig.dashboard.sleepGoalLabel}
                 </span>
@@ -623,25 +636,25 @@ export function Dashboard() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[20px] border border-border/70 bg-card/80 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+              <div className="rounded-md border border-border bg-background p-4">
+                <p className="text-sm font-medium text-muted-foreground">
                   {appConfig.dashboard.deepSleepLabel}
                 </p>
-                <p className="mt-2 font-mono text-2xl text-foreground">
+                <p className="mt-1 font-display text-2xl font-semibold tracking-[-0.03em] text-foreground">
                   {formatMinutes(deepSleepMinutes)}
                 </p>
               </div>
-              <div className="rounded-[20px] border border-border/70 bg-card/80 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+              <div className="rounded-md border border-border bg-background p-4">
+                <p className="text-sm font-medium text-muted-foreground">
                   {appConfig.dashboard.remSleepLabel}
                 </p>
-                <p className="mt-2 font-mono text-2xl text-foreground">
+                <p className="mt-1 font-display text-2xl font-semibold tracking-[-0.03em] text-foreground">
                   {formatMinutes(remSleepMinutes)}
                 </p>
               </div>
             </div>
 
-            <p className="text-sm leading-7 text-muted-foreground">
+            <p className="text-[13px] leading-5 text-muted-foreground">
               {astrology?.impactOnHealth.sleep ??
                 appConfig.dashboard.sleepInsightFallback}
             </p>
@@ -663,11 +676,11 @@ export function Dashboard() {
         ))}
       </div>
 
-      <Card className="border-primary/10 bg-card/90 backdrop-blur-xl">
+      <Card className="min-w-0">
         <CardHeader className="gap-3">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="flex flex-col gap-2">
-              <Badge variant="secondary">
+            <div className="flex min-w-0 flex-col gap-2">
+              <Badge variant="secondary" className="self-start">
                 {appConfig.dashboard.weeklyBadge}
               </Badge>
               <CardTitle className="text-2xl">
@@ -677,8 +690,8 @@ export function Dashboard() {
                 {appConfig.dashboard.weeklyDescription}
               </CardDescription>
             </div>
-            <div className="flex items-center gap-3 rounded-full border border-border bg-card px-4 py-2 text-sm text-muted-foreground">
-              <Bot className="text-primary" />
+            <div className="flex flex-wrap items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-[13px] text-muted-foreground">
+              <Bot aria-hidden="true" className="size-4 text-accent" />
               {appConfig.dashboard.aiUnlockedLabel}:{' '}
               <span className="font-semibold text-foreground">
                 {aiScoresEnabled
@@ -690,65 +703,79 @@ export function Dashboard() {
         </CardHeader>
 
         <CardContent className="flex flex-col gap-6">
-          <ChartContainer
-            config={weeklyChartConfig}
-            className="min-h-88 border-none bg-transparent p-0 shadow-none"
-          >
-            <AreaChart accessibilityLayer data={weeklyFlowData}>
-              <defs>
-                <linearGradient id="fillReadiness" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor="var(--color-prontidao)"
-                    stopOpacity={0.32}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--color-prontidao)"
-                    stopOpacity={0.02}
-                  />
-                </linearGradient>
-              </defs>
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="dia"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={12}
+          {weeklyFlowData.length > 0 ? (
+            <ChartContainer
+              config={weeklyChartConfig}
+              className="aspect-auto h-72 w-full border-none bg-transparent p-0 md:h-80"
+            >
+              <AreaChart accessibilityLayer data={weeklyFlowData}>
+                <CartesianGrid vertical={false} stroke="hsl(var(--border))" />
+                <XAxis
+                  dataKey="dia"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={12}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent />}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="prontidao"
+                  stroke="var(--color-prontidao)"
+                  fill="var(--color-prontidao)"
+                  fillOpacity={0.1}
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ChartContainer>
+          ) : (
+            <div className="flex min-h-48 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-background p-6 text-center">
+              <Activity
+                aria-hidden="true"
+                className="size-6 text-muted-foreground"
               />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-              <Area
-                type="monotone"
-                dataKey="prontidao"
-                stroke="var(--color-prontidao)"
-                fill="url(#fillReadiness)"
-                strokeWidth={3}
-              />
-            </AreaChart>
-          </ChartContainer>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-[22px] border border-border/70 bg-card/80 p-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                {appConfig.dashboard.currentReadinessLabel}
-              </p>
-              <p className="mt-2 font-mono text-3xl text-foreground">
-                {readinessScore ? Math.round(readinessScore) : 'N/A'}
+              <p className="text-sm text-muted-foreground">
+                Ainda não há leituras da semana para exibir a prontidão.
               </p>
             </div>
-            <div className="rounded-[22px] border border-border/70 bg-card/80 p-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          )}
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="flex flex-col gap-2 rounded-md border border-border p-4">
+              <p className="text-sm font-medium text-muted-foreground">
+                {appConfig.dashboard.currentReadinessLabel}
+              </p>
+              <p className="font-display text-4xl font-semibold tracking-[-0.03em] text-foreground">
+                {readinessScore ? Math.round(readinessScore) : 'N/A'}
+                {readinessScore ? (
+                  <span className="ml-1 text-base font-medium text-muted-foreground">
+                    /100
+                  </span>
+                ) : null}
+              </p>
+              {readinessScore ? (
+                <Progress
+                  aria-label="Prontidão atual de 0 a 100"
+                  value={Math.min(100, Math.round(readinessScore))}
+                  className="h-1.5"
+                />
+              ) : null}
+            </div>
+            <div className="flex flex-col gap-2 rounded-md border border-border p-4">
+              <p className="text-sm font-medium text-muted-foreground">
                 {appConfig.dashboard.longevityLabel}
               </p>
-              <p className="mt-2 font-mono text-3xl text-foreground">
+              <p className="font-display text-4xl font-semibold tracking-[-0.03em] text-foreground">
                 {longevityScore ? longevityScore.toFixed(1) : 'Bloqueado'}
               </p>
             </div>
-            <div className="rounded-[22px] border border-border/70 bg-card/80 p-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            <div className="flex flex-col gap-2 rounded-md border border-border p-4">
+              <p className="text-sm font-medium text-muted-foreground">
                 {appConfig.dashboard.liveContextLabel}
               </p>
-              <p className="mt-2 text-sm leading-7 text-foreground">
+              <p className="text-[15px] leading-relaxed text-foreground/80">
                 {astrology?.impactOnHealth.energy ??
                   appConfig.dashboard.liveContextFallback}
               </p>
@@ -769,19 +796,17 @@ export function Dashboard() {
       {todayMetrics ? (
         <section className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <h2 className="text-2xl font-display font-bold tracking-tight text-gradient-hero">
+            <h2 className="font-display text-2xl font-semibold tracking-[-0.02em] text-foreground">
               {appConfig.dashboard.pillarsTitle}
             </h2>
-            <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
+            <p className="max-w-3xl text-[15px] leading-relaxed text-muted-foreground">
               {appConfig.dashboard.pillarsDescription}
             </p>
           </div>
-          <div className="rounded-[32px] border border-border/70 bg-card/80 p-5 shadow-sm backdrop-blur-xl">
-            <MetricGrid metrics={todayMetrics} />
-          </div>
+          <MetricGrid metrics={todayMetrics} />
         </section>
       ) : (
-        <Card className="border-dashed border-border/80 bg-card/80">
+        <Card className="border-dashed">
           <CardHeader className="gap-3">
             <CardTitle className="text-2xl">
               {appConfig.dashboard.emptyMetricsTitle}

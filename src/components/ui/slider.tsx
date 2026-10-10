@@ -30,13 +30,14 @@ const Slider = React.forwardRef<
       )}
       {...props}
     >
-      <SliderPrimitive.Track className="relative h-2.5 w-full grow overflow-hidden rounded-full bg-muted">
-        <SliderPrimitive.Range className="absolute h-full bg-gradient-aurora bg-size-[160%_160%] animate-aurora" />
+      <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-muted">
+        <SliderPrimitive.Range className="absolute h-full bg-primary" />
       </SliderPrimitive.Track>
+      {/* Thumb branco com contorno teal e anel de foco visível (WCAG 2.4.7). */}
       <SliderPrimitive.Thumb
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledby}
-        className="block h-5 w-5 rounded-full border-2 border-white bg-primary shadow-teal transition-transform duration-200 hover:scale-105 focus-visible:outline-hidden focus-visible:ring-4 focus-visible:ring-primary/12 disabled:pointer-events-none disabled:opacity-50"
+        className="block h-5 w-5 rounded-full border-2 border-primary bg-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
       />
     </SliderPrimitive.Root>
   )

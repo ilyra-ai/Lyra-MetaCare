@@ -5,6 +5,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { Button } from '@/components/ui/button';
 import { Send, Mic, MicOff, ArrowUp } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 // ===== SpeechRecognition types (TS 5.x friendly) =====
 declare global {
@@ -70,16 +71,6 @@ interface ChatInputProps {
 const DEFAULT_MAX_LENGTH = 4000;
 const HIGH_CHAR_THRESHOLD = 0.75;
 const CRITICAL_CHAR_THRESHOLD = 0.95;
-
-// Posições fixas das partículas do botão de envio, distribuídas pela razão
-// áurea. Valores determinísticos evitam que as partículas "pulem" a cada
-// renderização (Math.random() durante o render) e divergências de hidratação.
-const SEND_BUTTON_PARTICLES = Array.from({ length: 8 }, (_, index) => ({
-  id: index,
-  left: Math.round(((index * 0.618034 + 0.12) % 1) * 100),
-  top: Math.round(((index * 0.381966 + 0.27) % 1) * 100),
-  delay: Number(((index * 0.0625) % 0.5).toFixed(3)),
-}));
 
 function ChatInput({
   onSendMessage,
@@ -194,16 +185,17 @@ function ChatInput({
   const isCritical = charProgress >= CRITICAL_CHAR_THRESHOLD;
 
   return (
-    <div className="relative mx-auto w-full max-w-4xl px-2 md:px-4">
+    <div className="relative mx-auto w-full max-w-4xl">
       <div
-        className={`relative flex items-end gap-2 rounded-[24px] border border-input bg-card/95 px-3 py-1.5 transition-all duration-200 focus-within:border-primary/55 focus-within:shadow-[0_0_0_4px_hsl(var(--primary)/0.12)] ${
-          disabled ? 'cursor-not-allowed opacity-50' : 'shadow-sm'
-        }`}
+        className={cn(
+          'relative flex items-end gap-2 rounded-xl border border-input bg-card px-3 py-1.5 transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-ring/25',
+          disabled && 'cursor-not-allowed opacity-50'
+        )}
         role="group"
         aria-labelledby={helperId}
       >
         {/* Textarea */}
-        <div className="relative z-10 flex-1">
+        <div className="min-w-0 flex-1">
           <TextareaAutosize
             ref={inputRef}
             id={inputId}
@@ -219,22 +211,10 @@ function ChatInput({
             aria-describedby={`${helperId} ${statusId}`}
             className="w-full resize-none border-0 bg-transparent px-1 py-2 text-sm leading-6 text-foreground placeholder:text-muted-foreground focus:outline-hidden"
           />
-
-          {showCounter && (
-            <div className="absolute -bottom-6 right-0 text-xs font-medium">
-              <span
-                className={
-                  isCritical ? 'text-destructive' : 'text-muted-foreground'
-                }
-              >
-                {text.length}/{maxLength}
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Botões de ação */}
-        <div className="relative z-10 flex items-center gap-1.5 pb-0.5">
+        <div className="flex shrink-0 items-center gap-1.5 pb-0.5">
           {/* Botão de voz */}
           {text.trim().length === 0 && (
             <Button
@@ -248,44 +228,17 @@ function ChatInput({
                   : 'Iniciar gravação de voz'
               }
               aria-pressed={isListening}
-              className={`
-                group relative h-9 w-9 overflow-hidden rounded-full transition-all duration-300
-                ${
-                  isListening
-                    ? 'scale-110 bg-gradient-coral shadow-coral hover:brightness-105'
-                    : 'border border-border/70 bg-secondary hover:scale-105 hover:bg-cosmic-light/60'
-                }
-                disabled:cursor-not-allowed disabled:opacity-50
-              `}
-            >
-              {isListening && (
-                <div
-                  className="absolute inset-0 flex items-center justify-center"
-                  aria-hidden="true"
-                >
-                  {[...Array(3)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute inset-0 animate-ping rounded-full border-2 border-white/30"
-                      style={{
-                        animationDelay: `${i * 0.3}s`,
-                        animationDuration: '1.5s',
-                      }}
-                    />
-                  ))}
-                </div>
+              className={cn(
+                'h-9 w-9 rounded-full disabled:cursor-not-allowed disabled:opacity-50',
+                isListening
+                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive-hover hover:text-destructive-foreground'
+                  : 'border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground'
               )}
-
+            >
               {isListening ? (
-                <MicOff
-                  className="relative z-10 h-4 w-4 text-white"
-                  aria-hidden="true"
-                />
+                <MicOff className="h-4 w-4" aria-hidden="true" />
               ) : (
-                <Mic
-                  className="relative z-10 h-4 w-4 text-muted-foreground transition-colors group-hover:text-cosmic"
-                  aria-hidden="true"
-                />
+                <Mic className="h-4 w-4" aria-hidden="true" />
               )}
             </Button>
           )}
@@ -296,96 +249,57 @@ function ChatInput({
             disabled={disabled || !text.trim()}
             size="icon"
             aria-label="Enviar mensagem"
-            className={`
-              group relative h-9 w-9 overflow-hidden rounded-full transition-all duration-300
-              ${
-                !disabled && text.trim()
-                  ? 'scale-100 bg-[linear-gradient(135deg,hsl(var(--cosmic)),hsl(var(--primary)))] shadow-cosmic hover:scale-110 hover:rotate-6 hover:brightness-110'
-                  : 'border border-border/70 bg-secondary'
-              }
-              disabled:cursor-not-allowed disabled:opacity-50
-              before:absolute before:inset-0 before:bg-linear-to-br before:from-white/40 before:to-transparent
-              before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100
-            `}
-          >
-            {!disabled && text.trim() && (
-              <div
-                className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                aria-hidden="true"
-              >
-                {SEND_BUTTON_PARTICLES.map((particle) => (
-                  <div
-                    key={particle.id}
-                    className="animate-particle absolute h-1 w-1 rounded-full bg-white"
-                    style={{
-                      left: `${particle.left}%`,
-                      top: `${particle.top}%`,
-                      animationDelay: `${particle.delay}s`,
-                    }}
-                  />
-                ))}
-              </div>
+            className={cn(
+              'h-9 w-9 rounded-full disabled:cursor-not-allowed',
+              !disabled && text.trim()
+                ? 'bg-primary text-primary-foreground hover:bg-primary-hover'
+                : 'border border-border bg-background text-muted-foreground disabled:opacity-100'
             )}
-
+          >
             {!disabled && text.trim() ? (
-              <ArrowUp
-                className="relative z-10 h-4 w-4 text-white transition-transform group-hover:scale-110"
-                aria-hidden="true"
-              />
+              <ArrowUp className="h-4 w-4" aria-hidden="true" />
             ) : (
-              <Send
-                className="relative z-10 h-4 w-4 text-muted-foreground"
-                aria-hidden="true"
-              />
+              <Send className="h-4 w-4" aria-hidden="true" />
             )}
           </Button>
         </div>
       </div>
 
-      {/* Status */}
-      {(isListening || text.length > 0) && (
-        <div
-          id={statusId}
-          className="absolute -bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-3 text-xs font-medium"
-          role="status"
-          aria-live="polite"
-        >
-          {isListening ? (
-            <span className="text-accent">Gravando áudio</span>
-          ) : (
-            <span className="text-muted-foreground">
-              Pressione Enter para enviar
+      {/* Status e contador ficam no fluxo (não vazam do cartão do chat). */}
+      {isListening || text.length > 0 || showCounter ? (
+        <div className="mt-1.5 flex min-h-4 items-center justify-between gap-3 px-1 text-xs font-medium">
+          <div id={statusId} role="status" aria-live="polite">
+            {isListening ? (
+              <span className="inline-flex items-center gap-1.5 text-destructive">
+                <span
+                  className="h-2 w-2 animate-pulse rounded-full bg-destructive"
+                  aria-hidden="true"
+                />
+                Gravando áudio
+              </span>
+            ) : text.length > 0 ? (
+              <span className="text-muted-foreground">
+                Pressione Enter para enviar
+              </span>
+            ) : null}
+          </div>
+          {showCounter ? (
+            <span
+              className={
+                isCritical ? 'text-destructive' : 'text-muted-foreground'
+              }
+            >
+              {text.length}/{maxLength}
             </span>
-          )}
+          ) : null}
         </div>
-      )}
+      ) : null}
 
       {/* Helper para leitores de tela */}
       <div id={helperId} className="sr-only">
         Digite sua mensagem ou use o botão de microfone para gravar áudio.
         Pressione Enter para enviar.
       </div>
-
-      {/* Animação das partículas do botão enviar */}
-      <style jsx>{`
-        @keyframes particle {
-          0% {
-            opacity: 0;
-            transform: translate(0, 0) scale(0);
-          }
-          50% {
-            opacity: 1;
-            transform: translate(var(--tx, 10px), var(--ty, -10px)) scale(1);
-          }
-          100% {
-            opacity: 0;
-            transform: translate(var(--tx, 20px), var(--ty, -20px)) scale(0);
-          }
-        }
-        .animate-particle {
-          animation: particle 1.5s ease-out infinite;
-        }
-      `}</style>
     </div>
   );
 }

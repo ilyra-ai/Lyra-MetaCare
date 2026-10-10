@@ -171,7 +171,7 @@ export function AppointmentFormModal({
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="appointment_date"
@@ -230,7 +230,10 @@ export function AppointmentFormModal({
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2
+                    className="mr-2 h-4 w-4 animate-spin"
+                    aria-hidden="true"
+                  />
                 )}
                 {appointmentToEdit ? 'Salvar Alterações' : 'Agendar'}
               </Button>

@@ -73,7 +73,7 @@ export const navigationItems: NavigationDefinition[] = [
     description:
       'Agenda de encontros, profissionais e organização do seu fluxo.',
     icon: CalendarDays,
-    section: 'Fluxo Guiado',
+    section: 'Fluxo guiado',
     sectionKey: 'guidedFlow',
     shortcut: 'G A',
   },
@@ -82,7 +82,7 @@ export const navigationItems: NavigationDefinition[] = [
     label: 'Monitoramento',
     description: 'Leituras em tempo real, tendências e estados do momento.',
     icon: Radio,
-    section: 'Fluxo Guiado',
+    section: 'Fluxo guiado',
     sectionKey: 'guidedFlow',
     shortcut: 'G R',
   },
@@ -92,7 +92,7 @@ export const navigationItems: NavigationDefinition[] = [
     description:
       'Conversa inteligente com contexto biométrico, emocional e astral.',
     icon: BrainCircuit,
-    section: 'Fluxo Guiado',
+    section: 'Fluxo guiado',
     sectionKey: 'guidedFlow',
     shortcut: 'G C',
   },
@@ -313,27 +313,5 @@ export function getPageMeta(pathname: string, appConfig?: AppPageConfig) {
         'Experiência premium de bem-estar com dados, IA e sabedoria ancestral.',
       icon: Settings2,
     }
-  );
-}
-
-export function buildBreadcrumb(pathname: string, appConfig?: AppPageConfig) {
-  const configuredItem = appConfig
-    ? getVisibleNavigation(true, appConfig).find(
-        (item) => item.href === pathname
-      )
-    : null;
-
-  if (configuredItem) {
-    return [configuredItem.section, configuredItem.label];
-  }
-
-  const segments = pathname.split('/').filter(Boolean);
-
-  if (segments.length === 0) {
-    return ['Dashboard'];
-  }
-
-  return segments.map((segment) =>
-    segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
   );
 }

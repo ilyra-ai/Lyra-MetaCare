@@ -1,84 +1,40 @@
 'use client';
 
-import { MadeWithIlyra } from '@/components/made-with-ilyra';
-import { Sidebar } from '@/components/layout/sidebar';
-import { Header } from '@/components/layout/header';
+import { AppShell } from '@/components/layout/AppShell';
+import { AccessDenied } from '@/components/layout/AccessDenied';
+import { PageIntro } from '@/components/layout/PageIntro';
 import { useAuth } from '@/context/AuthContext';
 import { SplashScreen } from '@/components/SplashScreen';
 import { AIConfigForm } from '@/components/admin/AIConfigForm';
 import { AIKnowledgeManager } from '@/components/admin/AIKnowledgeManager';
 import { useIsAdmin } from '@/hooks/use-is-admin';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle } from 'lucide-react';
-import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 
 export default function AIConfigPage() {
   const { session } = useAuth();
   const isAdmin = useIsAdmin();
 
-  // Use SplashScreen while session is loading
+  // SplashScreen enquanto a sessão carrega.
   if (session === undefined) {
     return <SplashScreen />;
   }
 
-  // AuthContext handles redirect if not logged in
+  // O AuthContext redireciona quando não há sessão.
   if (!session) {
     return null;
   }
 
   if (!isAdmin) {
-    return (
-      <div className="page-shell flex min-h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-md text-center border-destructive/40">
-          <CardHeader>
-            <AlertTriangle className="h-10 w-10 text-destructive mx-auto mb-2" />
-            <CardTitle>Acesso Negado</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Você não tem permissão para acessar esta página de administração.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <AccessDenied />;
   }
 
   return (
-    <div className="relative flex min-h-screen overflow-hidden">
-      {/* Background Decorativo Premium 2026 */}
-      <div className="pointer-events-none absolute left-0 top-0 z-0 h-[50vh] w-full bg-linear-to-b from-primary/10 to-transparent"></div>
-      <div className="pointer-events-none absolute right-[-10%] top-[-10%] z-0 h-[600px] w-[600px] rounded-full bg-primary/15 blur-3xl"></div>
-      <div className="pointer-events-none absolute bottom-[-10%] left-[-10%] z-0 h-[500px] w-[500px] rounded-full bg-accent/10 blur-3xl"></div>
-
-      {/* A Sidebar no Lyra geralmente não recebe props, vamos assegurar que ela tenha z-index por css global se necessário, mas removemos a prop que não existe */}
-      <Sidebar />
-      <div className="relative z-10 flex min-w-0 flex-1 flex-col">
-        <Header />
-        <PuckClientRenderer
-          documentKey="admin-ai-config"
-          className="w-full shrink-0"
-        />
-        <main
-          id="conteudo-principal"
-          className="flex-1 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto w-full"
-        >
-          <div className="mb-10 text-center sm:text-left">
-            <h2 className="font-display text-4xl font-bold tracking-tight text-foreground">
-              Modelos de IA
-            </h2>
-            <p className="mt-2 text-lg text-muted-foreground">
-              Gerencie a configuração central, comportamento e pesos do motor de
-              IA da Lyra.
-            </p>
-          </div>
-          <div className="w-full relative space-y-8">
-            <AIConfigForm />
-            <AIKnowledgeManager />
-          </div>
-        </main>
-        <MadeWithIlyra />
-      </div>
-    </div>
+    <AppShell puckDocumentKey="admin-ai-config">
+      <PageIntro
+        title="Modelos de IA"
+        description="Gerencie a configuração central, comportamento e pesos do motor de IA da Lyra."
+      />
+      <AIConfigForm />
+      <AIKnowledgeManager />
+    </AppShell>
   );
 }

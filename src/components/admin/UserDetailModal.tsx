@@ -82,13 +82,16 @@ const DetailItem = ({
   label: string;
   value: React.ReactNode;
 }) => (
-  <div className="flex items-start gap-3 rounded-2xl border border-border/70 bg-card/80 p-4 backdrop-blur-sm">
-    <Icon className="mt-1 h-4 w-4 text-muted-foreground" />
-    <div className="space-y-1">
-      <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
-        {label}
-      </p>
-      <div className="text-sm font-medium">{value || 'Não informado'}</div>
+  <div className="flex items-start gap-3 rounded-md border border-border bg-background p-4">
+    <Icon
+      className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
+      aria-hidden="true"
+    />
+    <div className="min-w-0 space-y-1">
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
+      <div className="break-words text-sm font-medium text-foreground">
+        {value || 'Não informado'}
+      </div>
     </div>
   </div>
 );
@@ -231,31 +234,29 @@ export function UserDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl overflow-hidden border-0 p-0 shadow-2xl ring-1 ring-border/70">
-        <div className="bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.14),transparent_32%),radial-gradient(circle_at_top_right,hsl(var(--cosmic)/0.14),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.94),rgba(249,248,252,0.92))] p-8">
+      <DialogContent className="max-w-5xl p-0">
+        <div className="p-5 sm:p-8">
           <DialogHeader className="space-y-6">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-24 w-24 border shadow-xl">
+              <div className="flex min-w-0 items-center gap-4">
+                <Avatar className="h-16 w-16 shrink-0 border border-border sm:h-20 sm:w-20">
                   <AvatarImage src={user.avatarUrl || undefined} />
-                  <AvatarFallback className="text-3xl">
-                    {user.firstName?.charAt(0) || <User />}
+                  <AvatarFallback className="font-display text-2xl">
+                    {user.firstName?.charAt(0) || <User aria-hidden="true" />}
                   </AvatarFallback>
                 </Avatar>
-                <div className="space-y-3">
-                  <div>
-                    <DialogTitle className="text-3xl font-semibold tracking-tight">
+                <div className="min-w-0 space-y-3">
+                  <div className="min-w-0">
+                    <DialogTitle className="break-words font-display text-2xl font-semibold tracking-tight">
                       {user.firstName || 'Usuário'} {user.lastName || ''}
                     </DialogTitle>
-                    <DialogDescription className="mt-2 text-sm leading-7">
+                    <DialogDescription className="mt-1 break-all text-sm leading-6">
                       {user.email}
                     </DialogDescription>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {user.onboardingCompleted ? (
-                      <Badge className="bg-success text-success-foreground">
-                        Onboarding Completo
-                      </Badge>
+                      <Badge variant="success">Onboarding Completo</Badge>
                     ) : (
                       <Badge variant="secondary">Onboarding Pendente</Badge>
                     )}
@@ -271,9 +272,12 @@ export function UserDetailModal({
                 </div>
               </div>
 
-              <div className="min-w-[280px] rounded-3xl border border-border/70 bg-card/85 p-5 shadow-xl backdrop-blur-sm">
-                <div className="mb-4 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                  <ShieldCheck className="h-4 w-4" />
+              <div className="w-full rounded-xl border border-border bg-background p-5 lg:w-auto lg:min-w-[280px]">
+                <div className="mb-4 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                  <ShieldCheck
+                    className="h-4 w-4 text-primary"
+                    aria-hidden="true"
+                  />
                   Gestão premium da assinatura
                 </div>
                 {loadingAssignment ? (
@@ -333,7 +337,10 @@ export function UserDetailModal({
                     >
                       {savingAssignment ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <Loader2
+                            className="mr-2 h-4 w-4 animate-spin"
+                            aria-hidden="true"
+                          />
                           Aplicando matriz ao usuário...
                         </>
                       ) : (
@@ -346,9 +353,9 @@ export function UserDetailModal({
             </div>
           </DialogHeader>
 
-          <div className="grid gap-6 border-t border-border/70 pt-8 lg:grid-cols-[1.2fr_0.9fr]">
-            <div className="space-y-6">
-              <Card className="border-0 shadow-xl ring-1 ring-border/70">
+          <div className="mt-6 grid gap-6 border-t border-border pt-6 lg:grid-cols-[1.2fr_0.9fr]">
+            <div className="min-w-0 space-y-6">
+              <Card>
                 <CardHeader>
                   <CardTitle>Perfil e contexto</CardTitle>
                   <CardDescription>
@@ -412,8 +419,8 @@ export function UserDetailModal({
               </Card>
             </div>
 
-            <div className="space-y-6">
-              <Card className="border-0 shadow-xl ring-1 ring-border/70">
+            <div className="min-w-0 space-y-6">
+              <Card>
                 <CardHeader>
                   <CardTitle>Assinatura vigente</CardTitle>
                   <CardDescription>
@@ -429,33 +436,39 @@ export function UserDetailModal({
                     </div>
                   ) : assignment ? (
                     <>
-                      <div className="rounded-2xl border border-border/70 bg-card/80 p-4 backdrop-blur-sm">
-                        <div className="mb-3 flex items-center justify-between gap-3">
-                          <div className="space-y-2">
+                      <div className="rounded-md border border-border bg-background p-4">
+                        <div className="mb-3 flex items-start justify-between gap-3">
+                          <div className="min-w-0 space-y-2">
                             <PlanBadge
                               planKey={assignment.subscription.plan.key}
                             />
-                            <p className="text-lg font-semibold">
+                            <p className="font-display text-lg font-semibold tracking-tight text-foreground">
                               {assignment.subscription.plan.name}
                             </p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm leading-6 text-muted-foreground">
                               {assignment.subscription.plan.tagline}
                             </p>
                           </div>
-                          <div
-                            className="h-12 w-12 rounded-2xl shadow-lg"
+                          {/* Cor configurada do plano (dado do banco), exibida de forma discreta. */}
+                          <span
+                            className="mt-1 h-4 w-4 shrink-0 rounded-full border border-border"
                             style={{
-                              background: `linear-gradient(135deg, ${assignment.subscription.plan.accentFrom}, ${assignment.subscription.plan.accentTo})`,
+                              backgroundColor:
+                                assignment.subscription.plan.accentFrom,
                             }}
+                            aria-hidden="true"
                           />
                         </div>
 
                         <Separator className="my-4" />
 
                         <div className="grid gap-3 sm:grid-cols-2">
-                          <div className="rounded-2xl border bg-background/70 p-3">
-                            <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                              <Wallet className="h-3.5 w-3.5" />
+                          <div className="rounded-md border border-border bg-card p-3">
+                            <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                              <Wallet
+                                className="h-3.5 w-3.5"
+                                aria-hidden="true"
+                              />
                               Cobrança
                             </div>
                             <p className="text-sm font-semibold capitalize">
@@ -465,9 +478,12 @@ export function UserDetailModal({
                                 : 'Mensal'}
                             </p>
                           </div>
-                          <div className="rounded-2xl border bg-background/70 p-3">
-                            <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                              <Sparkles className="h-3.5 w-3.5" />
+                          <div className="rounded-md border border-border bg-card p-3">
+                            <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                              <Sparkles
+                                className="h-3.5 w-3.5"
+                                aria-hidden="true"
+                              />
                               Status
                             </div>
                             <p className="text-sm font-semibold capitalize">
@@ -477,8 +493,8 @@ export function UserDetailModal({
                         </div>
                       </div>
 
-                      <div className="rounded-2xl border border-border/70 bg-card/80 p-4 backdrop-blur-sm">
-                        <p className="mb-3 text-sm font-semibold">
+                      <div className="rounded-md border border-border bg-background p-4">
+                        <p className="mb-3 text-sm font-semibold text-foreground">
                           Capacidades habilitadas
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -496,7 +512,7 @@ export function UserDetailModal({
                       </div>
                     </>
                   ) : (
-                    <div className="rounded-2xl border border-border/70 bg-card/80 p-4 text-sm text-muted-foreground backdrop-blur-sm">
+                    <div className="rounded-md border border-border bg-background p-4 text-sm text-muted-foreground">
                       Não foi possível carregar a assinatura atual deste
                       usuário.
                     </div>

@@ -40,16 +40,19 @@ export function QuickScanFAB() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-40 md:bottom-8 md:right-8">
+    // Margem segura inferior (home indicator do iOS) e botão só com ícone no
+    // celular; o dashboard reserva espaço no fim da página para que o FAB não
+    // cubra conteúdo essencial.
+    <div className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-40 md:bottom-8 md:right-8">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="accent"
             size="lg"
-            className="h-14 rounded-full px-5 shadow-coral animate-fade-in-up"
+            className="size-14 animate-fade-in rounded-full p-0 shadow-lg md:h-12 md:w-auto md:px-5"
             aria-label="Ações rápidas da Lyra"
           >
-            <WandSparkles />
+            <WandSparkles aria-hidden="true" />
             <span className="hidden text-sm font-semibold md:inline">
               Ações rápidas
             </span>
@@ -57,7 +60,7 @@ export function QuickScanFAB() {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="w-[20rem] rounded-[28px] border-primary/10 p-3"
+          className="w-[min(20rem,calc(100vw-2rem))] rounded-xl p-2"
         >
           <DropdownMenuLabel>Centro rápido da Lyra</DropdownMenuLabel>
           <DropdownMenuGroup>
@@ -71,8 +74,8 @@ export function QuickScanFAB() {
                   Atualiza sinais disponíveis e o contexto cósmico do momento.
                 </span>
               </div>
-              <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                {isSyncing ? 'AO VIVO' : 'AGORA'}
+              <span className="shrink-0 text-xs font-medium text-muted-foreground">
+                {isSyncing ? 'Ao vivo' : 'Agora'}
               </span>
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => router.push('/chat')}>
@@ -87,7 +90,7 @@ export function QuickScanFAB() {
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => router.push('/plan')}>
-              <Sparkles className="text-accent" />
+              <Sparkles className="text-cosmic" />
               <div className="flex flex-1 flex-col gap-0.5">
                 <span className="font-medium text-foreground">
                   Ver plano do dia

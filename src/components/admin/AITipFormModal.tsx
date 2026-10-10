@@ -146,8 +146,8 @@ export function AITipFormModal({
               control={form.control}
               name="is_active"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                  <div className="space-y-0.5">
+                <FormItem className="flex flex-row items-center justify-between gap-4 rounded-md border border-border bg-background p-4">
+                  <div className="min-w-0 space-y-0.5">
                     <FormLabel>Ativo</FormLabel>
                     <FormDescription>
                       Se desativado, não será exibido para os usuários.
@@ -173,7 +173,10 @@ export function AITipFormModal({
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2
+                    className="mr-2 h-4 w-4 animate-spin"
+                    aria-hidden="true"
+                  />
                 )}
                 Salvar
               </Button>

@@ -1,12 +1,9 @@
 'use client';
 
-import { MadeWithIlyra } from '@/components/made-with-ilyra';
-import { Sidebar } from '@/components/layout/sidebar';
-import { Header } from '@/components/layout/header';
+import { AppShell } from '@/components/layout/AppShell';
 import { useAuth } from '@/context/AuthContext';
 import { SplashScreen } from '@/components/SplashScreen';
 import { AppointmentsContent } from '@/components/appointments/AppointmentsContent';
-import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 
 export default function AppointmentsPage() {
   const { session } = useAuth();
@@ -20,19 +17,8 @@ export default function AppointmentsPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background/80">
-      <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Header />
-        <PuckClientRenderer
-          documentKey="appointments"
-          className="w-full shrink-0"
-        />
-        <main id="conteudo-principal" className="flex-1 p-4 sm:p-6 md:p-8">
-          <AppointmentsContent />
-        </main>
-        <MadeWithIlyra />
-      </div>
-    </div>
+    <AppShell puckDocumentKey="appointments">
+      <AppointmentsContent />
+    </AppShell>
   );
 }

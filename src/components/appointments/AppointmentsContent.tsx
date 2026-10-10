@@ -93,7 +93,7 @@ const Agenda = dynamic(
   {
     ssr: false,
     loading: () => (
-      <Skeleton className="h-[520px] w-full rounded-[24px] md:h-[640px]" />
+      <Skeleton className="h-[520px] w-full rounded-xl md:h-[640px]" />
     ),
   }
 );
@@ -341,28 +341,31 @@ export function AppointmentsContent() {
 
   return (
     <>
-      <div className="flex flex-col gap-8">
-        <section className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
-          <Card className="overflow-hidden border-border/70 bg-[linear-gradient(140deg,rgba(255,255,255,0.96),rgba(247,250,255,0.86),rgba(255,255,255,0.92))]">
+      <div className="flex flex-col gap-6">
+        <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+          <Card className="min-w-0 overflow-hidden">
             <CardHeader className="gap-5">
               <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="max-w-2xl">
-                  <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary">
-                    <CalendarClock className="mr-2 h-3.5 w-3.5" />
+                <div className="min-w-0 max-w-2xl">
+                  <Badge className="px-3 py-1">
+                    <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" />
                     {appointmentsConfig.heroBadge}
                   </Badge>
-                  <CardTitle className="mt-4" style={titleStyle}>
+                  <CardTitle
+                    className="mt-4 tracking-[-0.02em]"
+                    style={titleStyle}
+                  >
                     {appointmentsConfig.heroTitle}
                   </CardTitle>
                   <CardDescription
-                    className="mt-2 max-w-xl leading-7"
+                    className="mt-2 max-w-xl leading-relaxed text-foreground/80"
                     style={bodyStyle}
                   >
                     {appointmentsConfig.heroDescription}
                   </CardDescription>
                 </div>
 
-                <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
                   <Button
                     onClick={() => {
                       setAppointmentToEdit(null);
@@ -389,41 +392,41 @@ export function AppointmentsContent() {
               </div>
 
               <div className="grid gap-4 md:grid-cols-3">
-                <div className="rounded-[24px] border border-border/70 bg-white/82 p-5 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.26em] text-muted-foreground">
+                <div className="min-w-0 rounded-md border border-border bg-background p-5">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Próximo encontro
                   </p>
-                  <p className="mt-3 font-display text-xl font-semibold text-foreground">
+                  <p className="mt-2 break-words font-display text-xl font-semibold tracking-tight text-foreground">
                     {nextAppointment?.professionals?.name ||
                       'Livre por enquanto'}
                   </p>
-                  <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
                     {nextAppointment
                       ? formatAppointmentDate(nextAppointment)
                       : 'Sem consulta futura agendada. Você pode marcar um novo horário agora.'}
                   </p>
                 </div>
 
-                <div className="rounded-[24px] border border-border/70 bg-white/82 p-5 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.26em] text-muted-foreground">
+                <div className="min-w-0 rounded-md border border-border bg-background p-5">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Profissionais ativos
                   </p>
-                  <p className="mt-3 font-mono text-3xl text-primary">
+                  <p className="mt-2 font-display text-3xl font-semibold tracking-[-0.02em] text-foreground">
                     {professionals.length}
                   </p>
-                  <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
                     Contatos prontos para entrar na sua agenda pessoal.
                   </p>
                 </div>
 
-                <div className="rounded-[24px] border border-border/70 bg-white/82 p-5 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.26em] text-muted-foreground">
+                <div className="min-w-0 rounded-md border border-border bg-background p-5">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Consultas registradas
                   </p>
-                  <p className="mt-3 font-mono text-3xl text-cosmic">
+                  <p className="mt-2 font-display text-3xl font-semibold tracking-[-0.02em] text-foreground">
                     {appointments.length}
                   </p>
-                  <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
                     Histórico sincronizado para acompanhar ritmo e constância.
                   </p>
                 </div>
@@ -431,10 +434,10 @@ export function AppointmentsContent() {
             </CardHeader>
           </Card>
 
-          <Alert className="h-fit border-cosmic/20 bg-cosmic-light/70 text-foreground">
-            <Sparkles className="h-4 w-4 text-cosmic" />
+          <Alert className="h-fit rounded-xl border-border bg-card text-foreground shadow-none">
+            <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
             <AlertTitle>Orientação de uso</AlertTitle>
-            <AlertDescription className="leading-7">
+            <AlertDescription className="leading-6 text-foreground/80">
               Cadastre os profissionais uma única vez e depois agende, reagende
               ou cancele consultas diretamente no fluxo abaixo. O calendário
               permanece em pt-BR e ligado aos registros reais do banco.
@@ -444,9 +447,9 @@ export function AppointmentsContent() {
 
         <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
           {appointmentsConfig.showUpcomingList ? (
-            <Card className="border-border/70 bg-white/88">
+            <Card className="min-w-0">
               <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div>
+                <div className="min-w-0">
                   <CardTitle style={cardTitleStyle}>
                     {appointmentsConfig.listTitle}
                   </CardTitle>
@@ -454,7 +457,7 @@ export function AppointmentsContent() {
                     {appointmentsConfig.listDescription}
                   </CardDescription>
                 </div>
-                <Badge className="rounded-full border-accent/20 bg-accent/10 px-3 py-1 text-accent">
+                <Badge variant="secondary" className="w-fit shrink-0">
                   {upcomingAppointments.length} futura(s)
                 </Badge>
               </CardHeader>
@@ -463,10 +466,10 @@ export function AppointmentsContent() {
                   upcomingAppointments.map((appointment) => (
                     <div
                       key={appointment.id}
-                      className="flex flex-col gap-4 rounded-[24px] border border-border/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(250,250,255,0.8))] p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+                      className="flex flex-col gap-4 rounded-md border border-border bg-background p-4 sm:flex-row sm:items-center sm:justify-between"
                     >
-                      <div className="flex items-center gap-3">
-                        <Avatar className="size-12">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <Avatar className="size-12 shrink-0">
                           <AvatarImage
                             src={
                               appointment.professionals?.avatar_url || undefined
@@ -481,8 +484,8 @@ export function AppointmentsContent() {
                             )}
                           </AvatarFallback>
                         </Avatar>
-                        <div>
-                          <p className="font-semibold text-foreground">
+                        <div className="min-w-0">
+                          <p className="break-words font-semibold text-foreground">
                             {appointment.professionals?.name || 'Profissional'}
                           </p>
                           <p className="text-sm text-muted-foreground">
@@ -560,9 +563,12 @@ export function AppointmentsContent() {
                     </div>
                   ))
                 ) : (
-                  <div className="rounded-[24px] border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
-                    <HeartHandshake className="mx-auto h-10 w-10 text-primary" />
-                    <p className="mt-4 font-display text-xl font-semibold text-foreground">
+                  <div className="rounded-md border border-dashed border-border bg-background px-6 py-10 text-center">
+                    <HeartHandshake
+                      className="mx-auto h-10 w-10 text-primary"
+                      aria-hidden="true"
+                    />
+                    <p className="mt-4 font-display text-lg font-semibold tracking-tight text-foreground">
                       Nenhuma consulta futura agendada
                     </p>
                     <p className="mt-2 text-sm leading-7 text-muted-foreground">
@@ -576,9 +582,9 @@ export function AppointmentsContent() {
           ) : null}
 
           {appointmentsConfig.showProfessionalsList ? (
-            <Card className="border-border/70 bg-white/88">
+            <Card className="min-w-0">
               <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div>
+                <div className="min-w-0">
                   <CardTitle style={cardTitleStyle}>
                     {appointmentsConfig.professionalsTitle}
                   </CardTitle>
@@ -586,7 +592,7 @@ export function AppointmentsContent() {
                     {appointmentsConfig.professionalsDescription}
                   </CardDescription>
                 </div>
-                <Badge className="rounded-full border-primary/20 bg-primary/10 px-3 py-1 text-primary">
+                <Badge className="w-fit shrink-0">
                   {professionals.length} cadastrado(s)
                 </Badge>
               </CardHeader>
@@ -595,10 +601,10 @@ export function AppointmentsContent() {
                   professionals.map((professional) => (
                     <div
                       key={professional.id}
-                      className="flex flex-col gap-4 rounded-[24px] border border-border/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(249,248,255,0.82))] p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+                      className="flex flex-col gap-4 rounded-md border border-border bg-background p-4 sm:flex-row sm:items-center sm:justify-between"
                     >
-                      <div className="flex items-center gap-3">
-                        <Avatar className="size-12">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <Avatar className="size-12 shrink-0">
                           <AvatarImage
                             src={professional.avatar_url || undefined}
                             alt={professional.name}
@@ -607,15 +613,15 @@ export function AppointmentsContent() {
                             {getProfessionalInitial(professional.name)}
                           </AvatarFallback>
                         </Avatar>
-                        <div>
-                          <p className="font-semibold text-foreground">
+                        <div className="min-w-0">
+                          <p className="break-words font-semibold text-foreground">
                             {professional.name}
                           </p>
                           <p className="text-sm text-muted-foreground">
                             {professional.specialty}
                           </p>
                           {professional.contact ? (
-                            <p className="mt-1 text-sm text-muted-foreground">
+                            <p className="mt-1 break-words text-sm text-muted-foreground">
                               {professional.contact}
                             </p>
                           ) : null}
@@ -687,9 +693,12 @@ export function AppointmentsContent() {
                     </div>
                   ))
                 ) : (
-                  <div className="rounded-[24px] border border-dashed border-border bg-muted/30 px-6 py-10 text-center">
-                    <Stethoscope className="mx-auto h-10 w-10 text-cosmic" />
-                    <p className="mt-4 font-display text-xl font-semibold text-foreground">
+                  <div className="rounded-md border border-dashed border-border bg-background px-6 py-10 text-center">
+                    <Stethoscope
+                      className="mx-auto h-10 w-10 text-primary"
+                      aria-hidden="true"
+                    />
+                    <p className="mt-4 font-display text-lg font-semibold tracking-tight text-foreground">
                       Nenhum profissional cadastrado
                     </p>
                     <p className="mt-2 text-sm leading-7 text-muted-foreground">
@@ -704,7 +713,7 @@ export function AppointmentsContent() {
         </section>
 
         {appointmentsConfig.showCalendar ? (
-          <Card className="border-border/70 bg-white/90">
+          <Card className="min-w-0">
             <CardHeader>
               <CardTitle style={cardTitleStyle}>
                 {appointmentsConfig.calendarTitle}

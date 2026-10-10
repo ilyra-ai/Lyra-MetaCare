@@ -3,11 +3,11 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const alertVariants = cva(
-  'relative w-full rounded-[20px] border px-5 py-4 text-sm shadow-sm [&>svg+div]:translate-y-[-2px] [&>svg]:absolute [&>svg]:left-5 [&>svg]:top-5 [&>svg~*]:pl-8',
+  'relative w-full rounded-md border px-5 py-4 text-sm [&>svg+div]:translate-y-[-2px] [&>svg]:absolute [&>svg]:left-5 [&>svg]:top-5 [&>svg~*]:pl-8',
   {
     variants: {
       variant: {
-        default: 'border-border bg-card/92 text-foreground',
+        default: 'border-border bg-card text-foreground',
         success: 'border-success/20 bg-success-light text-success',
         warning: 'border-warning/20 bg-warning-light text-warning',
         destructive:

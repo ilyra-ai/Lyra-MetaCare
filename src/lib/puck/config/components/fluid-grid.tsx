@@ -49,24 +49,24 @@ function LyraFluidGridBlock({
   return (
     <section
       className={juntarClasses(
-        'w-full rounded-[28px] border px-6 py-7 sm:px-8 sm:py-8',
+        'w-full min-w-0 rounded-xl border p-5 sm:p-6',
         obterClasseSurfaceSection(surface)
       )}
     >
       {(eyebrow || title || description) && (
-        <div className="mb-6 flex flex-col gap-4">
+        <div className="mb-6 flex flex-col gap-2">
           {eyebrow ? (
-            <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
+            <p className="text-sm font-medium text-muted-foreground">
               {eyebrow}
             </p>
           ) : null}
           {title ? (
-            <h3 className="max-w-4xl text-balance font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+            <h3 className="max-w-4xl text-balance break-words font-display text-xl font-semibold tracking-tight text-foreground md:text-2xl">
               {title}
             </h3>
           ) : null}
           {description ? (
-            <p className="max-w-3xl text-pretty text-sm leading-7 text-muted-foreground md:text-base">
+            <p className="max-w-3xl text-pretty text-sm leading-6 text-muted-foreground md:text-base md:leading-relaxed">
               {description}
             </p>
           ) : null}

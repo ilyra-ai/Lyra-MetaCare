@@ -12,7 +12,7 @@ type TableProps = React.HTMLAttributes<HTMLTableElement> & {
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
   ({ className, scrollLabel, ...props }, ref) => (
-    <div className="overflow-hidden rounded-[20px] border border-border bg-card/92 shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
       <div
         className="relative w-full overflow-auto"
         {...(scrollLabel
@@ -38,7 +38,7 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      'bg-muted/85 [&_tr]:border-b [&_tr]:border-border',
+      'bg-background [&_tr]:border-b [&_tr]:border-border',
       className
     )}
     {...props}
@@ -83,7 +83,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      'border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-primary/8',
+      'border-b border-border transition-colors hover:bg-background data-[state=selected]:bg-sidebar-accent',
       className
     )}
     {...props}
@@ -99,7 +99,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      'px-4 py-3 text-left align-middle text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground has-[[role=checkbox]]:pr-0',
+      'px-4 py-3 text-left align-middle text-xs font-medium text-muted-foreground has-[[role=checkbox]]:pr-0',
       className
     )}
     {...props}

@@ -104,18 +104,23 @@ export function AvatarUploader({
         className="relative group cursor-pointer"
         onClick={() => fileInputRef.current?.click()}
       >
-        <Avatar className="size-32 border-4 border-primary/20 shadow-[0_22px_50px_-28px_rgba(49,155,142,0.45)] transition-all duration-300 group-hover:scale-[1.02]">
+        <Avatar className="size-28 border border-border sm:size-32">
           <AvatarImage src={currentAvatarUrl || undefined} alt={firstName} />
-          <AvatarFallback className="bg-[linear-gradient(145deg,rgba(49,155,142,0.12),rgba(139,92,246,0.12),rgba(255,255,255,0.92))] text-5xl text-primary">
-            {uploading ? <Loader2 className="h-8 w-8 animate-spin" /> : initial}
+          <AvatarFallback className="bg-sidebar-accent font-display text-5xl font-semibold text-primary">
+            {uploading ? (
+              <Loader2 className="h-8 w-8 animate-spin" aria-hidden="true" />
+            ) : (
+              initial
+            )}
           </AvatarFallback>
         </Avatar>
 
         <div
           className={cn(
-            'absolute inset-0 flex items-center justify-center rounded-full bg-foreground/14 opacity-0 transition-opacity duration-300',
+            'absolute inset-0 flex items-center justify-center rounded-full bg-foreground/60 opacity-0 transition-opacity duration-200',
             !uploading && 'group-hover:opacity-100'
           )}
+          aria-hidden="true"
         >
           {uploading ? (
             <Loader2 className="h-6 w-6 text-white animate-spin" />

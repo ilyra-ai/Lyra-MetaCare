@@ -222,18 +222,21 @@ export function AIKnowledgeManager() {
 
   return (
     <>
-      <Card className="border-border/70 bg-card/70 shadow-sm backdrop-blur-xl">
+      <Card>
         <CardHeader className="gap-3">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cosmic/10 text-cosmic shadow-inner">
-                <BookOpen className="h-6 w-6" />
-              </div>
-              <div className="space-y-1">
-                <CardTitle className="text-2xl font-bold text-foreground">
+            <div className="flex min-w-0 items-start gap-3">
+              <span
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic"
+                aria-hidden="true"
+              >
+                <BookOpen className="h-5 w-5" />
+              </span>
+              <div className="min-w-0 space-y-1">
+                <CardTitle className="text-xl">
                   Documentos, Skills e Treinamentos da IA
                 </CardTitle>
-                <CardDescription className="max-w-2xl text-base text-muted-foreground">
+                <CardDescription className="max-w-2xl">
                   Adicione documentos que o modelo usará como habilidades,
                   treinamentos e base de conhecimento — definindo o que a IA
                   deve saber, fazer e executar no app. Apenas documentos ativos
@@ -241,18 +244,18 @@ export function AIKnowledgeManager() {
                 </CardDescription>
               </div>
             </div>
-            <Badge variant="cosmic" className="rounded-full">
+            <Badge variant="cosmic">
               {activeCount} ativo{activeCount === 1 ? '' : 's'} /{' '}
               {documents.length}
             </Badge>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-8">
+        <CardContent className="space-y-6">
           {/* Formulário de criação */}
           <form
             onSubmit={handleCreate}
-            className="space-y-5 rounded-2xl border border-border/60 bg-card/60 p-5 shadow-sm"
+            className="space-y-5 rounded-md border border-border bg-background p-5"
           >
             <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
               <div className="space-y-2 md:col-span-2">
@@ -291,7 +294,10 @@ export function AIKnowledgeManager() {
                       return (
                         <SelectItem key={option.value} value={option.value}>
                           <span className="flex items-center gap-2">
-                            <Icon className="h-4 w-4 text-cosmic" />
+                            <Icon
+                              className="h-4 w-4 text-cosmic"
+                              aria-hidden="true"
+                            />
                             {option.label}
                           </span>
                         </SelectItem>
@@ -340,15 +346,14 @@ export function AIKnowledgeManager() {
                   Maior = aplicada primeiro no contexto.
                 </p>
               </div>
-              <Button
-                type="submit"
-                disabled={isSaving}
-                className="bg-linear-to-br from-cosmic to-primary text-white shadow-cosmic hover:brightness-105"
-              >
+              <Button type="submit" disabled={isSaving}>
                 {isSaving ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2
+                    className="mr-2 h-4 w-4 animate-spin"
+                    aria-hidden="true"
+                  />
                 ) : (
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
                 )}
                 Adicionar documento
               </Button>
@@ -362,8 +367,11 @@ export function AIKnowledgeManager() {
               <Skeleton className="h-24 w-full" />
             </div>
           ) : documents.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/70 bg-card/50 p-10 text-center">
-              <FileText className="h-10 w-10 text-muted-foreground" />
+            <div className="flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border bg-background p-10 text-center">
+              <FileText
+                className="h-10 w-10 text-muted-foreground"
+                aria-hidden="true"
+              />
               <p className="text-base font-semibold text-foreground">
                 Nenhum documento configurado
               </p>
@@ -380,27 +388,23 @@ export function AIKnowledgeManager() {
                 return (
                   <div
                     key={doc.id}
-                    className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-card/70 p-5 shadow-sm transition-colors hover:border-cosmic/30 sm:flex-row sm:items-start sm:justify-between"
+                    className="flex flex-col gap-3 rounded-md border border-border bg-card p-5 transition-colors hover:border-cosmic/30 sm:flex-row sm:items-start sm:justify-between"
                   >
                     <div className="flex min-w-0 flex-1 items-start gap-3">
-                      <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-cosmic/10 text-cosmic">
+                      <span
+                        className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic"
+                        aria-hidden="true"
+                      >
                         <Icon className="h-5 w-5" />
-                      </div>
+                      </span>
                       <div className="min-w-0 space-y-1.5">
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="font-semibold text-foreground">
+                          <p className="break-words font-semibold text-foreground">
                             {doc.title}
                           </p>
-                          <Badge
-                            variant="outline"
-                            className="rounded-full text-[11px] uppercase tracking-wide"
-                          >
-                            {meta.label}
-                          </Badge>
+                          <Badge variant="outline">{meta.label}</Badge>
                           {!doc.is_active && (
-                            <Badge variant="secondary" className="rounded-full">
-                              Inativo
-                            </Badge>
+                            <Badge variant="secondary">Inativo</Badge>
                           )}
                         </div>
                         <p className="line-clamp-3 whitespace-pre-wrap wrap-break-word text-sm leading-6 text-muted-foreground">
@@ -431,11 +435,11 @@ export function AIKnowledgeManager() {
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        className="text-destructive hover:bg-destructive-light hover:text-destructive"
                         onClick={() => setDocumentToDelete(doc)}
                         aria-label="Remover documento"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
                       </Button>
                     </div>
                   </div>

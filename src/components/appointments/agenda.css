@@ -26,12 +26,11 @@
 
 .rbc-toolbar button {
   min-height: 40px;
-  border-radius: 999px;
+  border-radius: 10px;
   border: 1px solid hsl(var(--border));
-  background: rgba(255, 255, 255, 0.92);
+  background: hsl(var(--card));
   color: hsl(var(--foreground));
-  padding: 0.55rem 1rem;
-  box-shadow: var(--shadow-sm);
+  padding: 0.5rem 0.9rem;
 }
 
 .rbc-toolbar button:hover,
@@ -40,30 +39,27 @@
 }
 
 .rbc-toolbar button.rbc-active {
-  background: var(--gradient-teal);
+  background: hsl(var(--primary));
   border-color: transparent;
   color: hsl(var(--primary-foreground));
-  box-shadow: var(--shadow-teal);
+  box-shadow: none;
 }
 
 .rbc-header {
   border-bottom: 1px solid hsl(var(--border));
-  padding: 0.85rem 0.5rem;
+  padding: 0.75rem 0.5rem;
   color: hsl(var(--muted-foreground));
   font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-weight: 500;
 }
 
 .rbc-month-view,
 .rbc-time-view,
 .rbc-agenda-view table.rbc-agenda-table {
   overflow: hidden;
-  border-radius: 24px;
+  border-radius: 12px;
   border: 1px solid hsl(var(--border));
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: var(--shadow);
+  background: hsl(var(--card));
 }
 
 .rbc-day-bg + .rbc-day-bg,
@@ -73,19 +69,23 @@
 }
 
 .rbc-off-range-bg {
-  background: hsl(var(--muted) / 0.62);
+  background: hsl(var(--background));
+}
+
+/* Dias de outro mês: a biblioteca usa #999 (2,6:1); o cinza secundário passa de 4,5:1. */
+.rbc-off-range {
+  color: hsl(var(--muted-foreground));
 }
 
 .rbc-today {
-  background: linear-gradient(180deg, hsl(var(--primary) / 0.08), transparent);
+  background: hsl(var(--sidebar-accent));
 }
 
 .rbc-event {
   border: 0;
-  border-radius: 14px;
-  background: var(--gradient-coral);
-  color: #fff;
-  box-shadow: var(--shadow-coral);
+  border-radius: 8px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
   padding: 0.2rem 0.45rem;
 }
 

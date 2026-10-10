@@ -12,7 +12,7 @@ export function QuickReply({ text, onSelect }: QuickReplyProps) {
     <Button
       variant="outline"
       size="sm"
-      className="h-8 whitespace-nowrap rounded-full border-cosmic/20 bg-card/85 px-3 text-xs text-foreground transition-colors hover:border-cosmic/35 hover:bg-cosmic-light/50"
+      className="h-auto min-h-8 max-w-full whitespace-normal rounded-full border-border bg-card px-3 py-1.5 text-left text-xs text-foreground transition-colors hover:border-input hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       onClick={() => onSelect(text)}
     >
       {text}

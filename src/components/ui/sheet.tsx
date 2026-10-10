@@ -18,7 +18,7 @@ const SheetOverlay = React.forwardRef<
   <SheetPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-50 bg-[rgba(16,21,48,0.24)] backdrop-blur-md data-[state=open]:animate-fade-in',
+      'fixed inset-0 z-50 bg-foreground/40 data-[state=open]:animate-fade-in',
       className
     )}
     {...props}
@@ -28,16 +28,16 @@ const SheetOverlay = React.forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
-  'fixed z-50 flex flex-col gap-4 bg-card/95 shadow-xl backdrop-blur-xl data-[state=open]:duration-300',
+  'fixed z-50 flex flex-col gap-4 border-border bg-card shadow-xl data-[state=open]:duration-300',
   {
     variants: {
       side: {
-        top: 'inset-x-3 top-3 rounded-[28px] border border-white/80 px-6 py-6 data-[state=open]:animate-fade-in-down',
+        top: 'inset-x-0 top-0 border-b px-6 py-6 data-[state=open]:animate-fade-in-down',
         bottom:
-          'inset-x-3 bottom-3 rounded-[28px] border border-white/80 px-6 py-6 data-[state=open]:animate-bounce-in',
-        left: 'inset-y-3 left-3 h-[calc(100vh-1.5rem)] w-[92vw] max-w-md rounded-[32px] border border-white/80 px-5 py-5 data-[state=open]:animate-slide-in-left',
+          'inset-x-0 bottom-0 rounded-t-xl border-t px-6 py-6 data-[state=open]:animate-fade-in-up',
+        left: 'inset-y-0 left-0 h-dvh w-[86vw] max-w-[320px] border-r px-4 py-5 data-[state=open]:animate-slide-in-left',
         right:
-          'inset-y-3 right-3 h-[calc(100vh-1.5rem)] w-[92vw] max-w-md rounded-[32px] border border-white/80 px-5 py-5 data-[state=open]:animate-slide-in-right',
+          'inset-y-0 right-0 h-dvh w-[92vw] max-w-md border-l px-5 py-5 data-[state=open]:animate-slide-in-right',
       },
     },
     defaultVariants: {
@@ -62,7 +62,7 @@ const SheetContent = React.forwardRef<
       className={cn(sheetVariants({ side }), className)}
       {...props}
     >
-      <SheetPrimitive.Close className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white/90 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring">
+      <SheetPrimitive.Close className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-[10px] text-muted-foreground hover:bg-muted transition-colors hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring">
         <X className="h-[18px] w-[18px]" strokeWidth={1.8} />
         <span className="sr-only">Fechar painel</span>
       </SheetPrimitive.Close>

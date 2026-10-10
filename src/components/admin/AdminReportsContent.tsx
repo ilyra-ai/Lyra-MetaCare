@@ -81,30 +81,40 @@ export function AdminReportsContent() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <Card className="shadow-sm">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <Card className="min-w-0">
         <CardHeader>
-          <CardTitle className="flex items-center">
-            <Users className="mr-3 h-5 w-5 text-primary" /> Relatórios de
-            Usuários
+          <CardTitle className="flex items-center gap-3">
+            <span
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-sidebar-accent text-primary"
+              aria-hidden="true"
+            >
+              <Users className="h-4 w-4" />
+            </span>
+            Relatórios de Usuários
           </CardTitle>
           <CardDescription>
             Exporte dados da plataforma para análise externa.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between rounded-[18px] border border-border/70 bg-secondary/60 p-4">
-            <div>
-              <h3 className="font-semibold">Exportar Todos os Usuários</h3>
-              <p className="text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-md border border-border bg-background p-4">
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-foreground">
+                Exportar Todos os Usuários
+              </h3>
+              <p className="text-sm leading-6 text-muted-foreground">
                 Gera um arquivo CSV com todos os dados da tabela de perfis.
               </p>
             </div>
             <Button onClick={handleExportUsers} disabled={isExporting}>
               {isExporting ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2
+                  className="mr-2 h-4 w-4 animate-spin"
+                  aria-hidden="true"
+                />
               ) : (
-                <FileDown className="mr-2 h-4 w-4" />
+                <FileDown className="mr-2 h-4 w-4" aria-hidden="true" />
               )}
               Exportar
             </Button>

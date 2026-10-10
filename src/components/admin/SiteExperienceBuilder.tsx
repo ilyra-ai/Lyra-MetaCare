@@ -17,6 +17,10 @@ import { toast } from 'sonner';
 import { LoginExperience } from '@/components/auth/LoginExperience';
 import { LandingPage } from '@/components/landing/LandingPage';
 import {
+  getVisibleNavigation,
+  groupNavigation,
+} from '@/components/layout/navigation';
+import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -77,7 +81,7 @@ type AdminConfigResponse = {
   publishedConfig: EditableDraft;
   createdAt: string | null;
   updatedAt: string | null;
-  updatedByUserId: string | null;
+  updatedByName: string | null;
   error?: string;
 };
 
@@ -227,7 +231,7 @@ function TypographySliderField({
   onValueChange: (value: number) => void;
 }) {
   return (
-    <div className="rounded-[20px] border border-border/70 bg-white/82 p-4">
+    <div className="rounded-md border border-border bg-card p-4">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
           <p className="text-sm font-medium text-foreground">{label}</p>
@@ -246,7 +250,7 @@ function TypographySliderField({
           value={[value]}
           onValueChange={(values) => onValueChange(values[0] ?? value)}
         />
-        <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+        <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
           <span>menor</span>
           <span>base</span>
           <span>maior</span>
@@ -268,8 +272,8 @@ function SwitchRow({
   onCheckedChange: (checked: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
-      <div className="flex flex-col gap-1">
+    <div className="flex items-center justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
+      <div className="flex min-w-0 flex-col gap-1">
         <p className="text-sm font-medium text-foreground">{title}</p>
         <p className="text-xs leading-6 text-muted-foreground">{description}</p>
       </div>
@@ -296,7 +300,7 @@ function ItemShell({
   onRemove: () => void;
 }) {
   return (
-    <Card className="border-border/70 bg-white/84">
+    <Card className="border-border bg-card">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div>
           <CardTitle className="text-base">{title}</CardTitle>
@@ -440,73 +444,103 @@ function buildAppNavigationItem() {
 
 function AppExperiencePreview({ config }: { config: AppPageConfig }) {
   const visibleItems = config.sidebar.items.filter((item) => item.visible);
+  // Mesma composição da sidebar real (rótulos de seção do rascunho e ícones
+  // das rotas conhecidas), vista como administrador.
+  const previewSections = groupNavigation(getVisibleNavigation(true, config));
 
   return (
-    <div className="min-h-full bg-[linear-gradient(180deg,rgba(249,248,252,0.98),rgba(255,255,255,0.98))] p-6">
+    <div className="min-h-full bg-background p-6">
       <div className="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
-        <Card className="border-border/70 bg-white/88 shadow-sm">
-          <CardHeader className="gap-4">
-            <div className="rounded-[22px] border border-border/70 bg-linear-to-br from-white via-white to-cosmic-light/45 p-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
-                {config.sidebar.brandEyebrow}
-              </p>
-              <CardTitle className="mt-2 text-3xl lowercase">
+        {/*
+          Sidebar simulada no visual "Lyra Clean": superfície branca com borda,
+          marca compacta, seções com rótulo discreto e itens de uma linha (sem
+          descrições), com o primeiro item no estado ativo.
+        */}
+        <div className="flex flex-col gap-5 rounded-xl border border-border bg-card px-3.5 py-5">
+          <div className="flex items-center gap-2.5 px-2.5 py-1">
+            <span
+              aria-hidden="true"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] bg-primary text-primary-foreground"
+            >
+              <Sparkles className="h-4 w-4" strokeWidth={2} />
+            </span>
+            <span className="min-w-0">
+              <span className="block font-display text-lg font-semibold lowercase leading-tight text-foreground">
                 {config.sidebar.brandTitle}
-              </CardTitle>
-            </div>
-            <CardDescription>
-              Sidebar prevista com largura de {config.sizing.sidebarWidth}px e{' '}
-              {visibleItems.length} itens visíveis.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="rounded-[20px] border border-border/70 bg-cosmic-light/45 p-4">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-                {config.sidebar.statusEyebrow}
-              </p>
-              <p className="mt-2 text-sm font-medium text-foreground">
-                {config.sidebar.statusTitle}
-              </p>
-            </div>
+              </span>
+              <span className="block truncate text-xs text-muted-foreground">
+                {config.sidebar.brandEyebrow}
+              </span>
+            </span>
+          </div>
 
-            <div className="space-y-3">
-              {Object.entries(config.sidebar.sectionLabels).map(
-                ([sectionKey, label]) => (
-                  <div
-                    key={sectionKey}
-                    className="rounded-[18px] border border-border/60 bg-white/90 px-4 py-3"
-                  >
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                      {sectionKey}
-                    </p>
-                    <p className="mt-1 text-sm font-medium text-foreground">
-                      {label}
-                    </p>
-                  </div>
-                )
-              )}
-            </div>
+          <p className="px-2.5 text-xs leading-5 text-muted-foreground">
+            Sidebar prevista com largura de {config.sizing.sidebarWidth}px e{' '}
+            {visibleItems.length} itens visíveis.
+          </p>
 
-            <div className="rounded-[20px] border border-border/70 bg-white/90 p-4">
-              <p className="text-sm font-semibold text-foreground">
-                {config.sidebar.preferencesTitle}
-              </p>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                {config.sidebar.preferencesDescription}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          <div className="rounded-md border border-border bg-background px-3 py-2.5">
+            <p className="text-xs font-medium text-muted-foreground">
+              {config.sidebar.statusEyebrow}
+            </p>
+            <p className="mt-1 text-sm font-medium text-foreground">
+              {config.sidebar.statusTitle}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-5">
+            {Object.entries(previewSections).map(
+              ([section, items], sectionIndex) => (
+                <div key={section} className="flex flex-col gap-0.5">
+                  <p className="px-2.5 pb-1.5 text-xs font-medium text-muted-foreground">
+                    {section}
+                  </p>
+                  {items.map((item, itemIndex) => {
+                    const isActive = sectionIndex === 0 && itemIndex === 0;
+                    const ItemIcon = item.icon;
+
+                    return (
+                      <div
+                        key={item.href}
+                        className={
+                          isActive
+                            ? 'flex min-h-10 items-center gap-2.5 rounded-[10px] bg-sidebar-accent px-2.5 text-sm font-semibold text-sidebar-accent-foreground'
+                            : 'flex min-h-10 items-center gap-2.5 rounded-[10px] px-2.5 text-sm text-foreground/80'
+                        }
+                      >
+                        <ItemIcon
+                          aria-hidden="true"
+                          className="h-[18px] w-[18px] shrink-0"
+                          strokeWidth={isActive ? 2.1 : 1.8}
+                        />
+                        <span className="truncate">{item.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )
+            )}
+          </div>
+
+          <div className="border-t border-border px-2.5 pt-3.5">
+            <p className="text-sm font-semibold text-foreground">
+              {config.sidebar.preferencesTitle}
+            </p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+              {config.sidebar.preferencesDescription}
+            </p>
+          </div>
+        </div>
 
         <div className="space-y-5">
-          <Card className="border-border/70 bg-white/88 shadow-sm">
+          <Card className="border-border bg-card">
             <CardHeader>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-muted-foreground">
                     Header do app
                   </p>
-                  <CardTitle className="mt-2 text-2xl">
+                  <CardTitle className="mt-1 text-xl">
                     {config.header.commandPlaceholder}
                   </CardTitle>
                 </div>
@@ -524,7 +558,7 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
           </Card>
 
           <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
-            <Card className="border-border/70 bg-white/88 shadow-sm">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-lg">
                   {config.dashboard.pulseTitle}
@@ -545,7 +579,7 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
               </CardContent>
             </Card>
 
-            <Card className="border-border/70 bg-white/88 shadow-sm">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-lg">
                   {config.appointments.heroTitle}
@@ -588,7 +622,7 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
               </CardContent>
             </Card>
 
-            <Card className="border-border/70 bg-white/88 shadow-sm">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-lg">
                   {config.aiPlan.pageTitle}
@@ -613,7 +647,7 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
               </CardContent>
             </Card>
 
-            <Card className="border-border/70 bg-white/88 shadow-sm">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-lg">
                   {config.monitoring.pageTitle}
@@ -656,7 +690,7 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
               </CardContent>
             </Card>
 
-            <Card className="border-border/70 bg-white/88 shadow-sm">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-lg">
                   {config.chat.pageTitle}
@@ -689,7 +723,7 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
               </CardContent>
             </Card>
 
-            <Card className="border-border/70 bg-white/88 shadow-sm">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-lg">
                   {config.connect.pageTitle}
@@ -714,7 +748,7 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
               </CardContent>
             </Card>
 
-            <Card className="border-border/70 bg-white/88 shadow-sm">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-lg">
                   {config.profile.pageTitle}
@@ -729,7 +763,7 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
             </Card>
           </div>
 
-          <Card className="border-border/70 bg-white/88 shadow-sm">
+          <Card className="border-border bg-card">
             <CardHeader>
               <CardTitle className="text-xl">Navegação visível</CardTitle>
               <CardDescription>
@@ -740,9 +774,9 @@ function AppExperiencePreview({ config }: { config: AppPageConfig }) {
               {visibleItems.map((item) => (
                 <div
                   key={item.href}
-                  className="rounded-[20px] border border-border/70 bg-white/92 p-4"
+                  className="min-w-0 rounded-md border border-border bg-background p-4"
                 >
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
                     <p className="text-sm font-semibold text-foreground">
                       {item.label}
                     </p>
@@ -788,10 +822,10 @@ export function SiteExperienceBuilder() {
   const [publishing, setPublishing] = useState(false);
   const [meta, setMeta] = useState<{
     updatedAt: string | null;
-    updatedByUserId: string | null;
+    updatedByName: string | null;
   }>({
     updatedAt: null,
-    updatedByUserId: null,
+    updatedByName: null,
   });
 
   useEffect(() => {
@@ -815,7 +849,7 @@ export function SiteExperienceBuilder() {
         setPublishedConfig(payload.publishedConfig);
         setMeta({
           updatedAt: payload.updatedAt,
-          updatedByUserId: payload.updatedByUserId,
+          updatedByName: payload.updatedByName,
         });
       } catch (error) {
         if (!active) return;
@@ -829,7 +863,7 @@ export function SiteExperienceBuilder() {
         setPublishedConfig(cloneValue(fallback));
         setMeta({
           updatedAt: null,
-          updatedByUserId: null,
+          updatedByName: null,
         });
       } finally {
         if (active) {
@@ -942,7 +976,7 @@ export function SiteExperienceBuilder() {
       setPublishedConfig(payload.publishedConfig);
       setMeta({
         updatedAt: payload.updatedAt,
-        updatedByUserId: payload.updatedByUserId,
+        updatedByName: payload.updatedByName,
       });
       toast.success('Rascunho salvo com sucesso.');
     } catch (error) {
@@ -976,7 +1010,7 @@ export function SiteExperienceBuilder() {
       setPublishedConfig(payload.publishedConfig);
       setMeta({
         updatedAt: payload.updatedAt,
-        updatedByUserId: payload.updatedByUserId,
+        updatedByName: payload.updatedByName,
       });
 
       toast.success(
@@ -1194,7 +1228,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <div className="flex items-center justify-between rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
               <div>
                 <p className="text-sm font-medium text-foreground">
                   Cards do preview inicial
@@ -1521,20 +1555,20 @@ export function SiteExperienceBuilder() {
                 />
               </FieldBlock>
             </div>
-            <div className="rounded-[24px] border border-border/70 bg-white/82 p-4">
+            <div className="rounded-md border border-border bg-card p-4">
               <div className="mb-4">
                 <p className="text-sm font-medium text-foreground">
-                  Ordem das secoes da landing
+                  Ordem das seções da landing
                 </p>
                 <p className="text-xs leading-6 text-muted-foreground">
-                  O preview e a pagina publicada respeitam esta ordem.
+                  A prévia e a página publicada respeitam esta ordem.
                 </p>
               </div>
               <div className="flex flex-col gap-3">
                 {landingDraft.sectionOrder.map((sectionKey, index) => (
                   <div
                     key={`${sectionKey}-${index}`}
-                    className="flex items-center justify-between rounded-[18px] border border-border/70 bg-background px-4 py-3"
+                    className="flex items-center justify-between gap-3 rounded-[10px] border border-border bg-background px-4 py-3"
                   >
                     <span className="text-sm font-medium text-foreground">
                       {sectionKey}
@@ -1571,7 +1605,7 @@ export function SiteExperienceBuilder() {
         <AccordionItem value="features">
           <AccordionTrigger>Cards de recursos</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4">
-            <div className="flex items-center justify-between rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
               <div>
                 <p className="text-sm font-medium text-foreground">
                   Lista de recursos
@@ -1664,7 +1698,7 @@ export function SiteExperienceBuilder() {
         <AccordionItem value="faq">
           <AccordionTrigger>FAQ e etapas do fluxo</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4">
-            <div className="flex items-center justify-between rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
               <div>
                 <p className="text-sm font-medium text-foreground">
                   Etapas do fluxo
@@ -1746,7 +1780,7 @@ export function SiteExperienceBuilder() {
                 </FieldBlock>
               </ItemShell>
             ))}
-            <div className="flex items-center justify-between rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
               <div>
                 <p className="text-sm font-medium text-foreground">
                   Perguntas do FAQ
@@ -1874,7 +1908,7 @@ export function SiteExperienceBuilder() {
                 />
               </FieldBlock>
             </div>
-            <div className="flex items-center justify-between rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-md border border-border bg-card px-4 py-3">
               <div>
                 <p className="text-sm font-medium text-foreground">
                   Highlights do painel
@@ -2286,7 +2320,7 @@ export function SiteExperienceBuilder() {
               />
             </div>
 
-            <div className="rounded-[20px] border border-border/70 bg-white/82 p-4">
+            <div className="rounded-md border border-border bg-card p-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-sm font-medium text-foreground">
@@ -2308,10 +2342,13 @@ export function SiteExperienceBuilder() {
                   step={4}
                   value={[appDraft.sizing.sidebarWidth]}
                   onValueChange={(values) =>
-                    updateDraft(['sizing', 'sidebarWidth'], values[0] ?? 288)
+                    updateDraft(
+                      ['sizing', 'sidebarWidth'],
+                      values[0] ?? appDraft.sizing.sidebarWidth
+                    )
                   }
                 />
-                <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
                   <span>compacta</span>
                   <span>equilibrada</span>
                   <span>ampla</span>
@@ -2436,7 +2473,7 @@ export function SiteExperienceBuilder() {
         <AccordionItem value="nav-items">
           <AccordionTrigger>Navegação editável</AccordionTrigger>
           <AccordionContent className="space-y-4">
-            <div className="flex items-center justify-between gap-3 rounded-[20px] border border-border/70 bg-white/82 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3">
               <div>
                 <p className="text-sm font-medium text-foreground">
                   Itens da sidebar
@@ -2579,7 +2616,7 @@ export function SiteExperienceBuilder() {
         <AccordionItem value="pages">
           <AccordionTrigger>Páginas internas</AccordionTrigger>
           <AccordionContent className="space-y-6">
-            <Card className="border-border/70 bg-white/84">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-base">Dashboard</CardTitle>
                 <CardDescription>
@@ -3039,7 +3076,7 @@ export function SiteExperienceBuilder() {
               </CardContent>
             </Card>
 
-            <Card className="border-border/70 bg-white/84">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-base">Agendamentos</CardTitle>
                 <CardDescription>
@@ -3180,7 +3217,7 @@ export function SiteExperienceBuilder() {
               </CardContent>
             </Card>
 
-            <Card className="border-border/70 bg-white/84">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-base">Plano de IA</CardTitle>
                 <CardDescription>
@@ -3477,7 +3514,7 @@ export function SiteExperienceBuilder() {
               </CardContent>
             </Card>
 
-            <Card className="border-border/70 bg-white/84">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-base">Monitoramento</CardTitle>
                 <CardDescription>
@@ -3619,7 +3656,7 @@ export function SiteExperienceBuilder() {
               </CardContent>
             </Card>
 
-            <Card className="border-border/70 bg-white/84">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-base">Chat IA</CardTitle>
                 <CardDescription>
@@ -3828,7 +3865,7 @@ export function SiteExperienceBuilder() {
               </CardContent>
             </Card>
 
-            <Card className="border-border/70 bg-white/84">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-base">Dispositivos</CardTitle>
                 <CardDescription>
@@ -4087,7 +4124,7 @@ export function SiteExperienceBuilder() {
               </CardContent>
             </Card>
 
-            <Card className="border-border/70 bg-white/84">
+            <Card className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-base">Perfil</CardTitle>
                 <CardDescription>
@@ -4135,18 +4172,22 @@ export function SiteExperienceBuilder() {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="border-b border-border/70">
+      <CardHeader className="border-b border-border">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="flex flex-col gap-3">
-            <Badge className="rounded-full border-cosmic/20 bg-cosmic/10 px-4 py-1.5 text-cosmic">
-              <Sparkles className="mr-2 h-3.5 w-3.5" />
-              editor premium da experiencia web
+          <div className="flex min-w-0 flex-col gap-3">
+            <Badge variant="default" className="w-fit">
+              <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+              editor premium da experiência web
             </Badge>
             <div className="flex flex-col gap-2">
-              <CardTitle className="text-3xl" role="heading" aria-level={2}>
+              <CardTitle
+                className="text-2xl tracking-[-0.02em]"
+                role="heading"
+                aria-level={2}
+              >
                 Superfícies editáveis do módulo Lyra Customaze UI UX
               </CardTitle>
-              <CardDescription className="max-w-3xl text-sm leading-7">
+              <CardDescription className="max-w-3xl text-sm leading-6">
                 Somente administradores podem editar, salvar rascunho, publicar,
                 restaurar e reorganizar a experiência pública e a camada visual
                 do app da Lyra.
@@ -4173,7 +4214,7 @@ export function SiteExperienceBuilder() {
               onClick={() => runAdminAction('restoreDefaults')}
               disabled={publishing || loading}
             >
-              Restaurar padrao
+              Restaurar padrão
             </Button>
             <Button
               variant="secondary"
@@ -4206,29 +4247,24 @@ export function SiteExperienceBuilder() {
           <ResizablePanel defaultSize="44%" minSize="36%">
             <ScrollArea className="h-[980px]">
               <div className="flex flex-col gap-6 p-6">
-                <div className="rounded-[24px] border border-border/70 bg-white/82 p-5">
+                <div className="rounded-xl border border-border bg-card p-5">
                   <div className="flex flex-wrap items-center gap-3">
-                    <p className="text-xs font-semibold uppercase tracking-[0.26em] text-muted-foreground">
-                      publicacao
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Publicação
                     </p>
-                    <Badge
-                      className={
-                        hasDraftChanges
-                          ? 'rounded-full border-accent/20 bg-accent/10 text-accent'
-                          : 'rounded-full border-success/20 bg-success/10 text-success'
-                      }
-                    >
+                    <Badge variant={hasDraftChanges ? 'warning' : 'success'}>
                       {hasDraftChanges
                         ? 'rascunho diferente do publicado'
-                        : 'sem divergencia com o publicado'}
+                        : 'sem divergência com o publicado'}
                     </Badge>
                   </div>
-                  <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                    Ultima atualizacao:{' '}
-                    {meta.updatedAt ?? 'ainda nao publicada'}.
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                    Última atualização:{' '}
+                    {meta.updatedAt ?? 'ainda não publicada'}.
                   </p>
-                  <p className="text-sm leading-7 text-muted-foreground">
-                    Atualizado por: {meta.updatedByUserId ?? 'sistema padrao'}.
+                  <p className="text-sm leading-6 text-muted-foreground">
+                    Atualizado por:{' '}
+                    {meta.updatedByName ?? 'configuração padrão'}.
                   </p>
                 </div>
 
@@ -4236,7 +4272,7 @@ export function SiteExperienceBuilder() {
                   <TabsList className="grid grid-cols-2">
                     <TabsTrigger value="content">
                       <Layers3 className="mr-2 h-4 w-4" />
-                      Conteudo guiado
+                      Conteúdo guiado
                     </TabsTrigger>
                     <TabsTrigger value="json">
                       <FileJson className="mr-2 h-4 w-4" />
@@ -4261,11 +4297,11 @@ export function SiteExperienceBuilder() {
                   </TabsContent>
 
                   <TabsContent value="json" className="m-0">
-                    <Card className="border-border/70 bg-white/82">
+                    <Card className="border-border bg-card">
                       <CardHeader>
-                        <CardTitle className="text-xl">Modo avancado</CardTitle>
+                        <CardTitle className="text-xl">Modo avançado</CardTitle>
                         <CardDescription>
-                          Aqui voce consegue editar a estrutura completa da{' '}
+                          Aqui você consegue editar a estrutura completa da{' '}
                           {pageKey === 'login'
                             ? 'tela de login'
                             : getSitePageLabel(pageKey).toLowerCase()}
@@ -4307,23 +4343,21 @@ export function SiteExperienceBuilder() {
               restante, sem transbordar o painel (que viraria uma região
               rolável sem foco de teclado).
             */}
-            <div className="flex h-[980px] flex-col bg-[linear-gradient(180deg,rgba(249,248,252,0.96),rgba(255,255,255,0.98))] p-6">
-              <div className="mb-4 flex shrink-0 items-center justify-between rounded-[24px] border border-border/70 bg-white/82 px-5 py-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.26em] text-muted-foreground">
-                    preview administrativo
+            <div className="flex h-[980px] flex-col bg-background p-6">
+              <div className="mb-4 flex shrink-0 flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-5 py-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-foreground">
+                    Prévia administrativa
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    O painel ao lado renderiza a experiencia com o rascunho
+                    O painel ao lado renderiza a experiência com o rascunho
                     atual.
                   </p>
                 </div>
-                <Badge className="rounded-full border-primary/20 bg-primary/10 px-4 py-1.5 text-primary">
-                  {getSitePageLabel(pageKey)}
-                </Badge>
+                <Badge variant="default">{getSitePageLabel(pageKey)}</Badge>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-hidden rounded-[32px] border border-border/70 bg-white shadow-[0_30px_90px_-46px_rgba(22,21,48,0.34)]">
+              <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-border bg-card">
                 {/*
                   A prévia é só visual (os controles ficam desativados em
                   previewMode): fica fora da árvore de acessibilidade e do

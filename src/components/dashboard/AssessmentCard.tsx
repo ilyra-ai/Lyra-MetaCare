@@ -138,15 +138,18 @@ export function AssessmentCard() {
 
   if (isAllCompleted) {
     return (
-      <Card className="overflow-hidden border-success/20 bg-success/5 shadow-sm">
+      <Card>
         <CardContent className="flex flex-col items-center gap-4 py-10 text-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-success/20 text-success">
-            <CheckCircle2 className="size-8" />
+          <div
+            aria-hidden="true"
+            className="flex size-14 items-center justify-center rounded-full bg-success-light text-success"
+          >
+            <CheckCircle2 className="size-7" />
           </div>
-          <h3 className="text-xl font-bold text-foreground">
+          <h3 className="font-display text-xl font-semibold tracking-tight text-foreground">
             Avaliações Concluídas!
           </h3>
-          <p className="text-sm text-muted-foreground max-w-md">
+          <p className="max-w-md text-[15px] leading-relaxed text-muted-foreground">
             Sua coerência biológica e espiritual agradece. Seus dados refinam
             nossos algoritmos cósmicos de inteligência artificial.
           </p>
@@ -156,18 +159,19 @@ export function AssessmentCard() {
   }
 
   return (
-    <Card className="overflow-hidden border-border/60 bg-card/60 backdrop-blur-md">
-      <CardHeader className="border-b border-border/40 bg-muted/20 pb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Sparkles className="size-5 text-primary" /> Avaliação Integrativa
+    <Card className="min-w-0 overflow-hidden">
+      <CardHeader className="border-b border-border pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="min-w-0">
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles aria-hidden="true" className="size-5 text-cosmic" />{' '}
+              Avaliação Integrativa
             </CardTitle>
             <CardDescription className="mt-1">
               Refinamento diário de bem-estar quântico
             </CardDescription>
           </div>
-          <div className="flex gap-2 bg-background/50 p-1 rounded-lg border border-border/50">
+          <div className="flex flex-wrap gap-1 rounded-[10px] border border-border bg-background p-1">
             <Button
               variant={activeTab === 'mood' ? 'secondary' : 'ghost'}
               size="sm"
@@ -209,7 +213,7 @@ export function AssessmentCard() {
             <RadioGroup
               value={moodValue}
               onValueChange={setMoodValue}
-              className="grid grid-cols-5 gap-3"
+              className="grid grid-cols-5 gap-2 sm:gap-3"
             >
               {[
                 { val: '1', emoji: '😫', label: 'Exausto' },
@@ -226,10 +230,12 @@ export function AssessmentCard() {
                   />
                   <Label
                     htmlFor={`mood-${m.val}`}
-                    className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-transparent bg-muted/50 p-3 hover:bg-muted peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 cursor-pointer transition-all"
+                    className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-md border border-border bg-background px-1 py-3 transition-colors hover:bg-muted peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-sidebar-accent"
                   >
-                    <span className="text-2xl">{m.emoji}</span>
-                    <span className="text-[10px] font-medium uppercase tracking-wider">
+                    <span aria-hidden="true" className="text-2xl">
+                      {m.emoji}
+                    </span>
+                    <span className="max-w-full truncate text-xs font-medium text-foreground">
                       {m.label}
                     </span>
                   </Label>
@@ -280,7 +286,7 @@ export function AssessmentCard() {
                       />
                       <Label
                         htmlFor={`q${q.id}-${o.val}`}
-                        className="flex cursor-pointer items-center justify-center rounded-lg border border-border/50 bg-background px-3 py-1.5 text-xs hover:bg-muted peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 peer-data-[state=checked]:text-primary transition-all"
+                        className="flex cursor-pointer items-center justify-center rounded-full border border-border bg-background px-3 py-1.5 text-[13px] transition-colors hover:bg-muted peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-sidebar-accent peer-data-[state=checked]:text-primary"
                       >
                         {o.label}
                       </Label>
@@ -300,28 +306,31 @@ export function AssessmentCard() {
                 Qual a probabilidade de você recomendar a nossa jornada
                 Quântica-Védica a um amigo?
               </Label>
-              <div className="flex justify-between w-full mt-2">
+              {/* 6 colunas no celular (2 linhas) e 11 a partir de sm: as 11
+                  notas não cabem em uma linha em 390px. */}
+              <div className="mt-2 grid w-full grid-cols-6 gap-1.5 sm:grid-cols-11">
                 {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                   <button
                     key={num}
                     type="button"
+                    aria-pressed={npsScore === num}
                     onClick={() => setNpsScore(num)}
                     className={cn(
-                      'flex size-8 items-center justify-center rounded-md border text-sm font-medium transition-all hover:bg-primary/10 hover:border-primary/50',
+                      'flex h-9 w-full items-center justify-center rounded-[10px] border font-display text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                       npsScore === num
-                        ? 'bg-primary text-primary-foreground border-primary scale-110 shadow-sm'
-                        : 'bg-background border-border/60 text-foreground/80'
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border bg-background text-foreground hover:border-primary hover:bg-sidebar-accent'
                     )}
                   >
                     {num}
                   </button>
                 ))}
               </div>
-              <div className="flex justify-between mt-1 px-1">
-                <span className="text-[10px] text-muted-foreground font-medium uppercase">
+              <div className="mt-1 flex flex-wrap justify-between gap-2 px-1">
+                <span className="text-xs font-medium text-muted-foreground">
                   0 - Nada provável
                 </span>
-                <span className="text-[10px] text-muted-foreground font-medium uppercase">
+                <span className="text-xs font-medium text-muted-foreground">
                   10 - Muito provável
                 </span>
               </div>
@@ -343,7 +352,7 @@ export function AssessmentCard() {
         )}
       </CardContent>
 
-      <CardFooter className="bg-muted/10 border-t border-border/40 pt-4 flex justify-end">
+      <CardFooter className="flex justify-end border-t border-border pt-4">
         {activeTab === 'mood' && (
           <Button onClick={handleMoodSubmit} disabled={isSubmitting}>
             {isSubmitting ? 'Registrando...' : 'Registrar Vibração'}

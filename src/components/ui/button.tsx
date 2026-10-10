@@ -3,33 +3,35 @@ import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
+/*
+  Botões do sistema "Lyra Clean": cores chapadas, raio de 10–12px e foco
+  visível. O teal é a ação principal; o violeta (`accent`) fica para ações
+  de IA. Sem gradientes, brilhos ou sombras coloridas.
+*/
 const buttonVariants = cva(
-  'relative inline-flex shrink-0 items-center justify-center gap-2 overflow-hidden whitespace-nowrap font-medium transition-all duration-200 before:absolute before:inset-0 before:rounded-[inherit] before:bg-white/20 before:opacity-0 before:transition-opacity before:duration-200 active:scale-[0.98] active:before:opacity-100 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+  'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
   {
     variants: {
       variant: {
-        default:
-          'bg-gradient-teal text-primary-foreground shadow-teal hover:brightness-105 hover:shadow-lg',
-        primary:
-          'bg-gradient-teal text-primary-foreground shadow-teal hover:brightness-105 hover:shadow-lg',
+        default: 'bg-primary text-primary-foreground hover:bg-primary-hover',
+        primary: 'bg-primary text-primary-foreground hover:bg-primary-hover',
         secondary:
-          'border border-border bg-card/95 text-foreground shadow-sm hover:bg-muted',
-        accent:
-          'bg-gradient-coral text-accent-foreground shadow-coral hover:brightness-105 hover:shadow-lg',
+          'border border-border bg-card text-foreground hover:bg-muted',
+        accent: 'bg-accent text-accent-foreground hover:bg-accent-hover',
         ghost:
-          'bg-transparent text-muted-foreground shadow-none hover:bg-muted/70 hover:text-foreground',
+          'bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground',
         destructive:
-          'bg-destructive text-destructive-foreground shadow-coral hover:brightness-95',
+          'bg-destructive text-destructive-foreground hover:bg-destructive-hover',
         outline:
-          'border border-border bg-transparent text-foreground shadow-none hover:bg-muted',
-        link: 'rounded-none px-0 py-0 text-primary shadow-none before:hidden hover:underline underline-offset-4',
+          'border border-border bg-transparent text-foreground hover:bg-muted',
+        link: 'h-auto px-0 py-0 text-primary underline-offset-4 hover:underline',
       },
       size: {
-        sm: 'h-8 rounded-full px-3 text-xs',
-        default: 'h-10 rounded-full px-5 text-sm',
-        lg: 'h-12 rounded-[16px] px-8 text-base',
-        xl: 'h-14 rounded-[18px] px-10 text-lg',
-        icon: 'h-10 w-10 rounded-full',
+        sm: 'h-8 rounded-sm px-3 text-xs',
+        default: 'h-10 rounded-[10px] px-4 text-sm',
+        lg: 'h-11 rounded-md px-5 text-[15px] font-semibold',
+        xl: 'h-12 rounded-md px-6 text-base font-semibold',
+        icon: 'h-10 w-10 rounded-[10px]',
       },
     },
     defaultVariants: {

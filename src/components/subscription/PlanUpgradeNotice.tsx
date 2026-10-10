@@ -23,23 +23,22 @@ export function PlanUpgradeNotice({
   preferredPlanKey,
 }: PlanUpgradeNoticeProps) {
   return (
-    <Card className="overflow-hidden border-0 shadow-xl ring-1 ring-border/70">
-      <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--cosmic)),hsl(var(--accent)))]" />
-      <CardHeader className="bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.12),transparent_45%),radial-gradient(circle_at_top_right,hsl(var(--accent)/0.12),transparent_40%)]">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-teal text-white shadow-teal">
-            <LockKeyhole className="h-5 w-5" />
+    <Card className="min-w-0 overflow-hidden">
+      <CardHeader>
+        <div className="flex items-start gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-sidebar-accent text-primary">
+            <LockKeyhole className="h-5 w-5" aria-hidden="true" />
           </div>
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <PlanBadge planKey={currentPlanKey} />
-            <CardTitle className="text-2xl font-semibold tracking-tight">
+            <CardTitle className="text-xl font-semibold tracking-tight">
               {title}
             </CardTitle>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4 p-6">
-        <p className="text-sm leading-7 text-muted-foreground">{description}</p>
+      <CardContent className="space-y-4">
+        <p className="text-sm leading-6 text-foreground/80">{description}</p>
         {showAction ? (
           <BillingActionPanel
             currentPlanKey={currentPlanKey}

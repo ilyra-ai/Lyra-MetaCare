@@ -106,7 +106,7 @@ export function buildProfileUpdatePayload(data: ProfileValues) {
 const chartConfig = {
   weight: {
     label: 'Peso (kg)',
-    color: 'hsl(var(--chart-2))',
+    color: 'hsl(var(--primary))',
   },
 };
 
@@ -165,7 +165,7 @@ function ProgressChart({
   }, [userId, db]);
 
   if (loading) {
-    return <Skeleton className="h-[250px] w-full" />;
+    return <Skeleton className="h-[250px] w-full rounded-xl" />;
   }
 
   if (data.length === 0) {
@@ -173,15 +173,20 @@ function ProgressChart({
       <Card className="col-span-full">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Progresso Longitudinal</CardTitle>
-          <TrendingUp className="h-5 w-5 text-muted-foreground" />
+          <TrendingUp
+            className="h-5 w-5 text-muted-foreground"
+            aria-hidden="true"
+          />
         </CardHeader>
-        <CardContent className="text-center p-8">
-          <p className="text-muted-foreground">
-            Nenhum dado de peso encontrado nos últimos 6 meses.
-          </p>
-          <p className="text-xs text-muted-foreground mt-2">
-            Registre seu peso para visualizar o progresso.
-          </p>
+        <CardContent>
+          <div className="rounded-md border border-dashed border-border bg-background p-6 text-center">
+            <p className="text-muted-foreground">
+              Nenhum dado de peso encontrado nos últimos 6 meses.
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Registre seu peso para visualizar o progresso.
+            </p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -191,10 +196,16 @@ function ProgressChart({
     <Card className="col-span-full">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Progresso Longitudinal (Peso)</CardTitle>
-        <TrendingUp className="h-5 w-5 text-muted-foreground" />
+        <TrendingUp
+          className="h-5 w-5 text-muted-foreground"
+          aria-hidden="true"
+        />
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+        <ChartContainer
+          config={chartConfig}
+          className="min-h-[200px] w-full border-0 p-0"
+        >
           <LineChart
             data={data}
             margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
@@ -206,14 +217,19 @@ function ProgressChart({
               axisLine={false}
               tickMargin={8}
             />
-            <YAxis domain={['dataMin - 5', 'dataMax + 5']} />
+            <YAxis
+              domain={['dataMin - 5', 'dataMax + 5']}
+              axisLine={false}
+              tickLine={false}
+              width={40}
+            />
             <ChartTooltip content={<ChartTooltipContent />} />
             <Line
               dataKey="weight"
               type="monotone"
               stroke="var(--color-weight)"
               strokeWidth={2}
-              dot={true}
+              dot={{ r: 3, fill: 'hsl(var(--primary))', strokeWidth: 0 }}
             />
           </LineChart>
         </ChartContainer>
@@ -341,14 +357,14 @@ export function ProfileForm() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          <Skeleton className="h-48 w-full" />
-          <Skeleton className="h-64 w-full" />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <Skeleton className="h-48 w-full rounded-xl" />
+          <Skeleton className="h-64 w-full rounded-xl" />
         </div>
-        <div className="lg:col-span-1 space-y-6">
-          <Skeleton className="h-32 w-full" />
-          <Skeleton className="h-64 w-full" />
+        <div className="space-y-6 lg:col-span-1">
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <Skeleton className="h-64 w-full rounded-xl" />
         </div>
       </div>
     );
@@ -364,15 +380,20 @@ export function ProfileForm() {
   };
 
   return (
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-      <div className="lg:col-span-2 space-y-8">
-        <Card className="border-border/70 bg-white/88">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="min-w-0 space-y-6 lg:col-span-2">
+        <Card>
           <CardHeader>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+            <p className="text-sm font-medium text-muted-foreground">
               {profileConfig.pageEyebrow}
             </p>
-            <CardTitle style={titleStyle}>{profileConfig.pageTitle}</CardTitle>
-            <CardDescription style={bodyStyle}>
+            <CardTitle className="tracking-[-0.02em]" style={titleStyle}>
+              {profileConfig.pageTitle}
+            </CardTitle>
+            <CardDescription
+              className="leading-relaxed text-foreground/80"
+              style={bodyStyle}
+            >
               {profileConfig.pageDescription}
             </CardDescription>
           </CardHeader>
@@ -386,7 +407,7 @@ export function ProfileForm() {
                   Informações essenciais para a análise de IA.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CardContent className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="first_name"
@@ -419,7 +440,10 @@ export function ProfileForm() {
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel className="mb-2">
-                        <Calendar className="h-4 w-4 mr-1 inline-block align-text-bottom" />{' '}
+                        <Calendar
+                          className="mr-1 inline-block h-4 w-4 align-text-bottom text-muted-foreground"
+                          aria-hidden="true"
+                        />{' '}
                         Data de Nascimento
                       </FormLabel>
                       <FormControl>
@@ -448,7 +472,7 @@ export function ProfileForm() {
                           disabled={!!birthDateWatch}
                           className={cn(
                             !!birthDateWatch &&
-                              'cursor-not-allowed border-border bg-muted/70'
+                              'cursor-not-allowed border-border bg-muted'
                           )}
                         />
                       </FormControl>
@@ -490,7 +514,10 @@ export function ProfileForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <Clock className="h-4 w-4 mr-1 inline-block align-text-bottom" />{' '}
+                        <Clock
+                          className="mr-1 inline-block h-4 w-4 align-text-bottom text-muted-foreground"
+                          aria-hidden="true"
+                        />{' '}
                         Hora Exata (HH:MM)
                       </FormLabel>
                       <FormControl>
@@ -507,7 +534,10 @@ export function ProfileForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <MapPin className="h-4 w-4 mr-1 inline-block align-text-bottom" />{' '}
+                        <MapPin
+                          className="mr-1 inline-block h-4 w-4 align-text-bottom text-muted-foreground"
+                          aria-hidden="true"
+                        />{' '}
                         Local de Nascimento
                       </FormLabel>
                       <FormControl>
@@ -535,13 +565,13 @@ export function ProfileForm() {
         {session?.user && <ProgressChart userId={session.user.id} db={db} />}
       </div>
 
-      <div className="lg:col-span-1 space-y-8">
+      <div className="min-w-0 space-y-6 lg:col-span-1">
         <AccountSubscriptionCard />
         <Card>
           <CardHeader>
             <CardTitle>Ações da Conta</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col space-y-2">
+          <CardContent className="flex flex-col gap-4">
             <AvatarUploader
               currentAvatarUrl={avatarUrl}
               firstName={firstName}
@@ -552,7 +582,7 @@ export function ProfileForm() {
               onClick={handleSignOut}
               className="w-full"
             >
-              <LogOut className="mr-2 h-4 w-4" />
+              <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
               Sair do App
             </Button>
           </CardContent>

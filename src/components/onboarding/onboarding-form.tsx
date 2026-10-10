@@ -160,9 +160,7 @@ const OnboardingStep: React.FC<{
   className?: string;
 }> = ({ children, className }) => (
   <CarouselItem className={cn('animate-fade-in', className)}>
-    <Card className="min-h-[550px] flex flex-col rounded-2xl border-border shadow-md">
-      {children}
-    </Card>
+    <Card className="flex min-h-[550px] flex-col">{children}</Card>
   </CarouselItem>
 );
 
@@ -335,19 +333,23 @@ export function OnboardingForm() {
                   </p>
                 </div>
                 <div className="flex justify-center items-center md:col-span-1">
-                  <div className="p-5 bg-gradient-teal rounded-2xl shadow-teal">
-                    <Sparkles className="w-12 h-12 md:w-16 md:h-16 text-white" />
+                  {/* IA: único destaque violeta do fluxo */}
+                  <div className="rounded-xl bg-cosmic-light p-5">
+                    <Sparkles
+                      className="h-12 w-12 text-cosmic-strong md:h-16 md:w-16"
+                      aria-hidden
+                    />
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between items-center border-t border-border pt-4">
+              <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
                 <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
                 <Button
                   type="button"
                   onClick={() => api?.scrollNext()}
-                  className="rounded-xl bg-gradient-teal text-white shadow-teal"
+                  className="ml-auto"
                 >
-                  Começar <ArrowRight className="ml-2 h-4 w-4" />
+                  Começar <ArrowRight className="h-4 w-4" aria-hidden />
                 </Button>
               </CardFooter>
             </OnboardingStep>
@@ -370,14 +372,14 @@ export function OnboardingForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center text-sm font-medium">
-                          <User className="h-4 w-4 mr-1.5 text-primary" /> Nome
+                          <User
+                            className="h-4 w-4 mr-1.5 text-primary"
+                            aria-hidden
+                          />{' '}
+                          Nome
                         </FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Seu nome"
-                            className="rounded-xl"
-                            {...field}
-                          />
+                          <Input placeholder="Seu nome" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -389,15 +391,14 @@ export function OnboardingForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center text-sm font-medium">
-                          <User className="h-4 w-4 mr-1.5 text-primary" />{' '}
+                          <User
+                            className="h-4 w-4 mr-1.5 text-primary"
+                            aria-hidden
+                          />{' '}
                           Sobrenome
                         </FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Seu sobrenome"
-                            className="rounded-xl"
-                            {...field}
-                          />
+                          <Input placeholder="Seu sobrenome" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -412,7 +413,10 @@ export function OnboardingForm() {
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <FormLabel className="mb-2 flex items-center text-sm font-medium">
-                          <Calendar className="h-4 w-4 mr-1.5 text-primary" />{' '}
+                          <Calendar
+                            className="h-4 w-4 mr-1.5 text-primary"
+                            aria-hidden
+                          />{' '}
                           Data de Nascimento
                         </FormLabel>
                         <FormControl>
@@ -434,7 +438,10 @@ export function OnboardingForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center text-sm font-medium">
-                          <Scale className="h-4 w-4 mr-1.5 text-primary" />{' '}
+                          <Scale
+                            className="h-4 w-4 mr-1.5 text-primary"
+                            aria-hidden
+                          />{' '}
                           Idade
                         </FormLabel>
                         <FormControl>
@@ -442,8 +449,7 @@ export function OnboardingForm() {
                             type="number"
                             placeholder="Idade"
                             className={cn(
-                              'rounded-xl',
-                              !!birthDate && 'bg-muted cursor-not-allowed'
+                              !!birthDate && 'cursor-not-allowed bg-muted'
                             )}
                             {...field}
                             disabled={!!birthDate}
@@ -463,7 +469,10 @@ export function OnboardingForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center text-sm font-medium">
-                          <Globe className="h-4 w-4 mr-1.5 text-primary" />{' '}
+                          <Globe
+                            className="h-4 w-4 mr-1.5 text-primary"
+                            aria-hidden
+                          />{' '}
                           Gênero
                         </FormLabel>
                         <Select
@@ -471,7 +480,7 @@ export function OnboardingForm() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="rounded-xl">
+                            <SelectTrigger>
                               <SelectValue placeholder="Selecione..." />
                             </SelectTrigger>
                           </FormControl>
@@ -497,8 +506,11 @@ export function OnboardingForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center text-sm font-medium">
-                          <Clock className="h-4 w-4 mr-1.5 text-cosmic" /> Hora
-                          Exata (HH:MM)
+                          <Clock
+                            className="h-4 w-4 mr-1.5 text-cosmic"
+                            aria-hidden
+                          />{' '}
+                          Hora Exata (HH:MM)
                         </FormLabel>
                         <FormControl>
                           <TimeInput placeholder="12:00" {...field} />
@@ -516,13 +528,15 @@ export function OnboardingForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center text-sm font-medium">
-                          <MapPin className="h-4 w-4 mr-1.5 text-cosmic" />{' '}
+                          <MapPin
+                            className="h-4 w-4 mr-1.5 text-cosmic"
+                            aria-hidden
+                          />{' '}
                           Local de Nascimento
                         </FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Ex: São Paulo, SP, Brasil"
-                            className="rounded-xl"
                             {...field}
                           />
                         </FormControl>
@@ -535,20 +549,18 @@ export function OnboardingForm() {
                   />
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between items-center border-t border-border pt-4">
+              <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
                 <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                <div className="flex items-center gap-2">
+                <div className="ml-auto flex items-center gap-2">
                   <Button
                     type="button"
-                    variant="outline"
-                    className="rounded-xl"
+                    variant="secondary"
                     onClick={() => api?.scrollPrev()}
                   >
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
+                    <ArrowLeft className="h-4 w-4" aria-hidden /> Voltar
                   </Button>
                   <Button
                     type="button"
-                    className="rounded-xl bg-gradient-teal text-white shadow-teal"
                     onClick={() =>
                       handleNext([
                         'first_name',
@@ -561,7 +573,7 @@ export function OnboardingForm() {
                       ])
                     }
                   >
-                    Próximo <ArrowRight className="ml-2 h-4 w-4" />
+                    Próximo <ArrowRight className="h-4 w-4" aria-hidden />
                   </Button>
                 </div>
               </CardFooter>
@@ -578,8 +590,11 @@ export function OnboardingForm() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col items-center justify-center p-6 space-y-8 overflow-y-auto">
-                <div className="p-5 bg-gradient-coral rounded-2xl shadow-coral">
-                  <Dumbbell className="w-12 h-12 md:w-16 md:h-16 text-white" />
+                <div className="rounded-xl bg-sidebar-accent p-5">
+                  <Dumbbell
+                    className="h-12 w-12 text-primary md:h-16 md:w-16"
+                    aria-hidden
+                  />
                 </div>
 
                 <div className="w-full max-w-md">
@@ -612,23 +627,18 @@ export function OnboardingForm() {
                   />
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between items-center border-t border-border pt-4">
+              <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
                 <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                <div className="flex items-center gap-2">
+                <div className="ml-auto flex items-center gap-2">
                   <Button
                     type="button"
-                    variant="outline"
-                    className="rounded-xl"
+                    variant="secondary"
                     onClick={() => api?.scrollPrev()}
                   >
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
+                    <ArrowLeft className="h-4 w-4" aria-hidden /> Voltar
                   </Button>
-                  <Button
-                    type="button"
-                    className="rounded-xl bg-gradient-teal text-white shadow-teal"
-                    onClick={() => api?.scrollNext()}
-                  >
-                    Próximo <ArrowRight className="ml-2 h-4 w-4" />
+                  <Button type="button" onClick={() => api?.scrollNext()}>
+                    Próximo <ArrowRight className="h-4 w-4" aria-hidden />
                   </Button>
                 </div>
               </CardFooter>
@@ -657,7 +667,7 @@ export function OnboardingForm() {
                               control={form.control}
                               name="goals"
                               render={({ field }) => (
-                                <FormItem className="flex flex-row items-center space-x-3 space-y-0 border border-border rounded-xl p-3 hover:bg-secondary transition-colors cursor-pointer">
+                                <FormItem className="flex min-w-0 cursor-pointer flex-row items-center space-x-3 space-y-0 rounded-md border border-border bg-card p-3 transition-colors hover:bg-muted">
                                   <FormControl>
                                     <Checkbox
                                       checked={field.value?.includes(item.id)}
@@ -675,8 +685,11 @@ export function OnboardingForm() {
                                       }}
                                     />
                                   </FormControl>
-                                  <div className="flex items-center space-x-2.5">
-                                    <GoalIcon className="h-4 w-4 text-primary shrink-0" />
+                                  <div className="flex min-w-0 items-center space-x-2.5">
+                                    <GoalIcon
+                                      className="h-4 w-4 shrink-0 text-primary"
+                                      aria-hidden
+                                    />
                                     <FormLabel className="font-medium cursor-pointer text-sm">
                                       {item.label}
                                     </FormLabel>
@@ -692,23 +705,18 @@ export function OnboardingForm() {
                   />
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between items-center border-t border-border pt-4">
+              <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
                 <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                <div className="flex items-center gap-2">
+                <div className="ml-auto flex items-center gap-2">
                   <Button
                     type="button"
-                    variant="outline"
-                    className="rounded-xl"
+                    variant="secondary"
                     onClick={() => api?.scrollPrev()}
                   >
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
+                    <ArrowLeft className="h-4 w-4" aria-hidden /> Voltar
                   </Button>
-                  <Button
-                    type="button"
-                    className="rounded-xl bg-gradient-teal text-white shadow-teal"
-                    onClick={() => api?.scrollNext()}
-                  >
-                    Próximo <ArrowRight className="ml-2 h-4 w-4" />
+                  <Button type="button" onClick={() => api?.scrollNext()}>
+                    Próximo <ArrowRight className="h-4 w-4" aria-hidden />
                   </Button>
                 </div>
               </CardFooter>
@@ -723,14 +731,17 @@ export function OnboardingForm() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col items-center justify-center p-6 space-y-6 overflow-y-auto">
-                <div className="p-5 bg-gradient-cosmic rounded-2xl shadow-cosmic">
-                  <ShieldCheck className="w-12 h-12 md:w-16 md:h-16 text-white" />
+                <div className="rounded-xl bg-sidebar-accent p-5">
+                  <ShieldCheck
+                    className="h-12 w-12 text-primary md:h-16 md:w-16"
+                    aria-hidden
+                  />
                 </div>
                 <FormField
                   control={form.control}
                   name="consent"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-border p-4 w-full max-w-md">
+                    <FormItem className="flex w-full max-w-md flex-row items-start space-x-3 space-y-0 rounded-md border border-border bg-background p-4">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
@@ -752,22 +763,17 @@ export function OnboardingForm() {
                   )}
                 />
               </CardContent>
-              <CardFooter className="flex justify-between items-center border-t border-border pt-4">
+              <CardFooter className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
                 <OnboardingNavigationDots api={api} count={TOTAL_STEPS} />
-                <div className="flex items-center gap-2">
+                <div className="ml-auto flex items-center gap-2">
                   <Button
                     type="button"
-                    variant="outline"
-                    className="rounded-xl"
+                    variant="secondary"
                     onClick={() => api?.scrollPrev()}
                   >
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
+                    <ArrowLeft className="h-4 w-4" aria-hidden /> Voltar
                   </Button>
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="rounded-xl bg-gradient-coral text-white shadow-coral"
-                  >
+                  <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? 'Salvando...' : 'Finalizar'}
                   </Button>
                 </div>

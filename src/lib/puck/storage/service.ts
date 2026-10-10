@@ -16,6 +16,7 @@ type PuckDocumentRow = {
   draft_data: string | Record<string, unknown>;
   published_data: string | Record<string, unknown>;
   updated_by_user_id: string | null;
+  updated_by_name: string | null;
   created_at: string | null;
   updated_at: string | null;
 };
@@ -25,18 +26,25 @@ function serializePuckData(data: LyraPuckData) {
 }
 
 async function getPuckDocumentRow(documentKey: LyraPuckDocumentKey) {
+  // Nome legível de quem salvou por último (nome completo ou, sem nome,
+  // e-mail), para o painel administrativo não exibir um UUID.
   const rows = await queryRows<PuckDocumentRow>(
     `
       SELECT
-        id,
-        document_key,
-        draft_data,
-        published_data,
-        updated_by_user_id,
-        created_at,
-        updated_at
-      FROM puck_documents
-      WHERE document_key = ?
+        d.id,
+        d.document_key,
+        d.draft_data,
+        d.published_data,
+        d.updated_by_user_id,
+        COALESCE(
+          NULLIF(TRIM(CONCAT_WS(' ', p.first_name, p.last_name)), ''),
+          p.email
+        ) AS updated_by_name,
+        d.created_at,
+        d.updated_at
+      FROM puck_documents d
+      LEFT JOIN profiles p ON p.id = d.updated_by_user_id
+      WHERE d.document_key = ?
       LIMIT 1
     `,
     [documentKey]
@@ -57,6 +65,7 @@ function buildEmptyPuckDocument(
     createdAt: null,
     updatedAt: null,
     updatedByUserId: null,
+    updatedByName: null,
   };
 }
 
@@ -82,6 +91,7 @@ export async function getAdminPuckDocument(
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     updatedByUserId: row.updated_by_user_id,
+    updatedByName: row.updated_by_name,
   };
 }
 
@@ -105,7 +115,10 @@ export async function getPublicPuckDocument(
     publishedData,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-    updatedByUserId: row.updated_by_user_id,
+    // A rota pública não identifica quem editou: o ID e o nome de um
+    // administrador não são dados do visitante.
+    updatedByUserId: null,
+    updatedByName: null,
   };
 }
 

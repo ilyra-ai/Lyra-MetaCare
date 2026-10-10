@@ -109,13 +109,13 @@ export default function RootLayout({
               toastOptions={{
                 classNames: {
                   toast:
-                    'group rounded-[20px] border border-white/80 bg-card/95 text-card-foreground shadow-xl backdrop-blur-xl',
+                    'group rounded-xl border border-border bg-card text-card-foreground shadow-lg',
                   title: 'font-semibold text-foreground',
                   description: 'text-sm text-muted-foreground',
                   actionButton:
-                    'rounded-full bg-primary text-primary-foreground shadow-teal',
+                    'rounded-[10px] bg-primary text-primary-foreground',
                   cancelButton:
-                    'rounded-full border border-border bg-secondary text-secondary-foreground',
+                    'rounded-[10px] border border-border bg-secondary text-secondary-foreground',
                 },
               }}
             />

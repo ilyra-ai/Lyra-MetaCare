@@ -121,7 +121,6 @@ export function ChatAssistantContent() {
   const [storedApiKey, setStoredApiKey] =
     useLocalStorageValue(BYOK_STORAGE_KEY);
   const userApiKey = storedApiKey ?? '';
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const handleSaveApiKey = (val: string) => {
@@ -136,8 +135,13 @@ export function ChatAssistantContent() {
     [chatConfig.quickReplies]
   );
 
+  // Rola só a lista de mensagens: `scrollIntoView` também rolava a janela e
+  // escondia o topo da página ao abrir o chat.
   const scrollToBottom = (smooth = true) => {
-    messagesEndRef.current?.scrollIntoView({
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    container.scrollTo({
+      top: container.scrollHeight,
       behavior: smooth ? 'smooth' : 'auto',
     });
   };
@@ -247,38 +251,35 @@ export function ChatAssistantContent() {
   };
 
   return (
-    <section className="flex h-full flex-col gap-4">
-      <Card className="overflow-hidden border-border/70 bg-white/88 shadow-sm backdrop-blur-xl">
-        <CardHeader className="gap-4 border-b border-border/60 bg-[radial-gradient(circle_at_top_left,hsl(var(--cosmic)/0.10)_0%,transparent_38%),radial-gradient(circle_at_top_right,hsl(var(--primary)/0.14)_0%,transparent_44%),linear-gradient(180deg,rgba(255,255,255,0.92),rgba(249,248,252,0.92))]">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="flex items-start gap-4">
-              <div className="relative">
-                <div className="absolute inset-0 rounded-[22px] bg-linear-to-br from-cosmic/45 via-accent/20 to-primary/45 blur-xl" />
-                <div className="relative flex h-14 w-14 items-center justify-center rounded-[22px] border border-white/80 bg-[linear-gradient(135deg,hsl(var(--cosmic)),hsl(var(--primary)))] text-white shadow-cosmic">
-                  <Brain className="h-6 w-6" />
-                </div>
+    <section className="flex flex-col gap-4">
+      <Card className="min-w-0">
+        <CardHeader className="gap-4 p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex min-w-0 items-start gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic-strong">
+                <Brain className="h-5 w-5" aria-hidden="true" />
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex min-w-0 flex-col gap-1">
                 <p
-                  className="text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground"
+                  className="text-sm font-medium text-muted-foreground"
                   style={{
-                    fontSize: scaleRem(0.68, appConfig.typography.navLabel),
+                    fontSize: scaleRem(0.875, appConfig.typography.navLabel),
                   }}
                 >
                   {chatConfig.pageEyebrow}
                 </p>
                 <CardTitle
-                  className="text-2xl md:text-3xl"
+                  className="text-2xl tracking-[-0.02em]"
                   style={{
-                    fontSize: scaleRem(1.8, appConfig.typography.pageTitle),
+                    fontSize: scaleRem(1.5, appConfig.typography.pageTitle),
                   }}
                 >
                   {chatConfig.pageTitle}
                 </CardTitle>
                 <CardDescription
-                  className="max-w-3xl leading-7"
+                  className="max-w-3xl leading-relaxed"
                   style={{
-                    fontSize: scaleRem(0.98, appConfig.typography.pageBody),
+                    fontSize: scaleRem(0.95, appConfig.typography.pageBody),
                   }}
                 >
                   {chatConfig.pageDescription}
@@ -291,22 +292,25 @@ export function ChatAssistantContent() {
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="rounded-full border-cosmic/20 bg-cosmic-light/50 px-4"
+                    className="w-full shrink-0 sm:w-fit"
                   >
-                    <Cpu className="text-cosmic" />
+                    <Cpu className="text-cosmic" aria-hidden="true" />
                     {chatConfig.integrationsButtonLabel}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-88 border-border/70 bg-white/92 p-0 backdrop-blur-xl">
-                  <div className="border-b border-border/60 px-5 py-4">
-                    <h2 className="text-base font-semibold text-foreground">
+                <PopoverContent
+                  align="end"
+                  className="w-[min(22rem,calc(100vw-2rem))] border-border bg-popover p-0"
+                >
+                  <div className="border-b border-border px-5 py-4">
+                    <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
                       {chatConfig.integrationsTitle}
                     </h2>
                     <p className="mt-1 text-sm leading-6 text-muted-foreground">
                       {chatConfig.integrationsDescription}
                     </p>
                   </div>
-                  <div className="space-y-3 px-5 py-4">
+                  <div className="max-h-[50dvh] space-y-3 overflow-y-auto px-5 py-4">
                     {integrations.map((item) => {
                       const Icon = item.icon;
                       return (
@@ -314,14 +318,14 @@ export function ChatAssistantContent() {
                           key={item.title}
                           className="flex items-start gap-3"
                         >
-                          <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-2xl bg-cosmic-light text-cosmic">
-                            <Icon className="h-4 w-4" />
+                          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic-strong">
+                            <Icon className="h-4 w-4" aria-hidden="true" />
                           </div>
-                          <div>
+                          <div className="min-w-0">
                             <p className="text-sm font-semibold text-foreground">
                               {item.title}
                             </p>
-                            <p className="text-xs leading-6 text-muted-foreground">
+                            <p className="text-xs leading-5 text-muted-foreground">
                               {item.description}
                             </p>
                           </div>
@@ -329,12 +333,15 @@ export function ChatAssistantContent() {
                       );
                     })}
                   </div>
-                  <div className="border-t border-border/60 bg-muted/10 px-5 py-4">
-                    <p className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
-                      <Sparkles className="size-4 text-primary" /> BYOK (sua
-                      própria chave)
+                  <div className="border-t border-border bg-background px-5 py-4">
+                    <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
+                      <Sparkles
+                        className="size-4 text-primary"
+                        aria-hidden="true"
+                      />{' '}
+                      BYOK (sua própria chave)
                     </p>
-                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                    <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
                       Use a sua chave do Google AI Studio (Gemini). Ela fica
                       salva só neste navegador e acompanha cada pergunta até o
                       servidor da Lyra, que a repassa ao Gemini sem gravá-la.
@@ -346,10 +353,10 @@ export function ChatAssistantContent() {
                       autoComplete="off"
                       value={userApiKey}
                       onChange={(e) => handleSaveApiKey(e.target.value)}
-                      className="h-8 text-xs bg-white"
+                      className="h-9 bg-card text-xs"
                     />
                     <p
-                      className="mt-2 text-[11px] text-muted-foreground"
+                      className="mt-2 text-xs text-muted-foreground"
                       aria-live="polite"
                     >
                       {userApiKey
@@ -367,35 +374,45 @@ export function ChatAssistantContent() {
       </Card>
 
       <div className="grid flex-1 gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
-        <Card className="relative flex min-h-176 flex-col overflow-hidden border-border/70 bg-[radial-gradient(circle_at_top_left,hsl(var(--cosmic)/0.08)_0%,transparent_30%),radial-gradient(circle_at_top_right,hsl(var(--primary)/0.10)_0%,transparent_32%),linear-gradient(180deg,rgba(255,255,255,0.94),rgba(249,248,252,0.96))] shadow-sm backdrop-blur-xl">
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.04)_1px,transparent_1px)] bg-size-[22px_22px] opacity-40" />
-
-          <div className="relative z-10 flex items-center justify-between gap-4 border-b border-border/60 px-6 py-5">
-            <div className="flex items-center gap-3">
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-[20px] bg-[linear-gradient(135deg,hsl(var(--cosmic)),hsl(var(--primary)))] text-white shadow-cosmic">
-                <Brain className="h-5 w-5" />
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-success text-[9px] font-bold text-white">
-                  •
-                </span>
+        {/*
+          Altura amarrada à janela: no celular o cartão ocupa quase toda a
+          tela (o cabeçalho rola acima dele); no desktop, cabeçalho da página
+          + cartão de conversa cabem juntos. Só a lista de mensagens rola.
+        */}
+        <Card className="relative flex h-[calc(100dvh-6rem)] min-h-[26rem] min-w-0 flex-col overflow-hidden lg:h-[calc(100dvh-15rem)]">
+          <div className="flex items-center justify-between gap-4 border-b border-border px-4 py-3 sm:px-5">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cosmic-light text-cosmic-strong">
+                <Brain className="h-5 w-5" aria-hidden="true" />
+                <span
+                  className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-card bg-success"
+                  aria-hidden="true"
+                />
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex min-w-0 flex-col gap-0.5">
                 <div className="flex items-center gap-2">
                   <h2
-                    className="font-semibold text-foreground"
+                    className="truncate font-display font-semibold tracking-tight text-foreground"
                     style={{
-                      fontSize: scaleRem(1.12, appConfig.typography.cardTitle),
+                      fontSize: scaleRem(1.05, appConfig.typography.cardTitle),
                     }}
                   >
                     {chatConfig.assistantTitle}
                   </h2>
-                  <Sparkles className="h-4 w-4 text-cosmic" />
+                  <Sparkles
+                    className="h-4 w-4 shrink-0 text-cosmic"
+                    aria-hidden="true"
+                  />
                 </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1">
-                    <span className="h-2 w-2 rounded-full bg-success" />
+                    <span
+                      className="h-2 w-2 rounded-full bg-success"
+                      aria-hidden="true"
+                    />
                     {chatConfig.assistantStatusLabel}
                   </span>
-                  <span className="text-border">•</span>
+                  <span aria-hidden="true">·</span>
                   <span>{chatConfig.assistantStatusNote}</span>
                 </div>
               </div>
@@ -404,16 +421,16 @@ export function ChatAssistantContent() {
 
           <div
             ref={messagesContainerRef}
-            className="relative z-10 flex-1 overflow-y-auto px-4 py-5"
+            className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5"
             style={{
               scrollbarWidth: 'thin',
-              scrollbarColor: 'rgba(139, 92, 246, 0.28) transparent',
+              scrollbarColor: 'hsl(var(--control)) transparent',
             }}
           >
-            <div className="mx-auto flex max-w-4xl flex-col gap-6">
+            <div className="mx-auto flex max-w-4xl flex-col gap-4">
               {messages.length === 1 ? (
-                <div className="rounded-[24px] border border-border/70 bg-white/84 p-5 shadow-sm">
-                  <p className="text-sm leading-7 text-muted-foreground">
+                <div className="rounded-md border border-border bg-background p-4">
+                  <p className="text-sm leading-6 text-muted-foreground">
                     {chatConfig.emptyStateHint}
                   </p>
                 </div>
@@ -445,8 +462,6 @@ export function ChatAssistantContent() {
                   <TypingIndicator />
                 </div>
               ) : null}
-
-              <div ref={messagesEndRef} />
             </div>
           </div>
 
@@ -456,16 +471,17 @@ export function ChatAssistantContent() {
                 scrollToBottom();
                 setIsNearBottom(true);
               }}
-              className="absolute bottom-32 right-6 z-20 flex h-12 w-12 items-center justify-center rounded-full border border-cosmic/20 bg-white/92 shadow-xl transition-all duration-300 hover:scale-110"
+              type="button"
+              className="absolute bottom-32 right-4 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-md transition-colors hover:bg-muted"
               aria-label="Voltar para o final da conversa"
             >
-              <ChevronDown className="h-5 w-5 text-cosmic" />
+              <ChevronDown className="h-5 w-5" aria-hidden="true" />
             </button>
           ) : null}
 
-          <div className="relative z-10 border-t border-border/60 bg-white/88 px-4 py-4 backdrop-blur-xl">
+          <div className="border-t border-border bg-card px-3 py-3 sm:px-5">
             {chatConfig.showQuickReplies && messages.length <= 2 ? (
-              <div className="mb-4 space-y-3">
+              <div className="mb-3 space-y-2">
                 <div className="flex flex-col gap-1">
                   <p
                     className="text-sm font-semibold text-foreground"
@@ -476,7 +492,7 @@ export function ChatAssistantContent() {
                     {chatConfig.quickRepliesTitle}
                   </p>
                   <p
-                    className="text-xs leading-6 text-muted-foreground"
+                    className="hidden text-xs leading-5 text-muted-foreground sm:block"
                     style={{
                       fontSize: scaleRem(0.8, appConfig.typography.cardBody),
                     }}
@@ -484,7 +500,7 @@ export function ChatAssistantContent() {
                     {chatConfig.quickRepliesDescription}
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex max-h-28 flex-wrap gap-2 overflow-y-auto">
                   {quickReplies.map((reply, index) => (
                     <div
                       key={reply}
@@ -509,8 +525,8 @@ export function ChatAssistantContent() {
           </div>
         </Card>
 
-        <aside className="flex flex-col gap-4">
-          <Card className="border-border/70 bg-white/88 shadow-sm">
+        <aside className="flex min-w-0 flex-col gap-4 xl:h-[calc(100dvh-15rem)] xl:min-h-[26rem] xl:overflow-y-auto">
+          <Card>
             <CardHeader className="gap-2">
               <CardTitle
                 className="text-lg"
@@ -535,7 +551,7 @@ export function ChatAssistantContent() {
                   type="button"
                   onClick={() => void handleSendMessage(reply)}
                   className={cn(
-                    'rounded-[18px] border border-border/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(249,248,252,0.96))] px-4 py-3 text-left text-sm text-foreground transition hover:border-cosmic/25 hover:bg-cosmic-light/40'
+                    'rounded-md border border-border bg-background px-4 py-3 text-left text-sm text-foreground transition-colors hover:border-input hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                   )}
                 >
                   {reply}
@@ -545,7 +561,7 @@ export function ChatAssistantContent() {
           </Card>
 
           {chatConfig.showIntegrations ? (
-            <Card className="border-border/70 bg-white/88 shadow-sm">
+            <Card>
               <CardHeader className="gap-2">
                 <CardTitle
                   className="text-lg"
@@ -570,17 +586,17 @@ export function ChatAssistantContent() {
                   return (
                     <div
                       key={item.title}
-                      className="rounded-[20px] border border-border/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(249,248,252,0.94))] p-4"
+                      className="rounded-md border border-border bg-background p-4"
                     >
                       <div className="flex items-start gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                          <Icon className="h-4 w-4" />
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic-strong">
+                          <Icon className="h-4 w-4" aria-hidden="true" />
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <p className="text-sm font-semibold text-foreground">
                             {item.title}
                           </p>
-                          <p className="mt-1 text-xs leading-6 text-muted-foreground">
+                          <p className="mt-1 text-xs leading-5 text-muted-foreground">
                             {item.description}
                           </p>
                         </div>

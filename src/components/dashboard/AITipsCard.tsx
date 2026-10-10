@@ -114,18 +114,16 @@ export function AITipsCard({
 
   if (!tip) {
     return (
-      <Card
-        className={cn(
-          'border-dashed border-border/80 bg-card/80 backdrop-blur-xl',
-          className
-        )}
-      >
+      <Card className={cn('border-dashed', className)}>
         <CardHeader className="gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-2xl bg-cosmic-light text-cosmic shadow-cosmic">
-              <BrainCircuit />
+            <div
+              aria-hidden="true"
+              className="flex size-10 shrink-0 items-center justify-center rounded-full bg-cosmic-light text-cosmic"
+            >
+              <BrainCircuit className="size-5" />
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex min-w-0 flex-col gap-1">
               <CardTitle>Feed de insights indisponível</CardTitle>
               <CardDescription>
                 O motor de recomendações não encontrou um insight ativo para
@@ -139,30 +137,23 @@ export function AITipsCard({
   }
 
   return (
-    <Card
-      className={cn(
-        'relative overflow-hidden border-cosmic/20 bg-[radial-gradient(circle_at_top_left,hsl(var(--cosmic-light))_0%,hsl(var(--card))_48%,hsl(var(--card))_100%)] shadow-cosmic/60',
-        className
-      )}
-    >
-      <div className="orchestrated-orb -left-10 top-0 h-28 w-28 bg-cosmic/60" />
-      <div className="orchestrated-orb bottom-0 right-0 h-24 w-24 bg-primary/40" />
-
-      <CardHeader className="relative gap-5">
+    <Card className={cn('min-w-0', className)}>
+      <CardHeader className="gap-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex size-12 items-center justify-center rounded-2xl bg-gradient-cosmic text-white shadow-cosmic">
-              <Cpu />
+          <div className="flex min-w-0 items-start gap-4">
+            <div
+              aria-hidden="true"
+              className="flex size-10 shrink-0 items-center justify-center rounded-full bg-cosmic-light text-cosmic-strong"
+            >
+              <Cpu className="size-5" />
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex min-w-0 flex-col gap-2">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="cosmic">Insight privado IA</Badge>
                 <Badge variant="secondary">Fluxo ativo</Badge>
               </div>
               <div className="flex flex-col gap-1">
-                <CardTitle className="text-xl">
-                  Protocolo sensível ao seu momento
-                </CardTitle>
+                <CardTitle>Protocolo sensível ao seu momento</CardTitle>
                 <CardDescription>
                   Uma leitura curta, útil e gentil para orientar o seu próximo
                   passo.
@@ -171,53 +162,53 @@ export function AITipsCard({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-3 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground shadow-sm">
-            <Sparkles className="text-cosmic" />
+          <div className="flex items-center gap-1.5 rounded-full bg-cosmic-light px-2.5 py-1 text-[13px] font-medium text-cosmic-strong">
+            <Sparkles aria-hidden="true" className="size-3.5" />
             On-device
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="relative flex flex-col gap-4">
-        <div className="rounded-[24px] border border-white/80 bg-white/80 p-5 shadow-sm backdrop-blur-md">
-          <p className="text-lg font-semibold leading-8 text-foreground">
+      <CardContent className="flex flex-col gap-4">
+        <div className="rounded-md border border-border bg-background p-5">
+          <p className="font-display text-lg font-semibold leading-7 tracking-tight text-foreground">
             {tip.title}
           </p>
-          <p className="mt-3 text-sm leading-7 text-muted-foreground">
+          <p className="mt-2 text-[15px] leading-relaxed text-foreground/80">
             {tip.detail}
           </p>
         </div>
 
         <div className="grid gap-3 md:grid-cols-3">
-          <div className="rounded-[20px] border border-border/70 bg-card/80 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          <div className="rounded-md border border-border p-4">
+            <p className="text-sm font-medium text-muted-foreground">
               Intenção
             </p>
-            <p className="mt-2 text-sm font-medium text-foreground">
+            <p className="mt-1 text-sm font-medium text-foreground">
               Clareza antes de intensidade
             </p>
           </div>
-          <div className="rounded-[20px] border border-border/70 bg-card/80 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          <div className="rounded-md border border-border p-4">
+            <p className="text-sm font-medium text-muted-foreground">
               Atmosfera
             </p>
-            <p className="mt-2 text-sm font-medium text-foreground">
+            <p className="mt-1 text-sm font-medium text-foreground">
               Astrologia moderna com IA gentil
             </p>
           </div>
-          <div className="rounded-[20px] border border-border/70 bg-card/80 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          <div className="rounded-md border border-border p-4">
+            <p className="text-sm font-medium text-muted-foreground">
               Próximo passo
             </p>
-            <p className="mt-2 text-sm font-medium text-foreground">
+            <p className="mt-1 text-sm font-medium text-foreground">
               Expandir para o plano completo
             </p>
           </div>
         </div>
       </CardContent>
 
-      <CardFooter className="relative justify-between">
-        <p className="text-sm text-muted-foreground">
+      <CardFooter className="flex-wrap justify-between">
+        <p className="min-w-0 text-[13px] text-muted-foreground">
           O conteúdo vem do feed real de `ai_tips` ativo nesta instância.
         </p>
         <Button

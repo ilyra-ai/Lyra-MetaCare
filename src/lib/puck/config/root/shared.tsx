@@ -30,19 +30,21 @@ const camposSomenteLeituraRoot: Partial<
   resolvedContextSummary: true,
 };
 
+/*
+ * As chaves de tema são valores persistidos nos documentos publicados e
+ * permanecem iguais; a renderização usa superfície branca com borda, e o tema
+ * de landing recebe apenas um detalhe violeta discreto na borda e no selo.
+ */
 const classesPorTema: Record<LyraPuckThemeVariant, string> = {
-  aurora:
-    'border-cosmic/20 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(237,233,254,0.7),rgba(224,231,255,0.62))]',
-  serene:
-    'border-primary/20 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(240,253,250,0.86),rgba(249,248,252,0.92))]',
-  shell:
-    'border-border/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98))]',
+  aurora: 'border-cosmic/30 bg-card',
+  serene: 'border-primary/20 bg-card',
+  shell: 'border-border bg-card',
 };
 
 const badgePorTema: Record<LyraPuckThemeVariant, string> = {
-  aurora: 'border-cosmic/20 bg-cosmic/10 text-cosmic',
-  serene: 'border-primary/20 bg-primary/10 text-primary',
-  shell: 'border-foreground/10 bg-foreground/6 text-foreground',
+  aurora: 'border-cosmic/20 bg-cosmic-light text-cosmic-strong',
+  serene: 'border-transparent bg-sidebar-accent text-primary',
+  shell: 'border-border bg-muted text-foreground',
 };
 
 function obterRegrasVisibilidade(visibilityRules: string) {
@@ -74,53 +76,46 @@ function LyraSurfaceRoot({
   return (
     <section
       className={cn(
-        'space-y-6 rounded-[32px] border p-6 shadow-[0_28px_90px_-56px_rgba(15,23,42,0.32)] md:p-8',
+        'min-w-0 space-y-6 rounded-xl border p-5 md:p-6',
         classesPorTema[themeVariant]
       )}
       data-surface-key={surfaceKey}
       data-theme-variant={themeVariant}
     >
       <div className="space-y-5">
-        <div className="flex flex-wrap items-center gap-3">
-          <Badge
-            className={cn(
-              'rounded-full px-4 py-1.5 text-[11px] uppercase tracking-[0.22em]',
-              badgePorTema[themeVariant]
-            )}
-          >
-            <Sparkles className="mr-2 h-3.5 w-3.5" />
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge className={cn('px-3 py-1', badgePorTema[themeVariant])}>
+            <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
             {rotuloBadge}
           </Badge>
 
-          <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-white/75 px-3 py-1.5 text-xs text-muted-foreground">
-            <Layers3 className="h-3.5 w-3.5" />
-            superfície: {surfaceTitle}
+          <div className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground">
+            <Layers3 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span className="truncate">superfície: {surfaceTitle}</span>
           </div>
 
-          <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-white/75 px-3 py-1.5 text-xs text-muted-foreground">
-            <Eye className="h-3.5 w-3.5" />
-            chave: {surfaceKey}
+          <div className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground">
+            <Eye className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span className="truncate">chave: {surfaceKey}</span>
           </div>
 
-          <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-white/75 px-3 py-1.5 text-xs text-muted-foreground">
-            <Sparkles className="h-3.5 w-3.5" />
-            fonte: {dynamicSource ?? 'manual'}
+          <div className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground">
+            <Sparkles className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span className="truncate">fonte: {dynamicSource ?? 'manual'}</span>
           </div>
         </div>
 
         <div className="space-y-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-            {title}
-          </p>
+          <p className="text-sm font-medium text-muted-foreground">{title}</p>
           <div className="space-y-2">
-            <h2 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            <h2 className="break-words font-display text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
               {surfaceTitle}
             </h2>
-            <p className="max-w-4xl text-sm leading-7 text-muted-foreground md:text-base">
+            <p className="max-w-4xl text-sm leading-6 text-muted-foreground md:text-base md:leading-relaxed">
               {surfaceDescription}
             </p>
             {resolvedContextSummary ? (
-              <div className="rounded-[22px] border border-primary/15 bg-primary/6 px-4 py-3 text-sm leading-7 text-foreground/85">
+              <div className="rounded-md border border-border bg-background px-4 py-3 text-sm leading-6 text-foreground/80">
                 {resolvedContextSummary}
               </div>
             ) : null}
@@ -131,7 +126,7 @@ function LyraSurfaceRoot({
           {regras.map((regra) => (
             <span
               key={regra}
-              className="rounded-full border border-border/80 bg-white/80 px-3 py-1 text-xs font-medium text-muted-foreground"
+              className="rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground"
             >
               {regra}
             </span>
@@ -146,7 +141,7 @@ function LyraSurfaceRoot({
       */}
       <div
         className={cn(
-          'space-y-4 rounded-[28px] border border-white/80 bg-white/92 p-5 shadow-[0_20px_80px_-60px_rgba(15,23,42,0.38)] md:p-6',
+          'space-y-4 rounded-xl border border-border bg-background p-4 md:p-6',
           !isEditing && 'has-[>div:only-child:empty]:hidden'
         )}
       >

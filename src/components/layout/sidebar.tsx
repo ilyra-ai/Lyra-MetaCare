@@ -9,7 +9,6 @@ import { useAccountSubscription } from '@/hooks/use-account-subscription';
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { scalePx, scaleRem } from '@/lib/site-page-config/runtime';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { PlanBadge } from '@/components/subscription/PlanBadge';
 import { SidebarLink } from './SidebarLink';
 import { getVisibleNavigation, groupNavigation } from './navigation';
 
@@ -18,6 +17,11 @@ type ProfileState = {
   avatar_url: string | null;
 };
 
+/*
+  Sidebar "Lyra Clean": branca, borda direita de 1px, marca compacta,
+  seções com rótulo discreto e o usuário com o plano no rodapé. A largura
+  continua configurável pelo construtor de UI (`sizing.sidebarWidth`).
+*/
 export function Sidebar() {
   const { session, db } = useAuth();
   const isAdmin = useIsAdmin();
@@ -59,101 +63,96 @@ export function Sidebar() {
 
   return (
     <aside
-      className="glass sticky top-0 hidden h-screen shrink-0 flex-col border-r border-sidebar-border lg:flex"
+      className="sticky top-0 hidden h-screen shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex"
       style={{
         width: `${appConfig.sizing.sidebarWidth}px`,
         maxWidth: '34vw',
       }}
     >
-      <div className="flex h-full flex-col px-4 py-5">
-        <div className="relative mb-8 flex flex-col items-center justify-center gap-3 py-6">
-          <Link
-            href="/"
-            className="group interactive-lift flex flex-col items-center gap-2"
+      <div className="flex h-full flex-col gap-5 px-3.5 py-5">
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-1"
+        >
+          <span
+            aria-hidden="true"
+            className="flex shrink-0 items-center justify-center rounded-[9px] bg-primary text-primary-foreground"
+            style={{
+              height: scalePx(32, iconScale),
+              width: scalePx(32, iconScale),
+            }}
           >
-            <div className="flex size-14 items-center justify-center rounded-[24px] bg-gradient-teal text-white shadow-teal ring-4 ring-white/50 backdrop-blur-md transition-all group-hover:scale-105 group-hover:shadow-cosmic">
-              <Sparkles
-                className="animate-float"
-                strokeWidth={2}
-                style={{
-                  height: scalePx(24, iconScale),
-                  width: scalePx(24, iconScale),
-                }}
-              />
-            </div>
-            <div className="text-center">
-              <p
-                className="font-display font-bold tracking-tight text-foreground"
-                style={{ fontSize: scaleRem(1.25, navLabelScale) }}
-              >
-                {appConfig.sidebar.brandTitle}
-              </p>
-              <p
-                className="font-semibold uppercase tracking-[0.2em] text-primary/80"
-                style={{ fontSize: scaleRem(0.625, navLabelScale) }}
-              >
-                {appConfig.sidebar.brandEyebrow}
-              </p>
-            </div>
-          </Link>
-          <div className="soft-divider absolute -bottom-4 opacity-60" />
-        </div>
+            <Sparkles
+              strokeWidth={2}
+              style={{
+                height: scalePx(16, iconScale),
+                width: scalePx(16, iconScale),
+              }}
+            />
+          </span>
+          <span className="min-w-0">
+            <span
+              className="block font-display font-semibold lowercase leading-tight text-foreground"
+              style={{ fontSize: scaleRem(1.125, navLabelScale) }}
+            >
+              {appConfig.sidebar.brandTitle}
+            </span>
+            <span
+              className="block truncate text-muted-foreground"
+              style={{ fontSize: scaleRem(0.75, navLabelScale) }}
+            >
+              {appConfig.sidebar.brandEyebrow}
+            </span>
+          </span>
+        </Link>
 
         <nav
           aria-label="Navegação principal"
-          className="mt-4 flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto pr-2"
+          className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto"
         >
           {Object.entries(sections).map(([section, items]) => (
-            <section key={section} className="space-y-2">
-              <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
+            <section key={section} className="flex flex-col gap-0.5">
+              <p className="px-2.5 pb-1.5 text-xs font-medium text-muted-foreground">
                 {section}
               </p>
-              <div className="space-y-1.5">
-                {items.map((item) => (
-                  <SidebarLink
-                    key={item.href}
-                    href={item.href}
-                    icon={item.icon}
-                    description={item.description}
-                    iconScale={iconScale}
-                    labelScale={navLabelScale}
-                  >
-                    {item.label}
-                  </SidebarLink>
-                ))}
-              </div>
+              {items.map((item) => (
+                <SidebarLink
+                  key={item.href}
+                  href={item.href}
+                  icon={item.icon}
+                  iconScale={iconScale}
+                  labelScale={navLabelScale}
+                >
+                  {item.label}
+                </SidebarLink>
+              ))}
             </section>
           ))}
         </nav>
 
-        <div className="relative mt-auto border-t border-sidebar-border/70 pt-6">
-          {subscription ? (
-            <div className="mb-3 flex justify-center">
-              <PlanBadge planKey={subscription.plan.key} />
-            </div>
-          ) : null}
+        <div className="flex items-center gap-2.5 border-t border-sidebar-border px-2.5 pt-3.5">
+          <Avatar className="h-9 w-9">
+            <AvatarImage
+              src={profile?.avatar_url || undefined}
+              alt={`Avatar de ${firstName}`}
+            />
+            <AvatarFallback aria-hidden="true">{initial}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-foreground">
+              {firstName}
+            </p>
+            <p className="truncate text-xs text-muted-foreground">
+              {subscription ? `Plano ${subscription.plan.name}` : userEmail}
+            </p>
+          </div>
           <Link
             href="/profile"
-            className="interactive-lift group flex w-full items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-sidebar-accent/70"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            aria-label={appConfig.sidebar.preferencesTitle}
+            title={appConfig.sidebar.preferencesDescription}
           >
-            <Avatar className="h-12 w-12 border-2 border-white shadow-sm transition-transform group-hover:scale-105">
-              <AvatarImage
-                src={profile?.avatar_url || undefined}
-                alt={`Avatar de ${firstName}`}
-              />
-              <AvatarFallback className="bg-gradient-teal font-medium text-white">
-                {initial}
-              </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-foreground">
-                {firstName}
-              </p>
-              <p className="truncate text-xs text-muted-foreground">
-                {userEmail}
-              </p>
-            </div>
-            <Settings2 className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-primary" />
+            <Settings2 className="h-[18px] w-[18px]" aria-hidden="true" />
           </Link>
         </div>
       </div>

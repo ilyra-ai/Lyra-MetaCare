@@ -201,33 +201,33 @@ export function AIConfigForm() {
         role="status"
         aria-label="Carregando configuração da IA"
       >
-        <Skeleton className="h-32 w-full rounded-3xl border border-white/50 backdrop-blur-md" />
-        <Skeleton className="h-96 w-full rounded-3xl border border-white/50 backdrop-blur-md" />
+        <Skeleton className="h-32 w-full rounded-xl" />
+        <Skeleton className="h-96 w-full rounded-xl" />
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
-      <div className="lg:col-span-8 space-y-8">
+    <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+      <div className="min-w-0 space-y-6 lg:col-span-8">
         {/* Bloco 1: Seleção do Motor (Em destaque) */}
-        <Card className="bg-white/70 backdrop-blur-xl border-white/60 shadow-sm rounded-3xl overflow-hidden relative">
-          <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
-            <BrainCircuit className="w-32 h-32 text-primary" />
-          </div>
-          <CardHeader className="pb-4 relative z-10">
-            <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground">
-              <div className="bg-primary/10 p-2 rounded-2xl text-primary shadow-inner">
-                <Zap className="h-6 w-6" />
-              </div>
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <span
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic"
+                aria-hidden="true"
+              >
+                <BrainCircuit className="h-5 w-5" />
+              </span>
               Motor de Orquestração
             </CardTitle>
-            <CardDescription className="text-muted-foreground text-base">
+            <CardDescription>
               Selecione e calibre o motor de IA responsável pelas inferências
               locais no backend MySQL.
             </CardDescription>
           </CardHeader>
-          <CardContent className="relative z-10">
+          <CardContent>
             <Form {...form}>
               <form
                 className="space-y-8"
@@ -238,28 +238,31 @@ export function AIConfigForm() {
                   control={form.control}
                   name="model_name"
                   render={({ field }) => (
-                    <FormItem className="bg-card/60 p-5 rounded-2xl border border-border/60 shadow-sm">
-                      <FormLabel className="text-foreground font-semibold flex items-center gap-2">
-                        <Server className="h-4 w-4 text-primary" />
+                    <FormItem className="rounded-md border border-border bg-background p-5">
+                      <FormLabel className="flex items-center gap-2 font-semibold text-foreground">
+                        <Server
+                          className="h-4 w-4 text-primary"
+                          aria-hidden="true"
+                        />
                         Motor Local Ativo
                       </FormLabel>
-                      <div className="flex flex-col sm:flex-row gap-4 mt-2">
-                        <div className="flex-1">
+                      <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+                        <div className="min-w-0 flex-1">
                           <Select
                             onValueChange={field.onChange}
                             value={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger className="h-12 rounded-xl border-input bg-card shadow-sm focus:ring-primary/30">
+                              <SelectTrigger>
                                 <SelectValue placeholder="Selecione um motor local operante..." />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="rounded-xl border-border/60 shadow-xl">
+                            <SelectContent>
                               {availableModels.map((model) => (
                                 <SelectItem
                                   key={model.id}
                                   value={model.id}
-                                  className="cursor-pointer focus:bg-primary/10 focus:text-primary rounded-lg my-1"
+                                  className="cursor-pointer"
                                 >
                                   {model.label}
                                 </SelectItem>
@@ -272,12 +275,18 @@ export function AIConfigForm() {
                           variant="outline"
                           onClick={loadLocalModels}
                           disabled={isLoadingModels}
-                          className="h-12 px-6 rounded-xl border-border hover:bg-secondary text-foreground transition-all active:scale-95"
+                          className="h-11"
                         >
                           {isLoadingModels ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
+                            <Loader2
+                              className="mr-2 h-4 w-4 animate-spin text-primary"
+                              aria-hidden="true"
+                            />
                           ) : (
-                            <RefreshCw className="mr-2 h-4 w-4 text-primary" />
+                            <RefreshCw
+                              className="mr-2 h-4 w-4 text-primary"
+                              aria-hidden="true"
+                            />
                           )}
                           Escanear Rede
                         </Button>
@@ -288,11 +297,14 @@ export function AIConfigForm() {
                 />
 
                 {/* Bloco 2: Diretrizes Comportamentais integrado no form */}
-                <div className="space-y-6 pt-6 border-t border-border/50">
-                  <h3 className="flex items-center gap-3 text-xl font-bold text-foreground">
-                    <div className="bg-cosmic-light p-2 rounded-2xl text-cosmic shadow-inner">
-                      <Sparkles className="h-5 w-5" />
-                    </div>
+                <div className="space-y-5 border-t border-border pt-6">
+                  <h3 className="flex items-center gap-3 font-display text-lg font-semibold tracking-tight text-foreground">
+                    <span
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic"
+                      aria-hidden="true"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                    </span>
                     Diretrizes Comportamentais
                   </h3>
 
@@ -307,7 +319,7 @@ export function AIConfigForm() {
                         <FormControl>
                           <Textarea
                             rows={4}
-                            className="resize-none rounded-2xl border-input bg-card/60 focus-visible:ring-cosmic/30 p-4 shadow-inner"
+                            className="resize-none leading-6"
                             placeholder="Ex: Você é a IA médica da Lyra, especializada em integrar dados vitais e astrológicos para gerar protocolos de longevidade."
                             {...field}
                           />
@@ -329,7 +341,7 @@ export function AIConfigForm() {
                         <FormControl>
                           <Textarea
                             rows={4}
-                            className="resize-none rounded-2xl border-input bg-card/60 focus-visible:ring-cosmic/30 p-4 shadow-inner"
+                            className="resize-none leading-6"
                             placeholder="1. Maximizar a clareza nas explicações.&#10;2. Correlacionar HRV com o mapa astral."
                             {...field}
                           />
@@ -341,14 +353,17 @@ export function AIConfigForm() {
                 </div>
 
                 {/* Bloco 3: Pesos integrado no form */}
-                <div className="space-y-6 pt-6 border-t border-border/50">
-                  <h3 className="flex items-center gap-3 text-xl font-bold text-foreground">
-                    <div className="bg-accent/10 p-2 rounded-2xl text-accent shadow-inner">
-                      <Activity className="h-5 w-5" />
-                    </div>
+                <div className="space-y-5 border-t border-border pt-6">
+                  <h3 className="flex items-center gap-3 font-display text-lg font-semibold tracking-tight text-foreground">
+                    <span
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-sidebar-accent text-primary"
+                      aria-hidden="true"
+                    >
+                      <Activity className="h-4 w-4" />
+                    </span>
                     Calibração de Biomarcadores
                   </h3>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm leading-6 text-muted-foreground">
                     Ajuste o peso (multiplicador matemático) que cada métrica
                     tem no algoritmo preditivo do plano.
                   </p>
@@ -358,16 +373,19 @@ export function AIConfigForm() {
                       control={form.control}
                       name="weight_hrv"
                       render={({ field }) => (
-                        <FormItem className="bg-card/70 p-4 rounded-2xl border border-border/60 shadow-sm transition-all hover:shadow-md hover:border-accent/30">
-                          <FormLabel className="text-foreground font-semibold flex items-center gap-2">
-                            <HeartPulse className="h-4 w-4 text-accent" />
+                        <FormItem className="rounded-md border border-border bg-background p-4">
+                          <FormLabel className="flex items-center gap-2 font-semibold text-foreground">
+                            <HeartPulse
+                              className="h-4 w-4 text-destructive"
+                              aria-hidden="true"
+                            />
                             Peso HRV
                           </FormLabel>
                           <FormControl>
                             <Input
                               type="number"
                               step="0.1"
-                              className="h-12 rounded-xl text-lg font-medium text-foreground border-input focus-visible:ring-accent/30 bg-card"
+                              className="font-display text-lg font-semibold"
                               {...field}
                             />
                           </FormControl>
@@ -379,16 +397,19 @@ export function AIConfigForm() {
                       control={form.control}
                       name="weight_sleep"
                       render={({ field }) => (
-                        <FormItem className="bg-card/70 p-4 rounded-2xl border border-border/60 shadow-sm transition-all hover:shadow-md hover:border-info/30">
-                          <FormLabel className="text-foreground font-semibold flex items-center gap-2">
-                            <Moon className="h-4 w-4 text-info" />
+                        <FormItem className="rounded-md border border-border bg-background p-4">
+                          <FormLabel className="flex items-center gap-2 font-semibold text-foreground">
+                            <Moon
+                              className="h-4 w-4 text-info"
+                              aria-hidden="true"
+                            />
                             Peso Sono
                           </FormLabel>
                           <FormControl>
                             <Input
                               type="number"
                               step="0.1"
-                              className="h-12 rounded-xl text-lg font-medium text-foreground border-input focus-visible:ring-info/30 bg-card"
+                              className="font-display text-lg font-semibold"
                               {...field}
                             />
                           </FormControl>
@@ -400,16 +421,19 @@ export function AIConfigForm() {
                       control={form.control}
                       name="weight_activity"
                       render={({ field }) => (
-                        <FormItem className="bg-card/70 p-4 rounded-2xl border border-border/60 shadow-sm transition-all hover:shadow-md hover:border-warning/30">
-                          <FormLabel className="text-foreground font-semibold flex items-center gap-2">
-                            <Activity className="h-4 w-4 text-warning" />
+                        <FormItem className="rounded-md border border-border bg-background p-4">
+                          <FormLabel className="flex items-center gap-2 font-semibold text-foreground">
+                            <Activity
+                              className="h-4 w-4 text-warning"
+                              aria-hidden="true"
+                            />
                             Peso Atividade
                           </FormLabel>
                           <FormControl>
                             <Input
                               type="number"
                               step="0.1"
-                              className="h-12 rounded-xl text-lg font-medium text-foreground border-input focus-visible:ring-warning/30 bg-card"
+                              className="font-display text-lg font-semibold"
                               {...field}
                             />
                           </FormControl>
@@ -421,16 +445,19 @@ export function AIConfigForm() {
                       control={form.control}
                       name="weight_nutrition"
                       render={({ field }) => (
-                        <FormItem className="bg-card/70 p-4 rounded-2xl border border-border/60 shadow-sm transition-all hover:shadow-md hover:border-success/30">
-                          <FormLabel className="text-foreground font-semibold flex items-center gap-2">
-                            <Apple className="h-4 w-4 text-success" />
+                        <FormItem className="rounded-md border border-border bg-background p-4">
+                          <FormLabel className="flex items-center gap-2 font-semibold text-foreground">
+                            <Apple
+                              className="h-4 w-4 text-success"
+                              aria-hidden="true"
+                            />
                             Peso Nutrição
                           </FormLabel>
                           <FormControl>
                             <Input
                               type="number"
                               step="0.1"
-                              className="h-12 rounded-xl text-lg font-medium text-foreground border-input focus-visible:ring-success/30 bg-card"
+                              className="font-display text-lg font-semibold"
                               {...field}
                             />
                           </FormControl>
@@ -447,32 +474,42 @@ export function AIConfigForm() {
       </div>
 
       {/* Sidebar Direita: Estado Operacional e Botão de Ação */}
-      <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+      <div className="min-w-0 space-y-6 lg:sticky lg:top-24 lg:col-span-4">
         {/* Botão de Submissão Principal */}
-        <Card className="bg-gradient-teal text-white shadow-teal rounded-3xl border-0 overflow-hidden relative">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.22),transparent_45%)] z-0"></div>
-          <CardContent className="p-6 relative z-10 flex flex-col items-center text-center space-y-4">
-            <div className="bg-white/20 p-3 rounded-full backdrop-blur-md mb-2">
-              <Settings className="h-8 w-8 text-white" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold">Salvar Configurações</h3>
-              <p className="text-white/80 text-sm mt-1">
-                Aplique todas as alterações feitas no motor e pesos na tabela
-                ai_config.
-              </p>
+        <Card>
+          <CardContent className="flex flex-col gap-4 p-6">
+            <div className="flex items-start gap-3">
+              <span
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-sidebar-accent text-primary"
+                aria-hidden="true"
+              >
+                <Settings className="h-5 w-5" />
+              </span>
+              <div className="min-w-0">
+                <h3 className="font-display text-lg font-semibold tracking-tight text-foreground">
+                  Salvar Configurações
+                </h3>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  Aplique todas as alterações feitas no motor e pesos na tabela
+                  ai_config.
+                </p>
+              </div>
             </div>
 
             <Button
               type="submit"
               form="ai-config-form"
+              size="lg"
               disabled={isSubmitting}
-              className="w-full bg-white text-primary hover:bg-white/90 h-14 rounded-2xl text-lg font-bold shadow-lg transition-transform active:scale-95"
+              className="w-full"
             >
               {isSubmitting ? (
-                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                <Loader2
+                  className="mr-2 h-5 w-5 animate-spin"
+                  aria-hidden="true"
+                />
               ) : (
-                <Settings className="mr-2 h-5 w-5" />
+                <Zap className="mr-2 h-5 w-5" aria-hidden="true" />
               )}
               {isSubmitting ? 'Sincronizando...' : 'Confirmar Atualização'}
             </Button>
@@ -480,32 +517,36 @@ export function AIConfigForm() {
         </Card>
 
         {/* Card de Status Operacional */}
-        <Card className="bg-white/70 backdrop-blur-xl border-white/60 shadow-sm rounded-3xl">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-bold text-foreground">
-              Estado Operacional
-            </CardTitle>
-            <CardDescription className="text-sm">
+            <CardTitle>Estado Operacional</CardTitle>
+            <CardDescription>
               Visão do ecossistema local do Next.js
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-card/60 rounded-2xl border border-border/60 p-4 transition-all hover:bg-card">
-              <div className="font-bold text-foreground flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
+          <CardContent className="space-y-3">
+            <div className="rounded-md border border-border bg-background p-4">
+              <div className="flex items-center gap-2 font-semibold text-foreground">
+                <span
+                  className="h-2 w-2 rounded-full bg-success"
+                  aria-hidden="true"
+                ></span>
                 Processamento Local
               </div>
-              <p className="text-muted-foreground text-sm mt-1 leading-relaxed">
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 Score e inferências calculadas internamente sobre as métricas
                 persistidas, sem latência externa.
               </p>
             </div>
-            <div className="bg-card/60 rounded-2xl border border-border/60 p-4 transition-all hover:bg-card">
-              <div className="font-bold text-foreground flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-cosmic"></div>
+            <div className="rounded-md border border-border bg-background p-4">
+              <div className="flex items-center gap-2 font-semibold text-foreground">
+                <span
+                  className="h-2 w-2 rounded-full bg-cosmic"
+                  aria-hidden="true"
+                ></span>
                 Planos em MySQL
               </div>
-              <p className="text-muted-foreground text-sm mt-1 leading-relaxed">
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 Plano gerado é estruturado e salvo nativamente para garantia de
                 privacidade dos seus dados.
               </p>

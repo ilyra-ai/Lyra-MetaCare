@@ -26,14 +26,23 @@ com sessão de administrador, `/`, `/plan`, `/goals`, `/appointments`,
 | Alvo de toque pequeno                     | Número do dia no calendário com ~19px de largura; no celular o calendário tinha só 300px de altura, as semanas ficavam com 20px e o cabeçalho cobria os números. | Área mínima de 24×24px em `agenda.css` (WCAG 2.5.8) e calendário com 520px (celular) / 640px (a partir de `md`).                                                                            |
 | Rodapé fora de landmark                   | O selo "feito com" era uma `div` solta.                                                                                                                          | `made-with-ilyra.tsx` virou `<footer>`; o link externo anuncia "(abre em nova aba)".                                                                                                        |
 
+## Contraste após o redesign "Lyra Clean" (tarefa 27)
+
+Os tokens de cor foram recalculados para que todo texto passe de 4,5:1 sobre
+branco e sobre o próprio tom claro dos badges: teal `#187268`, violeta
+`#6A4BD6` (texto de destaque `#4E35A8`), aviso `#8F5400`, sucesso `#0D704B`,
+informação `#3B4FC4`, erro `#B42318`, dourado `#7A5E00`. Contornos de
+checkbox e trilho do switch desligado usam `--control` (`#8C8C9B`, 3,3:1,
+WCAG 1.4.11). Os dias de outro mês do calendário passaram do `#999` da
+biblioteca para o cinza secundário. Resultado: zero violações de contraste
+nas telas da Lyra em 1440px e 390px.
+
 ## O que ainda aparece no axe e por quê
 
-- **`color-contrast`**: badges e textos com as cores de estado atuais
-  (`warning`, `cosmic`, `info`) sobre fundos claros. É resolvido pelos novos
-  tokens de cor do redesign "Lyra Clean" (tarefa 27), que troca a paleta
-  inteira. Corrigir cor a cor antes disso seria retrabalho.
 - **Interno do editor Puck (`@puckeditor/core` 0.23.0)**, sem API para
   ajustar:
+  - `color-contrast`: títulos das categorias da lista de componentes do Puck
+    (#767676 sobre #FAFAFA, 4,35:1).
   - `frame-title`: o `<iframe id="preview-frame">` do Puck não recebe
     `title`.
   - `select-name`: o seletor de zoom (`ViewportControls-zoomSelect`) não tem
