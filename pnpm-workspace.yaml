@@ -37,3 +37,11 @@ overrides:
   baseline-browser-mapping@>=2.0.0 <2.11.0: ^2.11.0
   # GHSA-68fv-2mgg-jv7q (postcss do Vite usado pelo Vitest).
   source-map-js@>=1.0.0 <1.2.2: ^1.2.2
+  # GHSA-vfj7-8cjw-p6xm (braces <= 3.0.3, sem versão corrigida): o
+  # @next/eslint-plugin-next fixa fast-glob 3.3.1 (micromatch → braces) e só
+  # usa `globSync(padrão, { onlyDirectories: true })` para resolver
+  # `settings.next.rootDir`. O tinyglobby (fdir + picomatch, sem braces)
+  # exporta o mesmo `globSync` com a mesma opção; validado com
+  # `pnpm check:lint` e com o teste de equivalência em
+  # scripts/verificar-glob-eslint-next.mjs.
+  '@next/eslint-plugin-next>fast-glob': npm:tinyglobby@^0.2.17

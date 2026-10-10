@@ -80,6 +80,8 @@ Ver `docs/api.md`: buckets conhecidos, caminhos validados e resolvidos dentro do
 
 ## Dependências
 
-- `pnpm audit --prod`: nenhuma vulnerabilidade conhecida (2026-10-06).
-- `pnpm audit` completo: 1 aviso restante, `braces` ≤ 3.0.3 (GHSA-vfj7-8cjw-p6xm, negação de serviço por padrões glob muito aninhados), **sem versão corrigida publicada**. Chega apenas por ferramentas de desenvolvimento (`eslint-config-next` e a CLI `shadcn`, via `micromatch`), que processam padrões do próprio repositório; não faz parte do pacote de produção.
+- `pnpm audit` completo e `pnpm audit --prod`: nenhuma vulnerabilidade conhecida (2026-10-10).
+- `braces` ≤ 3.0.3 (GHSA-vfj7-8cjw-p6xm, negação de serviço por padrões glob muito aninhados) não tem versão corrigida publicada; foi eliminado da árvore em vez de aguardar correção:
+  - a CLI `shadcn` saiu das `devDependencies` (só era usada para gerar componentes, nunca importada). Para adicionar um componente novo, use `pnpm dlx shadcn@<versão> add <componente>`, que lê o `components.json`;
+  - o `@next/eslint-plugin-next` fixa `fast-glob` 3.3.1 (que traz `micromatch` → `braces`) e só usa `globSync(padrão, { onlyDirectories: true })`. Um override restrito a esse pacote o resolve para o `tinyglobby` (fdir + picomatch, sem `braces`), que tem a mesma função e opção. A equivalência é verificada com a função real do plugin por `node scripts/verificar-glob-eslint-next.mjs`.
 - As correções transitivas estão em `overrides` no `pnpm-workspace.yaml`, cada uma restrita às versões afetadas.
