@@ -19,18 +19,23 @@
 
 ## Tópico 1 · Andamento Geral
 
-| Indicador          | Valor                           |
-| ------------------ | ------------------------------- |
-| Progresso          | `████████████████████` **100%** |
-| Tarefas totais     | 27                              |
-| 🟢 Finalizadas     | 27                              |
-| 🔵 Em andamento    | 0                               |
-| 🔴 Bloqueadas      | 0                               |
-| ⚪ A iniciar       | 0                               |
-| Branch de trabalho | `main` (única permitida)        |
-| Última atualização | 2026-10-10                      |
+| Indicador          | Valor                          |
+| ------------------ | ------------------------------ |
+| Progresso          | `███████████████░░░░░` **75%** |
+| Tarefas totais     | 36                             |
+| 🟢 Finalizadas     | 27                             |
+| 🔵 Em andamento    | 0                              |
+| 🔴 Bloqueadas      | 0                              |
+| ⚪ A iniciar       | 9                              |
+| Branch de trabalho | `main` (única permitida)       |
+| Última atualização | 2026-10-10                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (27 ÷ 27 = 100%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (27 ÷ 36 = 75%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+
+**Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
+
+- **Token temporário do GitHub:** mantido na configuração local do Git do ambiente de trabalho; o próprio usuário o remove ao publicar. Nunca é versionado, impresso ou salvo em memória.
+- **CI (integração contínua):** fora do escopo por enquanto, por decisão do usuário.
 
 ---
 
@@ -48,7 +53,45 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-Nenhuma tarefa a iniciar.
+_Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
+
+### 28 · Direitos do titular (LGPD) e segregação de dados sensíveis e fiscais
+
+- Somente o próprio usuário acessa os seus dados sensíveis (saúde, perfil, hábitos, ciclo, chat) e o seu histórico de compras.
+- **28.1** Somente o administrador da plataforma acessa os dados fiscais e tributários, que nunca podem ser excluídos (retenção legal).
+- Direitos do titular: exportação dos próprios dados, exclusão da conta (preservando apenas os registros fiscais obrigatórios, desvinculados dos dados sensíveis), política de privacidade, termos de uso e registro de consentimento.
+
+### 29 · Garantia de rotas, menus, botões e links reais
+
+- Verificar de forma real (sem simulação, placeholder, hardcode ou corte de código) todas as rotas da sidebar, do perfil e do menu do perfil, e todos os botões, links e ações das telas, corrigindo pela causa raiz o que não funcionar. O usuário fará os próprios testes de navegador depois.
+
+### 30 · Vulnerabilidade alta em `braces` (tratada como se fosse para produção)
+
+- Eliminar a vulnerabilidade sem afetar o funcionamento da plataforma, com evidência de `pnpm audit` limpo e de todos os portões verdes.
+
+### 31 · Textos sem acento
+
+- Corrigir os textos sem acento já identificados e varrer o projeto inteiro (interface, padrões configuráveis, documentos Puck iniciais, mensagens de API e e-mails) para corrigir todos os demais.
+
+### 32 · Página `/instruments`
+
+- Avaliar o risco de remoção (rotas, documento Puck `instruments`, tabela, testes, links). Sem risco, remover com prova de morte.
+
+### 33 · Experiência no celular
+
+- Corrigir os problemas de UI/UX no celular (login com o formulário abaixo de um texto longo, pontos de navegação do onboarding e demais telas), focando em experiência e rapidez.
+
+### 34 · Tema escuro
+
+- Ativar o tema escuro (com alternância) garantindo contraste de leitura em todos os textos, ícones, gráficos e componentes, comprovado por auditoria de contraste no tema escuro.
+
+### 35 · Onboarding no primeiro acesso
+
+- Verificar (e corrigir, se preciso) que o onboarding começa imediatamente quando um novo usuário cria a conta e acessa o app pela primeira vez.
+
+### 36 · Edição dos dados do onboarding no perfil
+
+- Permitir, na página do perfil, alterar todos os dados informados no onboarding, sem duplicidade de dados sensíveis nem de usuário de login (e-mail) com outros usuários já cadastrados.
 
 ---
 
