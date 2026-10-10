@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `███████████████░░░░░` **75%** |
-| Tarefas totais     | 36                             |
-| 🟢 Finalizadas     | 27                             |
-| 🔵 Em andamento    | 0                              |
+| Progresso          | `███████████████░░░░░` **74%** |
+| Tarefas totais     | 38                             |
+| 🟢 Finalizadas     | 28                             |
+| 🔵 Em andamento    | 2                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 9                              |
+| ⚪ A iniciar       | 8                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-10                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (27 ÷ 36 = 75%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (28 ÷ 38 = 73,7%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,12 @@
 
 ### ANDAMENTO
 
-Nenhuma tarefa em andamento.
+_Prioridade definida pelo usuário em 2026-10-10: tarefas 37 e 38 antes das demais._
+
+| Nº  | Tarefa                                  | O que está sendo realizado                                                                                                                                                                                                             |
+| --- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 37  | Administrador `admin@admin.com`         | Criar o usuário `admin@admin.com` com perfil de administrador total e a senha definida pelo usuário, pelo bootstrap de administradores do `.env.local` (a senha não é versionada nem escrita no código, conforme a regra de segredos). |
+| 38  | Isolamento das funções de administrador | Verificar de forma real que usuários comuns não acessam recursos, funcionalidades, alterações nem funções exclusivas do administrador (páginas, menus, APIs, dados e ações), corrigindo pela causa raiz o que vazar.                   |
 
 ### BLOQUEADAS
 
@@ -64,10 +69,6 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
 ### 29 · Garantia de rotas, menus, botões e links reais
 
 - Verificar de forma real (sem simulação, placeholder, hardcode ou corte de código) todas as rotas da sidebar, do perfil e do menu do perfil, e todos os botões, links e ações das telas, corrigindo pela causa raiz o que não funcionar. O usuário fará os próprios testes de navegador depois.
-
-### 30 · Vulnerabilidade alta em `braces` (tratada como se fosse para produção)
-
-- Eliminar a vulnerabilidade sem afetar o funcionamento da plataforma, com evidência de `pnpm audit` limpo e de todos os portões verdes.
 
 ### 31 · Textos sem acento
 
@@ -721,3 +722,13 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
   - axe sem violações de contraste nas telas da Lyra. Restam só itens internos do `@puckeditor/core` no editor (documentados em `docs/acessibilidade.md`).
   - `pnpm test` 241/241; `pnpm test:integration` 73/73; `check:format`, `check:lint` e `check:types` com exit 0; `build` com exit 0.
 - **Execução:** os lotes de telas foram divididos entre subagentes com um guia único de regras; as camadas compartilhadas (tokens, primitivos, layout, páginas, metas e backend) e a revisão final foram feitas diretamente.
+
+### 30 · Vulnerabilidade alta em `braces`
+
+- **Status:** 🟢 finalizada · **Commit:** `7c1f432` · **Push:** `c70e2f9..7c1f432 main -> main` (confirmado)
+- **Diagnóstico:** `braces` ≤ 3.0.3 (GHSA-vfj7-8cjw-p6xm, negação de serviço com padrões glob muito aninhados), sem versão corrigida publicada. Chegava por dois caminhos: a CLI `shadcn` e o `@next/eslint-plugin-next` (que fixa `fast-glob` 3.3.1, puxando `micromatch` e `braces`).
+- **Correção (tratada como se fosse para produção):**
+  - A CLI `shadcn` saiu das `devDependencies`. Ela só gerava componentes e nunca era importada; o `components.json` continua para uso com `pnpm dlx shadcn@<versão> add`.
+  - Override restrito ao plugin do Next: `fast-glob` resolvido para o `tinyglobby` (fdir + picomatch, sem `braces`), que exporta o mesmo `globSync` com `onlyDirectories`, a única função usada pelo plugin.
+  - `scripts/verificar-glob-eslint-next.mjs` chama a função real do plugin e confirma os mesmos diretórios do sistema de arquivos.
+- **Evidências:** `pnpm audit` e `pnpm audit --prod` com "No known vulnerabilities found"; `pnpm why braces` sem resultado; lint, format e types com exit 0; `test` 241/241; `test:integration` 73/73; `test:launchers` 17/17; `build` com exit 0.
