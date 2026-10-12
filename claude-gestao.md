@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `█████████████████░░░` **87%** |
+| Progresso          | `██████████████████░░` **89%** |
 | Tarefas totais     | 38                             |
-| 🟢 Finalizadas     | 33                             |
+| 🟢 Finalizadas     | 34                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 4                              |
+| ⚪ A iniciar       | 3                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-12                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (33 ÷ 38 = 86,8%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (34 ÷ 38 = 89,5%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,9 +43,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                                   | O que está sendo realizado                                                                                                                                 |
-| --- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 36  | Edição dos dados do onboarding no perfil | Mapeamento campo a campo (onboarding × perfil), edição completa no perfil e garantia de que e-mail de login e dados sensíveis não se repetem entre contas. |
+| Nº  | Tarefa                                           | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| --- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 28  | Direitos do titular (LGPD) e segregação de dados | Escopo: só o próprio usuário acessa os seus dados sensíveis (saúde, perfil, hábitos, ciclo, chat) e o seu histórico de compras; **28.1** só o administrador acessa os dados fiscais e tributários, que nunca podem ser excluídos; exportação dos dados, exclusão da conta (mantendo só os registros fiscais obrigatórios, desvinculados dos dados sensíveis), política de privacidade, termos de uso e registro de consentimento. Achado da tarefa 36: a remoção de usuário no painel admin apaga só o perfil e deixa a conta órfã (e o e-mail preso). |
 
 ### BLOQUEADAS
 
@@ -56,12 +56,6 @@ Nenhuma tarefa bloqueada.
 ## Tópico 3 · Tarefas a Iniciar
 
 _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
-
-### 28 · Direitos do titular (LGPD) e segregação de dados sensíveis e fiscais
-
-- Somente o próprio usuário acessa os seus dados sensíveis (saúde, perfil, hábitos, ciclo, chat) e o seu histórico de compras.
-- **28.1** Somente o administrador da plataforma acessa os dados fiscais e tributários, que nunca podem ser excluídos (retenção legal).
-- Direitos do titular: exportação dos próprios dados, exclusão da conta (preservando apenas os registros fiscais obrigatórios, desvinculados dos dados sensíveis), política de privacidade, termos de uso e registro de consentimento.
 
 ### 29 · Garantia de rotas, menus, botões e links reais
 
@@ -796,3 +790,24 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
   - login e onboarding sem estouro em 820 e 1440px;
   - `test` 230/230; `test:integration` 75/75; lint, format e types com exit 0; `build` com exit 0. Contas de QA e contadores de tentativa locais removidos do banco.
 - **Achado repassado à tarefa 29:** `/monitoring` mostra ao paciente nomes de variáveis internas de configuração no aviso de plano.
+
+### 36 · Edição dos dados do onboarding no perfil
+
+- **Status:** 🟢 finalizada · **Commit:** `e0a02a3` · **Push:** `38b998a..e0a02a3 main -> main` (confirmado)
+- **Mapeamento campo a campo:** nome, sobrenome, data, hora e local de nascimento, idade (calculada pela data) e gênero já estavam no perfil; **nível de atividade e metas só existiam no onboarding** e passaram a ser editáveis no perfil, com as mesmas opções (módulo compartilhado `opcoes-de-perfil.ts`, sem lista duplicada). O consentimento do onboarding não é gravado hoje; o registro de consentimento faz parte da tarefa 28.
+- **Defeito encontrado e corrigido (causa raiz):** o MySQL devolve a hora como `HH:MM:SS` e a validação do perfil exige `HH:MM`. Quem informou a hora no onboarding não conseguia salvar nada no perfil: a validação recusava a hora em silêncio. A hora agora é convertida ao carregar (`horaParaCampo`), e um aviso aparece quando algum campo bloqueia o envio.
+- **Sem duplicidade de e-mail de login:**
+  - `profiles.email` era uma cópia sem índice único. A migração `014` realinha a cópia com a conta e cria o índice único.
+  - Pela API de dados ninguém altera `profiles.email`, nem o administrador (só a cópia mudaria).
+  - Nova troca de e-mail no perfil (`PATCH /api/account/email`): exige a senha atual; as falhas contam no limite do login; `users` e `profiles` mudam na mesma transação; e-mail de outra conta (inclusive com maiúsculas e espaços) responde 409; o token é reemitido mantendo o tipo de sessão.
+  - Os demais dados sensíveis são linhas do próprio usuário (`profiles.id` = conta) e não se repetem entre contas.
+- **Evidências:**
+  - QA no build de produção em 1440 e 390px, 13/13 verificações:
+    - os dados do onboarding (atividade, metas e hora em `HH:MM`) aparecem no perfil;
+    - a edição gravada foi conferida no MySQL e persiste após recarregar;
+    - o e-mail de outra conta e a senha errada são recusados na tela;
+    - a troca de e-mail atualiza conta e perfil, mantém a sessão, e o login fica 401 com o e-mail antigo e 200 com o novo;
+    - o perfil no celular não tem estouro horizontal.
+  - `test` 235/235; `test:integration` 79/79 (novo `conta-email.integration.test.ts`, índice único e bloqueio de troca pelo administrador); lint, format e types com exit 0; `build` com exit 0.
+  - Migração `014` aplicada e reexecutada com "Já aplicada" em todas. Usuários de QA removidos do banco.
+- **Achado repassado à tarefa 28:** a remoção de usuário no painel administrativo apaga só o perfil. A conta fica órfã e o e-mail fica preso, sem que ninguém consiga se cadastrar com ele.
