@@ -8,7 +8,8 @@ Modelo de segurança da aplicação, revisado na tarefa 19 da instrução mestra
 - **O JWT não sai do cookie.** `/api/auth/session`, login e cadastro devolvem só os dados do usuário; antes o corpo trazia o `access_token`, que um XSS poderia ler.
 - **Papel e e-mail vêm do banco a cada requisição** (`src/lib/mysql/server-auth.ts`). Um administrador rebaixado perde o acesso na hora (antes mantinha o papel `admin` até o token expirar, em até 7 dias) e uma conta removida deixa de ter sessão.
 - **Login:** resposta 401 única e custo bcrypt constante para e-mail inexistente (sem enumeração de contas).
-- Testes: `src/app/api/seguranca.integration.test.ts`, `src/app/api/auth-storage.integration.test.ts`.
+- **Troca do e-mail de login** (`PATCH /api/account/email`): exige a senha atual, conta as falhas no mesmo limite do login da conta, atualiza `users.email` e `profiles.email` na mesma transação e reemite o token mantendo o tipo de sessão. Os dois e-mails têm índice único (`profiles.email` desde a migração `014`), então um e-mail de outra conta é recusado (409) mesmo numa corrida. Pela API de dados ninguém altera `profiles.email`, nem o administrador (só a cópia mudaria).
+- Testes: `src/app/api/seguranca.integration.test.ts`, `src/app/api/auth-storage.integration.test.ts`, `src/app/api/conta-email.integration.test.ts`.
 
 ## Isolamento das funções de administrador
 

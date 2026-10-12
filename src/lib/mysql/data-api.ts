@@ -273,7 +273,7 @@ function assertNonNegativeInteger(
 
 // Regras de escrita por coluna, aplicadas antes de qualquer SQL:
 // - colunas exclusivas de administradores (profiles.role);
-// - o e-mail do próprio perfil acompanha o da conta;
+// - o e-mail do perfil acompanha o da conta e não muda por aqui;
 // - a coluna de dono não pode transferir a linha para outro usuário.
 function protectWriteColumns(
   table: TableName,
@@ -298,14 +298,33 @@ function protectWriteColumns(
         403
       );
     }
+  }
 
-    if (
-      table === 'profiles' &&
-      'email' in payload &&
-      payload.email !== session.user.email
-    ) {
+  // O e-mail de login vive em `users` e em `profiles` e só muda pela rota
+  // /api/account/email, que atualiza as duas tabelas na mesma transação. Por
+  // aqui (inclusive para administradores) só a cópia mudaria e a conta ficaria
+  // com dois e-mails diferentes. Reenviar o próprio e-mail atual é inócuo.
+  if (table === 'profiles' && 'email' in payload) {
+    const proprioEmail = payload.email === session.user.email;
+    let permitido: boolean;
+    if (mode === 'insert') {
+      // Criar perfil: o usuário só com o e-mail da própria conta; o
+      // administrador com qualquer um (o índice único recusa repetição).
+      permitido = admin || proprioEmail;
+    } else {
+      // Alterar perfil: ninguém troca o e-mail. O usuário comum que reenvia
+      // o próprio e-mail atual não altera nada (no upsert ele é a coluna
+      // obrigatória do INSERT e fica; no update é descartado); o
+      // administrador pode estar editando a linha de outra pessoa, então
+      // qualquer e-mail no payload é recusado.
+      permitido = !admin && proprioEmail;
+      if (permitido && mode === 'update') {
+        delete payload.email;
+      }
+    }
+    if (!permitido) {
       throw new HttpError(
-        'O e-mail do perfil acompanha o e-mail da conta e não pode ser alterado aqui.',
+        'O e-mail de login só pode ser alterado pela troca de e-mail da conta.',
         403
       );
     }

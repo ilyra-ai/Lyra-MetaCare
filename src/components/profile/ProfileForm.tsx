@@ -52,6 +52,14 @@ import { DailyMetric } from '@/hooks/use-daily-metrics';
 import { db as databaseClient } from '@/integrations/mysql/client';
 import { AccountSubscriptionCard } from '@/components/subscription/AccountSubscriptionCard';
 import { MenstrualCycleSettings } from './MenstrualCycleSettings';
+import { AccountEmailCard } from './AccountEmailCard';
+import { Slider } from '@/components/ui/slider';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  IDS_DE_METAS,
+  METAS_DO_PERFIL,
+  NIVEL_DE_ATIVIDADE,
+} from '@/components/onboarding/opcoes-de-perfil';
 
 // --- Data Definitions ---
 // --- Zod Schema ---
@@ -79,10 +87,39 @@ export const profileSchema = z.object({
     error: (issue) =>
       issue.input === undefined ? 'Por favor, selecione um gênero.' : undefined,
   }),
+  // Campos do onboarding que antes não podiam ser revistos no perfil.
+  activity_level: z
+    .number()
+    .int()
+    .min(NIVEL_DE_ATIVIDADE.minimo)
+    .max(NIVEL_DE_ATIVIDADE.maximo)
+    .nullable()
+    .optional(),
+  goals: z
+    .array(
+      z
+        .string()
+        .refine((meta) => IDS_DE_METAS.includes(meta), 'Meta desconhecida.')
+    )
+    .optional(),
 });
 
 export type ProfileInput = z.input<typeof profileSchema>;
 export type ProfileValues = z.output<typeof profileSchema>;
+
+/**
+ * O MySQL devolve TIME como HH:MM:SS, e o campo (e a validação) do perfil
+ * usam HH:MM. Sem esta conversão, quem informou a hora no onboarding via
+ * "06:45:00" no campo e não conseguia salvar mais nada no perfil (a
+ * validação recusava a hora em silêncio).
+ */
+export function horaParaCampo(valor: string | null | undefined): string {
+  if (!valor) {
+    return '';
+  }
+  const hhmm = /^(\d{2}:\d{2})(?::\d{2}(?:\.\d+)?)?$/.exec(valor);
+  return hhmm ? hhmm[1] : valor;
+}
 
 export function buildProfileUpdatePayload(data: ProfileValues) {
   const formattedBirthDate = data.birth_date
@@ -97,6 +134,9 @@ export function buildProfileUpdatePayload(data: ProfileValues) {
     birth_date: formattedBirthDate,
     birth_time: formattedBirthTime,
     birth_location: formattedBirthLocation,
+    activity_level: data.activity_level ?? null,
+    // Mesma regra do onboarding: nenhuma meta escolhida é gravada como nulo.
+    goals: data.goals && data.goals.length > 0 ? data.goals : null,
   };
 }
 
@@ -256,6 +296,8 @@ export function ProfileForm() {
       birth_date: null,
       birth_time: '',
       birth_location: '',
+      activity_level: NIVEL_DE_ATIVIDADE.padrao,
+      goals: [],
     },
     mode: 'onChange',
   });
@@ -286,7 +328,7 @@ export function ProfileForm() {
       const { data, error } = await db
         .from('profiles')
         .select(
-          'first_name, last_name, age, gender, birth_date, birth_time, birth_location, avatar_url'
+          'first_name, last_name, age, gender, birth_date, birth_time, birth_location, avatar_url, activity_level, goals'
         )
         .eq('id', profileUserId)
         .maybeSingle();
@@ -313,8 +355,14 @@ export function ProfileForm() {
           gender:
             (data.gender as ProfileValues['gender']) ?? 'prefer_not-to-say',
           birth_date: validBirthDate,
-          birth_time: data.birth_time ?? '',
+          birth_time: horaParaCampo(data.birth_time),
           birth_location: data.birth_location ?? '',
+          activity_level: data.activity_level ?? NIVEL_DE_ATIVIDADE.padrao,
+          // Metas gravadas que não existem mais na lista são descartadas
+          // para não travar a validação do formulário.
+          goals: (data.goals ?? []).filter((meta) =>
+            IDS_DE_METAS.includes(meta)
+          ),
         });
       }
       setIsLoading(false);
@@ -376,7 +424,13 @@ export function ProfileForm() {
           celular empurrava o formulário para fora da primeira dobra. */}
       <div className="min-w-0 space-y-6 lg:col-span-2">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit, () =>
+              // Sem este aviso, um campo inválido fora da tela (no celular)
+              // fazia o botão "Salvar" parecer não funcionar.
+              toast.error('Revise os campos destacados antes de salvar.')
+            )}
+          >
             <Card>
               <CardHeader>
                 <CardTitle>Dados Pessoais e Cronobiologia</CardTitle>
@@ -528,6 +582,101 @@ export function ProfileForm() {
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="activity_level"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>
+                        Nível de atividade:{' '}
+                        <span className="text-primary">
+                          {field.value ?? NIVEL_DE_ATIVIDADE.padrao}
+                        </span>
+                      </FormLabel>
+                      <FormControl>
+                        <Slider
+                          aria-label={`Nível de atividade, de ${NIVEL_DE_ATIVIDADE.minimo} (sedentário) a ${NIVEL_DE_ATIVIDADE.maximo} (muito ativo)`}
+                          min={NIVEL_DE_ATIVIDADE.minimo}
+                          max={NIVEL_DE_ATIVIDADE.maximo}
+                          step={1}
+                          value={[field.value ?? NIVEL_DE_ATIVIDADE.padrao]}
+                          onValueChange={(valores) =>
+                            field.onChange(valores[0])
+                          }
+                          className="py-2"
+                        />
+                      </FormControl>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>{NIVEL_DE_ATIVIDADE.rotuloMinimo}</span>
+                        <span>{NIVEL_DE_ATIVIDADE.rotuloMaximo}</span>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="goals"
+                  render={() => (
+                    <FormItem className="md:col-span-2">
+                      <p
+                        id="perfil-objetivos-titulo"
+                        className="text-sm font-medium leading-none text-foreground"
+                      >
+                        Objetivos
+                      </p>
+                      <FormDescription>
+                        Os mesmos do onboarding; marque quantos quiser.
+                      </FormDescription>
+                      <div
+                        role="group"
+                        aria-labelledby="perfil-objetivos-titulo"
+                        className="grid grid-cols-1 gap-2 sm:grid-cols-2"
+                      >
+                        {METAS_DO_PERFIL.map((meta) => {
+                          const IconeDaMeta = meta.icon;
+                          return (
+                            <FormField
+                              key={meta.id}
+                              control={form.control}
+                              name="goals"
+                              render={({ field }) => (
+                                <FormItem className="flex min-w-0 flex-row items-center gap-3 space-y-0 rounded-md border border-border bg-card px-3 transition-colors hover:bg-muted has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={
+                                        field.value?.includes(meta.id) ?? false
+                                      }
+                                      onCheckedChange={(marcado) =>
+                                        field.onChange(
+                                          marcado
+                                            ? [...(field.value ?? []), meta.id]
+                                            : (field.value ?? []).filter(
+                                                (id) => id !== meta.id
+                                              )
+                                        )
+                                      }
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="flex min-h-11 min-w-0 flex-1 cursor-pointer items-center gap-2.5 py-2 text-sm font-medium">
+                                    <IconeDaMeta
+                                      className="h-4 w-4 shrink-0 text-primary"
+                                      aria-hidden
+                                    />
+                                    <span className="min-w-0">
+                                      {meta.label}
+                                    </span>
+                                  </FormLabel>
+                                </FormItem>
+                              )}
+                            />
+                          );
+                        })}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </CardContent>
               <CardFooter>
                 <Button type="submit" disabled={form.formState.isSubmitting}>
@@ -544,6 +693,7 @@ export function ProfileForm() {
 
       <div className="min-w-0 space-y-6 lg:col-span-1">
         <AccountSubscriptionCard />
+        <AccountEmailCard />
         <Card>
           <CardHeader>
             <CardTitle>Ações da Conta</CardTitle>

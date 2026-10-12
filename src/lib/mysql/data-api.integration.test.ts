@@ -375,6 +375,47 @@ describe('data-api · escrita', () => {
       }),
       403
     );
+
+    // Nem o administrador troca o e-mail por aqui (só a cópia em profiles
+    // mudaria): copiar o e-mail de outra conta é recusado.
+    await esperarHttp(
+      runUpdateQuery({
+        table: 'profiles',
+        values: { email: bruno.email },
+        filters: [{ type: 'eq', column: 'id', value: ana.id }],
+        session: admin.session,
+      }),
+      403
+    );
+
+    // Reenviar o próprio e-mail atual não altera nada e é aceito.
+    const reenvio = await runUpdateQuery({
+      table: 'profiles',
+      values: { email: ana.email, first_name: 'Ana' },
+      filters: [{ type: 'eq', column: 'id', value: ana.id }],
+      session: ana.session,
+    });
+    expect(reenvio.error).toBeNull();
+
+    const emails = await queryRows<{ id: string; email: string }>(
+      'SELECT id, email FROM profiles WHERE id IN (?, ?) ORDER BY email',
+      [ana.id, bruno.id]
+    );
+    expect(emails).toEqual(
+      [
+        { id: ana.id, email: ana.email },
+        { id: bruno.id, email: bruno.email },
+      ].sort((a, b) => a.email.localeCompare(b.email))
+    );
+  });
+
+  it('o banco recusa dois perfis com o mesmo e-mail (índice único)', async () => {
+    await expect(
+      executeStatement('UPDATE profiles SET email = ? WHERE id = ?', [
+        bruno.email.toUpperCase(),
+        ana.id,
+      ])
+    ).rejects.toMatchObject({ code: 'ER_DUP_ENTRY' });
   });
 
   it('não altera linhas de outro usuário', async () => {

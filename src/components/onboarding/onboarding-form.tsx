@@ -41,10 +41,8 @@ import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/context/AuthContext';
 import {
-  Heart,
   ArrowRight,
   User,
-  Activity,
   ArrowLeft,
   Calendar,
   Clock,
@@ -52,71 +50,18 @@ import {
   Dumbbell,
   ShieldCheck,
   Scale,
-  Moon,
-  Utensils,
-  Zap,
-  Weight,
-  Sun,
-  Rss,
   Globe,
-  Droplet,
-  Footprints,
-  TrendingUp,
   Sparkles,
 } from 'lucide-react';
 import {
   OnboardingNavigationDots,
   useEtapaAtual,
 } from './OnboardingNavigationDots';
+import { METAS_DO_PERFIL, NIVEL_DE_ATIVIDADE } from './opcoes-de-perfil';
 import { cn } from '@/lib/utils';
 import { DatePicker } from '@/components/ui/date-picker';
 import { differenceInYears } from 'date-fns';
 import { TimeInput } from '@/components/ui/time-input';
-
-const goalsList = [
-  { id: 'lose_weight', label: 'Perder Peso', icon: Weight },
-  { id: 'gain_muscle', label: 'Ganhar Músculo', icon: Dumbbell },
-  { id: 'improve_endurance', label: 'Melhorar Resistência', icon: Footprints },
-  { id: 'reduce_stress', label: 'Reduzir Estresse Crônico', icon: Heart },
-  { id: 'eat_healthier', label: 'Comer de Forma Saudável', icon: Utensils },
-  { id: 'optimize_hrv', label: 'Otimizar HRV (Resiliência)', icon: Zap },
-  {
-    id: 'improve_readiness',
-    label: 'Melhorar Score de Prontidão',
-    icon: ShieldCheck,
-  },
-  {
-    id: 'regulate_sleep_duration',
-    label: 'Regular Duração do Sono',
-    icon: Moon,
-  },
-  {
-    id: 'improve_sleep_efficiency',
-    label: 'Aumentar a Eficiência do Sono',
-    icon: Sun,
-  },
-  {
-    id: 'reduce_social_jetlag',
-    label: 'Reduzir o Social Jetlag (Regularidade)',
-    icon: Rss,
-  },
-  { id: 'increase_vo2max', label: 'Aumentar VO₂max', icon: TrendingUp },
-  {
-    id: 'meet_activity_guidelines',
-    label: 'Cumprir Diretrizes de Atividade',
-    icon: Activity,
-  },
-  {
-    id: 'optimize_protein',
-    label: 'Otimizar Ingestão de Proteínas',
-    icon: Utensils,
-  },
-  {
-    id: 'manage_blood_glucose',
-    label: 'Gerenciar Picos de Glicose',
-    icon: Droplet,
-  },
-];
 
 const onboardingSchema = z.object({
   first_name: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres.'),
@@ -187,7 +132,7 @@ export function OnboardingForm() {
       last_name: '',
       age: 18,
       gender: 'prefer_not-to-say',
-      activity_level: 3,
+      activity_level: NIVEL_DE_ATIVIDADE.padrao,
       goals: [],
       consent: false,
       birth_time: '12:00',
@@ -631,16 +576,16 @@ export function OnboardingForm() {
                         <FormControl>
                           <Slider
                             aria-label="Nível de atividade, de 1 (sedentário) a 5 (muito ativo)"
-                            min={1}
-                            max={5}
+                            min={NIVEL_DE_ATIVIDADE.minimo}
+                            max={NIVEL_DE_ATIVIDADE.maximo}
                             step={1}
-                            value={[field.value || 3]}
+                            value={[field.value || NIVEL_DE_ATIVIDADE.padrao]}
                             onValueChange={(vals) => field.onChange(vals[0])}
                           />
                         </FormControl>
                         <div className="flex justify-between text-xs text-muted-foreground mt-3">
-                          <span>Sedentário (1)</span>
-                          <span>Muito Ativo (5)</span>
+                          <span>{NIVEL_DE_ATIVIDADE.rotuloMinimo}</span>
+                          <span>{NIVEL_DE_ATIVIDADE.rotuloMaximo}</span>
                         </div>
                         <FormMessage />
                       </FormItem>
@@ -680,7 +625,7 @@ export function OnboardingForm() {
                     name="goals"
                     render={() => (
                       <FormItem className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {goalsList.map((item) => {
+                        {METAS_DO_PERFIL.map((item) => {
                           const GoalIcon = item.icon;
                           return (
                             <FormField

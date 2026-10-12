@@ -1,9 +1,31 @@
 import { describe, it, expect } from 'vitest';
 import {
   buildProfileUpdatePayload,
+  horaParaCampo,
   profileSchema,
   type ProfileValues,
 } from './ProfileForm';
+
+describe('horaParaCampo', () => {
+  it('converte o TIME do MySQL (HH:MM:SS) para o campo HH:MM', () => {
+    expect(horaParaCampo('06:45:00')).toBe('06:45');
+    expect(horaParaCampo('23:59:59.000')).toBe('23:59');
+    expect(horaParaCampo('12:00')).toBe('12:00');
+    expect(horaParaCampo(null)).toBe('');
+    expect(horaParaCampo(undefined)).toBe('');
+  });
+
+  it('o valor convertido passa na validação do perfil', () => {
+    const resultado = profileSchema.safeParse({
+      first_name: 'Ana',
+      last_name: 'Lima',
+      age: 30,
+      gender: 'female',
+      birth_time: horaParaCampo('06:45:00'),
+    });
+    expect(resultado.success).toBe(true);
+  });
+});
 
 describe('profileSchema', () => {
   const validData: ProfileValues = {
@@ -170,6 +192,54 @@ describe('profileSchema', () => {
       expect(payload.birth_date).toBe('1994-01-01');
       expect(payload.birth_time).toBe('14:30');
       expect(payload.birth_location).toBe('New York, USA');
+    });
+
+    it('grava nível de atividade e metas do onboarding (sem metas → nulo)', () => {
+      expect(
+        buildProfileUpdatePayload({
+          ...validData,
+          activity_level: 4,
+          goals: ['reduce_stress', 'optimize_hrv'],
+        })
+      ).toMatchObject({
+        activity_level: 4,
+        goals: ['reduce_stress', 'optimize_hrv'],
+      });
+      expect(
+        buildProfileUpdatePayload({ ...validData, goals: [] })
+      ).toMatchObject({ activity_level: null, goals: null });
+    });
+  });
+
+  describe('campos do onboarding no perfil', () => {
+    it('aceita nível de 1 a 5 e recusa fora da escala', () => {
+      for (const nivel of [1, 3, 5]) {
+        expect(
+          profileSchema.safeParse({ ...validData, activity_level: nivel })
+            .success
+        ).toBe(true);
+      }
+      for (const nivel of [0, 6, 2.5]) {
+        expect(
+          profileSchema.safeParse({ ...validData, activity_level: nivel })
+            .success
+        ).toBe(false);
+      }
+    });
+
+    it('aceita só metas da lista do onboarding', () => {
+      expect(
+        profileSchema.safeParse({ ...validData, goals: ['lose_weight'] })
+          .success
+      ).toBe(true);
+      const invalida = profileSchema.safeParse({
+        ...validData,
+        goals: ['meta_inventada'],
+      });
+      expect(invalida.success).toBe(false);
+      if (!invalida.success) {
+        expect(invalida.error.issues[0].message).toBe('Meta desconhecida.');
+      }
     });
   });
 });

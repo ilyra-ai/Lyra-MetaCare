@@ -1,4 +1,4 @@
-import { JWTPayload, SignJWT, jwtVerify } from 'jose';
+import { JWTPayload, SignJWT, decodeJwt, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
 import { AppSession } from '@/types/app-session';
@@ -33,7 +33,7 @@ export function getSecret() {
 // some ao fechar o navegador; o token expira em 12 horas como teto de
 // segurança caso o navegador restaure a sessão.
 const PERSISTENT_SESSION_SECONDS = 60 * 60 * 24 * 7;
-const BROWSER_SESSION_TOKEN_TTL = '12h';
+const BROWSER_SESSION_SECONDS = 12 * 60 * 60;
 
 export interface SessionOptions {
   persistent: boolean;
@@ -49,7 +49,7 @@ export async function signSessionToken(
     .setExpirationTime(
       options.persistent
         ? `${PERSISTENT_SESSION_SECONDS}s`
-        : BROWSER_SESSION_TOKEN_TTL
+        : `${BROWSER_SESSION_SECONDS}s`
     )
     .sign(getSecret());
 }
@@ -70,6 +70,19 @@ export async function verifySessionToken(
   } catch {
     return null;
   }
+}
+
+/**
+ * Diz se um token (já verificado) é de sessão persistente ("Lembrar-me" ou
+ * cadastro, 7 dias) ou de navegador (12 horas), pela duração emitida. Usado
+ * ao reemitir o token sem mudar o tipo de sessão que a pessoa escolheu.
+ */
+export function sessaoEhPersistente(token: string): boolean {
+  const { iat, exp } = decodeJwt(token);
+  if (typeof iat !== 'number' || typeof exp !== 'number') {
+    return false;
+  }
+  return exp - iat > BROWSER_SESSION_SECONDS;
 }
 
 export async function getServerSessionToken(): Promise<string | null> {
