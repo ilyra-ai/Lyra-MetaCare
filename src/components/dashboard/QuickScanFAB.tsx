@@ -2,9 +2,17 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Bot, HeartPulse, Sparkles, Watch, WandSparkles } from 'lucide-react';
+import {
+  Bot,
+  ClipboardCheck,
+  HeartPulse,
+  Sparkles,
+  Watch,
+  WandSparkles,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
+import { RegistroDoDiaDialog } from '@/components/metricas/RegistroDoDia';
 import { useHealthOrchestrator } from '@/context/HealthOrchestratorContext';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,6 +28,7 @@ import {
 export function QuickScanFAB() {
   const router = useRouter();
   const { triggerManualSync, isSyncing } = useHealthOrchestrator();
+  const [registroAberto, setRegistroAberto] = React.useState(false);
 
   // O resultado da sincronização é tratado no próprio handler (evento do
   // usuário), sem efeito observando o estado do contexto.
@@ -64,6 +73,17 @@ export function QuickScanFAB() {
         >
           <DropdownMenuLabel>Centro rápido da Lyra</DropdownMenuLabel>
           <DropdownMenuGroup>
+            <DropdownMenuItem onSelect={() => setRegistroAberto(true)}>
+              <ClipboardCheck className="text-primary" />
+              <div className="flex flex-1 flex-col gap-0.5">
+                <span className="font-medium text-foreground">
+                  Registrar meu dia
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Humor, energia, sono e as métricas que você quiser anotar.
+                </span>
+              </div>
+            </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => void handleSync()}>
               <HeartPulse className="text-primary" />
               <div className="flex flex-1 flex-col gap-0.5">
@@ -117,6 +137,10 @@ export function QuickScanFAB() {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
+      <RegistroDoDiaDialog
+        open={registroAberto}
+        onOpenChange={setRegistroAberto}
+      />
     </div>
   );
 }

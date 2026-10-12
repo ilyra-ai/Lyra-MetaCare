@@ -1,132 +1,265 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { format } from 'date-fns';
 import { toast } from 'sonner';
+
+import { db } from '@/integrations/mysql/client';
+import {
+  AgregadorDaSessao,
+  lerMedicaoDeFrequencia,
+} from '@/lib/health/sessao-cardiaca';
+import { avisarMetricasAtualizadas } from '@/lib/metricas/evento-de-atualizacao';
+
+export type EstadoDaConexao = 'idle' | 'connecting' | 'connected' | 'error';
 
 export interface BluetoothVitals {
   heartRate: number | null;
   hrv: number | null;
-  rrIntervals: number[];
   connected: boolean;
   isConnecting: boolean;
+  status: EstadoDaConexao;
+  deviceName: string | null;
+  errorMessage: string | null;
+  /** Hora (HH:mm) da última sessão gravada no banco. */
+  lastSavedAt: string | null;
   connect: () => Promise<void>;
   disconnect: () => void;
 }
 
+/** A cada 5 minutos a sessão agregada é gravada (e ao desconectar ou sair). */
+const INTERVALO_DE_GRAVACAO_MS = 5 * 60 * 1000;
+
+export const MENSAGEM_SEM_BLUETOOTH =
+  'O Web Bluetooth só funciona em navegadores compatíveis baseados em Chromium e em contexto seguro (localhost ou HTTPS).';
+
+/**
+ * Conexão com a pulseira/cinta cardíaca por Web Bluetooth: leitura ao vivo
+ * (FC e VFC), aviso às outras telas pelo canal "realtime-wearable" e gravação
+ * periódica da sessão no banco (`POST /api/metricas/sensor`). Antes havia duas
+ * implementações (painel e central de dispositivos) e nenhuma gravava nada.
+ */
 export function useBluetoothVitals(): BluetoothVitals {
-  const [connected, setConnected] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
+  const [status, setStatus] = useState<EstadoDaConexao>('idle');
   const [heartRate, setHeartRate] = useState<number | null>(null);
-  const [rrIntervals, setRrIntervals] = useState<number[]>([]);
   const [hrv, setHrv] = useState<number | null>(null);
-  const [device, setDevice] = useState<BluetoothDevice | null>(null);
+  const [deviceName, setDeviceName] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
-  const calculateHRV = (intervals: number[]) => {
-    if (intervals.length < 2) return null;
-    let sumDiffSq = 0;
-    for (let i = 1; i < intervals.length; i++) {
-      const diff = intervals[i] - intervals[i - 1];
-      sumDiffSq += diff * diff;
+  const deviceRef = useRef<BluetoothDevice | null>(null);
+  const agregadorRef = useRef(new AgregadorDaSessao());
+  const dataDaSessaoRef = useRef<string | null>(null);
+  const gravacaoBloqueadaRef = useRef(false);
+  // Um único canal por conexão (antes cada leitura abria um canal novo, que
+  // nunca era fechado).
+  const canalRef = useRef<ReturnType<typeof db.channel> | null>(null);
+
+  useEffect(() => {
+    const canal = db.channel('realtime-wearable');
+    canalRef.current = canal;
+    return () => {
+      canalRef.current = null;
+      db.removeChannel(canal);
+    };
+  }, []);
+
+  /** Grava o resumo da sessão acumulada e recomeça a agregação. */
+  const gravarSessao = useCallback(async (aoSair = false) => {
+    const agregador = agregadorRef.current;
+    const data = dataDaSessaoRef.current;
+    const resumo = agregador.resumo();
+    if (!resumo || !data || gravacaoBloqueadaRef.current) {
+      return;
     }
-    // rMSSD = root mean square of successive differences
-    return Math.round(Math.sqrt(sumDiffSq / (intervals.length - 1)));
-  };
-
-  const handleCharacteristicValueChanged = useCallback((event: Event) => {
-    const characteristic = event.target as BluetoothRemoteGATTCharacteristic;
-    const value = characteristic.value;
-    if (!value) return;
-    const flags = value.getUint8(0);
-    const hr16Bit = flags & 0x01;
-    const rrPresent = (flags & 0x10) !== 0;
-
-    let index = 1;
-    const hr = hr16Bit ? value.getUint16(index, true) : value.getUint8(index);
-    index += hr16Bit ? 2 : 1;
-
-    setHeartRate(hr);
-
-    if (rrPresent) {
-      const newIntervals: number[] = [];
-      while (index < value.byteLength) {
-        // RR interval in 1/1024 seconds
-        const rr = (value.getUint16(index, true) * 1000) / 1024;
-        newIntervals.push(rr);
-        index += 2;
-      }
-      setRrIntervals((prev) => {
-        const updated = [...prev, ...newIntervals].slice(-60); // Keep last 60 intervals
-        const newHrv = calculateHRV(updated);
-        setHrv(newHrv);
-        return updated;
+    agregador.zerar();
+    dataDaSessaoRef.current = null;
+    try {
+      const resposta = await fetch('/api/metricas/sensor', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data, ...resumo }),
+        // Ao fechar a página a gravação continua depois da navegação.
+        keepalive: aoSair,
       });
+      if (resposta.status === 403) {
+        gravacaoBloqueadaRef.current = true;
+        const corpo = (await resposta.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        toast.info('As leituras da pulseira não serão salvas.', {
+          description:
+            corpo?.error ?? 'O seu plano não inclui a conexão com wearables.',
+        });
+        return;
+      }
+      if (!resposta.ok) {
+        throw new Error(`HTTP ${resposta.status}`);
+      }
+      setLastSavedAt(format(new Date(), 'HH:mm'));
+      if (!aoSair) avisarMetricasAtualizadas();
+    } catch (error) {
+      console.error('Falha ao gravar a sessão da pulseira:', error);
+      if (!aoSair) {
+        toast.error('Não foi possível salvar as leituras da pulseira agora.');
+      }
     }
   }, []);
 
-  const connect = async () => {
+  const handleMeasurement = useCallback(
+    (event: Event) => {
+      const characteristic =
+        event.target as BluetoothRemoteGATTCharacteristic | null;
+      const value = characteristic?.value;
+      if (!value) return;
+
+      let medicao;
+      try {
+        medicao = lerMedicaoDeFrequencia(value);
+      } catch {
+        return;
+      }
+
+      // Virada do dia: a sessão de ontem é gravada antes de começar a de hoje.
+      const hoje = format(new Date(), 'yyyy-MM-dd');
+      if (dataDaSessaoRef.current && dataDaSessaoRef.current !== hoje) {
+        void gravarSessao();
+      }
+      dataDaSessaoRef.current = hoje;
+
+      agregadorRef.current.adicionar(medicao, Date.now());
+      const vfc = agregadorRef.current.rmssdAoVivo();
+      setHeartRate(medicao.fc);
+      setHrv(vfc);
+
+      // Leitura ao vivo para o monitoramento e o painel abertos em outras abas.
+      void canalRef.current?.send({
+        type: 'broadcast',
+        event: 'new_data',
+        payload: {
+          heartRate: medicao.fc,
+          hrv: vfc,
+          respiratoryRate: null,
+          temperature: null,
+        },
+      });
+    },
+    [gravarSessao]
+  );
+
+  const encerrar = useCallback(
+    (mensagem: boolean) => {
+      void gravarSessao();
+      if (deviceRef.current?.gatt?.connected) {
+        deviceRef.current.gatt.disconnect();
+      }
+      deviceRef.current = null;
+      setStatus('idle');
+      setDeviceName(null);
+      setHeartRate(null);
+      setHrv(null);
+      if (mensagem) {
+        toast.info('Monitor cardíaco desconectado.');
+      }
+    },
+    [gravarSessao]
+  );
+
+  const disconnect = useCallback(() => encerrar(true), [encerrar]);
+
+  const connect = useCallback(async () => {
     const bluetooth = navigator.bluetooth;
+    setErrorMessage(null);
     if (!bluetooth) {
-      toast.error(
-        'Web Bluetooth não é suportado neste navegador. Use Chrome, Edge ou Opera.'
-      );
+      setErrorMessage(MENSAGEM_SEM_BLUETOOTH);
+      toast.error('Bluetooth indisponível neste navegador', {
+        description: MENSAGEM_SEM_BLUETOOTH,
+      });
       return;
     }
 
     try {
-      setIsConnecting(true);
-      const btDevice = await bluetooth.requestDevice({
+      setStatus('connecting');
+      const device = await bluetooth.requestDevice({
         filters: [{ services: ['heart_rate'] }],
+        optionalServices: ['battery_service'],
       });
-
-      if (!btDevice.gatt) throw new Error('Dispositivo sem serviço GATT');
-
-      btDevice.addEventListener('gattserverdisconnected', disconnect);
-      const server = await btDevice.gatt.connect();
+      if (!device.gatt) {
+        throw new Error('O dispositivo não oferece o serviço GATT.');
+      }
+      device.addEventListener('gattserverdisconnected', () => encerrar(true));
+      const server = await device.gatt.connect();
       const service = await server.getPrimaryService('heart_rate');
       const characteristic = await service.getCharacteristic(
         'heart_rate_measurement'
       );
-
       await characteristic.startNotifications();
       characteristic.addEventListener(
         'characteristicvaluechanged',
-        handleCharacteristicValueChanged
+        handleMeasurement
       );
 
-      setDevice(btDevice);
-      setConnected(true);
-      toast.success(
-        `Conectado ao dispositivo: ${btDevice.name || 'Monitor Cardíaco'}`
-      );
-    } catch (err) {
-      toast.error(
-        'Falha ao conectar: ' +
-          (err instanceof Error ? err.message : 'Erro desconhecido')
-      );
-      console.error(err);
-    } finally {
-      setIsConnecting(false);
+      deviceRef.current = device;
+      gravacaoBloqueadaRef.current = false;
+      setDeviceName(device.name || 'Monitor cardíaco');
+      setStatus('connected');
+      toast.success(`Conectado a ${device.name || 'monitor cardíaco'}`, {
+        description:
+          'As leituras são salvas no seu dia a cada 5 minutos e ao desconectar.',
+      });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'NotFoundError') {
+        setStatus('idle');
+        toast.info('Seleção cancelada', {
+          description: 'Nenhum dispositivo Bluetooth foi selecionado.',
+        });
+        return;
+      }
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível conectar ao dispositivo.';
+      console.error(error);
+      setStatus('error');
+      setErrorMessage(message);
+      toast.error('Falha na conexão', { description: message });
     }
-  };
+  }, [encerrar, handleMeasurement]);
 
-  const disconnect = () => {
-    if (device?.gatt?.connected) {
-      device.gatt.disconnect();
-    }
-    setDevice(null);
-    setConnected(false);
-    setHeartRate(null);
-    setHrv(null);
-    setRrIntervals([]);
-    toast.info('Monitor cardíaco desconectado.');
-  };
+  // Gravação periódica enquanto conectado.
+  useEffect(() => {
+    if (status !== 'connected') return;
+    const intervalo = window.setInterval(() => {
+      void gravarSessao();
+    }, INTERVALO_DE_GRAVACAO_MS);
+    return () => window.clearInterval(intervalo);
+  }, [gravarSessao, status]);
+
+  // Saída da página (fechar aba, trocar de rota) grava o que ficou pendente.
+  useEffect(() => {
+    const aoSair = () => {
+      void gravarSessao(true);
+    };
+    window.addEventListener('pagehide', aoSair);
+    return () => {
+      window.removeEventListener('pagehide', aoSair);
+      aoSair();
+      if (deviceRef.current?.gatt?.connected) {
+        deviceRef.current.gatt.disconnect();
+      }
+    };
+  }, [gravarSessao]);
 
   return {
     heartRate,
     hrv,
-    rrIntervals,
-    connected,
-    isConnecting,
+    connected: status === 'connected',
+    isConnecting: status === 'connecting',
+    status,
+    deviceName,
+    errorMessage,
+    lastSavedAt,
     connect,
     disconnect,
   };

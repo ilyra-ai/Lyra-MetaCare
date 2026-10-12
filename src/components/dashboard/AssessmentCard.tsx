@@ -9,8 +9,10 @@
  */
 
 import { useState } from 'react';
+import { format } from 'date-fns';
 import { Brain, Heart, Star, Sparkles, CheckCircle2 } from 'lucide-react';
 
+import { avisarMetricasAtualizadas } from '@/lib/metricas/evento-de-atualizacao';
 import {
   Card,
   CardContent,
@@ -74,7 +76,12 @@ export function AssessmentCard() {
     }
     setIsSubmitting(true);
     try {
-      await enviarAvaliacao({ type: 'mood', payload: { moodValue } });
+      // O humor também entra no registro do dia (data local da pessoa).
+      await enviarAvaliacao({
+        type: 'mood',
+        payload: { moodValue, data: format(new Date(), 'yyyy-MM-dd') },
+      });
+      avisarMetricasAtualizadas();
 
       setCompleted((prev) => ({ ...prev, mood: true }));
       toast.success('Estado emocional registrado com sucesso!');

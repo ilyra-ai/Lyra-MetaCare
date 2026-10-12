@@ -516,3 +516,25 @@
   background: rgba(236, 236, 245, 0.32);
   background-clip: padding-box;
 }
+
+/*
+  Avisos (Sonner com `richColors`) nas cores da Lyra. O vermelho padrão da
+  biblioteca no tema claro (#E60000 sobre #FFF0F0) fica em 4,34:1, abaixo de
+  4,5:1; os pares abaixo são os tokens já garantidos por `src/app/tema.test.ts`
+  nos dois temas. Fora das camadas do Tailwind e com especificidade maior que
+  a do Sonner, cujo CSS é injetado depois deste arquivo.
+*/
+html [data-sonner-toaster][data-sonner-theme] {
+  --success-bg: hsl(var(--success-light));
+  --success-border: hsl(var(--success) / 0.35);
+  --success-text: hsl(var(--success));
+  --info-bg: hsl(var(--info-light));
+  --info-border: hsl(var(--info) / 0.35);
+  --info-text: hsl(var(--info));
+  --warning-bg: hsl(var(--warning-light));
+  --warning-border: hsl(var(--warning) / 0.35);
+  --warning-text: hsl(var(--warning));
+  --error-bg: hsl(var(--destructive-light));
+  --error-border: hsl(var(--destructive) / 0.35);
+  --error-text: hsl(var(--destructive));
+}

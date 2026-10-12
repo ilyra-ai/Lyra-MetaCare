@@ -18,6 +18,7 @@ import {
   type RegistroDosSinaisDoDia,
 } from '../lib/health/sinais-vitais';
 import { AstrologicalData } from '../lib/astrology/engine';
+import { ouvirMetricasAtualizadas } from '../lib/metricas/evento-de-atualizacao';
 import { db } from '../integrations/mysql/client';
 import { useAuth } from './AuthContext';
 import { useBluetoothVitals } from '../hooks/use-bluetooth-vitals';
@@ -163,6 +164,14 @@ export const HealthOrchestratorProvider: React.FC<{
       active = false;
     };
   }, [applySnapshot, userId]);
+
+  // Check-in salvo ou sessão da pulseira gravada: relê os sinais do dia.
+  useEffect(() => {
+    if (!userId) return;
+    return ouvirMetricasAtualizadas(() => {
+      void runHealthSync(userId, astrology).then(applySnapshot);
+    });
+  }, [applySnapshot, astrology, userId]);
 
   // Canal em tempo real para eventos de wearables publicados pelo app.
   useEffect(() => {

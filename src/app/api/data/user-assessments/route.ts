@@ -5,6 +5,8 @@ import { lerJson, respostaDeErro } from '@/lib/http/api';
 import { executeStatement } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 import { calculateWHO5Score, classifyNPS } from '@/lib/kpi/assessment-engine';
+import { gravarRegistroDoDia } from '@/lib/metricas/gravacao';
+import { dataDoRegistroSchema } from '@/lib/metricas/registro-do-dia';
 
 export const runtime = 'nodejs';
 
@@ -20,6 +22,9 @@ const assessmentSchema = z.discriminatedUnion('type', [
     payload: z.object({
       moodValue: escala(1, 5),
       notes: z.string().trim().max(2000).optional(),
+      // Dia local da pessoa: o humor também entra no registro do dia, que
+      // alimenta painel, scores e coach.
+      data: dataDoRegistroSchema.optional(),
     }),
   }),
   z.object({
@@ -97,6 +102,13 @@ export async function POST(request: Request) {
         notes,
       ]
     );
+
+    if (assessment.type === 'mood' && assessment.payload.data) {
+      await gravarRegistroDoDia(session.user.id, {
+        data: assessment.payload.data,
+        valores: { humor: assessment.payload.moodValue },
+      });
+    }
 
     return NextResponse.json({ success: true, scoreValue, notes });
   } catch (error) {

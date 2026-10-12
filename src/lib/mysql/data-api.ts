@@ -427,6 +427,10 @@ function ensureCanWrite(
       403
     );
   }
+  const rotaPropria = TABLE_CONFIG[table].escritaSoPorRotaPropria;
+  if (rotaPropria) {
+    throw new HttpError(rotaPropria, 403);
+  }
   return session;
 }
 

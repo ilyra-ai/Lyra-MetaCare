@@ -48,6 +48,11 @@ interface TableConfig {
   adminWriteColumns?: readonly string[];
   /** Colunas que só administradores podem gravar (ex.: o papel do usuário). */
   adminOnlyColumns?: string[];
+  /**
+   * Tabela gravada só por uma rota própria, com validação de faixa e regras
+   * de mesclagem; a API genérica apenas lê. O texto é a mensagem do 403.
+   */
+  escritaSoPorRotaPropria?: string;
 }
 
 export const TABLE_CONFIG: Record<TableName, TableConfig> = {
@@ -163,6 +168,10 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'eda_tonic_microsiemens',
       'afib_history_percent',
       'menstrual_flow',
+      'energy_level',
+      'sensor_heart_rate_avg',
+      'sensor_minutes',
+      'metrics_updated_at',
     ],
     userScopedBy: 'user_id',
     // Painel "Saúde dos dados": só quem registrou e quando (contagens e
@@ -170,6 +179,8 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
     adminReadAll: true,
     adminReadColumns: ['id', 'user_id', 'date', 'created_at'],
     adminWriteColumns: [],
+    escritaSoPorRotaPropria:
+      'As métricas do dia são gravadas pelo registro do dia (/api/metricas/dia) e pela pulseira (/api/metricas/sensor).',
   },
   goals: {
     columns: [

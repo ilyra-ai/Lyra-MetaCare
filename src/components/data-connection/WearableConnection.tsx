@@ -1,11 +1,6 @@
 'use client';
 
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useSyncExternalStore,
-} from 'react';
+import React, { useSyncExternalStore } from 'react';
 import {
   Card,
   CardContent,
@@ -15,36 +10,28 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, CheckCircle, XCircle, Watch, Zap } from 'lucide-react';
-import { toast } from 'sonner';
-import { db } from '@/integrations/mysql/client';
+import {
+  Activity,
+  CheckCircle,
+  HeartPulse,
+  Loader2,
+  Watch,
+  XCircle,
+  Zap,
+} from 'lucide-react';
 import type { AppPageConfig } from '@/lib/site-page-config/schema';
 import { scaleRem } from '@/lib/site-page-config/runtime';
+import { useBluetoothVitals } from '@/hooks/use-bluetooth-vitals';
 
-type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'error';
 // Capacidades do navegador não mudam durante a sessão: não há o que assinar.
 const subscribeToStaticCapability = () => () => undefined;
-const BLUETOOTH_UNSUPPORTED_MESSAGE =
-  'O Web Bluetooth só funciona em navegadores compatíveis baseados em Chromium e em contexto seguro (localhost ou HTTPS).';
 type ConnectConfig = AppPageConfig['connect'];
 
-function calculateRmssd(rrIntervalsMs: number[]) {
-  if (rrIntervalsMs.length < 2) {
-    return null;
-  }
-
-  const successiveDiffSquares = [];
-  for (let index = 1; index < rrIntervalsMs.length; index += 1) {
-    const diff = rrIntervalsMs[index] - rrIntervalsMs[index - 1];
-    successiveDiffSquares.push(diff * diff);
-  }
-
-  const meanSquare =
-    successiveDiffSquares.reduce((sum, value) => sum + value, 0) /
-    successiveDiffSquares.length;
-  return Number(Math.sqrt(meanSquare).toFixed(1));
-}
-
+/**
+ * Central de dispositivos: conexão com a pulseira/cinta cardíaca por Web
+ * Bluetooth. A leitura, o aviso às outras telas e a gravação da sessão no
+ * banco ficam no hook compartilhado `useBluetoothVitals`.
+ */
 export function WearableConnection({
   config,
   typography,
@@ -52,9 +39,6 @@ export function WearableConnection({
   config: ConnectConfig;
   typography: AppPageConfig['typography'];
 }) {
-  const [status, setStatus] = useState<ConnectionStatus>('idle');
-  const [deviceName, setDeviceName] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   // Suporte a Web Bluetooth é uma capacidade fixa do navegador: lida como
   // store externo (null no servidor, booleano no cliente após a hidratação).
   const bluetoothSupported = useSyncExternalStore<boolean | null>(
@@ -62,148 +46,16 @@ export function WearableConnection({
     () => Boolean(navigator.bluetooth),
     () => null
   );
-  const deviceRef = useRef<BluetoothDevice | null>(null);
-  const rrHistoryRef = useRef<number[]>([]);
-
-  useEffect(() => {
-    return () => {
-      // Cleanup on unmount
-      if (deviceRef.current?.gatt?.connected) {
-        deviceRef.current.gatt.disconnect();
-      }
-    };
-  }, []);
-
-  const handleCharacteristicValueChanged = (event: Event) => {
-    const characteristic =
-      event.target as BluetoothRemoteGATTCharacteristic | null;
-    const value = characteristic?.value;
-    if (!value) {
-      return;
-    }
-    // Parse Heart Rate Measurement characteristic
-    // Format: Flags (1 byte), Heart Rate (1 or 2 bytes depending on flags)
-    const flags = value.getUint8(0);
-    const rate16Bits = flags & 0x1;
-    const rrPresent = Boolean(flags & 0x10);
-    const heartRate = rate16Bits ? value.getUint16(1, true) : value.getUint8(1);
-    let cursor = rate16Bits ? 3 : 2;
-
-    if (rrPresent) {
-      while (cursor + 1 < value.byteLength) {
-        const rrValue = value.getUint16(cursor, true);
-        const rrMs = Number(((rrValue / 1024) * 1000).toFixed(2));
-        rrHistoryRef.current.push(rrMs);
-        cursor += 2;
-      }
-      rrHistoryRef.current = rrHistoryRef.current.slice(-20);
-    }
-
-    const hrv = calculateRmssd(rrHistoryRef.current);
-
-    // Propaga dados reais para o canal local em memória consumido pelo monitoramento.
-    db.channel('realtime-wearable').send({
-      type: 'broadcast',
-      event: 'new_data',
-      payload: {
-        heartRate,
-        hrv,
-        respiratoryRate: null,
-        temperature: null,
-      },
-    });
-  };
-
-  const handleConnect = async () => {
-    setStatus('connecting');
-    setDeviceName(null);
-    setErrorMessage(null);
-
-    const bluetooth = navigator.bluetooth;
-    if (!bluetooth) {
-      setStatus('idle');
-      setErrorMessage(BLUETOOTH_UNSUPPORTED_MESSAGE);
-      toast.error('Bluetooth indisponível neste navegador', {
-        description: BLUETOOTH_UNSUPPORTED_MESSAGE,
-      });
-      return;
-    }
-
-    try {
-      const device = await bluetooth.requestDevice({
-        filters: [{ services: ['heart_rate'] }],
-        optionalServices: ['battery_service'],
-      });
-
-      deviceRef.current = device;
-      setDeviceName(device.name || 'Dispositivo Desconhecido');
-
-      // Connect to GATT Server
-      const server = await device.gatt?.connect();
-      if (!server) {
-        throw new Error(
-          'Servidor GATT indisponível para o dispositivo selecionado.'
-        );
-      }
-
-      // Get Heart Rate Service
-      const service = await server.getPrimaryService('heart_rate');
-
-      // Get Heart Rate Measurement Characteristic
-      const characteristic = await service.getCharacteristic(
-        'heart_rate_measurement'
-      );
-
-      // Start notifications
-      await characteristic.startNotifications();
-      characteristic.addEventListener(
-        'characteristicvaluechanged',
-        handleCharacteristicValueChanged
-      );
-
-      device.addEventListener('gattserverdisconnected', handleDisconnect);
-
-      setStatus('connected');
-      setErrorMessage(null);
-      toast.success('Conexão estabelecida!', {
-        description: `Conectado ao ${device.name || 'dispositivo'} via Web Bluetooth.`,
-      });
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'NotFoundError') {
-        setStatus('idle');
-        toast.info('Seleção cancelada', {
-          description:
-            'Nenhum dispositivo Bluetooth foi selecionado para conexão.',
-        });
-        return;
-      }
-
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Não foi possível conectar ao dispositivo.';
-
-      console.error(error);
-      setStatus('error');
-      setErrorMessage(message);
-      toast.error('Falha na Conexão', {
-        description: message,
-      });
-    }
-  };
-
-  const handleDisconnect = () => {
-    if (deviceRef.current?.gatt?.connected) {
-      deviceRef.current.gatt.disconnect();
-    }
-    setStatus('idle');
-    setDeviceName(null);
-    setErrorMessage(null);
-    deviceRef.current = null;
-    toast.info('Desconectado', {
-      description: 'A conexão com o dispositivo foi encerrada.',
-    });
-  };
+  const {
+    status,
+    deviceName,
+    errorMessage,
+    heartRate,
+    hrv,
+    lastSavedAt,
+    connect,
+    disconnect,
+  } = useBluetoothVitals();
 
   const renderStatusContent = () => {
     switch (status) {
@@ -226,7 +78,7 @@ export function WearableConnection({
               </Alert>
             ) : null}
             <Button
-              onClick={handleConnect}
+              onClick={() => void connect()}
               className="w-full"
               disabled={bluetoothSupported === false}
             >
@@ -266,15 +118,44 @@ export function WearableConnection({
               {config.connectedDescription}:{' '}
               <span className="font-medium text-foreground">{deviceName}</span>
             </p>
+            <dl className="grid grid-cols-2 gap-3 text-left" aria-live="polite">
+              <div className="rounded-lg border border-border bg-card p-3">
+                <dt className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <HeartPulse className="h-3.5 w-3.5" aria-hidden="true" />
+                  Frequência cardíaca
+                </dt>
+                <dd className="mt-1 font-display text-2xl font-semibold text-foreground">
+                  {heartRate ?? '—'}
+                  <span className="ml-1 text-sm font-normal text-muted-foreground">
+                    bpm
+                  </span>
+                </dd>
+              </div>
+              <div className="rounded-lg border border-border bg-card p-3">
+                <dt className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Activity className="h-3.5 w-3.5" aria-hidden="true" />
+                  VFC (RMSSD)
+                </dt>
+                <dd className="mt-1 font-display text-2xl font-semibold text-foreground">
+                  {hrv ?? '—'}
+                  <span className="ml-1 text-sm font-normal text-muted-foreground">
+                    ms
+                  </span>
+                </dd>
+              </div>
+            </dl>
             <Alert className="rounded-md border-success/30 bg-success-light text-left shadow-none">
               <Zap className="h-4 w-4 text-success" aria-hidden="true" />
               <AlertTitle>{config.connectedAlertTitle}</AlertTitle>
               <AlertDescription>
-                {config.connectedAlertDescription}
+                {config.connectedAlertDescription}{' '}
+                {lastSavedAt
+                  ? `Última gravação no seu dia às ${lastSavedAt}.`
+                  : 'As leituras são salvas no seu dia a cada 5 minutos e ao desconectar.'}
               </AlertDescription>
             </Alert>
             <Button
-              onClick={handleDisconnect}
+              onClick={disconnect}
               variant="destructive"
               className="w-full"
             >
@@ -294,7 +175,7 @@ export function WearableConnection({
             <p className="break-words text-muted-foreground">
               {errorMessage || config.errorDescription}
             </p>
-            <Button onClick={handleConnect} className="w-full">
+            <Button onClick={() => void connect()} className="w-full">
               {config.retryButtonLabel}
             </Button>
           </div>

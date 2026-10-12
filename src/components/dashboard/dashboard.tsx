@@ -49,6 +49,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/components/ui/chart';
+import { BotaoRegistroDoDia } from '@/components/metricas/RegistroDoDia';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -411,6 +412,7 @@ export function Dashboard() {
               </div>
 
               <div className="flex flex-wrap gap-2">
+                <BotaoRegistroDoDia />
                 <Button
                   variant="outline"
                   className={cn(

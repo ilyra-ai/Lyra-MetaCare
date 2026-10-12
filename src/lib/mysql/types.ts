@@ -74,6 +74,10 @@ export interface DailyMetricRow extends TimestampedRow {
   weight_kg: number | null;
   mood_score: number | null;
   meditation_minutes: number;
+  energy_level: number | null;
+  sensor_heart_rate_avg: number | null;
+  sensor_minutes: number | null;
+  metrics_updated_at: string | null;
   hrr_1min_bpm: number | null;
   sleep_regularity_index: number | null;
   social_jetlag_hours: number | null;

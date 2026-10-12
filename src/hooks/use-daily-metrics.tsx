@@ -1,9 +1,10 @@
 'use client';
 
 import { useAuth } from '@/context/AuthContext';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useKeyedResource } from '@/hooks/use-keyed-resource';
 import { requisicaoCompartilhada } from '@/lib/http/requisicao-compartilhada';
+import { ouvirMetricasAtualizadas } from '@/lib/metricas/evento-de-atualizacao';
 import { toast } from 'sonner';
 import { format, subDays } from 'date-fns';
 
@@ -45,6 +46,11 @@ export interface DailyMetric {
   weight_kg: number | null;
   mood_score: number | null;
   meditation_minutes: number;
+
+  // Registro do dia e pulseira (tarefa 40)
+  energy_level: number | null;
+  sensor_heart_rate_avg: number | null;
+  sensor_minutes: number | null;
 
   // New metric: Heart Rate Recovery 1 min
   hrr_1min_bpm: number | null;
@@ -128,6 +134,9 @@ const defaultMetricValues = {
   blood_pressure_diastolic: null,
   weight_kg: null,
   mood_score: null,
+  energy_level: null,
+  sensor_heart_rate_avg: null,
+  sensor_minutes: null,
   // New metric default
   hrr_1min_bpm: null,
   // NEW SLEEP METRICS DEFAULTS
@@ -192,6 +201,7 @@ export function useDailyMetrics(
         light_sleep_minutes, sleep_efficiency, sleep_score, protein_grams, carb_grams, fat_grams, water_liters,
         caffeine_mg, stress_score, recovery_score, readiness_score, blood_glucose_mgdl, blood_pressure_systolic,
         blood_pressure_diastolic, weight_kg, mood_score, meditation_minutes,
+        energy_level, sensor_heart_rate_avg, sensor_minutes,
         hrr_1min_bpm,
         sleep_regularity_index, social_jetlag_hours, waso_minutes,
         training_load_epoc, daily_strain, sedentary_hours, sedentary_breaks,
@@ -265,6 +275,14 @@ export function useDailyMetrics(
     requestInicial
   );
   const todayMetrics = metrics.length > 0 ? metrics[metrics.length - 1] : null;
+
+  // Check-in salvo ou sessão da pulseira gravada: recarrega a janela.
+  useEffect(() => {
+    if (!requestKey) return;
+    return ouvirMetricasAtualizadas(() => {
+      void refresh();
+    });
+  }, [refresh, requestKey]);
 
   return { metrics, todayMetrics, loading, refresh };
 }
