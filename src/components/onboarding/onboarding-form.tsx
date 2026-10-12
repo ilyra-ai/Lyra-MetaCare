@@ -64,7 +64,10 @@ import {
   TrendingUp,
   Sparkles,
 } from 'lucide-react';
-import { OnboardingNavigationDots } from './OnboardingNavigationDots';
+import {
+  OnboardingNavigationDots,
+  useEtapaAtual,
+} from './OnboardingNavigationDots';
 import { cn } from '@/lib/utils';
 import { DatePicker } from '@/components/ui/date-picker';
 import { differenceInYears } from 'date-fns';
@@ -154,17 +157,26 @@ type OnboardingValues = z.output<typeof onboardingSchema>;
 
 const TOTAL_STEPS = 5;
 
+// Cada etapa ocupa a largura toda (sem o respiro lateral padrão do
+// carrossel, que deixava o cartão desalinhado no celular). As etapas fora da
+// tela ficam `inert`: o Tab, o "próximo campo" do teclado do celular e o
+// leitor de tela não entram mais em campos escondidos de outra etapa.
 const OnboardingStep: React.FC<{
   children: React.ReactNode;
+  ativa: boolean;
   className?: string;
-}> = ({ children, className }) => (
-  <CarouselItem className={cn('animate-fade-in', className)}>
-    <Card className="flex min-h-[550px] flex-col">{children}</Card>
+}> = ({ children, ativa, className }) => (
+  <CarouselItem
+    className={cn('animate-fade-in pr-0', className)}
+    inert={!ativa}
+  >
+    <Card className="flex flex-col sm:min-h-[550px]">{children}</Card>
   </CarouselItem>
 );
 
 export function OnboardingForm() {
   const [api, setApi] = React.useState<CarouselApi>();
+  const etapaAtual = useEtapaAtual(api);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { db, session } = useAuth();
 
@@ -312,15 +324,15 @@ export function OnboardingForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl">
         <Carousel
           setApi={setApi}
-          className="w-full max-w-2xl"
+          className="w-full"
           opts={{ watchDrag: false }}
         >
           <CarouselContent>
-            {/* Step 1: Welcome */}
-            <OnboardingStep>
+            {/* Etapa 1: boas-vindas */}
+            <OnboardingStep ativa={etapaAtual === 0}>
               <CardHeader className="space-y-2">
                 <CardTitle className="text-2xl font-display">
                   Bem-vindo(a) à sua Jornada
@@ -363,8 +375,8 @@ export function OnboardingForm() {
               </CardFooter>
             </OnboardingStep>
 
-            {/* Step 2: Personal Data */}
-            <OnboardingStep>
+            {/* Etapa 2: dados pessoais */}
+            <OnboardingStep ativa={etapaAtual === 1}>
               <CardHeader className="space-y-2">
                 <CardTitle className="font-display">
                   Seus Dados Pessoais
@@ -588,8 +600,8 @@ export function OnboardingForm() {
               </CardFooter>
             </OnboardingStep>
 
-            {/* Step 3: Activity Level */}
-            <OnboardingStep>
+            {/* Etapa 3: nível de atividade */}
+            <OnboardingStep ativa={etapaAtual === 2}>
               <CardHeader className="space-y-2">
                 <CardTitle className="font-display">
                   Nível de Atividade
@@ -653,8 +665,8 @@ export function OnboardingForm() {
               </CardFooter>
             </OnboardingStep>
 
-            {/* Step 4: Goals */}
-            <OnboardingStep>
+            {/* Etapa 4: metas */}
+            <OnboardingStep ativa={etapaAtual === 3}>
               <CardHeader className="space-y-2">
                 <CardTitle className="font-display">Seus Objetivos</CardTitle>
                 <CardDescription>
@@ -676,7 +688,10 @@ export function OnboardingForm() {
                               control={form.control}
                               name="goals"
                               render={({ field }) => (
-                                <FormItem className="flex min-w-0 cursor-pointer flex-row items-center space-x-3 space-y-0 rounded-md border border-border bg-card p-3 transition-colors hover:bg-muted">
+                                // A linha inteira é o rótulo (alvo de toque de
+                                // 44px): antes só a caixinha de 20px e o texto
+                                // marcavam a meta, apesar do cursor de clique.
+                                <FormItem className="flex min-w-0 flex-row items-center gap-3 space-y-0 rounded-md border border-border bg-card px-3 transition-colors hover:bg-muted has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5">
                                   <FormControl>
                                     <Checkbox
                                       checked={field.value?.includes(item.id)}
@@ -694,15 +709,15 @@ export function OnboardingForm() {
                                       }}
                                     />
                                   </FormControl>
-                                  <div className="flex min-w-0 items-center space-x-2.5">
+                                  <FormLabel className="flex min-h-11 min-w-0 flex-1 cursor-pointer items-center gap-2.5 py-2 text-sm font-medium">
                                     <GoalIcon
                                       className="h-4 w-4 shrink-0 text-primary"
                                       aria-hidden
                                     />
-                                    <FormLabel className="font-medium cursor-pointer text-sm">
+                                    <span className="min-w-0">
                                       {item.label}
-                                    </FormLabel>
-                                  </div>
+                                    </span>
+                                  </FormLabel>
                                 </FormItem>
                               )}
                             />
@@ -731,8 +746,8 @@ export function OnboardingForm() {
               </CardFooter>
             </OnboardingStep>
 
-            {/* Step 5: Consent & Submit */}
-            <OnboardingStep>
+            {/* Etapa 5: consentimento e envio */}
+            <OnboardingStep ativa={etapaAtual === 4}>
               <CardHeader className="space-y-2">
                 <CardTitle className="font-display">Quase lá!</CardTitle>
                 <CardDescription>
@@ -757,8 +772,8 @@ export function OnboardingForm() {
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>
+                      <div className="space-y-1.5">
+                        <FormLabel className="cursor-pointer leading-snug">
                           Eu concordo com o processamento dos meus dados para
                           personalizar minha experiência.
                         </FormLabel>

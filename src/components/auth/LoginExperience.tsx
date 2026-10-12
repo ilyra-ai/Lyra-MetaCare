@@ -50,6 +50,22 @@ function escalaFluida(
   return { fontSize: `clamp(${min}rem, ${ideal}rem, ${max}rem)` };
 }
 
+// Para o título grande: acompanha a largura da tela (≈ 2/3 do tamanho base
+// em 390px, o tamanho base perto de 1280px), para que no celular ele não
+// ocupe metade da primeira dobra. A escala do admin continua valendo.
+function escalaResponsiva(
+  baseRem: number,
+  escala: number
+): Pick<CSSProperties, 'fontSize'> {
+  const min = (baseRem * 0.66 * escala).toFixed(3);
+  const fixo = (baseRem * 0.52 * escala).toFixed(3);
+  const proporcional = (baseRem * 0.6 * escala).toFixed(3);
+  const max = (baseRem * 1.12 * escala).toFixed(3);
+  return {
+    fontSize: `clamp(${min}rem, calc(${fixo}rem + ${proporcional}vw), ${max}rem)`,
+  };
+}
+
 export function LoginExperience({
   overrideConfig,
   previewMode = false,
@@ -143,105 +159,62 @@ export function LoginExperience({
   const fieldIconClass =
     'text-muted-foreground transition-colors group-focus-within:text-primary';
 
+  const larguraDaIntroducao = {
+    maxWidth: `${Math.round(560 * sizing.introCard)}px`,
+  };
+  const paddingDaColunaEsquerda = 'px-6 sm:px-10 lg:px-16';
+
+  // Ordem do conteúdo (DOM e leitura): marca → título → formulário →
+  // detalhes da introdução → volta à landing. No celular é exatamente essa a
+  // ordem na tela, então o formulário aparece logo na primeira dobra (antes
+  // vinha depois de todo o texto de apresentação). A partir de `lg`, a grade
+  // devolve o desenho em duas colunas: apresentação à esquerda (título e
+  // detalhes centralizados na altura) e formulário à direita.
   return (
     <main
       id={previewMode ? undefined : 'conteudo-principal'}
-      className="grid min-h-screen w-full bg-background font-sans text-foreground lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]"
+      className="grid min-h-dvh w-full grid-cols-1 content-start bg-background font-sans text-foreground lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)_minmax(0,1fr)_auto] lg:content-stretch"
     >
-      {/* Coluna esquerda: marca, introdução configurável e volta à landing */}
-      <section className="flex min-w-0 flex-col gap-10 bg-background px-6 py-8 sm:px-10 sm:py-10 lg:px-16 lg:py-14">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary">
-            <ShieldCheck
-              className="h-5 w-5 text-primary-foreground"
-              aria-hidden
-            />
-          </span>
-          <span className="font-display text-xl font-semibold lowercase tracking-tight text-foreground">
-            {auth.brandText}
-          </span>
-        </div>
+      <div
+        className={cn(
+          'flex min-w-0 items-center gap-2.5 pt-6 sm:pt-10 lg:col-start-1 lg:row-start-1 lg:pt-14',
+          paddingDaColunaEsquerda
+        )}
+      >
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary">
+          <ShieldCheck
+            className="h-5 w-5 text-primary-foreground"
+            aria-hidden
+          />
+        </span>
+        <span className="font-display text-xl font-semibold lowercase tracking-tight text-foreground">
+          {auth.brandText}
+        </span>
+      </div>
 
-        {intro.visible ? (
-          <div
-            className="flex min-w-0 flex-1 flex-col justify-center"
-            style={{ maxWidth: `${Math.round(560 * sizing.introCard)}px` }}
-          >
-            <p className="mb-4 text-sm font-medium text-primary">
+      {intro.visible ? (
+        <div
+          className={cn(
+            'min-w-0 pb-6 pt-6 lg:col-start-1 lg:row-start-2 lg:self-end lg:pb-0 lg:pt-10',
+            paddingDaColunaEsquerda
+          )}
+        >
+          <div style={larguraDaIntroducao}>
+            <p className="mb-3 text-sm font-medium text-primary lg:mb-4">
               {intro.badgeText}
             </p>
             <h1
               className="font-display font-semibold leading-[1.08] tracking-[-0.03em] text-foreground break-words"
-              style={escalaFluida(3, typography.introTitle)}
+              style={escalaResponsiva(3, typography.introTitle)}
             >
               {intro.title}
             </h1>
-            <p
-              className="mt-4 font-display font-medium tracking-tight text-foreground/80"
-              style={escalaFluida(1.375, typography.introTitle)}
-            >
-              {intro.accentTitle}
-            </p>
-            <p
-              className="mt-5 leading-relaxed text-muted-foreground"
-              style={escalaFluida(1.125, typography.introBody)}
-            >
-              {intro.description}
-            </p>
-
-            {intro.highlights.length > 0 ? (
-              <ul className="mt-8 flex flex-col gap-4">
-                {intro.highlights.map((highlight) => {
-                  const HighlightIcon = getBuilderIcon(highlight.icon);
-                  return (
-                    <li
-                      key={highlight.id}
-                      className="flex items-start gap-3 leading-6"
-                      style={escalaFluida(0.9375, typography.highlightBody)}
-                    >
-                      <HighlightIcon
-                        className={cn(
-                          'mt-0.5 h-5 w-5 shrink-0',
-                          corDoIconeDestaque(highlight.tone)
-                        )}
-                        aria-hidden
-                      />
-                      <span className="min-w-0">
-                        <strong
-                          className="font-semibold text-foreground"
-                          style={escalaFluida(
-                            0.9375,
-                            typography.highlightTitle
-                          )}
-                        >
-                          {highlight.title}
-                        </strong>
-                        <span className="sr-only">:</span>{' '}
-                        <span className="text-muted-foreground">
-                          {highlight.description}
-                        </span>
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : null}
           </div>
-        ) : (
-          <div className="flex-1" />
-        )}
+        </div>
+      ) : null}
 
-        <Link
-          href="/"
-          className="inline-flex w-fit items-center gap-2 rounded-sm text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden />
-          {auth.backToLandingLabel}
-        </Link>
-      </section>
-
-      {/* Coluna direita: formulário */}
-      <section className="flex min-w-0 items-center justify-center border-t border-border bg-card px-6 py-10 sm:px-10 lg:border-l lg:border-t-0 lg:px-12 lg:py-14">
+      {/* Formulário: logo após o título no celular; coluna direita no desktop */}
+      <section className="flex min-w-0 items-start justify-center border-y border-border bg-card px-6 py-8 sm:px-10 sm:py-10 lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:items-center lg:border-y-0 lg:border-l lg:px-12 lg:py-14">
         <div
           className="w-full"
           style={{ maxWidth: `${Math.round(400 * sizing.authCard)}px` }}
@@ -350,7 +323,7 @@ export function LoginExperience({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2.5">
+                <div className="flex min-h-11 items-center gap-2.5">
                   <Checkbox
                     id="remember"
                     checked={rememberMe}
@@ -361,7 +334,7 @@ export function LoginExperience({
                   />
                   <Label
                     htmlFor="remember"
-                    className="cursor-pointer text-sm font-normal text-foreground"
+                    className="flex min-h-11 cursor-pointer items-center text-sm font-normal text-foreground"
                   >
                     Lembrar-me por 7 dias
                   </Label>
@@ -504,7 +477,7 @@ export function LoginExperience({
             <button
               type="button"
               onClick={() => setIsRegistering(!isRegistering)}
-              className="ml-2 rounded-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+              className="ml-1 inline-flex min-h-11 items-center rounded-sm px-1 font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
             >
               {isRegistering ? auth.loginTabLabel : auth.registerTabLabel}
             </button>
@@ -521,6 +494,83 @@ export function LoginExperience({
           </p>
         </div>
       </section>
+
+      {intro.visible ? (
+        <div
+          className={cn(
+            'min-w-0 pt-8 lg:col-start-1 lg:row-start-3 lg:self-start lg:pt-4',
+            paddingDaColunaEsquerda
+          )}
+        >
+          <div style={larguraDaIntroducao}>
+            <p
+              className="font-display font-medium tracking-tight text-foreground/80"
+              style={escalaFluida(1.375, typography.introTitle)}
+            >
+              {intro.accentTitle}
+            </p>
+            <p
+              className="mt-5 leading-relaxed text-muted-foreground"
+              style={escalaFluida(1.125, typography.introBody)}
+            >
+              {intro.description}
+            </p>
+
+            {intro.highlights.length > 0 ? (
+              <ul className="mt-8 flex flex-col gap-4">
+                {intro.highlights.map((highlight) => {
+                  const HighlightIcon = getBuilderIcon(highlight.icon);
+                  return (
+                    <li
+                      key={highlight.id}
+                      className="flex items-start gap-3 leading-6"
+                      style={escalaFluida(0.9375, typography.highlightBody)}
+                    >
+                      <HighlightIcon
+                        className={cn(
+                          'mt-0.5 h-5 w-5 shrink-0',
+                          corDoIconeDestaque(highlight.tone)
+                        )}
+                        aria-hidden
+                      />
+                      <span className="min-w-0">
+                        <strong
+                          className="font-semibold text-foreground"
+                          style={escalaFluida(
+                            0.9375,
+                            typography.highlightTitle
+                          )}
+                        >
+                          {highlight.title}
+                        </strong>
+                        <span className="sr-only">:</span>{' '}
+                        <span className="text-muted-foreground">
+                          {highlight.description}
+                        </span>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
+      <div
+        className={cn(
+          'pb-8 pt-6 sm:pb-10 lg:col-start-1 lg:row-start-4 lg:pb-14 lg:pt-8',
+          paddingDaColunaEsquerda
+        )}
+      >
+        <Link
+          href="/"
+          className="-mx-1 inline-flex min-h-11 w-fit items-center gap-2 rounded-sm px-1 text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+          {auth.backToLandingLabel}
+        </Link>
+      </div>
     </main>
   );
 }

@@ -886,10 +886,12 @@ export function LandingPage({
                         </button>
                       </div>
                     </div>
+                    {/* `flex-1` só na linha (sm+): na coluna do celular ele
+                        zerava a base de altura e os botões caíam para 22px. */}
                     <div className="flex flex-col gap-3 sm:flex-row">
                       <Button
                         type="submit"
-                        className="flex-1"
+                        className="h-11 sm:h-10 sm:flex-1"
                         style={textStyles.buttonLabel}
                         disabled={
                           previewMode ||
@@ -906,7 +908,7 @@ export function LandingPage({
                       <Button
                         type="button"
                         variant="secondary"
-                        className="flex-1"
+                        className="h-11 sm:h-10 sm:flex-1"
                         style={textStyles.buttonLabel}
                         onClick={() => navigateTo(config.hero.primaryCtaHref)}
                         disabled={previewMode}

@@ -252,11 +252,14 @@ export function ChatAssistantContent() {
 
   return (
     <section className="flex flex-col gap-4">
+      {/* No celular o cabeçalho fica compacto (sem o ícone e sem o texto de
+          apoio) para que a conversa e o campo de mensagem apareçam logo na
+          primeira dobra; a partir de `sm` o cabeçalho completo volta. */}
       <Card className="min-w-0">
-        <CardHeader className="gap-4 p-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <CardHeader className="gap-3 p-4 sm:gap-4 sm:p-5">
+          <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 items-start gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic-strong">
+              <div className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic-strong sm:flex">
                 <Brain className="h-5 w-5" aria-hidden="true" />
               </div>
               <div className="flex min-w-0 flex-col gap-1">
@@ -277,7 +280,7 @@ export function ChatAssistantContent() {
                   {chatConfig.pageTitle}
                 </CardTitle>
                 <CardDescription
-                  className="max-w-3xl leading-relaxed"
+                  className="hidden max-w-3xl leading-relaxed sm:block"
                   style={{
                     fontSize: scaleRem(0.95, appConfig.typography.pageBody),
                   }}

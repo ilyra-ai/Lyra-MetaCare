@@ -38,6 +38,33 @@ WCAG 1.4.11). Os dias de outro mês do calendário passaram do `#999` da
 biblioteca para o cinza secundário. Resultado: zero violações de contraste
 nas telas da Lyra em 1440px e 390px.
 
+## Celular (tarefa 33)
+
+Varredura em 390×844 (toque) de todas as rotas, para visitante, paciente,
+administrador e conta nova, medindo estouro horizontal e alvos de toque
+menores que 24×24px (WCAG 2.5.8):
+
+- **Onboarding:** o formulário crescia até 672px dentro de uma linha flex
+  centralizada e estourava para os dois lados (531px de página, início dos
+  cartões fora da tela). Agora é uma coluna com a largura da tela; as etapas
+  fora da tela ficam `inert`; o progresso é anunciado como "Etapa X de N"
+  (os pontos eram um `role="tablist"` sem abas); a linha inteira de cada meta
+  marca a opção (44px de altura); a página ganhou `<main>` e `<h1>`.
+- **Login:** a ordem passou a ser marca → título → formulário → detalhes da
+  apresentação, então o formulário aparece na primeira dobra; o título acompanha
+  a largura da tela. No desktop o desenho em duas colunas continua igual.
+- **Alvos de toque:** "Criar conta"/"Entrar", "Voltar para a landing",
+  "Lembrar-me" e o selo "Feito com iLyra AI" com 44px de altura; os botões do
+  acesso rápido da landing caíam para 22px por `flex-1` na coluna (agora só na
+  linha, a partir de `sm`).
+- **Perfil:** o cartão que repetia título e descrição da página saiu.
+- **Chat:** cabeçalho compacto no celular, para a conversa e o campo de
+  mensagem aparecerem antes.
+
+Resultado: nenhuma rota com estouro horizontal e nenhum alvo abaixo de 24px,
+exceto o checkbox "Lembrar-me" (20px, com rótulo de 44px ao lado, dentro da
+exceção de espaçamento) e o seletor de zoom interno do Puck (abaixo).
+
 ## O que ainda aparece no axe e por quê
 
 - **Interno do editor Puck (`@puckeditor/core` 0.23.0)**, sem API para

@@ -49,9 +49,7 @@ import { TimeInput } from '@/components/ui/time-input';
 import { AvatarUploader } from './AvatarUploader';
 import { HabitList } from './HabitList';
 import { DailyMetric } from '@/hooks/use-daily-metrics';
-import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { db as databaseClient } from '@/integrations/mysql/client';
-import { scaleRem } from '@/lib/site-page-config/runtime';
 import { AccountSubscriptionCard } from '@/components/subscription/AccountSubscriptionCard';
 import { MenstrualCycleSettings } from './MenstrualCycleSettings';
 
@@ -245,7 +243,6 @@ function ProgressChart({
 export function ProfileForm() {
   const { db, session } = useAuth();
   const router = useRouter();
-  const { config: appConfig } = usePublicSitePageConfig('app');
   const [isLoading, setIsLoading] = React.useState(true);
   const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
 
@@ -371,33 +368,13 @@ export function ProfileForm() {
   }
 
   const firstName = form.getValues('first_name') || 'Usuário';
-  const profileConfig = appConfig.profile;
-  const titleStyle = {
-    fontSize: scaleRem(1.875, appConfig.typography.pageTitle),
-  };
-  const bodyStyle = {
-    fontSize: scaleRem(0.95, appConfig.typography.pageBody),
-  };
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      {/* O título, o sobretítulo e a descrição da página ficam só no
+          PageIntro de /profile: este cartão os repetia logo abaixo, o que no
+          celular empurrava o formulário para fora da primeira dobra. */}
       <div className="min-w-0 space-y-6 lg:col-span-2">
-        <Card>
-          <CardHeader>
-            <p className="text-sm font-medium text-muted-foreground">
-              {profileConfig.pageEyebrow}
-            </p>
-            <CardTitle className="tracking-[-0.02em]" style={titleStyle}>
-              {profileConfig.pageTitle}
-            </CardTitle>
-            <CardDescription
-              className="leading-relaxed text-foreground/80"
-              style={bodyStyle}
-            >
-              {profileConfig.pageDescription}
-            </CardDescription>
-          </CardHeader>
-        </Card>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <Card>
