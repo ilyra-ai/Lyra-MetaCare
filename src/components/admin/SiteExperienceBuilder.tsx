@@ -399,7 +399,7 @@ function buildContentItem(prefix: string): ContentItem {
   return {
     id: createId(prefix),
     title: 'Novo bloco',
-    description: 'Descreva aqui o que este bloco entrega na experiencia.',
+    description: 'Descreva aqui o que este bloco entrega na experiência.',
     icon: 'sparkles',
     tone: 'primary',
   };
@@ -980,7 +980,7 @@ export function SiteExperienceBuilder() {
       });
       toast.success('Rascunho salvo com sucesso.');
     } catch (error) {
-      toast.error('Nao foi possivel salvar o rascunho.', {
+      toast.error('Não foi possível salvar o rascunho.', {
         description:
           error instanceof Error ? error.message : 'Falha desconhecida.',
       });
@@ -1003,7 +1003,7 @@ export function SiteExperienceBuilder() {
       const payload = (await response.json()) as AdminConfigResponse;
 
       if (!response.ok) {
-        throw new Error(payload.error || 'Falha ao executar a acao.');
+        throw new Error(payload.error || 'Falha ao executar a ação.');
       }
 
       setDraftConfig(payload.draftConfig);
@@ -1015,13 +1015,13 @@ export function SiteExperienceBuilder() {
 
       toast.success(
         action === 'publish'
-          ? 'Experiencia publicada com sucesso.'
+          ? 'Experiência publicada com sucesso.'
           : action === 'restorePublished'
-            ? 'Rascunho restaurado a partir da versao publicada.'
-            : 'Rascunho restaurado para o estado padrao.'
+            ? 'Rascunho restaurado a partir da versão publicada.'
+            : 'Rascunho restaurado para o estado padrão.'
       );
     } catch (error) {
-      toast.error('Nao foi possivel executar a acao.', {
+      toast.error('Não foi possível executar a ação.', {
         description:
           error instanceof Error ? error.message : 'Falha desconhecida.',
       });
@@ -1035,7 +1035,7 @@ export function SiteExperienceBuilder() {
       setDraftConfig(JSON.parse(jsonValue) as EditableDraft);
       toast.success('JSON aplicado no preview local.');
     } catch (error) {
-      toast.error('JSON invalido.', {
+      toast.error('JSON inválido.', {
         description:
           error instanceof Error ? error.message : 'Falha ao ler o JSON.',
       });
@@ -1046,7 +1046,7 @@ export function SiteExperienceBuilder() {
     try {
       await saveDraft(JSON.parse(jsonValue) as EditableDraft);
     } catch {
-      toast.error('JSON invalido.', {
+      toast.error('JSON inválido.', {
         description: 'Corrija o JSON antes de salvar no backend.',
       });
     }
@@ -1086,7 +1086,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Titulo principal">
+            <FieldBlock label="Título principal">
               <Input
                 value={landingDraft.hero.title}
                 onChange={(event) =>
@@ -1094,7 +1094,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Titulo em destaque">
+            <FieldBlock label="Título em destaque">
               <Input
                 value={landingDraft.hero.accentTitle}
                 onChange={(event) =>
@@ -1102,7 +1102,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Descricao">
+            <FieldBlock label="Descrição">
               <Textarea
                 value={landingDraft.hero.description}
                 onChange={(event) =>
@@ -1127,7 +1127,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="CTA secundario">
+              <FieldBlock label="CTA secundário">
                 <Input
                   value={landingDraft.hero.secondaryCtaLabel}
                   onChange={(event) =>
@@ -1138,7 +1138,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Link do CTA secundario">
+              <FieldBlock label="Link do CTA secundário">
                 <Input
                   value={landingDraft.hero.secondaryCtaHref}
                   onChange={(event) =>
@@ -1151,7 +1151,7 @@ export function SiteExperienceBuilder() {
               </FieldBlock>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              <FieldBlock label="Badge da entrada rapida">
+              <FieldBlock label="Badge da entrada rápida">
                 <Input
                   value={landingDraft.hero.quickAuthBadge}
                   onChange={(event) =>
@@ -1159,7 +1159,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Titulo da entrada rapida">
+              <FieldBlock label="Título da entrada rápida">
                 <Input
                   value={landingDraft.hero.quickAuthTitle}
                   onChange={(event) =>
@@ -1167,7 +1167,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Botao principal da entrada rapida">
+              <FieldBlock label="Botão principal da entrada rápida">
                 <Input
                   value={landingDraft.hero.quickAuthSubmitLabel}
                   onChange={(event) =>
@@ -1178,7 +1178,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Botao secundario da entrada rapida">
+              <FieldBlock label="Botão secundário da entrada rápida">
                 <Input
                   value={landingDraft.hero.quickAuthSecondaryLabel}
                   onChange={(event) =>
@@ -1190,7 +1190,7 @@ export function SiteExperienceBuilder() {
                 />
               </FieldBlock>
             </div>
-            <FieldBlock label="Descricao da entrada rapida">
+            <FieldBlock label="Descrição da entrada rápida">
               <Textarea
                 value={landingDraft.hero.quickAuthDescription}
                 onChange={(event) =>
@@ -1209,7 +1209,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Titulo do preview">
+            <FieldBlock label="Título do preview">
               <Input
                 value={landingDraft.hero.previewTitle}
                 onChange={(event) =>
@@ -1217,7 +1217,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Descricao do preview">
+            <FieldBlock label="Descrição do preview">
               <Textarea
                 value={landingDraft.hero.previewDescription}
                 onChange={(event) =>
@@ -1264,7 +1264,7 @@ export function SiteExperienceBuilder() {
                 }
                 onRemove={() => removeListItem(['hero', 'previewItems'], index)}
               >
-                <FieldBlock label="Titulo">
+                <FieldBlock label="Título">
                   <Input
                     value={item.title}
                     onChange={(event) =>
@@ -1277,7 +1277,7 @@ export function SiteExperienceBuilder() {
                     }
                   />
                 </FieldBlock>
-                <FieldBlock label="Descricao">
+                <FieldBlock label="Descrição">
                   <Textarea
                     value={item.description}
                     onChange={(event) =>
@@ -1291,7 +1291,7 @@ export function SiteExperienceBuilder() {
                   />
                 </FieldBlock>
                 <div className="grid gap-4 md:grid-cols-2">
-                  <FieldBlock label="Icone">
+                  <FieldBlock label="Ícone">
                     <IconSelectField
                       value={item.icon}
                       onValueChange={(nextValue) =>
@@ -1329,7 +1329,7 @@ export function SiteExperienceBuilder() {
             <div className="grid gap-4 md:grid-cols-2">
               <TypographySliderField
                 label="Hero principal"
-                description="Controla o tamanho do titulo principal da landing."
+                description="Controla o tamanho do título principal da landing."
                 value={landingDraft.typography.heroTitle}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'heroTitle'], nextValue)
@@ -1337,31 +1337,31 @@ export function SiteExperienceBuilder() {
               />
               <TypographySliderField
                 label="Texto do hero"
-                description="Ajusta o paragrafo principal logo abaixo do titulo."
+                description="Ajusta o parágrafo principal logo abaixo do título."
                 value={landingDraft.typography.heroBody}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'heroBody'], nextValue)
                 }
               />
               <TypographySliderField
-                label="Titulos de secao"
-                description="Afeta recursos, metricas, fluxo, planos, FAQ e CTA final."
+                label="Títulos de seção"
+                description="Afeta recursos, métricas, fluxo, planos, FAQ e CTA final."
                 value={landingDraft.typography.sectionTitle}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'sectionTitle'], nextValue)
                 }
               />
               <TypographySliderField
-                label="Textos de secao"
-                description="Ajusta descricoes de blocos e introducoes das secoes."
+                label="Textos de seção"
+                description="Ajusta descrições de blocos e introduções das seções."
                 value={landingDraft.typography.sectionBody}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'sectionBody'], nextValue)
                 }
               />
               <TypographySliderField
-                label="Titulos de cards"
-                description="Controla titulos de cards do hero, recursos e planos."
+                label="Títulos de cards"
+                description="Controla títulos de cards do hero, recursos e planos."
                 value={landingDraft.typography.cardTitle}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'cardTitle'], nextValue)
@@ -1369,15 +1369,15 @@ export function SiteExperienceBuilder() {
               />
               <TypographySliderField
                 label="Corpo dos cards"
-                description="Ajusta descricoes internas dos cards da landing."
+                description="Ajusta descrições internas dos cards da landing."
                 value={landingDraft.typography.cardBody}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'cardBody'], nextValue)
                 }
               />
               <TypographySliderField
-                label="Rotulos de botoes"
-                description="Ajusta o tamanho dos CTAs e botoes de navegacao da landing."
+                label="Rótulos de botões"
+                description="Ajusta o tamanho dos CTAs e botões de navegação da landing."
                 value={landingDraft.typography.buttonLabel}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'buttonLabel'], nextValue)
@@ -1389,20 +1389,20 @@ export function SiteExperienceBuilder() {
 
         <AccordionItem value="sections">
           <AccordionTrigger>
-            Secoes principais, CTA final e ordem
+            Seções principais, CTA final e ordem
           </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4">
             <SwitchRow
               title="Exibir recursos"
-              description="Liga ou desliga a secao de recursos."
+              description="Liga ou desliga a seção de recursos."
               checked={landingDraft.features.visible}
               onCheckedChange={(checked) =>
                 updateDraft(['features', 'visible'], checked)
               }
             />
             <SwitchRow
-              title="Exibir metricas"
-              description="Liga ou desliga a secao de metricas."
+              title="Exibir métricas"
+              description="Liga ou desliga a seção de métricas."
               checked={landingDraft.metrics.visible}
               onCheckedChange={(checked) =>
                 updateDraft(['metrics', 'visible'], checked)
@@ -1410,7 +1410,7 @@ export function SiteExperienceBuilder() {
             />
             <SwitchRow
               title="Exibir fluxo"
-              description="Liga ou desliga a secao de fluxo."
+              description="Liga ou desliga a seção de fluxo."
               checked={landingDraft.flow.visible}
               onCheckedChange={(checked) =>
                 updateDraft(['flow', 'visible'], checked)
@@ -1426,7 +1426,7 @@ export function SiteExperienceBuilder() {
             />
             <SwitchRow
               title="Exibir FAQ"
-              description="Liga ou desliga a secao de perguntas."
+              description="Liga ou desliga a seção de perguntas."
               checked={landingDraft.faq.visible}
               onCheckedChange={(checked) =>
                 updateDraft(['faq', 'visible'], checked)
@@ -1440,7 +1440,7 @@ export function SiteExperienceBuilder() {
                 updateDraft(['finalCta', 'visible'], checked)
               }
             />
-            <FieldBlock label="Titulo da secao de recursos">
+            <FieldBlock label="Título da seção de recursos">
               <Input
                 value={landingDraft.features.title}
                 onChange={(event) =>
@@ -1448,7 +1448,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Titulo da secao de metricas">
+            <FieldBlock label="Título da seção de métricas">
               <Input
                 value={landingDraft.metrics.title}
                 onChange={(event) =>
@@ -1456,7 +1456,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Titulo da secao de fluxo">
+            <FieldBlock label="Título da seção de fluxo">
               <Input
                 value={landingDraft.flow.title}
                 onChange={(event) =>
@@ -1464,7 +1464,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Titulo da secao de planos">
+            <FieldBlock label="Título da seção de planos">
               <Input
                 value={landingDraft.plans.title}
                 onChange={(event) =>
@@ -1472,7 +1472,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Titulo da secao de FAQ">
+            <FieldBlock label="Título da seção de FAQ">
               <Input
                 value={landingDraft.faq.title}
                 onChange={(event) =>
@@ -1480,7 +1480,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Titulo do CTA final">
+            <FieldBlock label="Título do CTA final">
               <Input
                 value={landingDraft.finalCta.title}
                 onChange={(event) =>
@@ -1488,7 +1488,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Descricao do CTA final">
+            <FieldBlock label="Descrição do CTA final">
               <Textarea
                 value={landingDraft.finalCta.description}
                 onChange={(event) =>
@@ -1497,7 +1497,7 @@ export function SiteExperienceBuilder() {
               />
             </FieldBlock>
             <div className="grid gap-4 md:grid-cols-2">
-              <FieldBlock label="Botao principal do CTA final">
+              <FieldBlock label="Botão principal do CTA final">
                 <Input
                   value={landingDraft.finalCta.primaryLabel}
                   onChange={(event) =>
@@ -1508,7 +1508,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Link do botao principal">
+              <FieldBlock label="Link do botão principal">
                 <Input
                   value={landingDraft.finalCta.primaryHref}
                   onChange={(event) =>
@@ -1516,7 +1516,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Botao secundario do CTA final">
+              <FieldBlock label="Botão secundário do CTA final">
                 <Input
                   value={landingDraft.finalCta.secondaryLabel}
                   onChange={(event) =>
@@ -1527,7 +1527,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Link do botao secundario">
+              <FieldBlock label="Link do botão secundário">
                 <Input
                   value={landingDraft.finalCta.secondaryHref}
                   onChange={(event) =>
@@ -1538,7 +1538,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Marca do rodape">
+              <FieldBlock label="Marca do rodapé">
                 <Input
                   value={landingDraft.footer.brandLine}
                   onChange={(event) =>
@@ -1546,7 +1546,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Nota do rodape">
+              <FieldBlock label="Nota do rodapé">
                 <Input
                   value={landingDraft.footer.note}
                   onChange={(event) =>
@@ -1611,7 +1611,7 @@ export function SiteExperienceBuilder() {
                   Lista de recursos
                 </p>
                 <p className="text-xs leading-6 text-muted-foreground">
-                  Controle titulo, texto, icone e tom visual de cada card.
+                  Controle título, texto, ícone e tom visual de cada card.
                 </p>
               </div>
               <Button
@@ -1636,7 +1636,7 @@ export function SiteExperienceBuilder() {
                 onMoveDown={() => moveListItem(['features', 'items'], index, 1)}
                 onRemove={() => removeListItem(['features', 'items'], index)}
               >
-                <FieldBlock label="Titulo">
+                <FieldBlock label="Título">
                   <Input
                     value={item.title}
                     onChange={(event) =>
@@ -1649,7 +1649,7 @@ export function SiteExperienceBuilder() {
                     }
                   />
                 </FieldBlock>
-                <FieldBlock label="Descricao">
+                <FieldBlock label="Descrição">
                   <Textarea
                     value={item.description}
                     onChange={(event) =>
@@ -1663,7 +1663,7 @@ export function SiteExperienceBuilder() {
                   />
                 </FieldBlock>
                 <div className="grid gap-4 md:grid-cols-2">
-                  <FieldBlock label="Icone">
+                  <FieldBlock label="Ícone">
                     <IconSelectField
                       value={item.icon}
                       onValueChange={(nextValue) =>
@@ -1704,7 +1704,7 @@ export function SiteExperienceBuilder() {
                   Etapas do fluxo
                 </p>
                 <p className="text-xs leading-6 text-muted-foreground">
-                  Mude numero, texto e icone de cada etapa da jornada.
+                  Mude número, texto e ícone de cada etapa da jornada.
                 </p>
               </div>
               <Button
@@ -1725,7 +1725,7 @@ export function SiteExperienceBuilder() {
                 onRemove={() => removeListItem(['flow', 'items'], index)}
               >
                 <div className="grid gap-4 md:grid-cols-2">
-                  <FieldBlock label="Numero">
+                  <FieldBlock label="Número">
                     <Input
                       value={item.step}
                       onChange={(event) =>
@@ -1738,7 +1738,7 @@ export function SiteExperienceBuilder() {
                       }
                     />
                   </FieldBlock>
-                  <FieldBlock label="Icone">
+                  <FieldBlock label="Ícone">
                     <IconSelectField
                       value={item.icon}
                       onValueChange={(nextValue) =>
@@ -1752,7 +1752,7 @@ export function SiteExperienceBuilder() {
                     />
                   </FieldBlock>
                 </div>
-                <FieldBlock label="Titulo">
+                <FieldBlock label="Título">
                   <Input
                     value={item.title}
                     onChange={(event) =>
@@ -1765,7 +1765,7 @@ export function SiteExperienceBuilder() {
                     }
                   />
                 </FieldBlock>
-                <FieldBlock label="Descricao">
+                <FieldBlock label="Descrição">
                   <Textarea
                     value={item.description}
                     onChange={(event) =>
@@ -1848,11 +1848,11 @@ export function SiteExperienceBuilder() {
         className="flex flex-col gap-4"
       >
         <AccordionItem value="intro">
-          <AccordionTrigger>Painel esquerdo da experiencia</AccordionTrigger>
+          <AccordionTrigger>Painel esquerdo da experiência</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4">
             <SwitchRow
               title="Exibir painel esquerdo"
-              description="Se desligar, o card de autenticacao assume protagonismo total."
+              description="Se desligar, o card de autenticação assume protagonismo total."
               checked={loginDraft.intro.visible}
               onCheckedChange={(checked) =>
                 updateDraft(['intro', 'visible'], checked)
@@ -1866,7 +1866,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Titulo">
+            <FieldBlock label="Título">
               <Input
                 value={loginDraft.intro.title}
                 onChange={(event) =>
@@ -1874,7 +1874,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Titulo em destaque">
+            <FieldBlock label="Título em destaque">
               <Input
                 value={loginDraft.intro.accentTitle}
                 onChange={(event) =>
@@ -1882,7 +1882,7 @@ export function SiteExperienceBuilder() {
                 }
               />
             </FieldBlock>
-            <FieldBlock label="Descricao">
+            <FieldBlock label="Descrição">
               <Textarea
                 value={loginDraft.intro.description}
                 onChange={(event) =>
@@ -1914,7 +1914,7 @@ export function SiteExperienceBuilder() {
                   Highlights do painel
                 </p>
                 <p className="text-xs leading-6 text-muted-foreground">
-                  Adicione cards para tornar o login mais amigavel e
+                  Adicione cards para tornar o login mais amigável e
                   explicativo.
                 </p>
               </div>
@@ -1944,7 +1944,7 @@ export function SiteExperienceBuilder() {
                 }
                 onRemove={() => removeListItem(['intro', 'highlights'], index)}
               >
-                <FieldBlock label="Titulo">
+                <FieldBlock label="Título">
                   <Input
                     value={item.title}
                     onChange={(event) =>
@@ -1957,7 +1957,7 @@ export function SiteExperienceBuilder() {
                     }
                   />
                 </FieldBlock>
-                <FieldBlock label="Descricao">
+                <FieldBlock label="Descrição">
                   <Textarea
                     value={item.description}
                     onChange={(event) =>
@@ -1971,7 +1971,7 @@ export function SiteExperienceBuilder() {
                   />
                 </FieldBlock>
                 <div className="grid gap-4 md:grid-cols-2">
-                  <FieldBlock label="Icone">
+                  <FieldBlock label="Ícone">
                     <IconSelectField
                       value={item.icon}
                       onValueChange={(nextValue) =>
@@ -2008,8 +2008,8 @@ export function SiteExperienceBuilder() {
           <AccordionContent className="flex flex-col gap-4">
             <div className="grid gap-4 md:grid-cols-2">
               <TypographySliderField
-                label="Titulo do painel esquerdo"
-                description="Controla o tamanho do titulo principal da experiencia de login."
+                label="Título do painel esquerdo"
+                description="Controla o tamanho do título principal da experiência de login."
                 value={loginDraft.typography.introTitle}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'introTitle'], nextValue)
@@ -2017,22 +2017,22 @@ export function SiteExperienceBuilder() {
               />
               <TypographySliderField
                 label="Texto do painel esquerdo"
-                description="Ajusta descricao e nota da area introdutoria."
+                description="Ajusta descrição e nota da área introdutória."
                 value={loginDraft.typography.introBody}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'introBody'], nextValue)
                 }
               />
               <TypographySliderField
-                label="Titulos dos destaques"
-                description="Ajusta os titulos dos cards explicativos do login."
+                label="Títulos dos destaques"
+                description="Ajusta os títulos dos cards explicativos do login."
                 value={loginDraft.typography.highlightTitle}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'highlightTitle'], nextValue)
                 }
               />
               <TypographySliderField
-                label="Descricoes dos destaques"
+                label="Descrições dos destaques"
                 description="Controla o texto dos cards do painel esquerdo."
                 value={loginDraft.typography.highlightBody}
                 onValueChange={(nextValue) =>
@@ -2040,8 +2040,8 @@ export function SiteExperienceBuilder() {
                 }
               />
               <TypographySliderField
-                label="Titulo do card de auth"
-                description="Ajusta a hierarquia principal do card de autenticacao."
+                label="Título do card de auth"
+                description="Ajusta a hierarquia principal do card de autenticação."
                 value={loginDraft.typography.authTitle}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'authTitle'], nextValue)
@@ -2049,7 +2049,7 @@ export function SiteExperienceBuilder() {
               />
               <TypographySliderField
                 label="Texto do card de auth"
-                description="Ajusta descricoes, apoio e contexto do formulario."
+                description="Ajusta descrições, apoio e contexto do formulário."
                 value={loginDraft.typography.authBody}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'authBody'], nextValue)
@@ -2057,22 +2057,22 @@ export function SiteExperienceBuilder() {
               />
               <TypographySliderField
                 label="Labels dos campos"
-                description="Controla o tamanho das labels dos formularios."
+                description="Controla o tamanho das labels dos formulários."
                 value={loginDraft.typography.fieldLabel}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'fieldLabel'], nextValue)
                 }
               />
               <TypographySliderField
-                label="Rotulos dos botoes"
-                description="Ajusta o texto dos botoes principais do login."
+                label="Rótulos dos botões"
+                description="Ajusta o texto dos botões principais do login."
                 value={loginDraft.typography.buttonLabel}
                 onValueChange={(nextValue) =>
                   updateDraft(['typography', 'buttonLabel'], nextValue)
                 }
               />
               <TypographySliderField
-                label="Rodape do card"
+                label="Rodapé do card"
                 description="Controla o texto final e o bloco de apoio do login."
                 value={loginDraft.typography.footerText}
                 onValueChange={(nextValue) =>
@@ -2084,7 +2084,7 @@ export function SiteExperienceBuilder() {
         </AccordionItem>
 
         <AccordionItem value="auth">
-          <AccordionTrigger>Card de autenticacao</AccordionTrigger>
+          <AccordionTrigger>Card de autenticação</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-4">
             <FieldBlock label="Badge">
               <Input
@@ -2103,7 +2103,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Titulo">
+              <FieldBlock label="Título">
                 <Input
                   value={loginDraft.auth.title}
                   onChange={(event) =>
@@ -2112,7 +2112,7 @@ export function SiteExperienceBuilder() {
                 />
               </FieldBlock>
             </div>
-            <FieldBlock label="Descricao">
+            <FieldBlock label="Descrição">
               <Textarea
                 value={loginDraft.auth.description}
                 onChange={(event) =>
@@ -2172,7 +2172,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Botao entrar">
+              <FieldBlock label="Botão entrar">
                 <Input
                   value={loginDraft.auth.loginButtonLabel}
                   onChange={(event) =>
@@ -2183,7 +2183,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Botao criar conta">
+              <FieldBlock label="Botão criar conta">
                 <Input
                   value={loginDraft.auth.registerButtonLabel}
                   onChange={(event) =>
@@ -2194,7 +2194,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Eyebrow do rodape">
+              <FieldBlock label="Eyebrow do rodapé">
                 <Input
                   value={loginDraft.auth.footerEyebrow}
                   onChange={(event) =>
@@ -2214,7 +2214,7 @@ export function SiteExperienceBuilder() {
                 />
               </FieldBlock>
             </div>
-            <FieldBlock label="Texto do rodape">
+            <FieldBlock label="Texto do rodapé">
               <Textarea
                 value={loginDraft.auth.footerText}
                 onChange={(event) =>

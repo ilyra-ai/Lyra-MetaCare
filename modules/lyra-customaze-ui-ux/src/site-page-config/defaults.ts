@@ -36,25 +36,25 @@ const defaultLandingPageConfig: LandingPageConfig = {
     fullLoginLabel: 'Tela completa',
   },
   hero: {
-    badgeText: 'uma experiencia clara, gentil e muito mais editavel',
+    badgeText: 'uma experiência clara, gentil e muito mais editável',
     title: 'Seu bem-estar ganha uma casa',
     accentTitle: 'mais linda, harmoniosa e inteligente.',
     description:
-      'A Lyra MetaCare une astrologia vedica, IA e sinais da sua rotina numa interface clara, doce e premium, feita para acolher sem cansar.',
-    primaryCtaLabel: 'Entrar na experiencia completa',
+      'A Lyra MetaCare une astrologia védica, IA e sinais da sua rotina numa interface clara, doce e premium, feita para acolher sem cansar.',
+    primaryCtaLabel: 'Entrar na experiência completa',
     primaryCtaHref: '/login',
-    secondaryCtaLabel: 'Ver catalogo publicado',
+    secondaryCtaLabel: 'Ver catálogo publicado',
     secondaryCtaHref: '#planos',
-    quickAuthBadge: 'entrada rapida',
+    quickAuthBadge: 'entrada rápida',
     quickAuthTitle: 'Entrar direto pela landing',
     quickAuthDescription:
-      'Uma entrada suave e organizada para quem ja quer cair direto na propria orbita.',
+      'Uma entrada suave e organizada para quem já quer cair direto na própria órbita.',
     quickAuthSubmitLabel: 'Entrar agora',
     quickAuthSecondaryLabel: 'Abrir tela completa',
     previewBadge: 'preview vivo',
-    previewTitle: 'Blocos leves, lindos e editaveis',
+    previewTitle: 'Blocos leves, lindos e editáveis',
     previewDescription:
-      'O novo painel administrativo vai permitir mexer em textos, cards, etapas, FAQ e hierarquia visual sem tocar no codigo.',
+      'O novo painel administrativo vai permitir mexer em textos, cards, etapas, FAQ e hierarquia visual sem tocar no código.',
     previewItems: [
       {
         id: 'landing-preview-1',
@@ -66,14 +66,14 @@ const defaultLandingPageConfig: LandingPageConfig = {
       {
         id: 'landing-preview-2',
         title: 'IA acolhedora',
-        description: 'Tecnologia com presenca e sem peso visual.',
+        description: 'Tecnologia com presença e sem peso visual.',
         icon: 'brain',
         tone: 'primary',
       },
       {
         id: 'landing-preview-3',
-        title: 'Fluxo editavel',
-        description: 'Cards, chamadas e secoes sob seu controle.',
+        title: 'Fluxo editável',
+        description: 'Cards, chamadas e seções sob seu controle.',
         icon: 'sparkles',
         tone: 'accent',
       },
@@ -82,15 +82,15 @@ const defaultLandingPageConfig: LandingPageConfig = {
   features: {
     visible: true,
     badgeText: 'Recursos em destaque',
-    title: 'Menos peso visual, mais clareza, mais ternura e mais intencao.',
+    title: 'Menos peso visual, mais clareza, mais ternura e mais intenção.',
     description:
-      'A landing passa a respirar melhor, com secoes mais simples e um ritmo visual mais bonito de acompanhar.',
+      'A landing passa a respirar melhor, com seções mais simples e um ritmo visual mais bonito de acompanhar.',
     items: [
       {
         id: 'landing-feature-1',
-        title: 'IA com presenca gentil',
+        title: 'IA com presença gentil',
         description:
-          'A tecnologia organiza sua jornada com leveza, sem roubar o protagonismo da experiencia.',
+          'A tecnologia organiza sua jornada com leveza, sem roubar o protagonismo da experiência.',
         icon: 'brain',
         tone: 'primary',
       },
@@ -114,17 +114,17 @@ const defaultLandingPageConfig: LandingPageConfig = {
   },
   metrics: {
     visible: true,
-    badgeText: 'Metricas publicas',
-    title: 'Os numeros da vitrine continuam reais e sincronizados.',
+    badgeText: 'Métricas públicas',
+    title: 'Os números da vitrine continuam reais e sincronizados.',
     description:
-      'Esta faixa usa os dados publicados dos planos para mostrar a saude comercial da experiencia sem inventar prova social.',
+      'Esta faixa usa os dados publicados dos planos para mostrar a saúde comercial da experiência sem inventar prova social.',
     items: [
       {
         id: 'landing-metric-1',
         label: 'planos publicados',
         source: 'planCount',
         customValue: '',
-        note: 'Lidos do catalogo publico.',
+        note: 'Lidos do catálogo público.',
         tone: 'primary',
       },
       {
@@ -132,7 +132,7 @@ const defaultLandingPageConfig: LandingPageConfig = {
         label: 'capacidades ativas',
         source: 'featureCount',
         customValue: '',
-        note: 'Somatorio real das features habilitadas.',
+        note: 'Somatório real das features habilitadas.',
         tone: 'accent',
       },
       {
@@ -140,7 +140,7 @@ const defaultLandingPageConfig: LandingPageConfig = {
         label: 'categorias funcionais',
         source: 'categoryCount',
         customValue: '',
-        note: 'Categorias extraidas dos planos reais.',
+        note: 'Categorias extraídas dos planos reais.',
         tone: 'cosmic',
       },
       {
@@ -148,7 +148,7 @@ const defaultLandingPageConfig: LandingPageConfig = {
         label: 'checkout conectado',
         source: 'checkoutCount',
         customValue: '',
-        note: 'Planos com integracao comercial pronta.',
+        note: 'Planos com integração comercial pronta.',
         tone: 'golden',
       },
     ],
@@ -156,16 +156,16 @@ const defaultLandingPageConfig: LandingPageConfig = {
   flow: {
     visible: true,
     badgeText: 'Como a jornada se abre',
-    title: 'Tudo foi pensado para parecer natural, bonito e facil de editar.',
+    title: 'Tudo foi pensado para parecer natural, bonito e fácil de editar.',
     description:
-      'O fluxo abaixo tambem fica totalmente configuravel, com cards, ordens e textos sob gestao administrativa.',
+      'O fluxo abaixo também fica totalmente configurável, com cards, ordens e textos sob gestão administrativa.',
     items: [
       {
         id: 'landing-step-1',
         step: '01',
-        title: 'Abra sua orbita',
+        title: 'Abra sua órbita',
         description:
-          'Seu cadastro cria um espaco pessoal para sinais, preferencias e contexto simbolico.',
+          'Seu cadastro cria um espaço pessoal para sinais, preferências e contexto simbólico.',
         icon: 'sparkles',
       },
       {
@@ -173,22 +173,22 @@ const defaultLandingPageConfig: LandingPageConfig = {
         step: '02',
         title: 'Conecte seu contexto',
         description:
-          'Rotina, sinais e preferencias alimentam uma leitura mais delicada e coerente.',
+          'Rotina, sinais e preferências alimentam uma leitura mais delicada e coerente.',
         icon: 'heartPulse',
       },
       {
         id: 'landing-step-3',
         step: '03',
-        title: 'Receba orientacao com IA',
+        title: 'Receba orientação com IA',
         description:
-          'Chat, planos e proximos passos ganham clareza sem excesso visual.',
+          'Chat, planos e próximos passos ganham clareza sem excesso visual.',
         icon: 'bot',
       },
     ],
   },
   plans: {
     visible: true,
-    badgeText: 'Catalogo publico sincronizado',
+    badgeText: 'Catálogo público sincronizado',
     title: 'Planos reais do produto com uma vitrine mais linda e organizada.',
     description:
       'O bloco de planos continua conectado ao MySQL e pode ser reposicionado sem perder a fonte real.',
@@ -199,13 +199,13 @@ const defaultLandingPageConfig: LandingPageConfig = {
     badgeText: 'FAQ',
     title: 'Perguntas importantes antes de entrar.',
     description:
-      'A ideia aqui e manter a landing bonita, sincera e util desde o primeiro contato.',
+      'A ideia aqui é manter a landing bonita, sincera e útil desde o primeiro contato.',
     items: [
       {
         id: 'landing-faq-1',
         question: 'A landing usa dados reais do produto?',
         answer:
-          'Sim. O catalogo abaixo e carregado por rota publica ligada ao MySQL desta instancia.',
+          'Sim. O catálogo abaixo é carregado por rota pública ligada ao MySQL desta instância.',
       },
       {
         id: 'landing-faq-2',
@@ -216,24 +216,24 @@ const defaultLandingPageConfig: LandingPageConfig = {
         id: 'landing-faq-3',
         question: 'O admin vai poder editar tudo depois?',
         answer:
-          'Sim. O novo editor administrativo salva rascunho, publica e permite ajuste fino via formularios e JSON validado.',
+          'Sim. O novo editor administrativo salva rascunho, publica e permite ajuste fino via formulários e JSON validado.',
       },
     ],
   },
   finalCta: {
     visible: true,
-    badgeText: 'Orbita final',
+    badgeText: 'Órbita final',
     title: 'Uma landing mais amiga, linda, organizada e pronta para receber.',
     description:
-      'O foco agora e beleza com sentido: mais harmonia, mais contexto e uma primeira impressao que abraca em vez de confundir.',
+      'O foco agora é beleza com sentido: mais harmonia, mais contexto e uma primeira impressão que abraça em vez de confundir.',
     primaryLabel: 'Abrir Lyra agora',
     primaryHref: '/login',
-    secondaryLabel: 'Explorar a experiencia',
+    secondaryLabel: 'Explorar a experiência',
     secondaryHref: '#recursos',
   },
   footer: {
     brandLine: 'lyra metacare',
-    note: 'Feito com leveza, intencao e tecnologia pela iLyra AI.',
+    note: 'Feito com leveza, intenção e tecnologia pela iLyra AI.',
   },
   sectionOrder: ['features', 'metrics', 'flow', 'plans', 'faq', 'finalCta'],
 };
@@ -260,18 +260,18 @@ const defaultLoginPageConfig: LoginPageConfig = {
     visible: true,
     badgeText: 'uma entrada mais doce, clara e acolhedora',
     title: 'Que bom te ver por aqui.',
-    accentTitle: 'Sua orbita Lyra esta pronta para receber voce.',
+    accentTitle: 'Sua órbita Lyra está pronta para receber você.',
     description:
       'Esta tela foi redesenhada para parecer mais harmoniosa, organizada e carinhosa: menos dureza visual, mais respiro e mais vontade de entrar.',
     noteEyebrow: 'Lyra MetaCare',
     noteText:
-      'Um espaco para unir simbolismo, tecnologia e bem-estar em uma experiencia mais bonita e facil de habitar.',
+      'Um espaço para unir simbolismo, tecnologia e bem-estar em uma experiência mais bonita e fácil de habitar.',
     highlights: [
       {
         id: 'login-highlight-1',
         title: 'Atmosfera clara',
         description:
-          'O tema se mantem luminoso, sereno e gostoso de olhar por muito tempo.',
+          'O tema se mantém luminoso, sereno e gostoso de olhar por muito tempo.',
         icon: 'sun',
         tone: 'primary',
       },
@@ -298,7 +298,7 @@ const defaultLoginPageConfig: LoginPageConfig = {
     brandText: 'lyra',
     title: 'Entre ou crie sua conta com calma.',
     description:
-      'Tudo aqui foi reorganizado para ficar mais fluido, mais fofo e mais convidativo, sem perder o rigor do fluxo real de autenticacao.',
+      'Tudo aqui foi reorganizado para ficar mais fluido, mais fofo e mais convidativo, sem perder o rigor do fluxo real de autenticação.',
     loginTabLabel: 'Entrar',
     registerTabLabel: 'Criar conta',
     emailLabel: 'Email',
@@ -309,7 +309,7 @@ const defaultLoginPageConfig: LoginPageConfig = {
     registerButtonLabel: 'Criar minha conta',
     footerEyebrow: 'entrada organizada',
     footerText:
-      'Sem atalhos vazios, sem botao sem funcao e sem ruido visual desnecessario. Apenas o fluxo real, com mais beleza e acolhimento.',
+      'Sem atalhos vazios, sem botão sem função e sem ruído visual desnecessário. Apenas o fluxo real, com mais beleza e acolhimento.',
     backToLandingLabel: 'Voltar para a landing',
   },
 };
@@ -531,7 +531,7 @@ const defaultAppPageConfig: AppPageConfig = {
     showCalendar: true,
   },
   aiPlan: {
-    pageEyebrow: 'orquestracao guiada',
+    pageEyebrow: 'orquestração guiada',
     pageTitle: 'Seu plano de IA',
     pageDescription:
       'Protocolos personalizados de foco, ritmo, nutrição e recuperação, com cruzamento real entre astrologia, biometria e persistência local.',
@@ -616,7 +616,7 @@ const defaultAppPageConfig: AppPageConfig = {
     showQuickReplies: true,
   },
   connect: {
-    pageEyebrow: 'conexao de sinais reais',
+    pageEyebrow: 'conexão de sinais reais',
     pageTitle:
       'Conecte wearables e leituras locais com uma experiência mais clara',
     pageDescription:
@@ -643,7 +643,7 @@ const defaultAppPageConfig: AppPageConfig = {
     disconnectButtonLabel: 'Desconectar dispositivo',
     errorTitle: 'Erro ao conectar o dispositivo',
     errorDescription:
-      'Nao foi possível concluir a conexão Bluetooth. Verifique o dispositivo, o pareamento e tente novamente.',
+      'Não foi possível concluir a conexão Bluetooth. Verifique o dispositivo, o pareamento e tente novamente.',
     retryButtonLabel: 'Tentar novamente',
   },
   profile: {

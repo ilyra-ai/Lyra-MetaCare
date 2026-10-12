@@ -25,7 +25,7 @@ POSTURA:
 
 COMPLETUDE:
 
-- Fazer tudo por completo, na íntegra, em sua totodalidade, fiel ao pedido, nao tendo simulações, nao tendo placeholders, nao tendo hardcode e nao tendo cortes em codigos.
+- Fazer tudo por completo, na íntegra, em sua totalidade, fiel ao pedido, não tendo simulações, não tendo placeholders, não tendo hardcode e não tendo cortes em códigos.
 - Não finalizar com pendências, inconsistências, warnings relevantes ou “pontas soltas”.
 
 CAUSA RAIZ:
@@ -34,7 +34,7 @@ CAUSA RAIZ:
 
 PARTE VISUAL DO APP (DESIGN / LAYOUT / UI UX / CSS / COMPONENTE / CHARTS / CARDS / TABLES / ETC)
 
-- Sempre quando implementar, redesenhar ou arrumar a parte visual web grafico css ui ux do app voce deverá implementar todos os requerimentos, recursos, funcionalidades, componentes, charts, cards, tables e etc focando em qualidade PREMIUM e que seja tendencia para o ano de 2026, mas focando em cores clares e não escuras como thema
+- Sempre quando implementar, redesenhar ou arrumar a parte visual web gráfico css ui ux do app você deverá implementar todos os requerimentos, recursos, funcionalidades, componentes, charts, cards, tables e etc focando em qualidade PREMIUM e que seja tendência para o ano de 2026, mas focando em cores claras e não escuras como tema
 - O sistema visual vigente é o "Lyra Clean", aprovado pelo usuário: siga [`docs/design-system.md`](./docs/design-system.md) (tokens de `globals.css`, `AppShell`, `PageIntro`, primitivos de `src/components/ui`). Não reintroduza orbes, gradientes decorativos, vidro fosco, sombras coloridas nem caixa alta espaçada, e mantenha contraste WCAG 2.2 AA ([`docs/acessibilidade.md`](./docs/acessibilidade.md)).
 
 PROIBIÇÕES:

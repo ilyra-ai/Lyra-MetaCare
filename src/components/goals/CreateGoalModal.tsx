@@ -31,7 +31,7 @@ const formSchema = z.object({
   title: z
     .string()
     .trim()
-    .min(3, 'Informe um titulo com pelo menos 3 caracteres.'),
+    .min(3, 'Informe um título com pelo menos 3 caracteres.'),
   description: z.string().trim(),
   category: z.string().trim(),
   target_value: z
@@ -39,7 +39,7 @@ const formSchema = z.object({
     .trim()
     .refine(
       (value) => value.length === 0 || Number.isFinite(Number(value)),
-      'Informe um numero valido para o valor-alvo.'
+      'Informe um número válido para o valor-alvo.'
     )
     .refine(
       (value) => value.length === 0 || Number(value) > 0,
@@ -47,7 +47,7 @@ const formSchema = z.object({
     ),
   current_value: z.coerce
     .number<number | string>()
-    .min(0, 'O progresso inicial nao pode ser negativo.'),
+    .min(0, 'O progresso inicial não pode ser negativo.'),
   unit: z.string().trim(),
 });
 
@@ -77,7 +77,7 @@ export function CreateGoalModal({ children, onCreated }: CreateGoalModalProps) {
 
   const onSubmit = async (data: FormValues) => {
     if (!session?.user) {
-      toast.error('Sessao invalida para criar meta.');
+      toast.error('Sessão inválida para criar meta.');
       return;
     }
 
@@ -145,7 +145,7 @@ export function CreateGoalModal({ children, onCreated }: CreateGoalModalProps) {
           <DialogTitle>Criar meta manual</DialogTitle>
           <DialogDescription>
             Cadastre uma meta personalizada com alvo, unidade e progresso
-            inicial para acompanhar sua evolucao real no app.
+            inicial para acompanhar sua evolução real no app.
           </DialogDescription>
         </DialogHeader>
 
@@ -156,7 +156,7 @@ export function CreateGoalModal({ children, onCreated }: CreateGoalModalProps) {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Titulo</FormLabel>
+                  <FormLabel>Título</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Ex: Dormir 8 horas por noite"
@@ -238,10 +238,10 @@ export function CreateGoalModal({ children, onCreated }: CreateGoalModalProps) {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descricao</FormLabel>
+                  <FormLabel>Descrição</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Descreva o objetivo e o criterio de acompanhamento."
+                      placeholder="Descreva o objetivo e o critério de acompanhamento."
                       {...field}
                       rows={4}
                     />

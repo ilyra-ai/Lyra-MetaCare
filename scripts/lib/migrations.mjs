@@ -112,7 +112,7 @@ export function buildBootstrapAdmins(env = process.env) {
   if (primaryEmail || primaryPassword) {
     if (!primaryEmail || !primaryPassword) {
       throw new Error(
-        'Bootstrap admin principal configurado de forma incompleta: ADMIN_BOOTSTRAP_EMAIL e ADMIN_BOOTSTRAP_PASSWORD sao obrigatorios.'
+        'Bootstrap admin principal configurado de forma incompleta: ADMIN_BOOTSTRAP_EMAIL e ADMIN_BOOTSTRAP_PASSWORD são obrigatórios.'
       );
     }
 

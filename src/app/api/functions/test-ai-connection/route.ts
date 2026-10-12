@@ -19,7 +19,7 @@ async function testGeminiConnection() {
       ok: false,
       provider: 'gemini',
       message:
-        'Gemini nao configurado no ambiente local. Os motores locais continuam disponiveis.',
+        'Gemini não configurado no ambiente local. Os motores locais continuam disponíveis.',
     };
   }
 
@@ -38,7 +38,7 @@ async function testGeminiConnection() {
           {
             parts: [
               {
-                text: 'Responda apenas com OK para validar a conexao administrativa.',
+                text: 'Responda apenas com OK para validar a conexão administrativa.',
               },
             ],
           },
@@ -183,7 +183,7 @@ export async function POST() {
         gemini: geminiCheck,
       },
       message:
-        'Motores locais testados em runtime. Quando configurado, o Gemini tambem e validado em tempo real por esta rota administrativa.',
+        'Motores locais testados em runtime. Quando configurado, o Gemini também é validado em tempo real por esta rota administrativa.',
     });
   } catch (error) {
     // 401/403 preservados (antes toda falha virava 500).

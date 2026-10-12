@@ -183,7 +183,7 @@ export function LandingPage({
 
         if (!response.ok || !Array.isArray(payload.plans)) {
           throw new Error(
-            payload.error || 'Falha ao carregar o catalogo publico.'
+            payload.error || 'Falha ao carregar o catálogo público.'
           );
         }
 
@@ -261,13 +261,13 @@ export function LandingPage({
     setSubmitting(false);
 
     if (error) {
-      toast.error('Nao foi possivel entrar agora.', {
+      toast.error('Não foi possível entrar agora.', {
         description: error.message,
       });
       return;
     }
 
-    toast.success('Boas-vindas. Sua orbita foi aberta com sucesso.');
+    toast.success('Boas-vindas. Sua órbita foi aberta com sucesso.');
     router.push('/');
   }
 
@@ -593,7 +593,7 @@ export function LandingPage({
                 <Card className="mt-6 border-destructive/20 bg-destructive-light">
                   <CardContent className="px-6 py-5">
                     <p className="text-sm font-medium text-destructive">
-                      Falha ao sincronizar o catalogo publico agora.
+                      Falha ao sincronizar o catálogo público agora.
                     </p>
                     <p className="mt-1 text-sm leading-6 text-muted-foreground">
                       {plansError}
@@ -994,7 +994,7 @@ export function LandingPage({
                 {config.footer.brandLine}
               </p>
               <p className="text-xs font-medium text-muted-foreground">
-                landing editavel
+                landing editável
               </p>
             </div>
           </div>
