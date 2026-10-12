@@ -19,18 +19,18 @@
 
 ## Tópico 1 · Andamento Geral
 
-| Indicador          | Valor                           |
-| ------------------ | ------------------------------- |
-| Progresso          | `████████████████████` **100%** |
-| Tarefas totais     | 38                              |
-| 🟢 Finalizadas     | 38                              |
-| 🔵 Em andamento    | 0                               |
-| 🔴 Bloqueadas      | 0                               |
-| ⚪ A iniciar       | 0                               |
-| Branch de trabalho | `main` (única permitida)        |
-| Última atualização | 2026-10-12                      |
+| Indicador          | Valor                          |
+| ------------------ | ------------------------------ |
+| Progresso          | `█████████████████░░░` **86%** |
+| Tarefas totais     | 44                             |
+| 🟢 Finalizadas     | 38                             |
+| 🔵 Em andamento    | 1                              |
+| 🔴 Bloqueadas      | 0                              |
+| ⚪ A iniciar       | 5                              |
+| Branch de trabalho | `main` (única permitida)       |
+| Última atualização | 2026-10-12                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (38 ÷ 38 = 100%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (38 ÷ 44 = 86,4%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,9 @@
 
 ### ANDAMENTO
 
-Nenhuma tarefa em andamento.
+| Nº  | Tarefa                                 | O que está sendo realizado                                                                                             |
+| --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 39  | Desativar Apple Saúde e Health Connect | Retirar a integração nativa de saúde (sem app de celular no projeto) de tudo o que o usuário vê, mantendo o Bluetooth. |
 
 ### BLOQUEADAS
 
@@ -53,7 +55,27 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-Nenhuma tarefa a iniciar.
+_Pedido do usuário em 2026-10-12: métricas reais e automáticas, IA como coach diário guiado pelo mapa védico e diferenciais de 2026._
+
+### 40 · Métricas reais gravadas
+
+- Gravar no banco as métricas do dia com validação no servidor: registro manual (check-in diário de sono, humor, energia, peso, passos, água, cafeína, atividade, meditação, FC de repouso, glicemia e pressão) e as leituras da pulseira por Bluetooth (FC mínima, máxima e de repouso e VFC por sessão), sem sobrescrever o que já foi registrado no dia.
+
+### 41 · Mapa védico real de cada pessoa
+
+- Local de nascimento e de moradia escolhidos de uma base real de cidades (coordenadas e fuso), mapa natal sidéreo (Lagna, planetas, Rahu e Ketu, nakshatra natal), Vimshottari Mahadasha e Antardasha reais (hoje o campo é um texto fixo) e o Panchang do dia (tithi, nakshatra, yoga, karana, vara) com nascer e pôr do sol do local de moradia.
+
+### 42 · Coach diário automático de IA
+
+- Rotina automática no servidor que, todos os dias, lê o mapa védico e as métricas de cada pessoa e gera o "Seu dia": como será o dia por períodos (madrugada, manhã, tarde, noite) com pontos bons e de atenção (Rahu Kalam, Yamaganda, Gulika, Abhijit, Choghadiya, Chandrashtama, Tara Bala), dicas de saúde, bem-estar, alimentação e exercício; notificação no sino; uso do Gemini quando configurado e motor local quando não.
+
+### 43 · O que a IA deve fazer sozinha e ainda não faz
+
+- Auditar tudo o que a IA deveria fazer automaticamente (dicas, plano, scores, alertas precoces, metas, hábitos) e implementar o que falta.
+
+### 44 · Diferenciais de 2026
+
+- Pesquisar tendências de 2026 e implementar diferenciais inovadores e reais para a Lyra.
 
 ---
 
