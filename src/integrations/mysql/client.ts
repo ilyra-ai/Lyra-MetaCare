@@ -331,6 +331,15 @@ export const db = {
       );
       return { data: result, error: null };
     },
+    // Relê a sessão no servidor e avisa os ouvintes. Usado quando um dado
+    // que faz parte da sessão muda (por exemplo, o onboarding concluído).
+    async refreshSession() {
+      const result = await requestJson<{ session: AppSession | null }>(
+        '/api/auth/session'
+      );
+      emitAuthChange('USER_UPDATED', result.session);
+      return { data: result, error: null };
+    },
     onAuthStateChange(callback: AuthChangeListener) {
       authListeners.add(callback);
       return {

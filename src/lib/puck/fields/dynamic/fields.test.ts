@@ -74,6 +74,7 @@ describe('campos dinâmicos do Puck da Lyra', () => {
                   id: 'admin-id',
                   email: 'admin@admin.com',
                   role: 'admin',
+                  onboarding_completed: true,
                   user_metadata: {
                     full_name: 'Admin Principal',
                     first_name: 'Admin',

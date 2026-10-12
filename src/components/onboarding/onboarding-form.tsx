@@ -4,7 +4,6 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import {
   Carousel,
@@ -167,7 +166,6 @@ const OnboardingStep: React.FC<{
 export function OnboardingForm() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const router = useRouter();
   const { db, session } = useAuth();
 
   const form = useForm<OnboardingInput, unknown, OnboardingValues>({
@@ -288,16 +286,27 @@ export function OnboardingForm() {
       .update(updatePayload)
       .eq('id', session.user.id);
 
-    setIsSubmitting(false);
-
     if (error) {
+      setIsSubmitting(false);
       console.error('Erro ao atualizar perfil no MySQL:', error);
       toast.error('Ocorreu um erro ao salvar seu perfil.', {
         description: error.message,
       });
-    } else {
+      return;
+    }
+
+    // A sessão traz o status do onboarding: relida do servidor, ela libera
+    // o app e o AuthProvider leva a pessoa ao painel.
+    try {
+      await db.auth.refreshSession();
       toast.success('Perfil salvo com sucesso! Bem-vindo(a)!');
-      router.push('/');
+    } catch (refreshError: unknown) {
+      setIsSubmitting(false);
+      console.error('Erro ao atualizar a sessão:', refreshError);
+      toast.error(
+        'Seu perfil foi salvo, mas não foi possível abrir o painel agora.',
+        { description: 'Recarregue a página para continuar.' }
+      );
     }
   };
 

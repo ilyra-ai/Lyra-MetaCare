@@ -113,7 +113,12 @@ export async function POST(request: Request) {
 
     const session = buildAppSession(
       { sub: userId, email: payload.email, role },
-      { first_name: payload.firstName, last_name: payload.lastName }
+      {
+        first_name: payload.firstName,
+        last_name: payload.lastName,
+        // Conta nova: o app abre direto no onboarding.
+        onboarding_completed: false,
+      }
     );
 
     return NextResponse.json({ session });

@@ -44,6 +44,7 @@ interface UserRow {
   role: string;
   first_name: string | null;
   last_name: string | null;
+  onboarding_completed: number;
 }
 
 // Hash bcrypt (mesmo custo do cadastro) de uma senha aleatória descartada,
@@ -75,7 +76,8 @@ export async function POST(request: Request) {
           u.password_hash,
           p.role,
           p.first_name,
-          p.last_name
+          p.last_name,
+          p.onboarding_completed
         FROM users u
         INNER JOIN profiles p ON p.id = u.id
         WHERE u.email = ?

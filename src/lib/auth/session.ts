@@ -110,19 +110,22 @@ export async function clearSessionCookie() {
  */
 export function buildAppSession(
   payload: SessionPayload,
-  profile?: {
+  profile: {
     first_name?: string | null;
     last_name?: string | null;
+    // O MySQL devolve TINYINT(1) como número (0/1).
+    onboarding_completed: boolean | number;
   }
 ): AppSession {
-  const firstName = profile?.first_name ?? null;
-  const lastName = profile?.last_name ?? null;
+  const firstName = profile.first_name ?? null;
+  const lastName = profile.last_name ?? null;
 
   return {
     user: {
       id: payload.sub,
       email: payload.email,
       role: payload.role,
+      onboarding_completed: Boolean(profile.onboarding_completed),
       user_metadata: {
         first_name: firstName,
         last_name: lastName,

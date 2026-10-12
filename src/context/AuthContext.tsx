@@ -1,14 +1,10 @@
 'use client';
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+
 import { db } from '@/integrations/mysql/client';
-import { useRouter } from 'next/navigation';
+import { destinoObrigatorio } from '@/lib/auth/destino-de-acesso';
 import { AppSession } from '@/types/app-session';
 
 type AuthContextType = {
@@ -21,139 +17,73 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<AppSession | null>(null);
-  const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-
-  // Função de fallback para criar o perfil se o trigger falhar ou não tiver rodado
-  const ensureProfileExists = useCallback(
-    async (currentSession: AppSession) => {
-      const { data: profiles, error: fetchError } = await db
-        .from('profiles')
-        .select('onboarding_completed, role')
-        .eq('id', currentSession.user.id);
-
-      if (fetchError) {
-        console.error('Erro ao consultar perfil do usuário:', fetchError);
-        return null;
-      }
-
-      const profile = profiles?.[0];
-
-      if (!profile) {
-        console.warn(
-          'Perfil ausente. Iniciando recuperação consistente no banco MySQL.'
-        );
-
-        const metadata = currentSession.user.user_metadata;
-        const firstName =
-          metadata?.first_name || metadata?.full_name?.split(' ')[0] || null;
-        const lastName =
-          metadata?.last_name ||
-          metadata?.full_name?.split(' ').slice(1).join(' ') ||
-          null;
-
-        const { error: insertError } = await db.from('profiles').insert({
-          id: currentSession.user.id,
-          email: currentSession.user.email,
-          first_name: firstName,
-          last_name: lastName,
-          onboarding_completed: false,
-          role: currentSession.user.role || 'patient',
-        });
-
-        if (insertError) {
-          console.error('Falha ao recriar perfil no banco MySQL:', insertError);
-          return null;
-        }
-
-        return {
-          onboarding_completed: false,
-          role: currentSession.user.role || 'patient',
-        };
-      }
-
-      return profile;
-    },
-    []
-  );
-
-  const handleRedirects = useCallback(
-    async (currentSession: AppSession | null) => {
-      if (!currentSession) {
-        setUserRole(null);
-        if (
-          window.location.pathname !== '/login' &&
-          window.location.pathname !== '/'
-        ) {
-          router.push('/login');
-        }
-        return;
-      }
-
-      // Usa a role já assinada na sessão para evitar estados transitórios
-      // em que páginas administrativas renderizam "Acesso Negado" antes de
-      // a leitura do perfil terminar.
-      setUserRole(currentSession.user.role || null);
-
-      // 1. Garantir que o perfil exista e buscar o status real de onboarding
-      const profile = await ensureProfileExists(currentSession);
-      setUserRole(profile?.role || null);
-
-      const isOnboardingPage = window.location.pathname === '/onboarding';
-      const isLoginPage = window.location.pathname === '/login';
-
-      if (!profile || !profile.onboarding_completed) {
-        if (!isOnboardingPage) {
-          router.push('/onboarding');
-        }
-      } else if (profile && profile.onboarding_completed) {
-        if (isLoginPage || isOnboardingPage) {
-          router.push('/');
-        }
-      }
-    },
-    [ensureProfileExists, router]
-  );
+  const pathname = usePathname();
 
   useEffect(() => {
-    const getInitialSession = async () => {
-      const {
-        data: { session },
-      } = await db.auth.getSession();
-      setSession(session);
-      setUserRole(session?.user.role || null);
-      setLoading(false);
-
-      if (session) {
-        handleRedirects(session);
-      } else {
-        if (
-          window.location.pathname !== '/login' &&
-          window.location.pathname !== '/'
-        ) {
-          router.push('/login');
-        }
-      }
-    };
-
-    getInitialSession();
+    let ativo = true;
+    // Um login, cadastro ou saída que aconteça antes de a leitura inicial
+    // terminar vale mais do que ela (que já estaria desatualizada).
+    let recebeuEvento = false;
 
     const { data: authListener } = db.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        handleRedirects(session);
+      (_event, novaSessao) => {
+        recebeuEvento = true;
+        setSession(novaSessao);
+        setLoading(false);
       }
     );
 
+    db.auth
+      .getSession()
+      .then(({ data }) => {
+        if (ativo && !recebeuEvento) {
+          setSession(data.session);
+        }
+      })
+      .catch((error: unknown) => {
+        // Sem resposta válida de /api/auth/session não há como confirmar a
+        // sessão: o app segue como visitante em vez de ficar em branco.
+        console.error('Falha ao consultar a sessão:', error);
+        if (ativo && !recebeuEvento) {
+          setSession(null);
+        }
+      })
+      .finally(() => {
+        if (ativo) {
+          setLoading(false);
+        }
+      });
+
     return () => {
+      ativo = false;
       authListener.subscription.unsubscribe();
     };
-  }, [handleRedirects, router]);
+  }, []);
+
+  // A decisão é refeita a cada troca de rota, inclusive na navegação feita
+  // só no cliente (links, `router.push` e o botão "voltar"): antes ela só
+  // rodava quando a sessão mudava, e o "voltar" a partir do onboarding abria
+  // o painel de uma conta que ainda não tinha concluído o cadastro.
+  const destino = loading ? null : destinoObrigatorio(session, pathname);
+
+  useEffect(() => {
+    if (destino) {
+      // `replace` para que o "voltar" não retorne à rota bloqueada.
+      router.replace(destino);
+    }
+  }, [destino, router]);
+
+  // Nada da rota bloqueada é montado (nem as consultas dela) enquanto o
+  // redirecionamento acontece.
+  const podeRenderizar = !loading && destino === null;
 
   return (
-    <AuthContext.Provider value={{ session, db, userRole }}>
-      {!loading && children}
+    <AuthContext.Provider
+      value={{ session, db, userRole: session?.user.role ?? null }}
+    >
+      {podeRenderizar && children}
     </AuthContext.Provider>
   );
 };
@@ -161,7 +91,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === null) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth precisa ser usado dentro de um AuthProvider.');
   }
   return context;
 };

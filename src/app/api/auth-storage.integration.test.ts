@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { SESSION_COOKIE_NAME } from '@/lib/auth/session';
-import { queryRows } from '@/lib/mysql/pool';
+import { executeStatement, queryRows } from '@/lib/mysql/pool';
 
 import { criarUsuario } from '../../../tests/integration/fixtures';
 import { chamar, cookieJar } from '../../../tests/integration/http';
@@ -65,6 +65,14 @@ describe('POST /api/auth/register e /api/auth/login', () => {
     });
     expect(resposta.status).toBe(200);
     expect(cookieJar.has(SESSION_COOKIE_NAME)).toBe(true);
+    // Conta nova abre direto no onboarding: a sessão já informa o status.
+    expect(
+      (
+        resposta.json as {
+          session: { user: { onboarding_completed: boolean } };
+        }
+      ).session.user.onboarding_completed
+    ).toBe(false);
     const perfil = await queryRows<{ role: string; email: string }>(
       'SELECT role, email FROM profiles WHERE email = ?',
       [email]
@@ -113,12 +121,28 @@ describe('POST /api/auth/register e /api/auth/login', () => {
     });
     expect(entrada.status).toBe(200);
     expect(cookieJar.has(SESSION_COOKIE_NAME)).toBe(true);
+    type RespostaDeSessao = {
+      session: { user: { email: string; onboarding_completed: boolean } };
+    };
+    expect(
+      (entrada.json as RespostaDeSessao).session.user.onboarding_completed
+    ).toBe(false);
 
     const atual = await chamar(sessao.GET);
+    const usuarioAtual = (atual.json as RespostaDeSessao).session.user;
+    expect(usuarioAtual.email).toBe(email);
+    expect(usuarioAtual.onboarding_completed).toBe(false);
+
+    // O status do onboarding vale pelo banco a cada leitura da sessão: ao
+    // concluir, a próxima leitura libera o app sem novo login.
+    await executeStatement(
+      'UPDATE profiles SET onboarding_completed = 1 WHERE email = ?',
+      [email]
+    );
+    const concluido = await chamar(sessao.GET);
     expect(
-      (atual.json as { session: { user: { email: string } } }).session.user
-        .email
-    ).toBe(email);
+      (concluido.json as RespostaDeSessao).session.user.onboarding_completed
+    ).toBe(true);
 
     await chamar(logout.POST, { method: 'POST' });
     expect(cookieJar.has(SESSION_COOKIE_NAME)).toBe(false);

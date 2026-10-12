@@ -1,7 +1,6 @@
 'use client';
 
-import { CSSProperties, SubmitEvent, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { CSSProperties, SubmitEvent, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import {
@@ -55,8 +54,10 @@ export function LoginExperience({
   overrideConfig,
   previewMode = false,
 }: LoginExperienceProps) {
-  const { session, db } = useAuth();
-  const router = useRouter();
+  // Depois do login ou do cadastro, o AuthProvider leva a sessão ao destino
+  // certo (onboarding para conta nova, painel para as demais) numa única
+  // navegação; antes esta tela ia ao painel e só então ao onboarding.
+  const { db } = useAuth();
   const { config: publicConfig } = usePublicSitePageConfig('login');
   const config = overrideConfig ?? publicConfig;
   const { intro, auth, typography, sizing } = config;
@@ -75,16 +76,6 @@ export function LoginExperience({
   // "Lembrar-me": sessão de 7 dias quando marcado; sessão de navegador quando
   // desmarcado (ver src/lib/auth/session.ts).
   const [rememberMe, setRememberMe] = useState(false);
-
-  useEffect(() => {
-    if (!previewMode && session) {
-      router.push('/');
-    }
-  }, [previewMode, router, session]);
-
-  if (!previewMode && session) {
-    return null;
-  }
 
   const iconStyle: CSSProperties = {
     width: `${(1.125 * sizing.iconScale).toFixed(3)}rem`,
@@ -119,7 +110,6 @@ export function LoginExperience({
     }
 
     toast.success('Que bom te receber de novo.');
-    router.push('/');
   }
 
   async function handleRegister(event: SubmitEvent<HTMLFormElement>) {
@@ -145,7 +135,6 @@ export function LoginExperience({
     }
 
     toast.success('Conta criada com sucesso. Vamos abrir sua jornada.');
-    router.push('/');
   }
 
   // Ícone à esquerda dentro do campo (decorativo; o rótulo é o nome acessível).

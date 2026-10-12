@@ -39,6 +39,8 @@ export async function criarUsuario(
         id,
         email,
         role,
+        // Igual ao perfil inserido acima (onboarding_completed = TRUE).
+        onboarding_completed: true,
         user_metadata: {
           first_name: nome,
           last_name: 'Teste',
