@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `███████████████░░░░░` **76%** |
+| Progresso          | `████████████████░░░░` **79%** |
 | Tarefas totais     | 38                             |
-| 🟢 Finalizadas     | 29                             |
+| 🟢 Finalizadas     | 30                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 8                              |
+| ⚪ A iniciar       | 7                              |
 | Branch de trabalho | `main` (única permitida)       |
-| Última atualização | 2026-10-10                     |
+| Última atualização | 2026-10-12                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (29 ÷ 38 = 76,3%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (30 ÷ 38 = 78,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,11 +43,9 @@
 
 ### ANDAMENTO
 
-_Prioridade definida pelo usuário em 2026-10-10: tarefas 37 e 38 antes das demais._
-
-| Nº  | Tarefa                                  | O que está sendo realizado                                                                                                                                                                                           |
-| --- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 38  | Isolamento das funções de administrador | Verificar de forma real que usuários comuns não acessam recursos, funcionalidades, alterações nem funções exclusivas do administrador (páginas, menus, APIs, dados e ações), corrigindo pela causa raiz o que vazar. |
+| Nº  | Tarefa                | O que está sendo realizado                                                                                                                                  |
+| --- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 32  | Página `/instruments` | Avaliação de risco da remoção (rotas, documento Puck `instruments`, tabela, API de dados, testes e links) e remoção com prova de morte se não houver risco. |
 
 ### BLOQUEADAS
 
@@ -72,10 +70,6 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
 ### 31 · Textos sem acento
 
 - Corrigir os textos sem acento já identificados e varrer o projeto inteiro (interface, padrões configuráveis, documentos Puck iniciais, mensagens de API e e-mails) para corrigir todos os demais.
-
-### 32 · Página `/instruments`
-
-- Avaliar o risco de remoção (rotas, documento Puck `instruments`, tabela, testes, links). Sem risco, remover com prova de morte.
 
 ### 33 · Experiência no celular
 
@@ -741,3 +735,19 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
   - MySQL: `admin@admin.com` com `role = admin`, nome "Administrador Total", onboarding concluído, plano `care` ativo (todas as capacidades) e senha em hash bcrypt.
   - `POST /api/auth/login` com o e-mail e a senha informados: 200; `/api/auth/session` retorna `role: "admin"`; `/api/admin/users`, `/api/admin/plans`, `/api/admin/page-config/app` e `/api/admin/puck/documents/landing-home`: 200.
 - **Recomendação:** a senha pedida segue um padrão comum; antes de publicar em produção, troque-a no `.env.local` (o próximo `pnpm db:migrate` regrava o hash).
+
+### 38 · Isolamento das funções de administrador
+
+- **Status:** 🟢 finalizada · **Commit:** `3a1fdca` · **Push:** `5e7d836..3a1fdca main -> main` (confirmado)
+- **Método:** verificação real com um paciente criado pelo cadastro público e com o `admin@admin.com`, por API (`curl` com sessão) e por navegador no build de produção. Mapeadas as 30 rotas de API e as 9 páginas `/admin/*`.
+- **Vazamentos encontrados e corrigidos (causa raiz):**
+  - **Configuração e base de conhecimento da IA legíveis por qualquer usuário:** a API de dados liberava a leitura de `ai_config` (missão, objetivos e pesos do motor) e `ai_knowledge_documents` (inclusive rascunhos inativos) para qualquer sessão. Agora `adminOnlyRead`; os recursos que dependem delas já as leem no servidor.
+  - **Primeiro cadastro virava administrador:** com o banco vazio (bootstrap desativado em produção), o primeiro visitante ganhava acesso total. O cadastro público agora sempre cria usuário comum no plano `free`.
+  - **Telas administrativas entregues a qualquer um:** o bloqueio era só no navegador. O `src/proxy.ts` passou a verificar o papel para `/admin/*`: visitante vai ao login e usuário comum volta ao próprio painel. A autorização definitiva continua nas APIs, que releem o papel no banco.
+- **Já corretos (confirmados):** as rotas `/api/admin/*`, `/api/rpc/*` e `test-ai-connection` exigem administrador; `profiles.role` só é gravado por administrador; sidebar, menu do celular e busca Ctrl K escondem os itens administrativos pelo papel definido no código.
+- **Evidências:**
+  - Paciente: 403 em todas as rotas e métodos administrativos (GET, PUT, POST, PATCH), sem alterar o próprio plano; 403 na leitura e escrita de `ai_config` e `ai_knowledge_documents`.
+  - Navegador: paciente com 8 itens no menu, nenhum administrativo, nada administrativo na busca, e as 9 rotas `/admin/*` devolvidas ao painel; `admin@admin.com` com 17 itens e as 9 telas abertas.
+  - Testes novos: `src/proxy.test.ts` (6) e matriz de integração em `dados-admin.integration.test.ts`; cadastro confirma `patient` e plano `free`.
+  - `test` 247/247; `test:integration` 75/75; lint, format e types com exit 0; `build` com exit 0.
+  - Usuário de QA removido do banco ao final.
