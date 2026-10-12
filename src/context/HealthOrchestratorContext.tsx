@@ -8,13 +8,18 @@ import React, {
   useState,
   useCallback,
 } from 'react';
+import { format } from 'date-fns';
+
 import {
-  fetchRealTimeVitals,
-  HealthDataMetrics,
-  getHealthRuntimeAvailability,
-} from '../lib/health/healthConnect';
+  COLUNAS_DOS_SINAIS_DO_DIA,
+  combinarSinais,
+  sinaisDoRegistro,
+  type HealthDataMetrics,
+  type RegistroDosSinaisDoDia,
+} from '../lib/health/sinais-vitais';
 import { AstrologicalData } from '../lib/astrology/engine';
 import { db } from '../integrations/mysql/client';
+import { useAuth } from './AuthContext';
 import { useBluetoothVitals } from '../hooks/use-bluetooth-vitals';
 
 export interface HealthSyncResult {
@@ -52,58 +57,61 @@ interface SyncSnapshot {
   error: string | null;
 }
 
-const EMPTY_VITALS: HealthDataMetrics = {
-  heartRate: null,
-  hrv_ms: null,
-  sleepDurationMinutes: null,
-  bloodGlucoseMgDl: null,
-  weightKg: null,
-  moodScore: null,
-};
-
-// Executa uma sincronização completa sem alterar estado: efemérides reais e,
-// quando houver runtime nativo (HealthKit/Health Connect), sinais vitais.
+// Uma sincronização completa, sem alterar estado: efemérides reais do céu do
+// momento e os sinais do dia já gravados no banco (registro do dia e
+// pulseira). A integração nativa com Apple Saúde e Health Connect foi
+// desativada: ela exige um app de celular que o projeto não tem.
 async function runHealthSync(
+  userId: string | null,
   previousAstrology: AstrologicalData | null
 ): Promise<SyncSnapshot> {
+  const falhas: string[] = [];
   let astrology = previousAstrology;
+  let vitals: HealthDataMetrics | null = null;
 
   try {
     const resAstro = await fetch('/api/astrology/ephemeris');
     if (!resAstro.ok) {
-      throw new Error('Falha na API de Efemérides');
+      throw new Error(`HTTP ${resAstro.status}`);
     }
-    const astroData = await resAstro.json();
+    const astroData = (await resAstro.json()) as { data: AstrologicalData };
     astrology = astroData.data;
-
-    const availability = getHealthRuntimeAvailability();
-    if (!availability.hasSupportedRuntime) {
-      return {
-        astrology,
-        vitals: null,
-        error:
-          'Nenhum runtime nativo de saúde foi detectado neste ambiente. O plano seguirá com contexto astrológico e biomarcadores apenas quando houver fonte real disponível.',
-      };
-    }
-
-    const currentVitals = await fetchRealTimeVitals();
-    return { astrology, vitals: currentVitals, error: null };
   } catch (error) {
-    return {
-      astrology,
-      vitals: null,
-      error:
-        error instanceof Error
-          ? error.message
-          : 'Erro desconhecido ao sincronizar dados de saúde.',
-    };
+    console.error('Falha ao ler as efemérides:', error);
+    falhas.push('o céu do momento');
   }
+
+  if (userId) {
+    const hoje = format(new Date(), 'yyyy-MM-dd');
+    const { data, error } = await db
+      .from<RegistroDosSinaisDoDia>('daily_metrics')
+      .select(COLUNAS_DOS_SINAIS_DO_DIA)
+      .eq('user_id', userId)
+      .eq('date', hoje)
+      .maybeSingle();
+    if (error) {
+      console.error('Falha ao ler os sinais do dia:', error);
+      falhas.push('os sinais do dia');
+    } else {
+      vitals = sinaisDoRegistro(data);
+    }
+  }
+
+  return {
+    astrology,
+    vitals,
+    error: falhas.length
+      ? `Não foi possível atualizar ${falhas.join(' e ')} agora. Tente sincronizar de novo em instantes.`
+      : null,
+  };
 }
 
 export const HealthOrchestratorProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  // Sinais obtidos na última sincronização com o runtime nativo.
+  const { session } = useAuth();
+  const userId = session?.user.id ?? null;
+  // Sinais do dia gravados no banco na última sincronização.
   const [syncedVitals, setSyncedVitals] = useState<HealthDataMetrics | null>(
     null
   );
@@ -118,22 +126,16 @@ export const HealthOrchestratorProvider: React.FC<{
   const { heartRate, hrv, connected, connect, disconnect } =
     useBluetoothVitals();
 
-  // Os sinais exibidos combinam a última sincronização com as leituras ao
-  // vivo (BLE do monitor cardíaco e canal em tempo real). Antes, as leituras
-  // ao vivo eram descartadas quando não havia runtime nativo de saúde.
-  const vitals = useMemo<HealthDataMetrics | null>(() => {
-    const liveHeartRate = heartRate ?? broadcastHeartRate;
-    if (liveHeartRate === null) {
-      return syncedVitals;
-    }
-
-    const base = syncedVitals ?? EMPTY_VITALS;
-    return {
-      ...base,
-      heartRate: liveHeartRate,
-      hrv_ms: heartRate !== null ? (hrv ?? base.hrv_ms) : base.hrv_ms,
-    };
-  }, [broadcastHeartRate, heartRate, hrv, syncedVitals]);
+  // Os sinais exibidos combinam os gravados com as leituras ao vivo (BLE do
+  // monitor cardíaco e canal em tempo real).
+  const vitals = useMemo(
+    () =>
+      combinarSinais(syncedVitals, {
+        heartRate: heartRate ?? broadcastHeartRate,
+        hrv: heartRate !== null ? hrv : null,
+      }),
+    [broadcastHeartRate, heartRate, hrv, syncedVitals]
+  );
 
   const applySnapshot = useCallback((snapshot: SyncSnapshot) => {
     setAstrology(snapshot.astrology);
@@ -145,22 +147,22 @@ export const HealthOrchestratorProvider: React.FC<{
   const triggerManualSync = useCallback(async (): Promise<HealthSyncResult> => {
     setIsSyncing(true);
     setSyncError(null);
-    const snapshot = await runHealthSync(astrology);
+    const snapshot = await runHealthSync(userId, astrology);
     applySnapshot(snapshot);
     return { error: snapshot.error };
-  }, [applySnapshot, astrology]);
+  }, [applySnapshot, astrology, userId]);
 
-  // Sincronização inicial na montagem do ecossistema orquestrado (o estado
-  // inicial já é "sincronizando").
+  // Sincronização inicial (o estado inicial já é "sincronizando") e a cada
+  // troca de conta.
   useEffect(() => {
     let active = true;
-    runHealthSync(null).then((snapshot) => {
+    runHealthSync(userId, null).then((snapshot) => {
       if (active) applySnapshot(snapshot);
     });
     return () => {
       active = false;
     };
-  }, [applySnapshot]);
+  }, [applySnapshot, userId]);
 
   // Canal em tempo real para eventos de wearables publicados pelo app.
   useEffect(() => {
