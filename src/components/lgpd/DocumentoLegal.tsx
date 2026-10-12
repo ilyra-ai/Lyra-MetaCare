@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowLeft, ShieldCheck } from 'lucide-react';
 
+import { ThemeToggleButton } from '@/components/theme/ThemeControls';
 import {
   ROTA_POLITICA_DE_PRIVACIDADE,
   ROTA_TERMOS_DE_USO,
@@ -50,23 +51,26 @@ export function DocumentoLegal({
               lyra
             </span>
           </Link>
-          <nav
-            aria-label="Documentos legais"
-            className="flex flex-wrap gap-x-4 text-sm"
-          >
-            <Link
-              href={ROTA_POLITICA_DE_PRIVACIDADE}
-              className="inline-flex min-h-11 items-center text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          <div className="flex items-center gap-2">
+            <nav
+              aria-label="Documentos legais"
+              className="flex flex-wrap gap-x-4 text-sm"
             >
-              Privacidade
-            </Link>
-            <Link
-              href={ROTA_TERMOS_DE_USO}
-              className="inline-flex min-h-11 items-center text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-            >
-              Termos de uso
-            </Link>
-          </nav>
+              <Link
+                href={ROTA_POLITICA_DE_PRIVACIDADE}
+                className="inline-flex min-h-11 items-center text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              >
+                Privacidade
+              </Link>
+              <Link
+                href={ROTA_TERMOS_DE_USO}
+                className="inline-flex min-h-11 items-center text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              >
+                Termos de uso
+              </Link>
+            </nav>
+            <ThemeToggleButton />
+          </div>
         </div>
 
         <header className="mt-10 border-b border-border pb-8">

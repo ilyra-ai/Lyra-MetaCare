@@ -278,8 +278,9 @@
     /* #E6E6EC */
     --border: 240 14% 91%;
     --input: 240 14% 88%;
-    /* #8C8C9B: contorno de checkbox e trilho de switch desligado (3:1, WCAG 1.4.11) */
-    --control: 240 7% 58%;
+    /* #848494: contorno de checkbox e trilho de switch desligado (3:1 também
+       sobre os tons neutros, WCAG 1.4.11) */
+    --control: 240 7% 55%;
     --ring: 173 65% 27%;
 
     /* #0D704B */
@@ -326,51 +327,75 @@
     --sidebar-ring: 173 65% 27%;
   }
 
+  /*
+    Tema escuro (tarefa 34). Superfícies em grafite azulado, nunca preto puro:
+    a elevação vem de superfícies mais claras (fundo → cartão → popover) e da
+    borda de 1px, já que sombra quase não aparece no escuro. As cores de
+    destaque são versões mais claras e menos saturadas das do tema claro e,
+    por serem claras, levam texto escuro por cima (`*-foreground` escuro).
+    Todos os pares de texto passam de 4,5:1 e os contornos de controles de
+    3:1 sobre fundo, cartão, popover e tons neutros (WCAG 1.4.3 e 1.4.11).
+  */
   .dark {
+    color-scheme: dark;
+
     --background: 240 24% 6%;
     --foreground: 240 15% 95%;
 
     --card: 240 22% 10%;
     --card-foreground: 240 15% 95%;
 
-    --popover: 240 22% 10%;
+    /* Um degrau acima do cartão: menus e popovers se destacam do conteúdo. */
+    --popover: 240 18% 13%;
     --popover-foreground: 240 15% 95%;
 
     --primary: 174 55% 55%;
     --primary-foreground: 240 24% 6%;
     --primary-hover: 174 55% 62%;
-    --control: 240 8% 52%;
-    --accent-hover: 253 70% 72%;
-    --destructive-hover: 0 72% 62%;
-    --destructive-light: 0 40% 16%;
 
     --secondary: 240 14% 14%;
     --secondary-foreground: 240 15% 95%;
 
     --muted: 240 12% 16%;
-    --muted-foreground: 240 10% 68%;
+    --muted-foreground: 240 10% 70%;
 
-    --accent: 253 70% 68%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 253 85% 77%;
+    --accent-foreground: 240 24% 6%;
+    --accent-hover: 253 85% 83%;
 
-    --destructive: 0 72% 56%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84% 70%;
+    --destructive-foreground: 240 24% 6%;
+    --destructive-hover: 0 84% 77%;
+    --destructive-light: 0 40% 16%;
 
     --border: 240 15% 18%;
-    --input: 240 15% 18%;
+    /* Contorno de campos de texto: 3:1 sobre cartão e popover. */
+    --input: 240 8% 47%;
+    --control: 240 8% 52%;
     --ring: 174 55% 55%;
 
     --success: 160 74% 46%;
+    --success-foreground: 240 24% 6%;
     --success-light: 160 38% 16%;
     --warning: 38 92% 58%;
+    --warning-foreground: 240 24% 6%;
     --warning-light: 38 36% 18%;
-    --info: 239 84% 72%;
+    --info: 236 90% 78%;
+    --info-foreground: 240 24% 6%;
     --info-light: 239 35% 17%;
-    --cosmic: 258 90% 72%;
+    --cosmic: 258 90% 76%;
+    --cosmic-foreground: 240 24% 6%;
     --cosmic-light: 258 35% 18%;
-    --cosmic-strong: 258 90% 80%;
+    --cosmic-strong: 258 90% 82%;
     --golden: 43 78% 54%;
+    --golden-foreground: 240 24% 6%;
     --golden-light: 43 36% 18%;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
+    --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.5);
 
     --chart-1: 174 55% 55%;
     --chart-2: 14 88% 62%;
@@ -478,5 +503,16 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(20, 20, 31, 0.3);
+  background-clip: padding-box;
+}
+
+/* No tema escuro o polegar escuro some sobre o fundo: usa o tom claro. */
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(236, 236, 245, 0.18);
+  background-clip: padding-box;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(236, 236, 245, 0.32);
   background-clip: padding-box;
 }

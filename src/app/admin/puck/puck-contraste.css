@@ -1,0 +1,10 @@
+/*
+  Ajustes de contraste do editor Puck (tarefa 34), pelos pontos de
+  personalização que a própria biblioteca expõe. O título das categorias da
+  gaveta de componentes usa `--puck-color-text-muted` (#767676), que sobre o
+  fundo da gaveta (#FAFAFA) dá 4,35:1, abaixo de 4,5:1 (WCAG 1.4.3). O cinza
+  04 do Puck (#5A5A5A) dá 6,6:1.
+*/
+:root {
+  --puck-drawer-category-color-text: var(--puck-color-grey-04);
+}

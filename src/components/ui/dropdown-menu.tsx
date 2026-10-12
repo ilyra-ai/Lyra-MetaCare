@@ -5,7 +5,19 @@ import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { Check, ChevronRight, Circle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const DropdownMenu = DropdownMenuPrimitive.Root;
+/**
+ * Menu suspenso não modal por padrão, como no padrão "menu button" da WAI-ARIA
+ * (APG): o menu fecha com Esc ou clique fora, sem esconder o resto da
+ * página. No modo modal o Radix marcava cabeçalho e conteúdo com
+ * `aria-hidden` enquanto eles continuavam focáveis (axe `aria-hidden-focus`)
+ * e escondia até o título da página dos leitores de tela.
+ */
+function DropdownMenu({
+  modal = false,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
+  return <DropdownMenuPrimitive.Root modal={modal} {...props} />;
+}
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 const DropdownMenuPortal = DropdownMenuPrimitive.Portal;

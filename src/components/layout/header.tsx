@@ -35,6 +35,7 @@ import {
 import { PlanBadge } from '@/components/subscription/PlanBadge';
 import { MobileSidebar } from './MobileSidebar';
 import { NotificationsMenu } from './NotificationsMenu';
+import { ThemeMenuGroup } from '@/components/theme/ThemeControls';
 import { ANCORA_PRIVACIDADE_E_DADOS } from '@/components/profile/PrivacyDataCard';
 import {
   getPageMeta,
@@ -259,6 +260,8 @@ export function Header() {
                   <ShieldCheck />
                   Privacidade e dados
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <ThemeMenuGroup />
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="text-destructive focus:text-destructive"

@@ -34,6 +34,7 @@ import type {
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { getBuilderIcon } from '@/lib/site-page-config/ui';
 import { cn } from '@/lib/utils';
+import { ThemeToggleButton } from '@/components/theme/ThemeControls';
 import Link from 'next/link';
 import {
   ROTA_POLITICA_DE_PRIVACIDADE,
@@ -771,6 +772,9 @@ export function LandingPage({
           </nav>
 
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+            {/* Na pré-visualização do construtor o botão mudaria o tema do
+                próprio painel administrativo. */}
+            {previewMode ? null : <ThemeToggleButton />}
             <Button
               variant="ghost"
               style={textStyles.buttonLabel}

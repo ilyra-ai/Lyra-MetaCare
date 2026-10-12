@@ -23,6 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import type { LoginPageConfig, ToneKey } from '@/lib/site-page-config/schema';
 import { getBuilderIcon } from '@/lib/site-page-config/ui';
+import { ThemeToggleButton } from '@/components/theme/ThemeControls';
 import {
   ROTA_POLITICA_DE_PRIVACIDADE,
   ROTA_TERMOS_DE_USO,
@@ -197,6 +198,9 @@ export function LoginExperience({
         <span className="font-display text-xl font-semibold lowercase tracking-tight text-foreground">
           {auth.brandText}
         </span>
+        {/* Na pré-visualização do construtor o botão mudaria o tema do
+            próprio painel administrativo. */}
+        {previewMode ? null : <ThemeToggleButton className="ml-auto" />}
       </div>
 
       {intro.visible ? (

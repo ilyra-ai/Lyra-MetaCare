@@ -158,10 +158,17 @@ export function NotificationsMenu({ iconScale }: { iconScale: number }) {
       </PopoverTrigger>
       <PopoverContent
         align="end"
+        // O conteúdo do popover tem papel de diálogo: o título dá o nome.
+        aria-labelledby="titulo-das-notificacoes"
         className="w-[min(22rem,calc(100vw-2rem))] p-0"
       >
         <div className="border-b border-border px-4 py-3">
-          <p className="text-sm font-semibold text-foreground">Notificações</p>
+          <p
+            id="titulo-das-notificacoes"
+            className="text-sm font-semibold text-foreground"
+          >
+            Notificações
+          </p>
           <p className="text-xs text-muted-foreground">
             Consultas dos próximos {DIAS_DE_ANTECEDENCIA} dias e avisos da
             assinatura.

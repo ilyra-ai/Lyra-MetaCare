@@ -28,13 +28,13 @@
 
 O **Lyra MetaCare** transforma dados de wearables, hábitos e contexto pessoal em **orientação acionável de longevidade**. A plataforma cruza biometria contínua (HRV, sono, glicose, VO₂max, oxigenação, entre dezenas de métricas) com motores determinísticos próprios e com uma camada de IA configurável, entregando ao usuário um painel claro, premium e calculado — sempre que possível — **no próprio dispositivo**.
 
-|                          |                                                                                                                                |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| 🎯 **Proposta de valor** | Converter sinais fisiológicos dispersos em ações diárias priorizadas, com idade biológica, detecção precoce e saúde da mulher. |
-| 🧠 **Inteligência**      | Motores isomórficos determinísticos (testáveis) + IA configurável por documentos/skills, com opção de modelo externo via BYOK. |
-| 🔒 **Privacidade**       | Modo Privacidade real: índices calculados no navegador; conversas processadas apenas pelo motor local quando ativado.          |
-| 🎨 **Experiência**       | Sistema visual "Lyra Clean" (tema claro, cartões brancos, teal + violeta astral, WCAG 2.2 AA), responsivo e em **pt-BR**.      |
-| ⚙️ **Operação**          | Subida local de ponta a ponta com um único comando (`run.py` no WSL2, `run.sh` no Git Bash): banco, migrações e aplicação.     |
+|                          |                                                                                                                                               |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🎯 **Proposta de valor** | Converter sinais fisiológicos dispersos em ações diárias priorizadas, com idade biológica, detecção precoce e saúde da mulher.                |
+| 🧠 **Inteligência**      | Motores isomórficos determinísticos (testáveis) + IA configurável por documentos/skills, com opção de modelo externo via BYOK.                |
+| 🔒 **Privacidade**       | Modo Privacidade real: índices calculados no navegador; conversas processadas apenas pelo motor local quando ativado.                         |
+| 🎨 **Experiência**       | Sistema visual "Lyra Clean" (tema claro padrão e tema escuro com alternância, teal + violeta astral, WCAG 2.2 AA), responsivo e em **pt-BR**. |
+| ⚙️ **Operação**          | Subida local de ponta a ponta com um único comando (`run.py` no WSL2, `run.sh` no Git Bash): banco, migrações e aplicação.                    |
 
 ---
 
@@ -276,7 +276,7 @@ Política de engenharia: correção sempre pela **causa raiz**, sem placeholders
 
 ## 🗺️ Roadmap
 
-- [x] Sistema visual "Lyra Clean" (tema claro, responsivo, acessível, pt-BR)
+- [x] Sistema visual "Lyra Clean" (tema claro padrão e tema escuro com alternância, responsivo, acessível, pt-BR)
 - [x] Documentos/Skills da IA configuráveis
 - [x] Inteligência Lyra 2026 (agêntico, idade biológica, detecção precoce, saúde da mulher, privacidade)
 - [x] Launchers locais `run.py` (WSL2) e `run.sh` (Git Bash) com paridade de comandos

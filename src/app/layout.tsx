@@ -3,6 +3,8 @@ import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { ThemeColorSync } from '@/components/theme/ThemeControls';
+import { COR_DA_BARRA_DO_NAVEGADOR } from '@/components/theme/tema';
 import { Toaster } from '@/components/ui/sonner';
 
 const inter = Inter({
@@ -74,8 +76,12 @@ export const viewport: Viewport = {
   initialScale: 1,
   // Sem maximumScale: o zoom do navegador precisa continuar disponível
   // (WCAG 1.4.4, redimensionar texto).
-  themeColor: '#f9f8fc',
-  colorScheme: 'light',
+  // Valor inicial (tema claro, o padrão); o `ThemeColorSync` troca a cor
+  // quando o tema escuro é aplicado.
+  themeColor: COR_DA_BARRA_DO_NAVEGADOR.light,
+  // A aplicação oferece os dois esquemas; o `next-themes` grava no <html> o
+  // `color-scheme` do tema escolhido.
+  colorScheme: 'light dark',
 };
 
 export default function RootLayout({
@@ -93,12 +99,15 @@ export default function RootLayout({
         <a href="#conteudo-principal" className="skip-nav">
           Pular para o conteúdo principal
         </a>
+        {/* Claro por padrão; a pessoa pode escolher Escuro ou Do sistema
+            (menu do perfil ou botão das telas públicas). */}
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
-          enableSystem={false}
+          enableSystem
           disableTransitionOnChange
         >
+          <ThemeColorSync />
           <AuthProvider>
             <div className="page-shell">{children}</div>
             <Toaster
