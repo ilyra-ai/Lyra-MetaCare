@@ -19,18 +19,18 @@
 
 ## Tópico 1 · Andamento Geral
 
-| Indicador          | Valor                          |
-| ------------------ | ------------------------------ |
-| Progresso          | `███████████████████░` **97%** |
-| Tarefas totais     | 38                             |
-| 🟢 Finalizadas     | 37                             |
-| 🔵 Em andamento    | 1                              |
-| 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 0                              |
-| Branch de trabalho | `main` (única permitida)       |
-| Última atualização | 2026-10-12                     |
+| Indicador          | Valor                           |
+| ------------------ | ------------------------------- |
+| Progresso          | `████████████████████` **100%** |
+| Tarefas totais     | 38                              |
+| 🟢 Finalizadas     | 38                              |
+| 🔵 Em andamento    | 0                               |
+| 🔴 Bloqueadas      | 0                               |
+| ⚪ A iniciar       | 0                               |
+| Branch de trabalho | `main` (única permitida)        |
+| Última atualização | 2026-10-12                      |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (37 ÷ 38 = 97,4%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (38 ÷ 38 = 100%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,9 +43,7 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa      | O que está sendo realizado                                                                                                                                                       |
-| --- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 34  | Tema escuro | Ativar o tema escuro (com alternância) garantindo contraste de leitura em todos os textos, ícones, gráficos e componentes, comprovado por auditoria de contraste no tema escuro. |
+Nenhuma tarefa em andamento.
 
 ### BLOQUEADAS
 
@@ -876,3 +874,19 @@ Nenhuma tarefa a iniciar.
   - Construtor: 17 seletores de rota, "Novo item" habilitado (sobrava `/admin/fiscal`), rotas em uso desabilitadas.
   - Teste de integração novo "configuração interna da cobrança" (`seguranca.integration.test.ts`).
   - `test` 236/236; `test:integration` 91/91; lint, format e types com exit 0; `build` com exit 0. Provas de remoção: `/nova-rota` e `Preferências` só aparecem em comentários que explicam a correção; `"/dashboard"` sem ocorrência em `src` e `modules`; 0 documentos Puck com `/dashboard`. Usuários de QA removidos.
+
+### 34 · Tema escuro
+
+- **Status:** 🟢 finalizada · **Commit:** `b3c438f` · **Push:** `main -> main` (confirmado; `main...origin/main` sem divergência)
+- **Estado encontrado:** o `.dark` existia em `globals.css`, mas o tema estava travado no claro (`enableSystem={false}`, sem nenhum controle) e, ativado à força, 86 nós falhavam no contraste em 1440 px: branco sobre os destaques claros (violeta 3,6:1; verde, âmbar, dourado, azul e cósmico entre 1,9:1 e 3,4:1), vermelho de erro sobre cartão e tom claro (3,7–4,3:1) e contorno dos campos de texto quase invisível (1,2:1). O código não tinha cores fixas relevantes fora dos tokens.
+- **Implementado:**
+  - **Alternância:** grupo "Tema" (Claro, Escuro, Do sistema) no menu do perfil, que não fecha ao escolher; botão "Tema escuro" (`aria-pressed`) na landing, na entrada e nos documentos legais (oculto na pré-visualização do construtor). O claro continua padrão; a escolha persiste no navegador e "Do sistema" segue o sistema operacional. Componentes em `src/components/theme/`.
+  - **Tokens do escuro:** destaques claros com texto escuro por cima (`*-foreground` = `#0C0C13`), erro, violeta e informação mais claros, `--input` com 3:1, popover um degrau acima do cartão, `color-scheme: dark`, sombras e barra de rolagem próprias e meta `theme-color` acompanhando o tema (`ThemeColorSync`, com a cor em módulo de servidor para o `viewport`).
+  - **Tema claro:** `--control` de `#8C8C9B` para `#848494`, para passar de 3:1 também sobre `muted`/`secondary`.
+  - **Teste contínuo:** `src/app/tema.test.ts` lê o `globals.css` e falha se algum par de texto cair abaixo de 4,5:1 ou de contorno abaixo de 3:1, nos dois temas, e confere a cor da barra do navegador.
+  - **Camadas (achados novos ao auditar menus e diálogos abertos):** o menu suspenso modal do Radix punha `aria-hidden` no cabeçalho e no conteúdo focáveis e escondia o `<h1>`; os menus passaram a ser não modais por padrão (padrão "menu button" da WAI-ARIA). O popover de notificações e o diálogo da busca Ctrl K ganharam nome acessível. O contraste dos títulos de categoria do Puck (4,35:1) foi corrigido pela variável `--puck-drawer-category-color-text` da própria biblioteca.
+- **Evidências:**
+  - axe (todas as regras WCAG 2.2 AA + boas práticas), servidor de produção, 390 e 1440 px, temas claro e escuro: 46 telas e camadas por largura (visitante, conta nova no onboarding, paciente e administrador em todas as rotas, menu do perfil, notificações, busca Ctrl K e sidebar do celular). **Zero violações de contraste** nos dois temas; restam 5 nós por largura: os 3 internos do Puck já registrados em `docs/acessibilidade.md` e `region` (boa prática) no portal do menu do perfil.
+  - Navegador: botão do login alterna e persiste após recarregar e entre páginas; menu do perfil com Claro/Escuro/Do sistema, inclusive com o sistema em escuro e em claro; `theme-color` `#f6f6f8` ↔ `#0c0c13`; sem avisos de console nem erros de hidratação; landing a 390 px sem estouro.
+  - Regressão das tarefas 29 e 36: sino, "Privacidade e dados", `/monitoring` e construtor sem mudança; varredura de botões e links sem achados.
+  - `test` 241/241; `test:integration` 91/91; lint, format e types com exit 0; `build` com exit 0 e sem avisos. Usuários de QA removidos.
