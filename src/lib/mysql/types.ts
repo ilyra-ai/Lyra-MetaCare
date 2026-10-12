@@ -189,11 +189,6 @@ export interface AppointmentRow extends AuditedRow {
   > | null;
 }
 
-export interface InstrumentRow {
-  id: number;
-  name: string;
-}
-
 export interface UserAssessmentRow extends AuditedRow {
   id: string;
   user_id: string;
@@ -224,7 +219,6 @@ export interface TableRowMap {
   ai_plans: AIPlanRow;
   appointments: AppointmentRow;
   professionals: ProfessionalRow;
-  instruments: InstrumentRow;
   user_assessments: UserAssessmentRow;
   user_streaks: UserStreakRow;
 }

@@ -10,7 +10,6 @@ export type TableName =
   | 'ai_plans'
   | 'appointments'
   | 'professionals'
-  | 'instruments'
   | 'user_assessments'
   | 'user_streaks';
 
@@ -31,7 +30,6 @@ interface TableConfig {
   columns: string[];
   /** Coluna que liga a linha ao usuário dono (escopo de leitura e escrita). */
   userScopedBy?: string;
-  publicRead?: boolean;
   adminOnlyCrud?: boolean;
   /**
    * Leitura restrita a administradores: a tabela só é usada pelo painel
@@ -242,10 +240,6 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
     ],
     userScopedBy: 'user_id',
     adminReadAll: true,
-  },
-  instruments: {
-    columns: ['id', 'name'],
-    publicRead: true,
   },
   user_assessments: {
     columns: [

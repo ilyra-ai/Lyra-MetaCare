@@ -5,7 +5,8 @@ Auditoria feita com **axe-core** (regras `wcag2a`, `wcag2aa`, `wcag21a`,
 (`pnpm build` + `pnpm start`), com Playwright/Chromium, em **1440px** e
 **390px** de largura. Foram auditadas as rotas públicas (`/`, `/login`) e,
 com sessão de administrador, `/`, `/plan`, `/goals`, `/appointments`,
-`/monitoring`, `/chat`, `/connect`, `/profile`, `/instruments`,
+`/monitoring`, `/chat`, `/connect`, `/profile`, `/instruments` (removida
+depois, na tarefa 32),
 `/billing/success`, `/admin/dashboard`, `/admin/users`, `/admin/plans`,
 `/admin/data-health`, `/admin/content`, `/admin/ai-config`,
 `/admin/reports`, `/admin/page-builder` e `/admin/puck`.

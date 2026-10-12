@@ -12,7 +12,7 @@ import {
   runUpsertQuery,
 } from '@/lib/mysql/data-api';
 import { executeStatement, queryRows } from '@/lib/mysql/pool';
-import type { QueryFilter } from '@/lib/mysql/table-config';
+import { TABLE_CONFIG, type QueryFilter } from '@/lib/mysql/table-config';
 
 import {
   contar,
@@ -74,11 +74,12 @@ beforeAll(async () => {
 });
 
 describe('data-api · leitura', () => {
-  it('exige sessão nas tabelas privadas e libera as públicas', async () => {
-    await esperarHttp(selecionar('habits', null), 401);
-    const publica = await selecionar('instruments', null);
-    expect(Array.isArray(publica.data)).toBe(true);
-    expect((publica.data as unknown[]).length).toBeGreaterThan(0);
+  it('exige sessão em todas as tabelas (não há tabela pública)', async () => {
+    for (const tabela of Object.keys(TABLE_CONFIG)) {
+      await esperarHttp(selecionar(tabela, null), 401);
+    }
+    // A demonstração `instruments` (tarefa 32) saiu da lista permitida.
+    await esperarHttp(selecionar('instruments', null), 400);
   });
 
   it('recusa tabelas fora da lista permitida', async () => {

@@ -29,7 +29,6 @@ const JSON_COLUMNS: Record<TableName, string[]> = {
   ai_plans: ['plan_data'],
   appointments: [],
   professionals: [],
-  instruments: [],
   user_assessments: ['raw_responses'],
   user_streaks: [],
 };
@@ -46,7 +45,6 @@ const BOOLEAN_COLUMNS: Record<TableName, string[]> = {
   ai_plans: [],
   appointments: [],
   professionals: [],
-  instruments: [],
   user_assessments: [],
   user_streaks: [],
 };
@@ -63,7 +61,6 @@ const DATE_COLUMNS: Record<TableName, string[]> = {
   ai_plans: [],
   appointments: [],
   professionals: [],
-  instruments: [],
   user_assessments: [],
   user_streaks: ['last_activity_date'],
 };
@@ -80,7 +77,6 @@ const TIME_COLUMNS: Record<TableName, string[]> = {
   ai_plans: [],
   appointments: [],
   professionals: [],
-  instruments: [],
   user_assessments: [],
   user_streaks: [],
 };
@@ -97,7 +93,6 @@ const DATETIME_COLUMNS: Record<TableName, string[]> = {
   ai_plans: ['created_at', 'updated_at'],
   appointments: ['appointment_time', 'created_at', 'updated_at'],
   professionals: ['created_at', 'updated_at'],
-  instruments: [],
   user_assessments: ['created_at', 'updated_at'],
   user_streaks: ['created_at', 'updated_at'],
 };
@@ -386,11 +381,9 @@ function isColumnFilter(filter: QueryFilter): filter is ColumnFilter {
   return filter.type !== 'or';
 }
 
+// Toda leitura pela API de dados exige sessão: não há tabela pública.
 function ensureCanRead(table: TableName, session: AppSession | null) {
   const config = TABLE_CONFIG[table];
-  if (config.publicRead) {
-    return;
-  }
   if (!session) {
     throw new HttpError('Sessão autenticada obrigatória para leitura.', 401);
   }

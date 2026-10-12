@@ -11,7 +11,6 @@ export const lyraPuckDocumentKeys = [
   'chat',
   'connect',
   'goals',
-  'instruments',
   'billing-success',
   'billing-cancel',
   'admin-dashboard',
@@ -357,15 +356,6 @@ export const lyraPuckDocuments: Array<{
     route: '/admin/puck?documentKey=goals',
     publicRoute: '/goals',
     publicLabel: 'Gestão de Objetivos',
-    surfaceKey: 'patient-portal',
-  },
-  {
-    key: 'instruments',
-    label: 'Inventários de Saúde',
-    description: 'Ponto de coleta padronizada para exames de feedback clínico.',
-    route: '/admin/puck?documentKey=instruments',
-    publicRoute: '/instruments',
-    publicLabel: 'Coleta de Dados',
     surfaceKey: 'patient-portal',
   },
   {
