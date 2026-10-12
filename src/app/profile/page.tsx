@@ -4,6 +4,9 @@ import { SplashScreen } from '@/components/SplashScreen';
 import { AppShell } from '@/components/layout/AppShell';
 import { PageIntro } from '@/components/layout/PageIntro';
 import { ProfileForm } from '@/components/profile/ProfileForm';
+import { AccountEmailCard } from '@/components/profile/AccountEmailCard';
+import { PrivacyDataCard } from '@/components/profile/PrivacyDataCard';
+import { PurchaseHistoryCard } from '@/components/profile/PurchaseHistoryCard';
 import { AccountSubscriptionCard } from '@/components/subscription/AccountSubscriptionCard';
 import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
 import { useAuth } from '@/context/AuthContext';
@@ -46,7 +49,13 @@ export default function ProfilePage() {
             showAction
             preferredPlanKey="meta"
           />
-          <AccountSubscriptionCard />
+          {/* Os direitos do titular (LGPD) não dependem do plano. */}
+          <div className="min-w-0 space-y-6">
+            <AccountSubscriptionCard />
+            <PurchaseHistoryCard />
+            <AccountEmailCard />
+            <PrivacyDataCard />
+          </div>
         </div>
       )}
     </AppShell>

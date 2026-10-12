@@ -23,6 +23,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import type { LoginPageConfig, ToneKey } from '@/lib/site-page-config/schema';
 import { getBuilderIcon } from '@/lib/site-page-config/ui';
+import {
+  ROTA_POLITICA_DE_PRIVACIDADE,
+  ROTA_TERMOS_DE_USO,
+} from '@/lib/lgpd/documentos';
 
 type SubmitMode = 'login' | 'register' | null;
 
@@ -92,6 +96,8 @@ export function LoginExperience({
   // "Lembrar-me": sessão de 7 dias quando marcado; sessão de navegador quando
   // desmarcado (ver src/lib/auth/session.ts).
   const [rememberMe, setRememberMe] = useState(false);
+  // LGPD: o cadastro exige o aceite dos termos e da política de privacidade.
+  const [aceiteDosTermos, setAceiteDosTermos] = useState(false);
 
   const iconStyle: CSSProperties = {
     width: `${(1.125 * sizing.iconScale).toFixed(3)}rem`,
@@ -139,6 +145,7 @@ export function LoginExperience({
       password: registerPassword,
       firstName: registerFirstName,
       lastName: registerLastName,
+      acceptTerms: aceiteDosTermos,
     });
 
     setSubmitMode(null);
@@ -458,9 +465,56 @@ export function LoginExperience({
                   </div>
                 </div>
 
+                <div className="flex items-start gap-2.5">
+                  <Checkbox
+                    id="aceite-termos"
+                    checked={aceiteDosTermos}
+                    onCheckedChange={(checked) =>
+                      setAceiteDosTermos(checked === true)
+                    }
+                    disabled={previewMode}
+                    className="mt-3"
+                    aria-describedby="aceite-termos-ajuda"
+                  />
+                  <div className="min-w-0">
+                    <Label
+                      htmlFor="aceite-termos"
+                      className="flex min-h-11 cursor-pointer items-center text-sm font-normal leading-snug text-foreground"
+                    >
+                      Li e aceito os termos de uso e a política de privacidade.
+                    </Label>
+                    <p
+                      id="aceite-termos-ajuda"
+                      className="text-xs leading-5 text-muted-foreground"
+                    >
+                      Leia os{' '}
+                      <Link
+                        href={ROTA_TERMOS_DE_USO}
+                        target="_blank"
+                        className="font-medium text-primary underline underline-offset-2"
+                      >
+                        termos de uso
+                        <span className="sr-only"> (abre em nova aba)</span>
+                      </Link>{' '}
+                      e a{' '}
+                      <Link
+                        href={ROTA_POLITICA_DE_PRIVACIDADE}
+                        target="_blank"
+                        className="font-medium text-primary underline underline-offset-2"
+                      >
+                        política de privacidade
+                        <span className="sr-only"> (abre em nova aba)</span>
+                      </Link>
+                      .
+                    </p>
+                  </div>
+                </div>
+
                 <Button
                   type="submit"
-                  disabled={previewMode || submitMode === 'register'}
+                  disabled={
+                    previewMode || submitMode === 'register' || !aceiteDosTermos
+                  }
                   className="w-full rounded-md font-semibold"
                   style={buttonStyle}
                 >
@@ -570,6 +624,23 @@ export function LoginExperience({
           <ArrowLeft className="h-4 w-4" aria-hidden />
           {auth.backToLandingLabel}
         </Link>
+        <nav
+          aria-label="Documentos legais"
+          className="mt-2 flex flex-wrap gap-x-4 text-xs text-muted-foreground"
+        >
+          <Link
+            href={ROTA_POLITICA_DE_PRIVACIDADE}
+            className="inline-flex min-h-11 items-center underline-offset-4 hover:text-foreground hover:underline"
+          >
+            Política de privacidade
+          </Link>
+          <Link
+            href={ROTA_TERMOS_DE_USO}
+            className="inline-flex min-h-11 items-center underline-offset-4 hover:text-foreground hover:underline"
+          >
+            Termos de uso
+          </Link>
+        </nav>
       </div>
     </main>
   );

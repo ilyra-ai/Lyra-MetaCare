@@ -36,8 +36,16 @@ interface TableConfig {
    * administrativo; os recursos do app que dependem dela a leem no servidor.
    */
   adminOnlyRead?: boolean;
-  /** Administradores leem e alteram linhas de qualquer usuário. */
+  /**
+   * Administradores alcançam linhas de outras contas, mas só nas colunas de
+   * `adminReadColumns` (leitura, filtro e ordenação) e `adminWriteColumns`
+   * (alteração). LGPD: dados de saúde e de perfil sensível ficam só com o
+   * titular; o administrador vê o necessário para gerir contas e planos.
+   * Tabelas sem esta marca são só do titular, inclusive para administradores.
+   */
   adminReadAll?: boolean;
+  adminReadColumns?: readonly string[];
+  adminWriteColumns?: readonly string[];
   /** Colunas que só administradores podem gravar (ex.: o papel do usuário). */
   adminOnlyColumns?: string[];
 }
@@ -68,7 +76,22 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'updated_at',
     ],
     userScopedBy: 'id',
+    // Gestão de contas: identificação, papel e status do onboarding. Data,
+    // hora e local de nascimento, gênero, idade, metas, atividade e ciclo
+    // menstrual ficam só com o titular.
     adminReadAll: true,
+    adminReadColumns: [
+      'id',
+      'first_name',
+      'last_name',
+      'email',
+      'role',
+      'onboarding_completed',
+      'avatar_url',
+      'created_at',
+      'updated_at',
+    ],
+    adminWriteColumns: ['onboarding_completed', 'role'],
     // O papel vai para o token de sessão no login: só um administrador pode
     // alterá-lo (impede a autopromoção a admin).
     adminOnlyColumns: ['role'],
@@ -142,7 +165,11 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'menstrual_flow',
     ],
     userScopedBy: 'user_id',
+    // Painel "Saúde dos dados": só quem registrou e quando (contagens e
+    // atividade), nunca os valores biométricos. Nenhuma alteração.
     adminReadAll: true,
+    adminReadColumns: ['id', 'user_id', 'date', 'created_at'],
+    adminWriteColumns: [],
   },
   goals: {
     columns: [
@@ -159,12 +186,10 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'updated_at',
     ],
     userScopedBy: 'user_id',
-    adminReadAll: true,
   },
   habits: {
     columns: ['id', 'user_id', 'name', 'is_active', 'frequency', 'created_at'],
     userScopedBy: 'user_id',
-    adminReadAll: true,
   },
   suggested_habits: {
     columns: ['id', 'name', 'frequency', 'is_active', 'created_at'],
@@ -210,7 +235,6 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
   ai_plans: {
     columns: ['id', 'user_id', 'plan_data', 'created_at', 'updated_at'],
     userScopedBy: 'user_id',
-    adminReadAll: true,
   },
   appointments: {
     columns: [
@@ -225,7 +249,6 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'updated_at',
     ],
     userScopedBy: 'user_id',
-    adminReadAll: true,
   },
   professionals: {
     columns: [
@@ -239,7 +262,6 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'updated_at',
     ],
     userScopedBy: 'user_id',
-    adminReadAll: true,
   },
   user_assessments: {
     columns: [
@@ -253,7 +275,6 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'updated_at',
     ],
     userScopedBy: 'user_id',
-    adminReadAll: true,
   },
   user_streaks: {
     columns: [
@@ -267,7 +288,6 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'updated_at',
     ],
     userScopedBy: 'user_id',
-    adminReadAll: true,
   },
 };
 

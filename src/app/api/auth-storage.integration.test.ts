@@ -34,8 +34,11 @@ describe('POST /api/auth/register e /api/auth/login', () => {
 
   it('valida o cadastro', async () => {
     for (const body of [
-      { email: 'invalido', password: senha },
-      { email, password: 'curta' },
+      { email: 'invalido', password: senha, acceptTerms: true },
+      { email, password: 'curta', acceptTerms: true },
+      // LGPD: sem o aceite dos termos e da política, a conta não é criada.
+      { email, password: senha },
+      { email, password: senha, acceptTerms: false },
       {},
     ]) {
       const resposta = await chamar(register.POST, {
@@ -60,7 +63,12 @@ describe('POST /api/auth/register e /api/auth/login', () => {
   it('cadastra como paciente, abre sessão e recusa e-mail repetido', async () => {
     const resposta = await chamar(register.POST, {
       method: 'POST',
-      body: { email: email.toUpperCase(), password: senha, firstName: 'Nova' },
+      body: {
+        email: email.toUpperCase(),
+        password: senha,
+        firstName: 'Nova',
+        acceptTerms: true,
+      },
       usuario: null,
     });
     expect(resposta.status).toBe(200);
@@ -87,10 +95,24 @@ describe('POST /api/auth/register e /api/auth/login', () => {
       [email]
     );
     expect(plano).toEqual([{ plan_key: 'free' }]);
+    // O aceite fica registrado com a versão vigente de cada documento.
+    const consentimentos = await queryRows<{
+      consent_type: string;
+      document_version: string;
+    }>(
+      `SELECT c.consent_type, c.document_version FROM consent_records c
+         JOIN users u ON u.id = c.user_id
+        WHERE u.email = ? ORDER BY c.consent_type`,
+      [email]
+    );
+    expect(consentimentos).toEqual([
+      { consent_type: 'privacy_policy', document_version: '2026-10-12' },
+      { consent_type: 'terms_of_use', document_version: '2026-10-12' },
+    ]);
 
     const repetido = await chamar(register.POST, {
       method: 'POST',
-      body: { email, password: senha },
+      body: { email, password: senha, acceptTerms: true },
       usuario: null,
     });
     expect(repetido.status).toBe(409);

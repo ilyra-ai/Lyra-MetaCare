@@ -13,6 +13,8 @@ Modelo de segurança da aplicação, revisado na tarefa 19 da instrução mestra
 
 ## Isolamento das funções de administrador
 
+- **LGPD:** o administrador não lê, não altera e não apaga dados de saúde nem o perfil sensível de outras contas; vê só identificação, papel, onboarding e plano, e consulta os registros fiscais (somente leitura). Detalhes, consentimento, exportação e exclusão de conta em [`lgpd.md`](./lgpd.md).
+
 - **Quem é administrador:** só os usuários do bootstrap (`ADMIN_BOOTSTRAP_*` no `.env.local`, aplicados por `pnpm db:migrate`) ou promovidos por outro administrador. O cadastro público sempre cria usuário comum no plano `free`; antes, o primeiro cadastro de um banco vazio virava administrador.
 - **APIs (autorização definitiva):** todas as rotas `/api/admin/*` e `/api/rpc/*` exigem `requireAdminSession`, que relê o papel no banco. Na API de dados, `ai_config` e `ai_knowledge_documents` só são lidas e alteradas por administradores (antes qualquer usuário autenticado as lia); `ai_tips` e `suggested_habits` são lidas pelo usuário comum só quando ativas e alteradas só pelo administrador; `profiles.role` só é gravado por administrador.
 - **Páginas `/admin/*`:** o `src/proxy.ts` faz a verificação otimista do papel no token e devolve o usuário comum ao próprio painel (e o visitante ao login) antes de entregar a tela; cada página ainda confere o papel no cliente. Depois de uma troca de papel, o usuário precisa entrar de novo para o novo papel valer nas páginas (nas APIs vale na hora).

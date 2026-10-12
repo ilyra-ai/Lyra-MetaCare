@@ -87,7 +87,7 @@ describe('data-api · leitura', () => {
     await esperarHttp(selecionar('billing_customers', admin), 400);
   });
 
-  it('usuário comum só lê as próprias linhas; o administrador lê todas', async () => {
+  it('cada conta só lê as próprias linhas, inclusive o administrador (LGPD)', async () => {
     const habitoAna = await criarHabito(ana, 'Caminhar');
     const habitoBruno = await criarHabito(bruno, 'Meditar');
 
@@ -101,12 +101,12 @@ describe('data-api · leitura', () => {
     });
     expect(tentativa.data).toEqual([]);
 
+    // Hábitos são dados do titular: o administrador também só vê os seus.
     const doAdmin = (await selecionar('habits', admin)).data as {
       id: string;
     }[];
-    expect(doAdmin.map((linha) => linha.id)).toEqual(
-      expect.arrayContaining([habitoAna, habitoBruno])
-    );
+    expect(doAdmin.map((linha) => linha.id)).not.toContain(habitoAna);
+    expect(doAdmin.map((linha) => linha.id)).not.toContain(habitoBruno);
   });
 
   it('valida colunas, filtros e operadores', async () => {
@@ -593,37 +593,34 @@ describe('data-api · escrita', () => {
     expect(linha[0]?.onboarding_completed).toBe(1);
   });
 
-  it('o administrador remove a conta de outro usuário, nunca a própria', async () => {
+  it('perfil não se apaga pela API de dados (só pela exclusão de conta)', async () => {
     const alvo = await criarUsuario('patient', 'Remover');
     await criarHabito(alvo, 'Algo');
-    const resultado = await runDeleteQuery({
-      table: 'profiles',
-      filters: [{ type: 'eq', column: 'id', value: alvo.id }],
-      session: admin.session,
-    });
-    expect(resultado.data).toEqual({ deleted: 1 });
+    // Nem o titular (deixaria a conta sem login e o e-mail preso) nem o
+    // administrador (pularia as regras da exclusão de conta).
+    for (const [sessao, id] of [
+      [alvo.session, alvo.id],
+      [admin.session, alvo.id],
+      [admin.session, admin.id],
+    ] as const) {
+      await esperarHttp(
+        runDeleteQuery({
+          table: 'profiles',
+          filters: [{ type: 'eq', column: 'id', value: id }],
+          session: sessao,
+        }),
+        403
+      );
+    }
     expect(
-      await contar('SELECT COUNT(*) AS total FROM users WHERE id = ?', [
-        alvo.id,
-      ])
-    ).toBe(0);
+      await contar(
+        'SELECT COUNT(*) AS total FROM profiles WHERE id IN (?, ?)',
+        [alvo.id, admin.id]
+      )
+    ).toBe(2);
     expect(
       await contar('SELECT COUNT(*) AS total FROM habits WHERE user_id = ?', [
         alvo.id,
-      ])
-    ).toBe(0);
-
-    await esperarHttp(
-      runDeleteQuery({
-        table: 'profiles',
-        filters: [{ type: 'eq', column: 'id', value: admin.id }],
-        session: admin.session,
-      }),
-      400
-    );
-    expect(
-      await contar('SELECT COUNT(*) AS total FROM users WHERE id = ?', [
-        admin.id,
       ])
     ).toBe(1);
   });

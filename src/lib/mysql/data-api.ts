@@ -1,4 +1,4 @@
-import { executeStatement, queryRows, withTransaction } from '@/lib/mysql/pool';
+import { executeStatement, queryRows } from '@/lib/mysql/pool';
 import { AppSession } from '@/types/app-session';
 import {
   QueryFilter,
@@ -307,20 +307,20 @@ function protectWriteColumns(
   if (table === 'profiles' && 'email' in payload) {
     const proprioEmail = payload.email === session.user.email;
     let permitido: boolean;
-    if (mode === 'insert') {
-      // Criar perfil: o usuário só com o e-mail da própria conta; o
-      // administrador com qualquer um (o índice único recusa repetição).
-      permitido = admin || proprioEmail;
-    } else {
+    if (mode === 'update') {
       // Alterar perfil: ninguém troca o e-mail. O usuário comum que reenvia
-      // o próprio e-mail atual não altera nada (no upsert ele é a coluna
-      // obrigatória do INSERT e fica; no update é descartado); o
+      // o próprio e-mail atual não altera nada (o campo é descartado); o
       // administrador pode estar editando a linha de outra pessoa, então
       // qualquer e-mail no payload é recusado.
       permitido = !admin && proprioEmail;
-      if (permitido && mode === 'update') {
+      if (permitido) {
         delete payload.email;
       }
+    } else {
+      // Inserir ou upsert: o perfil é sempre o da própria sessão (o id e o
+      // e-mail são preenchidos pela sessão antes desta verificação), e o
+      // e-mail é a coluna obrigatória do INSERT.
+      permitido = proprioEmail;
     }
     if (!permitido) {
       throw new HttpError(
@@ -746,6 +746,82 @@ async function selectProfilesWithDailyMetrics(
   }));
 }
 
+// ---------------------------------------------------------------------------
+// LGPD: acesso do administrador a linhas de outras contas
+// ---------------------------------------------------------------------------
+
+/**
+ * Diz se a operação de um administrador alcança linhas de outras contas
+ * numa tabela `adminReadAll`. Uma consulta presa às próprias linhas (filtro
+ * `eq` do dono igual ao próprio id) é tratada como a de qualquer titular.
+ */
+function acessoEntreContas(
+  table: TableName,
+  filters: QueryFilter[],
+  session: AppSession | null
+) {
+  const config = TABLE_CONFIG[table];
+  if (!session || !isAdmin(session) || !config.adminReadAll) {
+    return false;
+  }
+  const owner = config.userScopedBy;
+  if (!owner) {
+    return false;
+  }
+  const restritoAoProprio = filters.some(
+    (filter) =>
+      Boolean(filter) &&
+      typeof filter === 'object' &&
+      isColumnFilter(filter) &&
+      filter.type === 'eq' &&
+      filter.column === owner &&
+      filter.value === session.user.id
+  );
+  return !restritoAoProprio;
+}
+
+function exigirColunasEntreContas(
+  table: TableName,
+  colunas: readonly string[],
+  permitidas: readonly string[]
+) {
+  const proibida = colunas.find((coluna) => !permitidas.includes(coluna));
+  if (proibida) {
+    throw new HttpError(
+      `${table}.${proibida} é dado pessoal do titular e não fica disponível ao administrador (LGPD).`,
+      403
+    );
+  }
+}
+
+/** Colunas citadas em filtros (inclusive OR) e ordenações. */
+function colunasDaConsulta(filters: QueryFilter[], orders: QueryOrder[]) {
+  const colunas: string[] = [];
+  for (const filter of filters) {
+    if (!filter || typeof filter !== 'object') {
+      continue;
+    }
+    if (filter.type === 'or') {
+      for (const trecho of String(filter.expression ?? '').split(',')) {
+        const coluna = /^\s*([a-z_]+)\./i.exec(trecho)?.[1];
+        if (coluna) {
+          colunas.push(coluna);
+        }
+      }
+      continue;
+    }
+    if (isColumnFilter(filter)) {
+      colunas.push(filter.column);
+    }
+  }
+  for (const order of Array.isArray(orders) ? orders : []) {
+    if (order && typeof order === 'object' && !order.foreignTable) {
+      colunas.push(order.column);
+    }
+  }
+  return colunas;
+}
+
 export async function runSelectQuery(options: {
   table: string;
   select: string;
@@ -845,6 +921,50 @@ export async function runSelectQuery(options: {
   const specialProfiles =
     table === 'profiles' && options.select.includes('daily_metrics(');
 
+  // LGPD: de outras contas, o administrador só lê, filtra e ordena pelas
+  // colunas liberadas; `*` vira exatamente essa lista.
+  let selectEfetivo = options.select;
+  if (acessoEntreContas(table, effectiveFilters, options.session)) {
+    const permitidas = TABLE_CONFIG[table].adminReadColumns ?? [];
+    if (permitidas.length === 0) {
+      throw new HttpError(
+        `Os dados de ${table} são só do titular (LGPD).`,
+        403
+      );
+    }
+    exigirColunasEntreContas(
+      table,
+      colunasDaConsulta(effectiveFilters, options.orders),
+      permitidas
+    );
+    if (specialProfiles) {
+      exigirColunasEntreContas(
+        'profiles',
+        ['id', 'first_name', 'email'],
+        permitidas
+      );
+      exigirColunasEntreContas(
+        'daily_metrics',
+        ['user_id', 'date'],
+        TABLE_CONFIG.daily_metrics.adminReadColumns ?? []
+      );
+    } else {
+      const pedido = options.select.trim();
+      if (pedido === '*' || pedido.length === 0) {
+        selectEfetivo = permitidas.join(', ');
+      } else {
+        exigirColunasEntreContas(
+          table,
+          pedido
+            .split(',')
+            .map((coluna) => coluna.trim())
+            .filter(Boolean),
+          permitidas
+        );
+      }
+    }
+  }
+
   const where = buildWhereClause(table, effectiveFilters, options.session);
   const order = buildOrderClause(table, options.orders, specialProfiles);
   const offset = hasRangeFrom ? (options.rangeFrom as number) : null;
@@ -865,7 +985,7 @@ export async function runSelectQuery(options: {
       options.session
     );
   } else {
-    const selectedColumns = sanitizeColumns(table, options.select);
+    const selectedColumns = sanitizeColumns(table, selectEfetivo);
     data = await queryRows<QueryRecord>(
       `
         SELECT ${selectedColumns}
@@ -961,7 +1081,8 @@ export async function runInsertQuery(options: {
       nextPayload[config.userScopedBy] = session.user.id;
     }
 
-    if (table === 'profiles' && !isAdmin(session)) {
+    // Perfil: só o da própria sessão, inclusive para o administrador.
+    if (table === 'profiles') {
       nextPayload.id = session.user.id;
       nextPayload.email = session.user.email;
     }
@@ -1087,7 +1208,9 @@ export async function runUpsertQuery(options: {
   if (!payload.id && config.columns.includes('id')) {
     payload.id = crypto.randomUUID();
   }
-  if (table === 'profiles' && !isAdmin(session)) {
+  // Perfil por upsert: sempre o da própria sessão, inclusive para o
+  // administrador (o perfil de outra conta não é regravado por aqui).
+  if (table === 'profiles') {
     payload.id = session.user.id;
     payload.email = session.user.email;
   } else if (config.userScopedBy && config.userScopedBy !== 'id') {
@@ -1168,6 +1291,15 @@ export async function runUpdateQuery(options: {
     }
   }
   protectWriteColumns(table, session, payload, 'update');
+  // LGPD: em outras contas o administrador só altera as colunas liberadas
+  // (ex.: papel e status do onboarding), nunca dados do titular.
+  if (acessoEntreContas(table, options.filters, session)) {
+    exigirColunasEntreContas(
+      table,
+      Object.keys(payload).filter((coluna) => coluna !== 'updated_at'),
+      TABLE_CONFIG[table].adminWriteColumns ?? []
+    );
+  }
   const entries = Object.entries(payload);
 
   if (entries.length === 0) {
@@ -1249,26 +1381,24 @@ export async function runDeleteQuery(options: {
   await ensurePlanFeatureAccessForTable(table, session, 'write');
   assertWriteFilters(options.filters, 'excluir');
 
-  // O administrador remove a conta inteira (users → perfil e dados em
-  // cascata), nunca a própria.
-  if (table === 'profiles' && isAdmin(session)) {
-    const where = buildWhereClause(table, options.filters, session, true);
-    const rows = await queryRows<{ id: string }>(
-      `SELECT t.id FROM profiles t ${where.clause}`,
-      where.params
+  // Perfil não se apaga pela API de dados: a exclusão é da conta inteira e
+  // passa pelas regras da LGPD (DELETE /api/account pelo titular, DELETE
+  // /api/admin/users/:id pelo administrador). Antes, o titular apagava só o
+  // próprio perfil (a conta ficava sem login e com o e-mail preso) e o
+  // administrador removia contas sem as verificações da exclusão (assinatura
+  // paga ativa, último administrador) e sem apagar as imagens enviadas.
+  if (table === 'profiles') {
+    throw new HttpError(
+      'O perfil só é removido com a exclusão da conta (página do perfil ou painel de usuários).',
+      403
     );
-    if (rows.some((row) => row.id === session.user.id)) {
-      throw new HttpError(
-        'Um administrador não pode remover a própria conta por aqui.',
-        400
-      );
-    }
-    await withTransaction(async (connection) => {
-      for (const row of rows) {
-        await connection.execute('DELETE FROM users WHERE id = ?', [row.id]);
-      }
-    });
-    return { data: { deleted: rows.length }, error: null };
+  }
+  // LGPD: o administrador não apaga dados de outras contas.
+  if (acessoEntreContas(table, options.filters, session)) {
+    throw new HttpError(
+      `Os dados de ${table} de outra conta só podem ser apagados pelo titular (LGPD).`,
+      403
+    );
   }
 
   const where = buildWhereClause(table, options.filters, options.session, true);

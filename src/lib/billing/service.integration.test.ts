@@ -109,6 +109,11 @@ afterAll(() => {
 
 describe('webhook Stripe', () => {
   it('recusa requisição sem assinatura ou com assinatura inválida', async () => {
+    // Outros arquivos de teste também recebem eventos (ex.: faturas da LGPD):
+    // a verificação é de que nenhum evento novo foi gravado aqui.
+    const eventosAntes = await contar(
+      "SELECT COUNT(*) AS total FROM billing_webhook_events WHERE provider = 'stripe'"
+    );
     const usuario = await criarUsuario('patient', 'Assinatura');
     const payload = eventoDeAssinatura({
       tipo: 'customer.subscription.updated',
@@ -146,7 +151,7 @@ describe('webhook Stripe', () => {
       await contar(
         "SELECT COUNT(*) AS total FROM billing_webhook_events WHERE provider = 'stripe'"
       )
-    ).toBe(0);
+    ).toBe(eventosAntes);
   });
 
   it('ativa o plano pago e ignora a reentrega do mesmo evento', async () => {

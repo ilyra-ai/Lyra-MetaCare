@@ -170,20 +170,29 @@ export function UserManagementContent() {
   const handleDeleteUser = async () => {
     if (!userToDelete) return;
 
-    const { error } = await db
-      .from('profiles')
-      .delete()
-      .eq('id', userToDelete.id);
-
-    if (error) {
-      toast.error('Erro ao remover perfil do usuário.', {
-        description: error.message,
+    // Exclusão da conta inteira pelas regras da LGPD (mesmo serviço da
+    // exclusão feita pela própria pessoa; registros fiscais permanecem).
+    try {
+      const resposta = await fetch(`/api/admin/users/${userToDelete.id}`, {
+        method: 'DELETE',
+        credentials: 'include',
       });
-    } else {
-      toast.success(
-        `Perfil de ${userToDelete.firstName || 'usuário'} foi removido.`
-      );
-      await fetchUsers();
+      const corpo = (await resposta.json().catch(() => null)) as {
+        error?: string;
+      } | null;
+      if (!resposta.ok) {
+        toast.error('Não foi possível excluir a conta.', {
+          description: corpo?.error ?? `HTTP ${resposta.status}`,
+        });
+      } else {
+        toast.success(
+          `Conta de ${userToDelete.firstName || 'usuário'} excluída.`
+        );
+        await fetchUsers();
+      }
+    } catch (falha: unknown) {
+      console.error('Falha ao excluir a conta:', falha);
+      toast.error('Sem conexão com o servidor. Tente novamente.');
     }
 
     setIsDeleteAlertOpen(false);
@@ -424,11 +433,13 @@ export function UserManagementContent() {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja deletar o perfil de{' '}
+              Tem certeza de que deseja excluir a conta de{' '}
               <span className="font-bold">
                 {userToDelete?.firstName || 'usuário'}
               </span>
-              ? Esta ação não pode ser desfeita.
+              ? Todos os dados pessoais e de saúde dela serão apagados; só os
+              registros fiscais permanecem, como exige a lei. Esta ação não pode
+              ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

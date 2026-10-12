@@ -932,6 +932,135 @@ async function syncStripeSubscription(
   });
 }
 
+function idDoPreco(price: string | Stripe.Price | undefined | null) {
+  if (!price) {
+    return null;
+  }
+  return typeof price === 'string' ? price : price.id;
+}
+
+/**
+ * Registro fiscal de uma fatura paga (LGPD, tarefa 28.1). Guarda só o que a
+ * obrigação fiscal exige (valores, datas, número da fatura e a fotografia do
+ * comprador no momento da compra) e nunca dado de saúde. O registro é
+ * idempotente pelo id da fatura e sobrevive à exclusão da conta: o vínculo com
+ * o usuário vira NULL (ON DELETE SET NULL).
+ */
+async function registrarFaturaPaga(invoice: Stripe.Invoice) {
+  const detalhesDaAssinatura = invoice.parent?.subscription_details ?? null;
+  const customerId =
+    typeof invoice.customer === 'string'
+      ? invoice.customer
+      : (invoice.customer?.id ?? null);
+
+  const userIdDoMetadado =
+    typeof detalhesDaAssinatura?.metadata?.lyra_user_id === 'string'
+      ? detalhesDaAssinatura.metadata.lyra_user_id
+      : null;
+  const userIdCandidato =
+    userIdDoMetadado ??
+    (customerId ? await getUserIdByExternalCustomerId(customerId) : null);
+  // Só vincula se a conta existir: um id inválido derrubaria a FK, e a fatura
+  // continua sendo um fato fiscal mesmo sem conta associada.
+  const existentes = userIdCandidato
+    ? await queryRows<{ id: string }>(
+        'SELECT id FROM users WHERE id = ? LIMIT 1',
+        [userIdCandidato]
+      )
+    : [];
+  const userId = existentes[0]?.id ?? null;
+
+  const primeiraLinha = invoice.lines?.data?.[0];
+  const priceId = idDoPreco(primeiraLinha?.pricing?.price_details?.price);
+  let planKey: string | null = null;
+  let intervalo: string | null = null;
+  if (priceId) {
+    const planos = await queryRows<{
+      plan_key: string;
+      external_annual_price_id: string | null;
+    }>(
+      `
+        SELECT plan_key, external_annual_price_id
+        FROM subscription_plans
+        WHERE external_monthly_price_id = ? OR external_annual_price_id = ?
+        LIMIT 1
+      `,
+      [priceId, priceId]
+    );
+    if (planos[0]) {
+      planKey = planos[0].plan_key;
+      intervalo =
+        planos[0].external_annual_price_id === priceId ? 'annual' : 'monthly';
+    }
+  }
+
+  const documento = invoice.customer_tax_ids?.[0] ?? null;
+  const impostos = (invoice.total_taxes ?? []).reduce(
+    (soma, imposto) => soma + imposto.amount,
+    0
+  );
+  const pagoEm =
+    invoice.status_transitions?.paid_at ??
+    invoice.effective_at ??
+    invoice.created;
+
+  await executeStatement(
+    `
+      INSERT IGNORE INTO fiscal_records (
+        id,
+        provider,
+        external_invoice_id,
+        invoice_number,
+        user_id,
+        external_customer_id,
+        buyer_name,
+        buyer_email,
+        buyer_tax_id_type,
+        buyer_tax_id,
+        buyer_address,
+        description,
+        plan_key,
+        billing_interval,
+        currency_code,
+        amount_subtotal,
+        amount_tax,
+        amount_total,
+        period_start,
+        period_end,
+        paid_at,
+        hosted_invoice_url
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    [
+      crypto.randomUUID(),
+      getStripeProviderName(),
+      invoice.id,
+      invoice.number ?? null,
+      userId,
+      customerId,
+      invoice.customer_name ?? null,
+      invoice.customer_email ?? null,
+      documento?.type ?? null,
+      documento?.value ?? null,
+      invoice.customer_address
+        ? JSON.stringify(invoice.customer_address)
+        : null,
+      primeiraLinha?.description?.slice(0, 255) ?? invoice.description ?? null,
+      planKey,
+      intervalo,
+      invoice.currency.toUpperCase(),
+      invoice.subtotal,
+      impostos,
+      invoice.total,
+      formatUtcDateTimeFromUnix(invoice.period_start),
+      formatUtcDateTimeFromUnix(invoice.period_end),
+      formatUtcDateTimeFromUnix(pagoEm),
+      invoice.hosted_invoice_url ?? null,
+    ]
+  );
+}
+
 export async function processStripeWebhook(options: {
   payload: string;
   signature: string | null;
@@ -1011,6 +1140,10 @@ export async function processStripeWebhook(options: {
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
         await syncStripeSubscription(subscription, event.type);
+        break;
+      }
+      case 'invoice.paid': {
+        await registrarFaturaPaga(event.data.object as Stripe.Invoice);
         break;
       }
       default:

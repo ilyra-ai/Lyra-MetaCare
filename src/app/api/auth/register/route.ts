@@ -9,6 +9,7 @@ import {
   signSessionToken,
 } from '@/lib/auth/session';
 import { lerJson, respostaDeErro } from '@/lib/http/api';
+import { registrarConsentimentos } from '@/lib/lgpd/conta';
 import { withTransaction } from '@/lib/mysql/pool';
 import { ensureUserSubscription } from '@/lib/plans/service';
 import {
@@ -39,6 +40,11 @@ const registerSchema = z.object({
     .max(200, 'A senha pode ter no máximo 200 caracteres.'),
   firstName: nomeOpcional,
   lastName: nomeOpcional,
+  // LGPD: a conta só nasce com o aceite dos termos de uso e da política de
+  // privacidade, registrado (versão e data) em consent_records.
+  acceptTerms: z.literal(true, {
+    error: 'Aceite os termos de uso e a política de privacidade.',
+  }),
 });
 
 export async function POST(request: Request) {
@@ -92,6 +98,12 @@ export async function POST(request: Request) {
           papel,
         ]
       );
+      await registrarConsentimentos({
+        userId,
+        tipos: ['terms_of_use', 'privacy_policy'],
+        userAgent: request.headers.get('user-agent'),
+        connection,
+      });
       return papel;
     });
 

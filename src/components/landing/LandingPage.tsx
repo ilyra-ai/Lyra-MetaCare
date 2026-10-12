@@ -34,6 +34,11 @@ import type {
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { getBuilderIcon } from '@/lib/site-page-config/ui';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
+import {
+  ROTA_POLITICA_DE_PRIVACIDADE,
+  ROTA_TERMOS_DE_USO,
+} from '@/lib/lgpd/documentos';
 
 // Visual "Lyra Clean": fundo suave chapado para o ícone de cada item. O
 // violeta fica reservado ao tom astral/IA ("cosmic"); os demais usam o teal
@@ -1000,6 +1005,23 @@ export function LandingPage({
             {config.footer.note}
           </p>
         </div>
+        <nav
+          aria-label="Documentos legais"
+          className="mx-auto mt-6 flex max-w-7xl flex-wrap gap-x-5 border-t border-border pt-4 text-sm text-muted-foreground"
+        >
+          <Link
+            href={ROTA_POLITICA_DE_PRIVACIDADE}
+            className="inline-flex min-h-11 items-center underline-offset-4 hover:text-foreground hover:underline"
+          >
+            Política de privacidade
+          </Link>
+          <Link
+            href={ROTA_TERMOS_DE_USO}
+            className="inline-flex min-h-11 items-center underline-offset-4 hover:text-foreground hover:underline"
+          >
+            Termos de uso
+          </Link>
+        </nav>
       </footer>
     </div>
   );

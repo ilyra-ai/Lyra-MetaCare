@@ -17,7 +17,7 @@ const SENHA = 'Senha-Troca-2026';
 async function cadastrar(email: string) {
   const resposta = await chamar(register.POST, {
     method: 'POST',
-    body: { email, password: SENHA, firstName: 'Troca' },
+    body: { email, password: SENHA, firstName: 'Troca', acceptTerms: true },
     headers: ORIGEM,
     usuario: null,
   });

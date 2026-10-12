@@ -112,13 +112,6 @@ interface AdminUserListRow {
   onboarding_completed: number;
   created_at: string;
   avatar_url: string | null;
-  age: number | null;
-  gender: string | null;
-  activity_level: number | null;
-  goals: string | string[] | null;
-  birth_date: string | null;
-  birth_time: string | null;
-  birth_location: string | null;
   role: string;
   plan_key: PlanKey | null;
   plan_name: string | null;
@@ -166,25 +159,6 @@ function toPlanSummary(row: CurrentSubscriptionRow): SubscriptionPlanSummary {
     externalMonthlyPriceId: row.external_monthly_price_id,
     externalAnnualPriceId: row.external_annual_price_id,
   };
-}
-
-function parseJsonArrayValue(value: string | string[] | null) {
-  if (Array.isArray(value)) {
-    return value;
-  }
-
-  if (typeof value !== 'string') {
-    return null;
-  }
-
-  try {
-    const parsed = JSON.parse(value) as unknown;
-    return Array.isArray(parsed)
-      ? parsed.filter((item): item is string => typeof item === 'string')
-      : null;
-  } catch {
-    return null;
-  }
 }
 
 async function queryWithConnection<TRow extends object>(
@@ -925,13 +899,6 @@ export async function listAdminUsersWithSubscriptions(options: {
           p.onboarding_completed,
           p.created_at,
           p.avatar_url,
-          p.age,
-          p.gender,
-          p.activity_level,
-          p.goals,
-          p.birth_date,
-          p.birth_time,
-          p.birth_location,
           p.role,
           sp.plan_key,
           sp.name AS plan_name,
@@ -974,14 +941,6 @@ export async function listAdminUsersWithSubscriptions(options: {
     onboardingCompleted: row.onboarding_completed === 1,
     createdAt: row.created_at,
     avatarUrl: row.avatar_url,
-    age: row.age === null ? null : Number(row.age),
-    gender: row.gender,
-    activityLevel:
-      row.activity_level === null ? null : Number(row.activity_level),
-    goals: parseJsonArrayValue(row.goals),
-    birthDate: row.birth_date,
-    birthTime: row.birth_time,
-    birthLocation: row.birth_location,
     role: row.role,
     plan: {
       key: row.plan_key,

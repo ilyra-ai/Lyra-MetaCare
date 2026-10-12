@@ -53,6 +53,8 @@ import { db as databaseClient } from '@/integrations/mysql/client';
 import { AccountSubscriptionCard } from '@/components/subscription/AccountSubscriptionCard';
 import { MenstrualCycleSettings } from './MenstrualCycleSettings';
 import { AccountEmailCard } from './AccountEmailCard';
+import { PrivacyDataCard } from './PrivacyDataCard';
+import { PurchaseHistoryCard } from './PurchaseHistoryCard';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -693,7 +695,9 @@ export function ProfileForm() {
 
       <div className="min-w-0 space-y-6 lg:col-span-1">
         <AccountSubscriptionCard />
+        <PurchaseHistoryCard />
         <AccountEmailCard />
+        <PrivacyDataCard />
         <Card>
           <CardHeader>
             <CardTitle>Ações da Conta</CardTitle>

@@ -5,6 +5,12 @@ export const ROTAS_PUBLICAS: ReadonlySet<string> = new Set(['/', '/login']);
 export const ROTA_LOGIN = '/login';
 export const ROTA_ONBOARDING = '/onboarding';
 export const ROTA_INICIAL = '/';
+// Política de privacidade e termos de uso: abertos a qualquer pessoa, a
+// qualquer momento (inclusive durante o onboarding, que tem links para eles).
+export const ROTAS_SEMPRE_LIBERADAS: ReadonlySet<string> = new Set([
+  '/privacidade',
+  '/termos',
+]);
 
 /**
  * Decide para onde a sessão precisa ir a partir da rota aberta.
@@ -19,6 +25,10 @@ export function destinoObrigatorio(
   session: AppSession | null,
   pathname: string
 ): string | null {
+  if (ROTAS_SEMPRE_LIBERADAS.has(pathname)) {
+    return null;
+  }
+
   if (!session) {
     return ROTAS_PUBLICAS.has(pathname) ? null : ROTA_LOGIN;
   }

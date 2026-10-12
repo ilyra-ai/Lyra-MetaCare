@@ -130,13 +130,8 @@ export interface AdminUserListItem {
   onboardingCompleted: boolean;
   createdAt: string;
   avatarUrl: string | null;
-  age: number | null;
-  gender: string | null;
-  activityLevel: number | null;
-  goals: string[] | null;
-  birthDate: string | null;
-  birthTime: string | null;
-  birthLocation: string | null;
+  // LGPD: a listagem administrativa traz só identificação, papel, onboarding
+  // e plano. Nascimento, gênero, idade, metas e atividade ficam com o titular.
   role: string;
   plan: AdminUserPlanSummary;
 }

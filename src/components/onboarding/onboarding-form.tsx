@@ -58,9 +58,11 @@ import {
   useEtapaAtual,
 } from './OnboardingNavigationDots';
 import { METAS_DO_PERFIL, NIVEL_DE_ATIVIDADE } from './opcoes-de-perfil';
+import Link from 'next/link';
+import { ROTA_POLITICA_DE_PRIVACIDADE } from '@/lib/lgpd/documentos';
 import { cn } from '@/lib/utils';
 import { DatePicker } from '@/components/ui/date-picker';
-import { differenceInYears } from 'date-fns';
+import { differenceInYears, format } from 'date-fns';
 import { TimeInput } from '@/components/ui/time-input';
 
 const onboardingSchema = z.object({
@@ -213,9 +215,32 @@ export function OnboardingForm() {
     }
     setIsSubmitting(true);
 
+    // LGPD, art. 11, I: o consentimento específico para dados de saúde é
+    // registrado (versão e data) antes de qualquer dado de saúde ser gravado.
+    try {
+      const consentimento = await fetch('/api/account/consents', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ types: ['health_data_processing'] }),
+      });
+      if (!consentimento.ok) {
+        throw new Error(`HTTP ${consentimento.status}`);
+      }
+    } catch (falha: unknown) {
+      setIsSubmitting(false);
+      console.error('Erro ao registrar o consentimento:', falha);
+      toast.error('Não foi possível registrar o seu consentimento agora.', {
+        description: 'Verifique a conexão e tente finalizar de novo.',
+      });
+      return;
+    }
+
     const profileData = data;
+    // Data do calendário local (toISOString converteria para UTC e, em fusos
+    // a leste de Greenwich, gravaria o dia anterior).
     const formattedBirthDate = profileData.birth_date
-      ? profileData.birth_date.toISOString().split('T')[0]
+      ? format(profileData.birth_date, 'yyyy-MM-dd')
       : null;
     const ageInt = Math.floor(profileData.age);
     const formattedBirthTime =
@@ -719,12 +744,24 @@ export function OnboardingForm() {
                       </FormControl>
                       <div className="space-y-1.5">
                         <FormLabel className="cursor-pointer leading-snug">
-                          Eu concordo com o processamento dos meus dados para
-                          personalizar minha experiência.
+                          Autorizo a Lyra a tratar os meus dados de saúde e
+                          bem-estar para calcular indicadores e gerar
+                          orientações personalizadas.
                         </FormLabel>
-                        <FormDescription className="text-xs">
-                          Você pode gerenciar seus dados nas configurações a
-                          qualquer momento.
+                        <FormDescription className="text-xs leading-5">
+                          Dados de saúde são sensíveis (LGPD, art. 11): só você
+                          os acessa. Você pode baixá-los ou excluir a conta a
+                          qualquer momento em Perfil → Privacidade e dados.
+                          Detalhes na{' '}
+                          <Link
+                            href={ROTA_POLITICA_DE_PRIVACIDADE}
+                            target="_blank"
+                            className="font-medium text-primary underline underline-offset-2"
+                          >
+                            política de privacidade
+                            <span className="sr-only"> (abre em nova aba)</span>
+                          </Link>
+                          .
                         </FormDescription>
                         <FormMessage />
                       </div>

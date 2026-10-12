@@ -27,7 +27,7 @@ function ipNovo() {
 async function cadastrar(email: string, senha: string, ip = ipNovo()) {
   return chamar(register.POST, {
     method: 'POST',
-    body: { email, password: senha },
+    body: { email, password: senha, acceptTerms: true },
     headers: { 'x-forwarded-for': ip },
     usuario: null,
   });

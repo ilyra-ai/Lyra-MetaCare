@@ -33,10 +33,7 @@ import { ptBR } from 'date-fns/locale';
 import {
   User,
   Calendar,
-  Clock,
-  MapPin,
-  Activity,
-  Target,
+  Lock,
   Loader2,
   ShieldCheck,
   Sparkles,
@@ -357,10 +354,11 @@ export function UserDetailModal({
             <div className="min-w-0 space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Perfil e contexto</CardTitle>
+                  <CardTitle>Conta</CardTitle>
                   <CardDescription>
-                    Dados operacionais e cadastrais usados na jornada do
-                    produto.
+                    Dados de gestão da conta. Nascimento, gênero, idade, metas,
+                    atividade, ciclo e métricas de saúde ficam só com o titular
+                    (LGPD).
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4 md:grid-cols-2">
@@ -375,46 +373,16 @@ export function UserDetailModal({
                       }
                     )}
                   />
-                  <DetailItem icon={User} label="Gênero" value={user.gender} />
                   <DetailItem
-                    icon={Calendar}
-                    label="Idade"
-                    value={user.age ? `${user.age} anos` : null}
+                    icon={ShieldCheck}
+                    label="Papel"
+                    value={user.role === 'admin' ? 'Administrador' : 'Usuário'}
                   />
                   <DetailItem
-                    icon={Activity}
-                    label="Nível de Atividade"
-                    value={user.activityLevel}
+                    icon={Lock}
+                    label="Dados pessoais e de saúde"
+                    value="Visíveis só para o titular. Pedidos de acesso, correção ou exclusão são feitos pela própria pessoa na página do perfil."
                   />
-                  <DetailItem
-                    icon={MapPin}
-                    label="Local de Nascimento"
-                    value={user.birthLocation}
-                  />
-                  <DetailItem
-                    icon={Clock}
-                    label="Hora de Nascimento"
-                    value={user.birthTime}
-                  />
-                  <div className="md:col-span-2">
-                    <DetailItem
-                      icon={Target}
-                      label="Metas"
-                      value={
-                        user.goals && user.goals.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {user.goals.map((goal) => (
-                              <Badge key={goal} variant="secondary">
-                                {goal}
-                              </Badge>
-                            ))}
-                          </div>
-                        ) : (
-                          'Nenhuma meta definida'
-                        )
-                      }
-                    />
-                  </div>
                 </CardContent>
               </Card>
             </div>

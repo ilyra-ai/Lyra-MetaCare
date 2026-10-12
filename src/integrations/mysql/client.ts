@@ -383,6 +383,8 @@ export const db = {
       password: string;
       firstName?: string;
       lastName?: string;
+      // LGPD: aceite dos termos de uso e da política de privacidade.
+      acceptTerms: boolean;
     }) {
       const result = await requestJson<{
         session?: AppSession;

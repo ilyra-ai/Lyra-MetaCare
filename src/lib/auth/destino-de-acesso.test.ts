@@ -49,6 +49,14 @@ describe('destinoObrigatorio', () => {
     expect(destinoObrigatorio(nova, '/onboarding')).toBeNull();
   });
 
+  it('política de privacidade e termos ficam abertos para todos', () => {
+    for (const rota of ['/privacidade', '/termos']) {
+      expect(destinoObrigatorio(null, rota)).toBeNull();
+      expect(destinoObrigatorio(sessao(false), rota)).toBeNull();
+      expect(destinoObrigatorio(sessao(true), rota)).toBeNull();
+    }
+  });
+
   it('administrador sem onboarding também passa pelo onboarding', () => {
     expect(destinoObrigatorio(sessao(false, 'admin'), '/admin/users')).toBe(
       '/onboarding'
