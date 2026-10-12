@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `███████████████████░` **95%** |
+| Progresso          | `███████████████████░` **97%** |
 | Tarefas totais     | 38                             |
-| 🟢 Finalizadas     | 36                             |
+| 🟢 Finalizadas     | 37                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 1                              |
+| ⚪ A iniciar       | 0                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-12                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (36 ÷ 38 = 94,7%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (37 ÷ 38 = 97,4%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,9 +43,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                             | O que está sendo realizado                                                                                                                                                                                                                                                                                           |
-| --- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 29  | Rotas, menus, botões e links reais | Verificação real de todas as rotas da sidebar, do perfil e do menu do perfil e de todos os botões, links e ações das telas, com correção pela causa raiz. Inclui o achado da tarefa 33: `/monitoring` mostra ao paciente nomes de variáveis internas de configuração (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`). |
+| Nº  | Tarefa      | O que está sendo realizado                                                                                                                                                       |
+| --- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 34  | Tema escuro | Ativar o tema escuro (com alternância) garantindo contraste de leitura em todos os textos, ícones, gráficos e componentes, comprovado por auditoria de contraste no tema escuro. |
 
 ### BLOQUEADAS
 
@@ -55,11 +55,7 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-_Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
-
-### 34 · Tema escuro
-
-- Ativar o tema escuro (com alternância) garantindo contraste de leitura em todos os textos, ícones, gráficos e componentes, comprovado por auditoria de contraste no tema escuro.
+Nenhuma tarefa a iniciar.
 
 ---
 
@@ -863,3 +859,20 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
   - migrations já aplicadas: mudar o texto altera o checksum. A `005` grava só na tabela `ui_config`, que não é usada;
   - o banco: os textos gravados já estavam acentuados, e não há configuração de página salva (a landing e o login usam os padrões corrigidos).
 - **Evidências:** varredura final sem texto visível sem acento; no navegador, landing e login sem nenhum termo sem acento; `test` 236/236; `test:integration` 90/90; `test:launchers` OK; lint, format e types com exit 0; `build` com exit 0.
+
+### 29 · Rotas, menus, botões e links reais
+
+- **Status:** 🟢 finalizada · **Commit:** `124c7fe` · **Push:** `main -> main` (confirmado; `main...origin/main` sem divergência)
+- **Método:** varredura no navegador (Playwright, servidor de produção) de todas as rotas como paciente, como administrador e como visitante. Em cada tela foram listados os botões sem nenhuma ação ligada (sem handler de clique/teclado, sem submit e sem gatilho Radix) e todos os links internos, abertos um a um para conferir 404.
+- **Achados e correções (causa raiz):**
+  - **Sino de notificações sem ação:** virou o componente `NotificationsMenu`, com dados reais da conta (consultas dos próximos 7 dias pela API de dados e avisos da assinatura: pagamento pendente ou renovação cancelada), contador com plural correto e links para `/appointments` e `/profile`. Sem dados, mostra "Nenhuma notificação no momento.".
+  - **"Preferências" no menu do perfil abria a mesma página de "Meu perfil":** virou "Privacidade e dados", que leva ao card dos direitos LGPD (`/profile#privacidade-e-dados`). Como os cards acima carregam depois e empurram o card para baixo, a rolagem é refeita a cada mudança de altura até a pessoa interagir (limite de 5 s).
+  - **Link `/dashboard` (404) no conteúdo do Puck:** o painel fica em `/`. Corrigido no código (`initial-data`, `feature-card`, rota pública do documento) e nos documentos já gravados pela migration `016_corrige_link_dashboard_puck.sql`.
+  - **Construtor de UI criava item de sidebar com `/nova-rota` (404):** o item novo nasce com a primeira rota real ainda não usada (o botão fica desabilitado quando não sobra nenhuma) e o campo "Rota" virou um seletor das rotas existentes, com as já usadas desabilitadas. O schema do módulo exige formato de rota interna também no servidor.
+  - **`/monitoring` mostrava ao paciente os nomes das variáveis da Stripe** (achado da tarefa 33): `GET /api/account/billing` só envia `missingKeys` ao administrador, e checkout/portal sem credencial respondem 503 com mensagem genérica para o paciente.
+- **Evidências:**
+  - Varredura final: 12 rotas do paciente, 22 do administrador e 2 do visitante sem nenhum botão sem ação; 10 e 21 links internos verificados sem 404; nenhum erro de página.
+  - Navegador em 1440 px e 390 px: sino com "Notificações (1 nova)", popover dentro da tela e clique levando a `/appointments`; "Privacidade e dados" deixa o card no topo (80 px, logo abaixo do cabeçalho); `/monitoring` sem `STRIPE_`; documento sem estouro horizontal.
+  - Construtor: 17 seletores de rota, "Novo item" habilitado (sobrava `/admin/fiscal`), rotas em uso desabilitadas.
+  - Teste de integração novo "configuração interna da cobrança" (`seguranca.integration.test.ts`).
+  - `test` 236/236; `test:integration` 91/91; lint, format e types com exit 0; `build` com exit 0. Provas de remoção: `/nova-rota` e `Preferências` só aparecem em comentários que explicam a correção; `"/dashboard"` sem ocorrência em `src` e `modules`; 0 documentos Puck com `/dashboard`. Usuários de QA removidos.
