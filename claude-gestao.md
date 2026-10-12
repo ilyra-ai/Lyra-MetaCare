@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `████████████████░░░░` **79%** |
+| Progresso          | `████████████████░░░░` **82%** |
 | Tarefas totais     | 38                             |
-| 🟢 Finalizadas     | 30                             |
+| 🟢 Finalizadas     | 31                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 7                              |
+| ⚪ A iniciar       | 6                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-12                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (30 ÷ 38 = 78,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (31 ÷ 38 = 81,6%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,9 +43,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                | O que está sendo realizado                                                                                                                                  |
-| --- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 32  | Página `/instruments` | Avaliação de risco da remoção (rotas, documento Puck `instruments`, tabela, API de dados, testes e links) e remoção com prova de morte se não houver risco. |
+| Nº  | Tarefa                        | O que está sendo realizado                                                                                                                              |
+| --- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 35  | Onboarding no primeiro acesso | Verificação real com conta nova (cadastro → primeira tela → onboarding) e dos caminhos de entrada (login, rotas protegidas, volta ao app sem concluir). |
 
 ### BLOQUEADAS
 
@@ -78,10 +78,6 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
 ### 34 · Tema escuro
 
 - Ativar o tema escuro (com alternância) garantindo contraste de leitura em todos os textos, ícones, gráficos e componentes, comprovado por auditoria de contraste no tema escuro.
-
-### 35 · Onboarding no primeiro acesso
-
-- Verificar (e corrigir, se preciso) que o onboarding começa imediatamente quando um novo usuário cria a conta e acessa o app pela primeira vez.
 
 ### 36 · Edição dos dados do onboarding no perfil
 
@@ -751,3 +747,18 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
   - Testes novos: `src/proxy.test.ts` (6) e matriz de integração em `dados-admin.integration.test.ts`; cadastro confirma `patient` e plano `free`.
   - `test` 247/247; `test:integration` 75/75; lint, format e types com exit 0; `build` com exit 0.
   - Usuário de QA removido do banco ao final.
+
+### 32 · Página `/instruments`
+
+- **Status:** 🟢 finalizada · **Commit:** `0741a4a` · **Push:** `3403a7c..0741a4a main -> main` (confirmado)
+- **Risco avaliado: nenhum.** A página era uma demonstração do template, sem link em sidebar, menu do celular, Ctrl K, landing ou documentos Puck publicados. Nenhum motor, tela ou API da Lyra lia a tabela. Ela era a única tabela lida sem sessão pela API de dados, então removê-la diminui a superfície exposta.
+- **Removido:**
+  - página `src/app/instruments/page.tsx`;
+  - tabela `instruments` e documento Puck `instruments` (migração `013_remove_instruments_demo.sql`, idempotente, sem dados de usuário);
+  - flag `publicRead` (agora toda leitura em `/api/data` exige sessão), tipos `InstrumentRow` e a chave Puck;
+  - `src/lib/mysql/query-utils.ts` e o teste dele: código morto, importado só pelo próprio teste.
+- **Evidências:**
+  - prova de morte: `grep -rn instruments` sem ocorrências no código; `publicRead` só aparece num campo homônimo e não relacionado do contrato do módulo `lyra-customaze-ui-ux`;
+  - migração aplicada; segunda execução com "Já aplicada" em todas; tabela inexistente e 0 documentos Puck `instruments`;
+  - produção: `/instruments` 404; `/api/data/instruments` 400 ("Tabela não suportada");
+  - `test` 226/226 (21 testes a menos, do arquivo morto removido); `test:integration` 75/75 (todas as tabelas exigem sessão: 401); lint, format e types com exit 0; `build` com exit 0.
