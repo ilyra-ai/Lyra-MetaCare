@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `██████████████████░░` **89%** |
+| Progresso          | `██████████████████░░` **91%** |
 | Tarefas totais     | 44                             |
-| 🟢 Finalizadas     | 39                             |
+| 🟢 Finalizadas     | 40                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 4                              |
+| ⚪ A iniciar       | 3                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-12                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (39 ÷ 44 = 88,6%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (40 ÷ 44 = 90,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -56,10 +56,6 @@ Nenhuma tarefa bloqueada.
 ## Tópico 3 · Tarefas a Iniciar
 
 _Pedido do usuário em 2026-10-12: métricas reais e automáticas, IA como coach diário guiado pelo mapa védico e diferenciais de 2026._
-
-### 41 · Mapa védico real de cada pessoa
-
-- Local de nascimento e de moradia escolhidos de uma base real de cidades (coordenadas e fuso), mapa natal sidéreo (Lagna, planetas, Rahu e Ketu, nakshatra natal), Vimshottari Mahadasha e Antardasha reais (hoje o campo é um texto fixo) e o Panchang do dia (tithi, nakshatra, yoga, karana, vara) com nascer e pôr do sol do local de moradia.
 
 ### 42 · Coach diário automático de IA
 
@@ -915,3 +911,21 @@ _Pedido do usuário em 2026-10-12: métricas reais e automáticas, IA como coach
 - **Causa:** o código tentava ler HealthKit/Health Connect por um plugin que só existe dentro de um app de celular (Capacitor), que o projeto não tem. No navegador isso nunca funcionava e o painel mostrava "Nenhum runtime nativo de saúde foi detectado" para todo usuário.
 - **Implementado:** `src/lib/health/healthConnect.ts` removido; tipos e conversão dos sinais em `src/lib/health/sinais-vitais.ts` (com testes). A sincronização (`HealthOrchestratorContext`) passou a ler as efemérides e os sinais do dia gravados no banco; a pulseira Bluetooth continua com leitura ao vivo. Mensagem de falha só quando algo real falha, sem citar integrações.
 - **Evidências:** prova de remoção sem referências a `healthConnect`, `getHealthRuntimeAvailability`, `fetchRealTimeVitals` ou "runtime nativo" no código; no navegador, painel e plano sem nenhuma menção a HealthKit, Health Connect ou runtime nativo, "Estado atual" em sintonia e sem erros de console; `test` 244/244; lint, format, types e `build` com exit 0.
+
+### 40 · Métricas reais gravadas
+
+- **Status:** 🟢 finalizada · **Commit:** `06f633e` · **Push:** `main -> main` (confirmado)
+- **Causa:** nada no app gravava `daily_metrics` (a tabela estava com 0 linhas); a pulseira Bluetooth só exibia leituras na tela e havia duas implementações dela, ambas lendo o campo "energia gasta" (bit 3 da característica GATT 0x2A37) como se fosse intervalo RR.
+- **Implementado:**
+  - **Check-in "Registrar meu dia"** (botão no painel e item nas ações rápidas): humor e energia (1 a 5), estresse, sono, passos, minutos ativos, água, cafeína, proteína, peso, FC de repouso, glicemia, pressão e meditação. Faixas e casas decimais definidas em `src/lib/metricas/registro-do-dia.ts`, as mesmas no navegador e no servidor; campos vazios não apagam o que já existe; o diálogo abre com os valores do dia.
+  - **Rotas:** `GET/POST /api/metricas/dia` e `POST /api/metricas/sensor` (este exige o recurso `wearable_bluetooth_connection`, antes só bloqueado na tela). `daily_metrics` deixou de aceitar escrita pela API genérica (403 com o caminho correto). O humor da avaliação do painel também grava o `mood_score` do dia.
+  - **Pulseira:** hook único `useBluetoothVitals` usado no painel e na central de dispositivos; `src/lib/health/sessao-cardiaca.ts` lê a medição conforme a especificação e agrega a sessão (FC mínima, máxima e média, repouso pela menor média móvel de 60 s, RMSSD só com RR de 300 a 2000 ms e sem saltos acima de 20%). A sessão é gravada a cada 5 minutos, ao desconectar, ao sair da página e na virada do dia; no banco, mínima e máxima viram os extremos do dia, a média é ponderada pelos minutos, o repouso fica com o menor valor e a VFC com a sessão mais recente. O canal ao vivo passou a ser um só por conexão (antes cada leitura abria um canal que nunca era fechado).
+  - **Migration 017:** `energy_level`, `sensor_heart_rate_avg`, `sensor_minutes` e `metrics_updated_at`.
+  - **Atualização:** painel, cartões e sincronização recarregam quando o dia é registrado.
+  - **Achado na auditoria do diálogo:** o aviso de erro do Sonner no tema claro tinha 4,34:1; os avisos passaram a usar os tokens da Lyra (cobertos pelo teste de contraste).
+- **Evidências:**
+  - Integração (`src/app/api/metricas.integration.test.ts`, 15 testes): gravação parcial que preserva o dia, 8 entradas inválidas recusadas com 400 sem gravar nada, 401 sem sessão, 403 na API genérica, humor da avaliação no dia, 403 da pulseira no plano Free, soma de duas sessões (extremos 58/132, média ponderada 79,5, repouso 61 vencendo o check-in de 64, VFC preservada) e sessão incoerente recusada.
+  - Unidade: leitura GATT (8 e 16 bits, energia gasta, truncada) e agregação (repouso 60 bpm, RMSSD 10 ms, artefatos), datas e mensagens de validação.
+  - Navegador (1440 px claro e 390 px escuro): diálogo pelo painel e pelas ações rápidas, erro "Glicemia: o mínimo é 20 mg/dL." com `aria-invalid`, painel de 0 para 9.000 passos e 2,5 L de água logo após salvar, reabertura com os valores do dia, axe sem violações nos dois temas, sem erros de console e sem estouro de largura.
+  - **Limite do ambiente:** a conexão Bluetooth real precisa de uma pulseira física e de navegador com Web Bluetooth; foi validada pelos testes de leitura e agregação e pela rota com a sessão agregada.
+  - `test` 263/263; `test:integration` 106/106; lint, format, types e `build` com exit 0 e sem avisos.
