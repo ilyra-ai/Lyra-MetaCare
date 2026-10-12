@@ -116,7 +116,11 @@ const loginSizingSchema = z.object({
 });
 
 const appNavigationItemSchema = z.object({
-  href: z.string().min(1),
+  // Rota interna do app ("/", "/plan", "/admin/users"...). O construtor só
+  // oferece rotas existentes; aqui o formato também é exigido no servidor.
+  href: z
+    .string()
+    .regex(/^\/[a-z0-9\-/]*$/, 'Use uma rota interna do app (ex.: /plan).'),
   label: z.string().min(1),
   description: z.string().min(1),
   visible: z.boolean(),

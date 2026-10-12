@@ -607,7 +607,14 @@ export async function getAccountBillingContext(options: {
     getBillingCustomerByUserId(options.session.user.id),
   ]);
 
-  const environment = getStripeEnvironmentStatus(options.origin);
+  const statusDoAmbiente = getStripeEnvironmentStatus(options.origin);
+  // Os nomes das variáveis de configuração que faltam são detalhe interno:
+  // só o administrador os recebe (antes iam para qualquer usuário e
+  // apareciam na tela de monitoramento do paciente).
+  const environment =
+    options.session.user.role === 'admin'
+      ? statusDoAmbiente
+      : { ...statusDoAmbiente, missingKeys: [] };
 
   return {
     environment,
@@ -626,19 +633,31 @@ export async function getAccountBillingContext(options: {
   };
 }
 
+/**
+ * Recusa a operação de cobrança quando a Stripe não está configurada. O
+ * administrador recebe a lista do que falta; os demais, uma mensagem sem
+ * detalhes internos de configuração.
+ */
+function exigirCobrancaConfigurada(session: AppSession, origin?: string) {
+  const environment = getStripeEnvironmentStatus(origin);
+  if (environment.configured) {
+    return;
+  }
+  throw new HttpError(
+    session.user.role === 'admin'
+      ? `Billing externo Stripe não está pronto neste ambiente. Faltando: ${environment.missingKeys.join(', ')}.`
+      : 'Os pagamentos online ainda não estão disponíveis neste ambiente.',
+    503
+  );
+}
+
 export async function createStripeCheckoutUrl(options: {
   session: AppSession;
   planKey: PlanKey;
   billingInterval: 'monthly' | 'annual';
   origin?: string;
 }) {
-  const environment = getStripeEnvironmentStatus(options.origin);
-  if (!environment.configured) {
-    throw new HttpError(
-      `Billing externo Stripe não está pronto neste ambiente. Faltando: ${environment.missingKeys.join(', ')}.`,
-      503
-    );
-  }
+  exigirCobrancaConfigurada(options.session, options.origin);
 
   if (options.planKey === 'free') {
     throw new HttpError(
@@ -708,13 +727,7 @@ export async function createStripePortalUrl(options: {
   session: AppSession;
   origin?: string;
 }) {
-  const environment = getStripeEnvironmentStatus(options.origin);
-  if (!environment.configured) {
-    throw new HttpError(
-      `Billing externo Stripe não está pronto neste ambiente. Faltando: ${environment.missingKeys.join(', ')}.`,
-      503
-    );
-  }
+  exigirCobrancaConfigurada(options.session, options.origin);
 
   const baseUrl = getBillingBaseUrl(options.origin);
   if (!baseUrl) {

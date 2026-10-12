@@ -19,6 +19,7 @@ import { LandingPage } from '@/components/landing/LandingPage';
 import {
   getVisibleNavigation,
   groupNavigation,
+  navigationItems,
 } from '@/components/layout/navigation';
 import {
   Accordion,
@@ -433,13 +434,23 @@ function buildLoginHighlightItem(): LoginHighlightItem {
   };
 }
 
-function buildAppNavigationItem() {
-  return {
-    href: '/nova-rota',
-    label: 'Novo item',
-    description: 'Explique o propósito deste ponto de navegação.',
-    visible: true,
-  };
+// Rotas reais do app que podem virar item da sidebar. Antes a rota era texto
+// livre e o item novo nascia com "/nova-rota", que levava a uma página 404
+// se o administrador publicasse sem editar.
+const ROTAS_DE_NAVEGACAO = navigationItems.map((item) => ({
+  href: item.href,
+  label: item.label,
+  description: item.description,
+}));
+
+function buildAppNavigationItem(hrefsEmUso: readonly string[]) {
+  const rota = ROTAS_DE_NAVEGACAO.find(
+    (candidata) => !hrefsEmUso.includes(candidata.href)
+  );
+  if (!rota) {
+    return null;
+  }
+  return { ...rota, visible: true };
 }
 
 function AppExperiencePreview({ config }: { config: AppPageConfig }) {
@@ -2229,6 +2240,8 @@ export function SiteExperienceBuilder() {
   }
 
   function renderAppEditor() {
+    const hrefsDaSidebar = appDraft.sidebar.items.map((item) => item.href);
+    const novoItemDeNavegacao = buildAppNavigationItem(hrefsDaSidebar);
     return (
       <Accordion type="multiple" defaultValue={['visual', 'sidebar', 'pages']}>
         <AccordionItem value="visual">
@@ -2485,9 +2498,17 @@ export function SiteExperienceBuilder() {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() =>
-                  addListItem(['sidebar', 'items'], buildAppNavigationItem())
+                disabled={!novoItemDeNavegacao}
+                title={
+                  novoItemDeNavegacao
+                    ? undefined
+                    : 'Todas as rotas do app já estão na sidebar.'
                 }
+                onClick={() => {
+                  if (novoItemDeNavegacao) {
+                    addListItem(['sidebar', 'items'], novoItemDeNavegacao);
+                  }
+                }}
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Novo item
@@ -2504,17 +2525,35 @@ export function SiteExperienceBuilder() {
               >
                 <div className="grid gap-4 xl:grid-cols-2">
                   <FieldBlock label="Rota">
-                    <Input
+                    <Select
                       value={item.href}
-                      onChange={(event) =>
+                      onValueChange={(valor) =>
                         updateListItem(
                           ['sidebar', 'items'],
                           index,
                           'href',
-                          event.target.value
+                          valor
                         )
                       }
-                    />
+                    >
+                      <SelectTrigger aria-label={`Rota do item ${item.label}`}>
+                        <SelectValue placeholder="Escolha uma rota" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ROTAS_DE_NAVEGACAO.map((rota) => (
+                          <SelectItem
+                            key={rota.href}
+                            value={rota.href}
+                            disabled={
+                              rota.href !== item.href &&
+                              hrefsDaSidebar.includes(rota.href)
+                            }
+                          >
+                            {rota.label} ({rota.href})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FieldBlock>
                   <FieldBlock label="Label">
                     <Input

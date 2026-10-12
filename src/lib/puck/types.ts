@@ -326,7 +326,7 @@ export const lyraPuckDocuments: Array<{
     description:
       'Espaço principal para análise integral do paciente com Lyra MetaCare.',
     route: '/admin/puck?documentKey=dashboard',
-    publicRoute: '/dashboard',
+    publicRoute: '/',
     publicLabel: 'Página de Dashboard Principal',
     surfaceKey: 'patient-portal',
   },

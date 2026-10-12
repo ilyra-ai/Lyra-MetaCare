@@ -13,7 +13,9 @@ import {
 import { criarUsuario } from '../../../tests/integration/fixtures';
 import { chamar, entrarComo } from '../../../tests/integration/http';
 
+import * as cobranca from './account/billing/route';
 import * as adminUsuarios from './admin/users/route';
+import * as checkout from './billing/checkout/route';
 import * as login from './auth/login/route';
 import * as register from './auth/register/route';
 import * as sessao from './auth/session/route';
@@ -180,5 +182,51 @@ describe('sessão', () => {
     await executeStatement('DELETE FROM users WHERE id = ?', [usuario.id]);
     const resposta = await chamar(sessao.GET);
     expect(resposta.json).toEqual({ session: null });
+  });
+});
+
+describe('configuração interna da cobrança', () => {
+  it('só o administrador vê quais variáveis da Stripe faltam', async () => {
+    const segredos = {
+      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+      STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    };
+    delete process.env.STRIPE_SECRET_KEY;
+    delete process.env.STRIPE_WEBHOOK_SECRET;
+    try {
+      const paciente = await criarUsuario('patient', 'Cobranca');
+      const admin = await criarUsuario('admin', 'Cobranca');
+
+      const doPaciente = await chamar(cobranca.GET, { usuario: paciente });
+      const ambientePaciente = (
+        doPaciente.json as {
+          environment: { configured: boolean; missingKeys: string[] };
+        }
+      ).environment;
+      expect(ambientePaciente.configured).toBe(false);
+      expect(ambientePaciente.missingKeys).toEqual([]);
+
+      const doAdmin = await chamar(cobranca.GET, { usuario: admin });
+      expect(
+        (doAdmin.json as { environment: { missingKeys: string[] } }).environment
+          .missingKeys
+      ).toEqual(
+        expect.arrayContaining(['STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET'])
+      );
+
+      const checkoutPaciente = await chamar(checkout.POST, {
+        method: 'POST',
+        body: { planKey: 'meta', billingInterval: 'monthly' },
+        usuario: paciente,
+      });
+      expect(checkoutPaciente.status).toBe(503);
+      expect(checkoutPaciente.texto).not.toMatch(/STRIPE_/);
+    } finally {
+      for (const [chave, valor] of Object.entries(segredos)) {
+        if (valor !== undefined) {
+          process.env[chave] = valor;
+        }
+      }
+    }
   });
 });

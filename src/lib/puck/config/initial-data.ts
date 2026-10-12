@@ -130,7 +130,7 @@ const defaultLandingHomeData: LyraPuckData = {
                     icon: 'cpu',
                     tone: 'cosmic',
                     ctaLabel: 'Ver dashboard',
-                    ctaHref: '/dashboard',
+                    ctaHref: '/',
                   },
                 },
               ],

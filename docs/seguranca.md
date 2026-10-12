@@ -87,6 +87,7 @@ Ver `docs/api.md`: buckets conhecidos, caminhos validados e resolvidos dentro do
 - Webhook: assinatura verificada pela SDK (`constructEvent`) com `STRIPE_WEBHOOK_SECRET`; sem assinatura ou com assinatura inválida → 400; eventos idempotentes por `billing_webhook_events` (reentrega devolve `duplicate`).
 - Checkout e portal exigem sessão; o cliente Stripe é sempre o do usuário autenticado e os metadados levam o id dele.
 - URLs de retorno: em produção vêm só de `APP_BASE_URL`/`NEXT_PUBLIC_APP_URL` (a origem da requisição, derivada do `Host`, é aceita apenas fora de produção).
+- Configuração interna: os nomes das variáveis da Stripe que faltam (`environment.missingKeys` em `GET /api/account/billing`) só aparecem para administradores; para o paciente a lista vem vazia, e checkout e portal sem credencial respondem 503 com uma mensagem genérica (coberto em `src/app/api/seguranca.integration.test.ts`).
 - **Fronteira externa:** a criação real de sessões de checkout e portal e o `checkout.session.completed` (que consulta a API da Stripe) exigem credenciais reais da Stripe, não disponíveis neste ambiente; o restante é coberto por `src/lib/billing/service.integration.test.ts`.
 
 ## Dependências

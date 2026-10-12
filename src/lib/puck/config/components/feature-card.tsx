@@ -161,7 +161,7 @@ export const lyraFeatureCardBlockConfig = {
     icon: 'cpu',
     tone: 'cosmic',
     ctaLabel: 'Explorar detalhe',
-    ctaHref: '/dashboard',
+    ctaHref: '/',
   },
   render: (props: Record<string, unknown>) => (
     <LyraFeatureCardBlock

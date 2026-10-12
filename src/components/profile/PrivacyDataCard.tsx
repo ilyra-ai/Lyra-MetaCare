@@ -39,6 +39,9 @@ interface Consentimento {
   accepted_at: string;
 }
 
+/** Âncora do card, usada pelo menu do perfil ("Privacidade e dados"). */
+export const ANCORA_PRIVACIDADE_E_DADOS = 'privacidade-e-dados';
+
 function dataBr(valor: string) {
   // "AAAA-MM-DD..." vindo do banco (UTC) ou da versão do documento.
   const [ano, mes, dia] = valor.slice(0, 10).split('-');
@@ -63,6 +66,36 @@ export function PrivacyDataCard() {
   const [erroDeExclusao, setErroDeExclusao] = React.useState<string | null>(
     null
   );
+
+  // O perfil carrega em etapas: quando se chega por "/profile#privacidade-e-dados"
+  // (menu do perfil), o card ainda não existe no momento da navegação, e os
+  // cards acima dele (assinatura, compras) crescem depois que os dados chegam,
+  // empurrando-o para baixo. Por isso a rolagem é refeita a cada mudança de
+  // altura da página até a pessoa rolar ou tocar na tela, com um limite de
+  // tempo.
+  const cartao = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    if (window.location.hash !== `#${ANCORA_PRIVACIDADE_E_DADOS}`) {
+      return;
+    }
+    const alinhar = () => cartao.current?.scrollIntoView({ block: 'start' });
+    alinhar();
+    const observador = new ResizeObserver(alinhar);
+    observador.observe(document.body);
+    const eventosDaPessoa = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
+    const limite = window.setTimeout(encerrar, 5000);
+    function encerrar() {
+      observador.disconnect();
+      window.clearTimeout(limite);
+      for (const evento of eventosDaPessoa) {
+        window.removeEventListener(evento, encerrar);
+      }
+    }
+    for (const evento of eventosDaPessoa) {
+      window.addEventListener(evento, encerrar, { passive: true });
+    }
+    return encerrar;
+  }, []);
 
   React.useEffect(() => {
     let ativo = true;
@@ -154,7 +187,7 @@ export function PrivacyDataCard() {
   const fraseConfere = frase.trim().toUpperCase() === FRASE_DE_EXCLUSAO;
 
   return (
-    <Card>
+    <Card id={ANCORA_PRIVACIDADE_E_DADOS} className="scroll-mt-20" ref={cartao}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <FileCheck2 className="h-4 w-4 text-primary" aria-hidden="true" />

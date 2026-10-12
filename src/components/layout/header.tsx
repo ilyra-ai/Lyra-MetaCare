@@ -3,11 +3,10 @@
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  Bell,
   LogOut,
   MessageCircleHeart,
   Search,
-  Settings2,
+  ShieldCheck,
   UserRound,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -35,6 +34,8 @@ import {
 } from '@/components/ui/command';
 import { PlanBadge } from '@/components/subscription/PlanBadge';
 import { MobileSidebar } from './MobileSidebar';
+import { NotificationsMenu } from './NotificationsMenu';
+import { ANCORA_PRIVACIDADE_E_DADOS } from '@/components/profile/PrivacyDataCard';
 import {
   getPageMeta,
   getVisibleNavigation,
@@ -175,21 +176,7 @@ export function Header() {
               <Search className="h-[18px] w-[18px]" strokeWidth={1.9} />
             </Button>
 
-            <Button
-              type="button"
-              variant="secondary"
-              size="icon"
-              aria-label="Notificações"
-            >
-              <Bell
-                className="text-foreground"
-                strokeWidth={1.9}
-                style={{
-                  height: scalePx(18, appConfig.sizing.iconScale),
-                  width: scalePx(18, appConfig.sizing.iconScale),
-                }}
-              />
-            </Button>
+            <NotificationsMenu iconScale={appConfig.sizing.iconScale} />
 
             <Button
               type="button"
@@ -262,9 +249,15 @@ export function Header() {
                   <UserRound />
                   {appConfig.header.profileMenuLabel}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push('/profile')}>
-                  <Settings2 />
-                  Preferências
+                {/* Antes "Preferências" abria a mesma página de "Meu perfil";
+                    agora leva direto à seção de privacidade e dados. */}
+                <DropdownMenuItem
+                  onClick={() =>
+                    router.push(`/profile#${ANCORA_PRIVACIDADE_E_DADOS}`)
+                  }
+                >
+                  <ShieldCheck />
+                  Privacidade e dados
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
