@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `█████████████████░░░` **84%** |
+| Progresso          | `█████████████████░░░` **87%** |
 | Tarefas totais     | 38                             |
-| 🟢 Finalizadas     | 32                             |
+| 🟢 Finalizadas     | 33                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 5                              |
+| ⚪ A iniciar       | 4                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-12                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (32 ÷ 38 = 84,2%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (33 ÷ 38 = 86,8%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,9 +43,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                 | O que está sendo realizado                                                                                                                                                                                                                                                                     |
-| --- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 33  | Experiência no celular | Antecipada por um defeito real achado na tarefa 35: em 390px o onboarding fica com 531px de largura (cartões cortados e rolagem lateral). Escopo pedido: login com o formulário abaixo de um texto longo, pontos de navegação do onboarding e demais telas, com foco em experiência e rapidez. |
+| Nº  | Tarefa                                   | O que está sendo realizado                                                                                                                                 |
+| --- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 36  | Edição dos dados do onboarding no perfil | Mapeamento campo a campo (onboarding × perfil), edição completa no perfil e garantia de que e-mail de login e dados sensíveis não se repetem entre contas. |
 
 ### BLOQUEADAS
 
@@ -66,6 +66,7 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
 ### 29 · Garantia de rotas, menus, botões e links reais
 
 - Verificar de forma real (sem simulação, placeholder, hardcode ou corte de código) todas as rotas da sidebar, do perfil e do menu do perfil, e todos os botões, links e ações das telas, corrigindo pela causa raiz o que não funcionar. O usuário fará os próprios testes de navegador depois.
+- Achado na tarefa 33: `/monitoring` mostra ao paciente nomes de variáveis internas de configuração (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`) no aviso de plano; esse detalhe deve ficar só para administradores.
 
 ### 31 · Textos sem acento
 
@@ -74,10 +75,6 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
 ### 34 · Tema escuro
 
 - Ativar o tema escuro (com alternância) garantindo contraste de leitura em todos os textos, ícones, gráficos e componentes, comprovado por auditoria de contraste no tema escuro.
-
-### 36 · Edição dos dados do onboarding no perfil
-
-- Permitir, na página do perfil, alterar todos os dados informados no onboarding, sem duplicidade de dados sensíveis nem de usuário de login (e-mail) com outros usuários já cadastrados.
 
 ---
 
@@ -778,3 +775,24 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
   - ao finalizar abre o painel; "voltar" e `/onboarding` não reabrem o onboarding; rotas liberadas; novo login (390px) abre o painel; visitante vai ao login.
   - `test` 230/230; `test:integration` 75/75 (sessão com o status, inclusive após concluir sem novo login); lint, format e types com exit 0; `build` com exit 0. Usuários de QA removidos do banco.
 - **Achado repassado à tarefa 33:** em 390px o formulário do onboarding fica com 531px de largura (cartões cortados e rolagem lateral).
+
+### 33 · Experiência no celular
+
+- **Status:** 🟢 finalizada · **Commit:** `b2dddb8` · **Push:** `40bd98a..b2dddb8 main -> main` (confirmado)
+- **Método:** varredura real em 390×844 com toque, em todas as rotas, como visitante, paciente, administrador e conta nova: estouro horizontal, alvos de toque abaixo de 24px e captura da primeira dobra. Referências de 2026 consultadas: formulário acima da dobra no login, progresso de etapas com texto, alvos de 44px.
+- **Problemas encontrados e corrigidos (causa raiz):**
+  - **Onboarding cortado:** o formulário ficava numa linha flex centralizada e crescia até 672px; no celular estourava para os dois lados (página com 531px e o início dos cartões fora da tela, sem como rolar até ele). Agora é uma coluna na largura da tela, as etapas fora da tela ficam `inert` (o "próximo campo" do teclado não pula para etapas escondidas) e a página ganhou `<main>` e `<h1>`.
+  - **Pontos do onboarding:** eram um `role="tablist"` sem abas, que não dizia nada ao leitor de tela. Agora há o texto "Etapa X de N" e os pontos já concluídos ficam marcados.
+  - **Metas do onboarding:** só a caixinha de 20px e o texto marcavam a meta, apesar do cursor de clique na linha. Agora a linha inteira (44px) marca e a opção escolhida fica destacada.
+  - **Login com o formulário abaixo de um texto longo:** a ordem passou a ser marca → título → formulário → detalhes. No celular o formulário aparece na primeira dobra e o título acompanha a largura da tela; no desktop o desenho em duas colunas continua igual.
+  - **Botões do acesso rápido da landing com 22px:** `flex-1` na coluna zerava a base de altura. Agora só vale na linha (a partir de `sm`).
+  - **Alvos pequenos:** "Criar conta"/"Entrar", "Voltar para a landing", "Lembrar-me" e o selo "Feito com iLyra AI" passaram a 44px.
+  - **Perfil:** um cartão repetia o título e a descrição da página logo abaixo do cabeçalho; removido.
+  - **Chat:** cabeçalho compacto no celular (sem ícone e texto de apoio), para a conversa aparecer antes.
+- **Evidências:**
+  - nenhuma rota com estouro horizontal em 390px (antes: onboarding com 531px); alvos abaixo de 24px só o checkbox "Lembrar-me" (com rótulo de 44px ao lado) e o seletor interno do Puck;
+  - axe sem violações em `/`, `/login`, `/chat`, `/profile`, `/goals` e `/onboarding`, em 390 e 1440px;
+  - fluxo completo do onboarding (13 verificações) aprovado no celular e no desktop; dados gravados conferidos no MySQL;
+  - login e onboarding sem estouro em 820 e 1440px;
+  - `test` 230/230; `test:integration` 75/75; lint, format e types com exit 0; `build` com exit 0. Contas de QA e contadores de tentativa locais removidos do banco.
+- **Achado repassado à tarefa 29:** `/monitoring` mostra ao paciente nomes de variáveis internas de configuração no aviso de plano.
