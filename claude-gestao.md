@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `██████████████████░░` **92%** |
+| Progresso          | `███████████████████░` **95%** |
 | Tarefas totais     | 38                             |
-| 🟢 Finalizadas     | 35                             |
+| 🟢 Finalizadas     | 36                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 2                              |
+| ⚪ A iniciar       | 1                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-12                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (35 ÷ 38 = 92,1%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (36 ÷ 38 = 94,7%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,9 +43,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa            | O que está sendo realizado                                                                                                                                                 |
-| --- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 31  | Textos sem acento | Varredura de interface, padrões configuráveis, documentos Puck iniciais, mensagens de API e banco (seeds e configurações já gravadas), com correção dos textos sem acento. |
+| Nº  | Tarefa                             | O que está sendo realizado                                                                                                                                                                                                                                                                                           |
+| --- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 29  | Rotas, menus, botões e links reais | Verificação real de todas as rotas da sidebar, do perfil e do menu do perfil e de todos os botões, links e ações das telas, com correção pela causa raiz. Inclui o achado da tarefa 33: `/monitoring` mostra ao paciente nomes de variáveis internas de configuração (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`). |
 
 ### BLOQUEADAS
 
@@ -56,11 +56,6 @@ Nenhuma tarefa bloqueada.
 ## Tópico 3 · Tarefas a Iniciar
 
 _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
-
-### 29 · Garantia de rotas, menus, botões e links reais
-
-- Verificar de forma real (sem simulação, placeholder, hardcode ou corte de código) todas as rotas da sidebar, do perfil e do menu do perfil, e todos os botões, links e ações das telas, corrigindo pela causa raiz o que não funcionar. O usuário fará os próprios testes de navegador depois.
-- Achado na tarefa 33: `/monitoring` mostra ao paciente nomes de variáveis internas de configuração (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`) no aviso de plano; esse detalhe deve ficar só para administradores.
 
 ### 34 · Tema escuro
 
@@ -851,3 +846,20 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
     - `/admin/fiscal` funciona;
     - exclusão pela interface volta ao login, apaga tudo e mantém o registro fiscal desvinculado; login da conta excluída responde 401.
   - Telas novas sem estouro em 390px. Migração `015` aplicada. Dados de QA removidos.
+
+### 31 · Textos sem acento
+
+- **Status:** 🟢 finalizada · **Commit:** `961ccf4` · **Push:** `aeb8b4a..961ccf4 main -> main` (confirmado)
+- **Método:** varredura com dicionário de português (pyspellchecker, instalado fora do projeto). O critério foi palavra sem acento cuja forma acentuada é a usual. A varredura cobriu:
+  - textos visíveis: literais, JSX e rótulos de uma palavra;
+  - padrões configuráveis, mensagens de API, scripts, launchers e documentação;
+  - conteúdo gravado no banco: documentos Puck, planos, recursos, hábitos, dicas, configuração e base de conhecimento da IA.
+- **Corrigido:**
+  - padrões da landing e do login (`modules/lyra-customaze-ui-ux/.../defaults.ts`): hero, métricas, fluxo, FAQ, CTA final, rodapé, textos do login, "orquestração guiada", "conexão de sinais reais" e a mensagem de erro do Bluetooth;
+  - construtor da experiência (`SiteExperienceBuilder`): cerca de 90 rótulos, descrições e mensagens;
+  - landing, modal de metas, teste de conexão da IA, mensagem do bootstrap do administrador e `AGENTS.md`.
+- **Mantidos de propósito:**
+  - identificadores e chaves internas (ex.: status `atencao`, `estavel`) e ids de elementos;
+  - migrations já aplicadas: mudar o texto altera o checksum. A `005` grava só na tabela `ui_config`, que não é usada;
+  - o banco: os textos gravados já estavam acentuados, e não há configuração de página salva (a landing e o login usam os padrões corrigidos).
+- **Evidências:** varredura final sem texto visível sem acento; no navegador, landing e login sem nenhum termo sem acento; `test` 236/236; `test:integration` 90/90; `test:launchers` OK; lint, format e types com exit 0; `build` com exit 0.
