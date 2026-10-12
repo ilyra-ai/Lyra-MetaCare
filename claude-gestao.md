@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `██████████████████░░` **89%** |
+| Progresso          | `██████████████████░░` **92%** |
 | Tarefas totais     | 38                             |
-| 🟢 Finalizadas     | 34                             |
+| 🟢 Finalizadas     | 35                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 3                              |
+| ⚪ A iniciar       | 2                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-12                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (34 ÷ 38 = 89,5%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (35 ÷ 38 = 92,1%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,9 +43,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                                           | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| --- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 28  | Direitos do titular (LGPD) e segregação de dados | Escopo: só o próprio usuário acessa os seus dados sensíveis (saúde, perfil, hábitos, ciclo, chat) e o seu histórico de compras; **28.1** só o administrador acessa os dados fiscais e tributários, que nunca podem ser excluídos; exportação dos dados, exclusão da conta (mantendo só os registros fiscais obrigatórios, desvinculados dos dados sensíveis), política de privacidade, termos de uso e registro de consentimento. Achado da tarefa 36: a remoção de usuário no painel admin apaga só o perfil e deixa a conta órfã (e o e-mail preso). |
+| Nº  | Tarefa            | O que está sendo realizado                                                                                                                                                 |
+| --- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 31  | Textos sem acento | Varredura de interface, padrões configuráveis, documentos Puck iniciais, mensagens de API e banco (seeds e configurações já gravadas), com correção dos textos sem acento. |
 
 ### BLOQUEADAS
 
@@ -61,10 +61,6 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
 
 - Verificar de forma real (sem simulação, placeholder, hardcode ou corte de código) todas as rotas da sidebar, do perfil e do menu do perfil, e todos os botões, links e ações das telas, corrigindo pela causa raiz o que não funcionar. O usuário fará os próprios testes de navegador depois.
 - Achado na tarefa 33: `/monitoring` mostra ao paciente nomes de variáveis internas de configuração (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`) no aviso de plano; esse detalhe deve ficar só para administradores.
-
-### 31 · Textos sem acento
-
-- Corrigir os textos sem acento já identificados e varrer o projeto inteiro (interface, padrões configuráveis, documentos Puck iniciais, mensagens de API e e-mails) para corrigir todos os demais.
 
 ### 34 · Tema escuro
 
@@ -810,4 +806,48 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
     - o perfil no celular não tem estouro horizontal.
   - `test` 235/235; `test:integration` 79/79 (novo `conta-email.integration.test.ts`, índice único e bloqueio de troca pelo administrador); lint, format e types com exit 0; `build` com exit 0.
   - Migração `014` aplicada e reexecutada com "Já aplicada" em todas. Usuários de QA removidos do banco.
-- **Achado repassado à tarefa 28:** a remoção de usuário no painel administrativo apaga só o perfil. A conta fica órfã e o e-mail fica preso, sem que ninguém consiga se cadastrar com ele.
+- **Achado repassado à tarefa 28 (corrigido na tarefa 28):** o registro original dizia que a remoção pelo painel administrativo apagava só o perfil. Na análise da tarefa 28 isso se mostrou incorreto: pelo administrador, a API de dados já apagava a conta inteira, mas sem as verificações da exclusão (assinatura paga renovável, último administrador) e sem apagar as imagens. Quem deixava a conta órfã era o **próprio titular**: ele conseguia apagar o próprio perfil pela API de dados, ficava sem login e com o e-mail preso. Os dois casos foram resolvidos na tarefa 28.
+
+### 28 · Direitos do titular (LGPD) e segregação de dados sensíveis e fiscais
+
+- **Status:** 🟢 finalizada · **Commit:** `5d068c1` · **Push:** `37b6bb1..5d068c1 main -> main` (confirmado)
+- **Diagnóstico:**
+  - o administrador lia, filtrava, alterava e apagava, pela API de dados, todos os dados de saúde de todas as contas: métricas, metas, hábitos, planos, agenda, profissionais, avaliações e sequências;
+  - a listagem administrativa trazia nascimento, gênero, idade, metas e atividade de todos;
+  - não havia exportação, exclusão de conta pelo titular, registro de consentimento, política de privacidade, termos de uso nem registro fiscal das compras;
+  - o consentimento do onboarding não era gravado.
+- **Implementado:**
+  - **Segregação (titular):**
+    - `adminReadColumns`/`adminWriteColumns` na API de dados. De outras contas, o administrador vê só identificação, papel, onboarding e plano, e em métricas só quem registrou e quando.
+    - Pedir, filtrar (inclusive `or`), ordenar, alterar ou apagar dado do titular responde 403.
+    - As tabelas de saúde ficaram só com o titular, também para o administrador.
+    - A listagem e o detalhe de usuários do painel perderam os dados sensíveis.
+  - **28.1 (fiscal):**
+    - o evento `invoice.paid` da Stripe grava `fiscal_records`, de forma idempotente, com a fotografia fiscal do comprador e sem dado de saúde;
+    - só o administrador consulta, em leitura (`/admin/fiscal`, com filtro por período e CSV);
+    - não existe rota de alteração ou exclusão, e a tabela não faz parte da API de dados;
+    - na exclusão da conta, o registro fica com `user_id = NULL`.
+  - **Direitos do titular:**
+    - exportação JSON (`/api/account/export`);
+    - exclusão da conta com senha e frase de confirmação. Recusa assinatura paga com renovação ativa e o último administrador; apaga também as imagens enviadas;
+    - histórico de compras (`/api/account/purchases`);
+    - consentimentos versionados: o cadastro exige o aceite, e o onboarding grava o consentimento de dados de saúde (art. 11, I) antes de salvar qualquer dado;
+    - páginas `/privacidade` e `/termos`, abertas a todos inclusive durante o onboarding, com links no login, no cadastro, na landing e no perfil;
+    - card "Privacidade e dados" no perfil, também quando o plano bloqueia a edição do perfil.
+  - **Administrador:** exclui contas pela rota `DELETE /api/admin/users/:id`, com o mesmo serviço. O perfil não se apaga mais pela API de dados.
+  - **Correção extra:** o onboarding gravava a data de nascimento com `toISOString`, o que podia salvar o dia anterior em fusos a leste de UTC.
+- **Conflito entre requisitos (registrado):** os registros fiscais são, por natureza, registros de compra. Para atender ao 28.1, o administrador vê as faturas como dado fiscal (valores, datas, documento do comprador), mas não existe histórico de compras por pessoa no painel nem ligação com dados de saúde. O titular vê o próprio histórico completo.
+- **Fronteiras externas:**
+  - Stripe: sem segredo real, o `invoice.paid` foi validado com evento assinado localmente pela SDK oficial.
+  - Identificação do controlador: razão social e CNPJ precisam ser informados pela empresa (o e-mail do encarregado vem de `LGPD_CONTATO_EMAIL`).
+  - Imutabilidade no banco: gatilhos exigiriam o privilégio `SUPER` com o log binário ligado. A recomendação de revogar `UPDATE`/`DELETE` em produção está em `docs/lgpd.md`.
+- **Evidências:**
+  - `test:integration` 90/90. O novo `lgpd.integration.test.ts` tem 11 testes: consentimento, segregação (colunas, filtros, ordenação, alteração e exclusão), lista administrativa, fatura assinada → registro fiscal idempotente, acesso fiscal, exportação, exclusão com retenção fiscal e as recusas.
+  - `test` 236/236; lint, format e types com exit 0; `build` com exit 0; `test:launchers` OK.
+  - QA no build de produção, 20/20 conferido no MySQL:
+    - cadastro bloqueado sem o aceite; consentimentos gravados;
+    - perfil com consentimentos, compra e download dos dados;
+    - administrador recebe 403 ao pedir data de nascimento;
+    - `/admin/fiscal` funciona;
+    - exclusão pela interface volta ao login, apaga tudo e mantém o registro fiscal desvinculado; login da conta excluída responde 401.
+  - Telas novas sem estouro em 390px. Migração `015` aplicada. Dados de QA removidos.
