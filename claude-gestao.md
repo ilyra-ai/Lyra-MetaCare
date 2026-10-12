@@ -43,9 +43,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                  | O que está sendo realizado                                                                                                                          |
-| --- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 40  | Métricas reais gravadas | Gravar no banco, com validação no servidor, o registro manual do dia e as leituras da pulseira Bluetooth, sem sobrescrever o que já foi registrado. |
+| Nº  | Tarefa                          | O que está sendo realizado                                                                                                                                                                                                                                                                                 |
+| --- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 41  | Mapa védico real de cada pessoa | Local de nascimento e de moradia escolhidos de uma base real de cidades (coordenadas e fuso), mapa natal sidéreo (Lagna, planetas, Rahu e Ketu, nakshatra natal), Vimshottari Mahadasha e Antardasha reais (hoje o campo é um texto fixo) e o Panchang do dia com nascer e pôr do sol do local de moradia. |
 
 ### BLOQUEADAS
 
