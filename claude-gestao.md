@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `████████████████░░░░` **82%** |
+| Progresso          | `█████████████████░░░` **84%** |
 | Tarefas totais     | 38                             |
-| 🟢 Finalizadas     | 31                             |
+| 🟢 Finalizadas     | 32                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 6                              |
+| ⚪ A iniciar       | 5                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-12                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (31 ÷ 38 = 81,6%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (32 ÷ 38 = 84,2%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,9 +43,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                        | O que está sendo realizado                                                                                                                              |
-| --- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 35  | Onboarding no primeiro acesso | Verificação real com conta nova (cadastro → primeira tela → onboarding) e dos caminhos de entrada (login, rotas protegidas, volta ao app sem concluir). |
+| Nº  | Tarefa                 | O que está sendo realizado                                                                                                                                                                                                                                                                     |
+| --- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 33  | Experiência no celular | Antecipada por um defeito real achado na tarefa 35: em 390px o onboarding fica com 531px de largura (cartões cortados e rolagem lateral). Escopo pedido: login com o formulário abaixo de um texto longo, pontos de navegação do onboarding e demais telas, com foco em experiência e rapidez. |
 
 ### BLOQUEADAS
 
@@ -70,10 +70,6 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
 ### 31 · Textos sem acento
 
 - Corrigir os textos sem acento já identificados e varrer o projeto inteiro (interface, padrões configuráveis, documentos Puck iniciais, mensagens de API e e-mails) para corrigir todos os demais.
-
-### 33 · Experiência no celular
-
-- Corrigir os problemas de UI/UX no celular (login com o formulário abaixo de um texto longo, pontos de navegação do onboarding e demais telas), focando em experiência e rapidez.
 
 ### 34 · Tema escuro
 
@@ -762,3 +758,23 @@ _Pedido do usuário em 2026-10-10, após a revisão final das tarefas 01 a 27._
   - migração aplicada; segunda execução com "Já aplicada" em todas; tabela inexistente e 0 documentos Puck `instruments`;
   - produção: `/instruments` 404; `/api/data/instruments` 400 ("Tabela não suportada");
   - `test` 226/226 (21 testes a menos, do arquivo morto removido); `test:integration` 75/75 (todas as tabelas exigem sessão: 401); lint, format e types com exit 0; `build` com exit 0.
+
+### 35 · Onboarding no primeiro acesso
+
+- **Status:** 🟢 finalizada · **Commit:** `fae09bd` · **Push:** `39e765f..fae09bd main -> main` (confirmado)
+- **Verificação inicial:** cadastro, login e rotas digitadas já levavam ao onboarding, mas com dois defeitos reproduzidos no navegador:
+  - **Fuga pelo "voltar":** a partir do onboarding, o botão "voltar" abria o painel completo (menu, métricas, chat) de uma conta recém-criada.
+  - **Desvio pelo painel:** o cadastro ia primeiro ao painel e só depois ao onboarding; páginas montavam e faziam consultas antes do redirecionamento.
+- **Causa raiz:** o `AuthProvider` só decidia o destino quando a sessão mudava (não a cada rota) e renderizava a página antes de conhecer o status do onboarding, que exigia uma consulta extra ao perfil.
+- **Correção:**
+  - a sessão (`/api/auth/session`, login e cadastro) traz `onboarding_completed` lido do banco;
+  - `src/lib/auth/destino-de-acesso.ts` decide o destino (visitante → login; conta sem onboarding → onboarding; conta pronta sai de login e onboarding), com testes;
+  - o `AuthProvider` reavalia a cada rota, usa `replace` e não monta a rota bloqueada;
+  - ao concluir, o onboarding relê a sessão (`db.auth.refreshSession`) e o app abre o painel; o login deixa a navegação para o `AuthProvider`;
+  - removida a recriação de perfil pelo cliente (código inalcançável: sem perfil não existe sessão). Prova de morte: `grep` sem ocorrências.
+- **Evidências (build de produção, 1440px):** 13/13 verificações e zero erros de console:
+  - cadastro → `/onboarding` direto (trilha `/login → /onboarding`, 776 ms);
+  - "voltar" e as rotas `/`, `/plan`, `/profile`, `/admin/users` e `/login` não abrem o painel;
+  - ao finalizar abre o painel; "voltar" e `/onboarding` não reabrem o onboarding; rotas liberadas; novo login (390px) abre o painel; visitante vai ao login.
+  - `test` 230/230; `test:integration` 75/75 (sessão com o status, inclusive após concluir sem novo login); lint, format e types com exit 0; `build` com exit 0. Usuários de QA removidos do banco.
+- **Achado repassado à tarefa 33:** em 390px o formulário do onboarding fica com 531px de largura (cartões cortados e rolagem lateral).
