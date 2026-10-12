@@ -33,6 +33,11 @@ interface TableConfig {
   userScopedBy?: string;
   publicRead?: boolean;
   adminOnlyCrud?: boolean;
+  /**
+   * Leitura restrita a administradores: a tabela só é usada pelo painel
+   * administrativo; os recursos do app que dependem dela a leem no servidor.
+   */
+  adminOnlyRead?: boolean;
   /** Administradores leem e alteram linhas de qualquer usuário. */
   adminReadAll?: boolean;
   /** Colunas que só administradores podem gravar (ex.: o papel do usuário). */
@@ -184,6 +189,9 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'updated_at',
     ],
     adminOnlyCrud: true,
+    // Missão, objetivos e pesos do motor: lidos no servidor pelas funções de
+    // IA (calculate-longevity-score); o cliente só os acessa no painel admin.
+    adminOnlyRead: true,
   },
   ai_knowledge_documents: {
     columns: [
@@ -197,6 +205,9 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'updated_at',
     ],
     adminOnlyCrud: true,
+    // Base de conhecimento (inclusive rascunhos inativos): injetada no
+    // servidor pelo ask-ai-assistant; só o painel admin a lê pelo cliente.
+    adminOnlyRead: true,
   },
   ai_plans: {
     columns: ['id', 'user_id', 'plan_data', 'created_at', 'updated_at'],

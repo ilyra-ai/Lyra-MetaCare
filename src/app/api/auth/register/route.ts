@@ -49,9 +49,14 @@ export async function POST(request: Request) {
     const passwordHash = await hashPassword(payload.password);
     const userId = crypto.randomUUID();
 
-    // Contagem e inserção na mesma transação, com bloqueio da tabela de
-    // usuários: dois cadastros simultâneos num banco vazio não viram dois
-    // administradores. E-mail repetido (inclusive em corrida) → 409.
+    // O cadastro público sempre cria um usuário comum. Administradores só
+    // nascem pelo bootstrap do `.env.local` (`pnpm db:migrate`) ou pela ação
+    // de outro administrador. Antes, o primeiro cadastro de um banco vazio
+    // virava administrador: com o bootstrap desativado em produção, qualquer
+    // visitante que se cadastrasse primeiro ganharia acesso total.
+    // E-mail repetido → 409; numa corrida entre dois cadastros iguais, o
+    // índice UNIQUE de `users.email` recusa o segundo (ER_DUP_ENTRY, também
+    // convertido em 409 por `respostaDeErro`).
     const role = await withTransaction(async (connection) => {
       const [existentes] = await connection.query<RowDataPacket[]>(
         'SELECT id FROM users WHERE email = ? LIMIT 1',
@@ -60,10 +65,7 @@ export async function POST(request: Request) {
       if (existentes.length > 0) {
         return null;
       }
-      const [contagem] = await connection.query<RowDataPacket[]>(
-        'SELECT COUNT(*) AS total FROM users FOR UPDATE'
-      );
-      const papel = Number(contagem[0]?.total ?? 0) === 0 ? 'admin' : 'patient';
+      const papel = 'patient' as const;
 
       await connection.execute(
         'INSERT INTO users (id, email, password_hash) VALUES (?, ?, ?)',
@@ -100,11 +102,7 @@ export async function POST(request: Request) {
       );
     }
 
-    await ensureUserSubscription(
-      userId,
-      role === 'admin' ? 'care' : 'free',
-      'auth_register'
-    );
+    await ensureUserSubscription(userId, 'free', 'auth_register');
 
     const token = await signSessionToken({
       sub: userId,

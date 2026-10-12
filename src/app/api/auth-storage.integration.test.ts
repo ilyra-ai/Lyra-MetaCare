@@ -70,6 +70,15 @@ describe('POST /api/auth/register e /api/auth/login', () => {
       [email]
     );
     expect(perfil).toEqual([{ role: 'patient', email }]);
+    // O cadastro público nunca cria administrador nem plano pago.
+    const plano = await queryRows<{ plan_key: string }>(
+      `SELECT p.plan_key FROM user_subscriptions s
+         JOIN subscription_plans p ON p.id = s.plan_id
+         JOIN users u ON u.id = s.user_id
+        WHERE u.email = ?`,
+      [email]
+    );
+    expect(plano).toEqual([{ plan_key: 'free' }]);
 
     const repetido = await chamar(register.POST, {
       method: 'POST',

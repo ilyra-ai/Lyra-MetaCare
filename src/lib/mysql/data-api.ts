@@ -394,6 +394,12 @@ function ensureCanRead(table: TableName, session: AppSession | null) {
   if (!session) {
     throw new HttpError('Sessão autenticada obrigatória para leitura.', 401);
   }
+  if (config.adminOnlyRead && !isAdmin(session)) {
+    throw new HttpError(
+      'Apenas administradores podem consultar este recurso.',
+      403
+    );
+  }
 }
 
 function ensureCanWrite(

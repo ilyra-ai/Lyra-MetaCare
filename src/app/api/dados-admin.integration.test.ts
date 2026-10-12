@@ -199,6 +199,106 @@ describe('rotas administrativas', () => {
     }
   });
 
+  it('paciente não alcança nenhuma rota ou método administrativo (403)', async () => {
+    const chamadas = [
+      () => chamar(planosAdmin.GET, { usuario: ana }),
+      () =>
+        chamar(planoAdmin.PATCH, {
+          method: 'PATCH',
+          params: { planKey: 'free' },
+          body: { name: 'Invasão' },
+          usuario: ana,
+        }),
+      () =>
+        chamar(usuariosAdmin.GET, { path: '/api/admin/users', usuario: ana }),
+      () =>
+        chamar(assinaturaAdmin.GET, {
+          params: { userId: ana.id },
+          usuario: ana,
+        }),
+      () =>
+        chamar(assinaturaAdmin.PATCH, {
+          method: 'PATCH',
+          params: { userId: ana.id },
+          body: { planKey: 'care' },
+          usuario: ana,
+        }),
+      () =>
+        chamar(paginaAdmin.GET, { params: { pageKey: 'app' }, usuario: ana }),
+      () =>
+        chamar(paginaAdmin.PUT, {
+          method: 'PUT',
+          params: { pageKey: 'app' },
+          body: { config: {} },
+          usuario: ana,
+        }),
+      () =>
+        chamar(paginaAdmin.POST, {
+          method: 'POST',
+          params: { pageKey: 'app' },
+          body: { action: 'publish' },
+          usuario: ana,
+        }),
+      () =>
+        chamar(puckAdmin.GET, {
+          params: { documentKey: 'landing-home' },
+          usuario: ana,
+        }),
+      () =>
+        chamar(puckAdmin.PUT, {
+          method: 'PUT',
+          params: { documentKey: 'landing-home' },
+          body: { draftData: { content: [], root: { props: {} } } },
+          usuario: ana,
+        }),
+      () =>
+        chamar(puckAdmin.POST, {
+          method: 'POST',
+          params: { documentKey: 'landing-home' },
+          body: { action: 'publish' },
+          usuario: ana,
+        }),
+      () => chamar(rpcSaude.GET, { usuario: ana }),
+    ];
+    for (const chamada of chamadas) {
+      expect((await chamada()).status).toBe(403);
+    }
+
+    // A tentativa não alterou o plano da paciente.
+    const plano = await queryRows<{ plan_key: string }>(
+      `SELECT p.plan_key FROM user_subscriptions s
+         JOIN subscription_plans p ON p.id = s.plan_id
+        WHERE s.user_id = ?`,
+      [ana.id]
+    );
+    expect(plano[0]?.plan_key).not.toBe('care');
+  });
+
+  it('configuração e base de conhecimento da IA: só o admin lê e altera', async () => {
+    for (const tabela of ['ai_config', 'ai_knowledge_documents']) {
+      expect((await consultarTabela(tabela, ana)).status).toBe(403);
+      expect((await consultarTabela(tabela, admin)).status).toBe(200);
+      const escrita = await chamar(dados.POST, {
+        method: 'POST',
+        params: { table: tabela },
+        body: { values: { title: 'Invasão', mission: 'Invasão' } },
+        usuario: ana,
+      });
+      expect(escrita.status).toBe(403);
+    }
+    // Conteúdo editorial: paciente lê só o ativo e não grava.
+    for (const tabela of ['ai_tips', 'suggested_habits']) {
+      expect((await consultarTabela(tabela, ana)).status).toBe(200);
+      const escrita = await chamar(dados.POST, {
+        method: 'POST',
+        params: { table: tabela },
+        body: { values: { title: 'Invasão' } },
+        usuario: ana,
+      });
+      expect(escrita.status).toBe(403);
+    }
+  });
+
   it('lista usuários com paginação validada', async () => {
     const lista = await chamar(usuariosAdmin.GET, {
       path: '/api/admin/users?pageSize=5&sortColumn=email&ascending=true',

@@ -10,6 +10,14 @@ Modelo de segurança da aplicação, revisado na tarefa 19 da instrução mestra
 - **Login:** resposta 401 única e custo bcrypt constante para e-mail inexistente (sem enumeração de contas).
 - Testes: `src/app/api/seguranca.integration.test.ts`, `src/app/api/auth-storage.integration.test.ts`.
 
+## Isolamento das funções de administrador
+
+- **Quem é administrador:** só os usuários do bootstrap (`ADMIN_BOOTSTRAP_*` no `.env.local`, aplicados por `pnpm db:migrate`) ou promovidos por outro administrador. O cadastro público sempre cria usuário comum no plano `free`; antes, o primeiro cadastro de um banco vazio virava administrador.
+- **APIs (autorização definitiva):** todas as rotas `/api/admin/*` e `/api/rpc/*` exigem `requireAdminSession`, que relê o papel no banco. Na API de dados, `ai_config` e `ai_knowledge_documents` só são lidas e alteradas por administradores (antes qualquer usuário autenticado as lia); `ai_tips` e `suggested_habits` são lidas pelo usuário comum só quando ativas e alteradas só pelo administrador; `profiles.role` só é gravado por administrador.
+- **Páginas `/admin/*`:** o `src/proxy.ts` faz a verificação otimista do papel no token e devolve o usuário comum ao próprio painel (e o visitante ao login) antes de entregar a tela; cada página ainda confere o papel no cliente. Depois de uma troca de papel, o usuário precisa entrar de novo para o novo papel valer nas páginas (nas APIs vale na hora).
+- **Menus:** sidebar, menu do celular e busca Ctrl K escondem os itens administrativos pelo papel; a marcação de item administrativo vem do código, e não da configuração editável do construtor.
+- Testes: `src/proxy.test.ts` (redirecionamentos e CSRF) e `src/app/api/dados-admin.integration.test.ts` (paciente recebe 403 em todas as rotas e métodos administrativos, sem alterar nada).
+
 ## Limite de tentativas (rate limiting)
 
 Janela fixa persistida no MySQL (`rate_limit_buckets`, migration 012), válida entre processos e reinícios (`src/lib/security/rate-limit.ts`). A chave é o SHA-256 de `<escopo>:<valor>`: e-mails e IPs não ficam em texto.
