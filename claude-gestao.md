@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `█████████████████░░░` **86%** |
+| Progresso          | `██████████████████░░` **89%** |
 | Tarefas totais     | 44                             |
-| 🟢 Finalizadas     | 38                             |
+| 🟢 Finalizadas     | 39                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 5                              |
+| ⚪ A iniciar       | 4                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-12                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (38 ÷ 44 = 86,4%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (39 ÷ 44 = 88,6%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,9 +43,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                                 | O que está sendo realizado                                                                                             |
-| --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| 39  | Desativar Apple Saúde e Health Connect | Retirar a integração nativa de saúde (sem app de celular no projeto) de tudo o que o usuário vê, mantendo o Bluetooth. |
+| Nº  | Tarefa                  | O que está sendo realizado                                                                                                                          |
+| --- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 40  | Métricas reais gravadas | Gravar no banco, com validação no servidor, o registro manual do dia e as leituras da pulseira Bluetooth, sem sobrescrever o que já foi registrado. |
 
 ### BLOQUEADAS
 
@@ -56,10 +56,6 @@ Nenhuma tarefa bloqueada.
 ## Tópico 3 · Tarefas a Iniciar
 
 _Pedido do usuário em 2026-10-12: métricas reais e automáticas, IA como coach diário guiado pelo mapa védico e diferenciais de 2026._
-
-### 40 · Métricas reais gravadas
-
-- Gravar no banco as métricas do dia com validação no servidor: registro manual (check-in diário de sono, humor, energia, peso, passos, água, cafeína, atividade, meditação, FC de repouso, glicemia e pressão) e as leituras da pulseira por Bluetooth (FC mínima, máxima e de repouso e VFC por sessão), sem sobrescrever o que já foi registrado no dia.
 
 ### 41 · Mapa védico real de cada pessoa
 
@@ -912,3 +908,10 @@ _Pedido do usuário em 2026-10-12: métricas reais e automáticas, IA como coach
   - Navegador: botão do login alterna e persiste após recarregar e entre páginas; menu do perfil com Claro/Escuro/Do sistema, inclusive com o sistema em escuro e em claro; `theme-color` `#f6f6f8` ↔ `#0c0c13`; sem avisos de console nem erros de hidratação; landing a 390 px sem estouro.
   - Regressão das tarefas 29 e 36: sino, "Privacidade e dados", `/monitoring` e construtor sem mudança; varredura de botões e links sem achados.
   - `test` 241/241; `test:integration` 91/91; lint, format e types com exit 0; `build` com exit 0 e sem avisos. Usuários de QA removidos.
+
+### 39 · Desativar Apple Saúde e Health Connect
+
+- **Status:** 🟢 finalizada · **Commit:** `0ebc6f1` · **Push:** `main -> main` (confirmado)
+- **Causa:** o código tentava ler HealthKit/Health Connect por um plugin que só existe dentro de um app de celular (Capacitor), que o projeto não tem. No navegador isso nunca funcionava e o painel mostrava "Nenhum runtime nativo de saúde foi detectado" para todo usuário.
+- **Implementado:** `src/lib/health/healthConnect.ts` removido; tipos e conversão dos sinais em `src/lib/health/sinais-vitais.ts` (com testes). A sincronização (`HealthOrchestratorContext`) passou a ler as efemérides e os sinais do dia gravados no banco; a pulseira Bluetooth continua com leitura ao vivo. Mensagem de falha só quando algo real falha, sem citar integrações.
+- **Evidências:** prova de remoção sem referências a `healthConnect`, `getHealthRuntimeAvailability`, `fetchRealTimeVitals` ou "runtime nativo" no código; no navegador, painel e plano sem nenhuma menção a HealthKit, Health Connect ou runtime nativo, "Estado atual" em sintonia e sem erros de console; `test` 244/244; lint, format, types e `build` com exit 0.
