@@ -353,6 +353,13 @@ const defaultAppPageConfig: AppPageConfig = {
         visible: true,
       },
       {
+        href: '/dia',
+        label: 'Meu dia',
+        description:
+          'Coach diário: como será o seu dia por período, com o mapa védico e os seus sinais.',
+        visible: true,
+      },
+      {
         href: '/plan',
         label: 'Plano de IA',
         description:

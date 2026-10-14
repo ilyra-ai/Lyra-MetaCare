@@ -7,7 +7,7 @@
  * aceitou cada versão.
  */
 
-export const VERSAO_POLITICA_DE_PRIVACIDADE = '2026-10-12';
+export const VERSAO_POLITICA_DE_PRIVACIDADE = '2026-10-14';
 export const VERSAO_TERMOS_DE_USO = '2026-10-12';
 export const VERSAO_CONSENTIMENTO_DADOS_DE_SAUDE = '2026-10-12';
 

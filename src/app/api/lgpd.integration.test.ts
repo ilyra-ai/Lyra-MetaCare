@@ -444,6 +444,16 @@ describe('portabilidade e exclusão da conta', () => {
       `INSERT INTO daily_metrics (id, user_id, date, steps) VALUES (?, ?, CURDATE(), 4321)`,
       [randomUUID(), pessoa.id]
     );
+    await executeStatement(
+      `INSERT INTO daily_briefings (id, user_id, briefing_date, content, source, inputs_hash)
+       VALUES (?, ?, CURDATE(), JSON_OBJECT('manchete', 'Dia de teste'), 'local', REPEAT('a', 64))`,
+      [randomUUID(), pessoa.id]
+    );
+    await executeStatement(
+      `INSERT INTO user_notifications (id, user_id, kind, title, body, dedupe_key)
+       VALUES (?, ?, 'coach_dia', 'Seu dia está pronto', 'Dia de teste', 'dia:teste')`,
+      [randomUUID(), pessoa.id]
+    );
     const resposta = await chamar(exportacao.GET, { usuario: pessoa });
     expect(resposta.status).toBe(200);
     expect(resposta.headers.get('content-disposition')).toMatch(
@@ -456,11 +466,19 @@ describe('portabilidade e exclusão da conta', () => {
       perfil: { id: string };
       consentimentos: unknown[];
       daily_metrics: { steps: number }[];
+      daily_briefings: { content: { manchete: string } }[];
+      user_notifications: { title: string }[];
     };
     expect(corpo.conta.email).toBe(pessoa.email);
     expect(corpo.perfil.id).toBe(pessoa.id);
     expect(corpo.consentimentos).toHaveLength(2);
     expect(corpo.daily_metrics.map((linha) => linha.steps)).toEqual([4321]);
+    expect(
+      corpo.daily_briefings.map((linha) => linha.content.manchete)
+    ).toEqual(['Dia de teste']);
+    expect(corpo.user_notifications.map((linha) => linha.title)).toEqual([
+      'Seu dia está pronto',
+    ]);
 
     const visitante = await chamar(exportacao.GET, { usuario: null });
     expect(visitante.status).toBe(401);
@@ -474,6 +492,16 @@ describe('portabilidade e exclusão da conta', () => {
     });
     await executeStatement(
       `INSERT INTO daily_metrics (id, user_id, date, steps) VALUES (?, ?, CURDATE(), 10)`,
+      [randomUUID(), pessoa.id]
+    );
+    await executeStatement(
+      `INSERT INTO daily_briefings (id, user_id, briefing_date, content, source, inputs_hash)
+       VALUES (?, ?, CURDATE(), JSON_OBJECT('manchete', 'x'), 'local', REPEAT('b', 64))`,
+      [randomUUID(), pessoa.id]
+    );
+    await executeStatement(
+      `INSERT INTO user_notifications (id, user_id, kind, title, body, dedupe_key)
+       VALUES (?, ?, 'coach_alerta', 'Alerta', 'x', 'alerta:teste')`,
       [randomUUID(), pessoa.id]
     );
     const { absolute } = resolveStoragePath('avatars', [pessoa.id, 'foto.png']);
@@ -511,6 +539,8 @@ describe('portabilidade e exclusão da conta', () => {
       ['users', 'id'],
       ['profiles', 'id'],
       ['daily_metrics', 'user_id'],
+      ['daily_briefings', 'user_id'],
+      ['user_notifications', 'user_id'],
       ['consent_records', 'user_id'],
       ['user_subscriptions', 'user_id'],
     ]) {

@@ -7,11 +7,14 @@ import {
   type AiSkillDocument,
 } from '@/lib/ai/chat-engine';
 import { getAstrologicalContext } from '@/lib/astrology/engine';
+import { obterBriefingDoDia } from '@/lib/coach/servico';
+import type { BriefingDoDia } from '@/lib/coach/tipos';
 import { lerJson, respostaDeErro } from '@/lib/http/api';
 import { listaDeTextos } from '@/lib/json-values';
 import { queryRows } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
-import { consumeUsageQuota } from '@/lib/plans/service';
+import { registrarErroInterno } from '@/lib/observability/log-seguro';
+import { consumeUsageQuota, recursoHabilitado } from '@/lib/plans/service';
 
 export const runtime = 'nodejs';
 
@@ -80,6 +83,24 @@ export async function POST(request: Request) {
       `
     );
 
+    // "Seu dia" do coach (o mesmo da página "Meu dia"), quando o plano inclui
+    // o coach e o perfil tem cidade. Falha aqui não derruba o chat.
+    let seuDia: BriefingDoDia | null = null;
+    try {
+      if (
+        await recursoHabilitado(
+          session.user.id,
+          session.user.role,
+          'ai_tips_feed'
+        )
+      ) {
+        const estado = await obterBriefingDoDia(session.user.id);
+        seuDia = estado.estado === 'pronto' ? estado.briefing : null;
+      }
+    } catch (erro) {
+      registrarErroInterno('ask-ai-assistant:coach', erro);
+    }
+
     const fallbackResponse = generateLocalAssistantReply(query, {
       profile: profile
         ? {
@@ -90,6 +111,7 @@ export async function POST(request: Request) {
       latestMetric: latestMetric ?? null,
       astrology: getAstrologicalContext(new Date(), profile ?? undefined),
       skills,
+      seuDia,
     });
 
     let finalResponse = fallbackResponse;

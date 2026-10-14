@@ -1,4 +1,5 @@
 import { AstrologicalData } from '@/lib/astrology/engine';
+import type { BriefingDoDia } from '@/lib/coach/tipos';
 import { calculateDynamicDosha } from '@/lib/ayurveda/dosha-engine';
 import { calculateQuantumCoherence } from '@/lib/quantum/coherence-engine';
 import { calculateChakraAlignment } from '@/lib/chakra/alignment-engine';
@@ -27,6 +28,30 @@ interface ChatContext {
   // Documentos/skills configurados no admin que orientam o que a IA deve
   // saber, fazer e executar no app. Injetados em tempo real no contexto.
   skills?: AiSkillDocument[];
+  // "Seu dia" do coach diário (tarefa 42), quando o plano inclui o coach e o
+  // perfil tem cidade: o chat responde sobre o dia com os mesmos horários.
+  seuDia?: BriefingDoDia | null;
+}
+
+function resumoDoDia(dia: BriefingDoDia) {
+  const linhas = [
+    `Seu dia (${dia.local.rotulo.split(',')[0]}): ${dia.manchete}.`,
+    ...dia.periodos.map(
+      (p) =>
+        `- ${p.nome} (${p.horario}): ${p.qualidade === 'favoravel' ? 'favorável' : p.qualidade === 'neutro' ? 'neutro' : 'cautela'}. ${p.sugestao}`
+    ),
+    `Focos: ${dia.focos.map((f) => f.texto).join(' ')}`,
+    `Cuidados: ${dia.cuidados.map((c) => c.texto).join(' ')}`,
+  ];
+  if (dia.alertas.length > 0) {
+    linhas.push(`Atenção: ${dia.alertas.map((a) => a.texto).join(' ')}`);
+  }
+  if (dia.prontidao.valor !== null) {
+    linhas.push(
+      `Prontidão de hoje: ${dia.prontidao.valor}/100 (${dia.prontidao.base.join(', ')}).`
+    );
+  }
+  return linhas.join('\n');
 }
 
 // Monta um bloco textual com as skills ativas, para uso como instrucao
@@ -188,6 +213,22 @@ export function generateLocalAssistantReply(
     'status',
     'como estou',
   ]);
+  const isDayQuery = contemTermo(text, [
+    'meu dia',
+    'o dia',
+    'hoje',
+    'amanhã',
+    'manhã',
+    'tarde',
+    'noite',
+    'agora',
+    'horário',
+    'horários',
+    'rahu',
+    'choghadiya',
+    'panchang',
+    'coach',
+  ]);
   const isConsultationQuery = contemTermo(text, [
     'consulta',
     'médico',
@@ -327,6 +368,20 @@ export function generateLocalAssistantReply(
 - Energia Vital (Prana): ${prana.index}/100 (${prana.level})
 - Pancha Koshas (Vedanta): ${koshas.overallScore}/100 (${koshas.overallStatus} - ${koshas.dharmaAlignment})`
     );
+  }
+
+  // 8.1. O dia de hoje pelo coach diário
+  if (isDayQuery) {
+    if (context.seuDia) {
+      responses.push(resumoDoDia(context.seuDia));
+      responses.push(
+        'Os detalhes de cada período, com o "por quê" de cada dica, estão em "Meu dia" na barra lateral.'
+      );
+    } else if (text.includes('meu dia') || text.includes('coach')) {
+      responses.push(
+        `${name}, para eu dizer como será o seu dia por período, escolha no perfil a cidade onde você mora e informe data, hora e cidade de nascimento.`
+      );
+    }
   }
 
   // 9. Agendamentos

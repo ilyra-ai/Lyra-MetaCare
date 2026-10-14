@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Smartphone,
   Sparkles,
+  Sunrise,
   Target,
   UserRound,
   UsersRound,
@@ -48,6 +49,16 @@ export const navigationItems: NavigationDefinition[] = [
     section: 'Principal',
     sectionKey: 'principal',
     shortcut: 'G D',
+  },
+  {
+    href: '/dia',
+    label: 'Meu dia',
+    description:
+      'Coach diário: como será o seu dia por período, com o mapa védico e os seus sinais.',
+    icon: Sunrise,
+    section: 'Principal',
+    sectionKey: 'principal',
+    shortcut: 'G H',
   },
   {
     href: '/plan',
@@ -271,15 +282,30 @@ function buildConfiguredNavigation(appConfig?: AppPageConfig) {
     } satisfies NavigationDefinition;
   });
 
-  const missingBaseItems = navigationItems
-    .filter((item) => !configuredHrefs.has(item.href))
-    .map((item) => ({
+  // Páginas novas que ainda não estão na configuração salva pelo
+  // administrador entram logo depois da página que as antecede na navegação
+  // padrão (ex.: "Meu dia" depois do Dashboard), e não no fim da lista.
+  const result: NavigationDefinition[] = [...configuredItems];
+  navigationItems.forEach((item, index) => {
+    if (configuredHrefs.has(item.href)) return;
+    const missing = {
       ...item,
       section: getSectionLabel(item.sectionKey, appConfig) ?? item.section,
       visible: true,
-    }));
+    };
+    const previousHref = navigationItems
+      .slice(0, index)
+      .reverse()
+      .find((candidate) =>
+        result.some((existing) => existing.href === candidate.href)
+      )?.href;
+    const position = previousHref
+      ? result.findIndex((existing) => existing.href === previousHref) + 1
+      : result.length;
+    result.splice(position, 0, missing);
+  });
 
-  return [...configuredItems, ...missingBaseItems];
+  return result;
 }
 
 export function getVisibleNavigation(

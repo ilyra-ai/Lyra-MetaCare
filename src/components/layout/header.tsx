@@ -86,17 +86,59 @@ export function Header() {
     void loadProfile();
   }, [db, session]);
 
+  // Atalhos "G + letra" exibidos na paleta de comandos (ex.: G D, G H).
+  const atalhos = React.useMemo(
+    () =>
+      new Map(
+        getVisibleNavigation(isAdmin, appConfig)
+          .filter((item) => item.shortcut?.startsWith('G '))
+          .map((item) => [
+            (item.shortcut as string).slice(2).toLowerCase(),
+            item.href,
+          ])
+      ),
+    [appConfig, isAdmin]
+  );
+
   React.useEffect(() => {
+    let esperandoSegundaTecla = 0;
+    const emCampoDeTexto = (alvo: EventTarget | null) =>
+      alvo instanceof HTMLElement &&
+      (alvo.isContentEditable ||
+        ['INPUT', 'TEXTAREA', 'SELECT'].includes(alvo.tagName));
+
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         setCommandOpen((current) => !current);
+        return;
+      }
+      if (
+        event.metaKey ||
+        event.ctrlKey ||
+        event.altKey ||
+        emCampoDeTexto(event.target)
+      ) {
+        return;
+      }
+      const tecla = event.key.toLowerCase();
+      if (esperandoSegundaTecla > Date.now()) {
+        esperandoSegundaTecla = 0;
+        const destino = atalhos.get(tecla);
+        if (destino) {
+          event.preventDefault();
+          router.push(destino);
+        }
+        return;
+      }
+      if (tecla === 'g') {
+        esperandoSegundaTecla = Date.now() + 1500;
       }
     };
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
+  }, [atalhos, router]);
 
   if (!session) {
     return null;

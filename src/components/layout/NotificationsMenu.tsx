@@ -2,7 +2,13 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Bell, CalendarClock, CreditCard } from 'lucide-react';
+import {
+  Bell,
+  CalendarClock,
+  CreditCard,
+  Sunrise,
+  TriangleAlert,
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -12,14 +18,69 @@ import {
 } from '@/components/ui/popover';
 import { useAuth } from '@/context/AuthContext';
 import { useAccountSubscription } from '@/hooks/use-account-subscription';
+import { useKeyedResource } from '@/hooks/use-keyed-resource';
+import { ouvirCoachAtualizado } from '@/lib/coach/evento-do-coach';
 import { scalePx } from '@/lib/site-page-config/runtime';
+import { cn } from '@/lib/utils';
 
 interface Notificacao {
   id: string;
   titulo: string;
   detalhe: string;
   href: string;
-  tipo: 'consulta' | 'assinatura';
+  tipo: 'consulta' | 'assinatura' | 'coach_dia' | 'coach_alerta';
+  /** Notificação do coach ainda não lida (consultas e avisos: sempre false). */
+  nova: boolean;
+}
+
+interface NotificacaoDoServidor {
+  id: string;
+  tipo: 'coach_dia' | 'coach_alerta';
+  titulo: string;
+  corpo: string;
+  link: string | null;
+  criadaEm: string;
+  lida: boolean;
+}
+
+interface RespostaDasNotificacoes {
+  notificacoes: NotificacaoDoServidor[];
+  naoLidas: number;
+}
+
+const SEM_NOTIFICACOES: RespostaDasNotificacoes = {
+  notificacoes: [],
+  naoLidas: 0,
+};
+
+async function lerNotificacoes(): Promise<RespostaDasNotificacoes> {
+  const resposta = await fetch('/api/notificacoes', {
+    credentials: 'include',
+    cache: 'no-store',
+  });
+  if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
+  return (await resposta.json()) as RespostaDasNotificacoes;
+}
+
+function avisarFalha(falha: unknown) {
+  // O sino continua com as consultas e os avisos da assinatura.
+  console.error('Falha ao carregar as notificações:', falha);
+}
+
+const ICONE_DO_TIPO = {
+  consulta: CalendarClock,
+  assinatura: CreditCard,
+  coach_dia: Sunrise,
+  coach_alerta: TriangleAlert,
+} as const;
+
+function quando(iso: string) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(iso));
 }
 
 interface ConsultaProxima {
@@ -49,15 +110,45 @@ function data(valor: string) {
 }
 
 /**
- * Central de notificações do cabeçalho, com dados reais da conta: consultas
- * dos próximos dias e avisos da assinatura. Antes o sino não tinha nenhuma
- * ação.
+ * Central de notificações do cabeçalho, com dados reais da conta: as
+ * notificações do coach diário gravadas no servidor ("Seu dia está pronto" e
+ * alertas), consultas dos próximos dias e avisos da assinatura. Abrir o sino
+ * marca as notificações do coach como lidas.
  */
 export function NotificationsMenu({ iconScale }: { iconScale: number }) {
   const { db, session } = useAuth();
   const { data: assinatura } = useAccountSubscription();
   const [consultas, setConsultas] = React.useState<ConsultaProxima[]>([]);
   const userId = session?.user.id ?? null;
+  const [versao, setVersao] = React.useState(0);
+  const [lidasAoAbrir, setLidasAoAbrir] = React.useState(false);
+
+  React.useEffect(
+    () => ouvirCoachAtualizado(() => setVersao((v) => v + 1)),
+    []
+  );
+  const { data: doServidor, refresh } = useKeyedResource(
+    userId ? `notificacoes:${userId}:${versao}` : null,
+    lerNotificacoes,
+    avisarFalha,
+    SEM_NOTIFICACOES
+  );
+
+  const aoAbrirOuFechar = (aberto: boolean) => {
+    if (aberto && doServidor.naoLidas > 0) {
+      setLidasAoAbrir(true);
+      void fetch('/api/notificacoes', {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ todas: true }),
+      }).catch(avisarFalha);
+    }
+    if (!aberto && lidasAoAbrir) {
+      setLidasAoAbrir(false);
+      void refresh();
+    }
+  };
 
   React.useEffect(() => {
     if (!userId) return;
@@ -87,7 +178,14 @@ export function NotificationsMenu({ iconScale }: { iconScale: number }) {
     };
   }, [db, userId]);
 
-  const notificacoes: Notificacao[] = [];
+  const notificacoes: Notificacao[] = doServidor.notificacoes.map((item) => ({
+    id: item.id,
+    tipo: item.tipo,
+    titulo: item.titulo,
+    detalhe: `${quando(item.criadaEm)} · ${item.corpo}`,
+    href: item.link ?? '/dia',
+    nova: !item.lida,
+  }));
   for (const consulta of consultas) {
     notificacoes.push({
       id: `consulta-${consulta.id}`,
@@ -101,6 +199,7 @@ export function NotificationsMenu({ iconScale }: { iconScale: number }) {
           : ''
       }`,
       href: '/appointments',
+      nova: false,
     });
   }
   if (assinatura?.status === 'past_due') {
@@ -111,6 +210,7 @@ export function NotificationsMenu({ iconScale }: { iconScale: number }) {
       detalhe:
         'Atualize a forma de pagamento para manter os recursos do plano.',
       href: '/profile',
+      nova: false,
     });
   } else if (assinatura?.cancelAtPeriodEnd && assinatura.plan.key !== 'free') {
     notificacoes.push({
@@ -120,14 +220,19 @@ export function NotificationsMenu({ iconScale }: { iconScale: number }) {
       detalhe:
         'A renovação foi cancelada. Você pode reativá-la no portal de cobrança.',
       href: '/profile',
+      nova: false,
     });
   }
 
-  const total = notificacoes.length;
+  // Consultas e avisos da assinatura valem enquanto existirem; as do coach
+  // contam até serem lidas.
+  const total =
+    notificacoes.filter((n) => n.tipo === 'consulta' || n.tipo === 'assinatura')
+      .length + (lidasAoAbrir ? 0 : doServidor.naoLidas);
   const tamanhoDoIcone = scalePx(18, iconScale);
 
   return (
-    <Popover>
+    <Popover onOpenChange={aoAbrirOuFechar}>
       <PopoverTrigger asChild>
         <Button
           type="button"
@@ -135,8 +240,10 @@ export function NotificationsMenu({ iconScale }: { iconScale: number }) {
           size="icon"
           className="relative"
           aria-label={
+            // O número visível no selo abre o nome acessível (WCAG 2.5.3,
+            // rótulo no nome).
             total > 0
-              ? `Notificações (${total} ${total === 1 ? 'nova' : 'novas'})`
+              ? `${total} ${total === 1 ? 'notificação nova' : 'notificações novas'}`
               : 'Notificações'
           }
         >
@@ -170,32 +277,42 @@ export function NotificationsMenu({ iconScale }: { iconScale: number }) {
             Notificações
           </p>
           <p className="text-xs text-muted-foreground">
-            Consultas dos próximos {DIAS_DE_ANTECEDENCIA} dias e avisos da
-            assinatura.
+            Seu dia e alertas do coach, consultas dos próximos{' '}
+            {DIAS_DE_ANTECEDENCIA} dias e avisos da assinatura.
           </p>
         </div>
-        {total === 0 ? (
+        {notificacoes.length === 0 ? (
           <p className="px-4 py-6 text-center text-sm text-muted-foreground">
             Nenhuma notificação no momento.
           </p>
         ) : (
           <ul className="max-h-[60dvh] divide-y divide-border overflow-y-auto">
             {notificacoes.map((item) => {
-              const Icone =
-                item.tipo === 'consulta' ? CalendarClock : CreditCard;
+              const Icone = ICONE_DO_TIPO[item.tipo];
               return (
                 <li key={item.id}>
                   <Link
                     href={item.href}
-                    className="flex min-h-11 items-start gap-3 px-4 py-3 transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-hidden"
+                    className={cn(
+                      'flex min-h-11 items-start gap-3 px-4 py-3 transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-hidden',
+                      item.nova && 'bg-primary/5'
+                    )}
                   >
                     <Icone
-                      className="mt-0.5 h-4 w-4 shrink-0 text-primary"
+                      className={cn(
+                        'mt-0.5 h-4 w-4 shrink-0',
+                        item.tipo === 'coach_alerta'
+                          ? 'text-warning'
+                          : 'text-primary'
+                      )}
                       aria-hidden="true"
                     />
                     <span className="min-w-0">
                       <span className="block text-sm font-medium text-foreground">
                         {item.titulo}
+                        {item.nova ? (
+                          <span className="sr-only"> (nova)</span>
+                        ) : null}
                       </span>
                       <span className="block text-xs text-muted-foreground">
                         {item.detalhe}

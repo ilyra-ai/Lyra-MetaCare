@@ -21,6 +21,7 @@ function sessao(onboardingConcluido: boolean, role = 'patient'): AppSession {
 
 const ROTAS_DO_APP = [
   '/',
+  '/dia',
   '/plan',
   '/goals',
   '/appointments',

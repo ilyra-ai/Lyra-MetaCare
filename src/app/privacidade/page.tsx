@@ -60,8 +60,16 @@ export default function PoliticaDePrivacidadePage() {
             é guardada só como hash (bcrypt) e nunca pode ser lida por ninguém.
           </li>
           <li>
-            <strong>Perfil:</strong> data, hora e local de nascimento, idade,
-            gênero, nível de atividade, metas e foto.
+            <strong>Perfil:</strong> data, hora e cidade de nascimento, cidade
+            onde mora (com as coordenadas e o fuso da cidade), idade, gênero,
+            nível de atividade, metas e foto.
+          </li>
+          <li>
+            <strong>Coach diário:</strong> o &quot;Seu dia&quot; preparado todos
+            os dias a partir do seu mapa védico, do céu da sua cidade e das suas
+            métricas, a sua resposta a &quot;isso te ajudou?&quot; e as
+            notificações do sino. É calculado nos motores da própria Lyra, sem
+            envio a serviços externos.
           </li>
           <li>
             <strong>Dados de saúde e bem-estar (dados sensíveis):</strong>{' '}
@@ -178,6 +186,10 @@ export default function PoliticaDePrivacidadePage() {
             Os seus dados ficam guardados enquanto a sua conta existir. Ao
             excluir a conta, todos os dados pessoais e de saúde são apagados
             imediatamente, junto com as fotos enviadas.
+          </p>
+          <p>
+            O &quot;Seu dia&quot; do coach e as notificações do sino ficam
+            guardados por 90 dias e são apagados automaticamente depois disso.
           </p>
           <p>
             <strong>Exceção: registros fiscais.</strong> As faturas pagas não

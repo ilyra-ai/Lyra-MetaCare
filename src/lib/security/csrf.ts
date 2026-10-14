@@ -15,7 +15,7 @@
 export const METODOS_DE_ESCRITA = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 // Rotas chamadas por servidores externos, com autenticação própria.
-const ROTAS_EXTERNAS = new Set(['/api/webhooks/stripe']);
+const ROTAS_EXTERNAS = new Set(['/api/webhooks/stripe', '/api/coach/rotina']);
 
 function origemDe(url: string | null | undefined) {
   if (!url) {

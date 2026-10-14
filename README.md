@@ -210,6 +210,7 @@ O `.env.local` é a **fonte única de configuração**, lida pelo Next.js, pelos
 
 - Mapa das rotas da API (autenticação, entrada, saída, erros e tabelas): [`docs/api.md`](./docs/api.md).
 - Mapa védico e dia védico (método, base de cidades e validação contra o Swiss Ephemeris): [`docs/astrologia.md`](./docs/astrologia.md).
+- Coach diário "Seu dia" (regras, rotina automática, notificações e privacidade): [`docs/coach.md`](./docs/coach.md).
 - Modelo de segurança (sessão, CSRF, limites de tentativa, cabeçalhos, XSS, dados de saúde, Stripe e Sentry): [`docs/seguranca.md`](./docs/seguranca.md).
 - Performance (medições por rota, gargalos corrigidos e como medir): [`docs/performance.md`](./docs/performance.md).
 - Acessibilidade (auditoria axe, correções e limitações conhecidas): [`docs/acessibilidade.md`](./docs/acessibilidade.md).

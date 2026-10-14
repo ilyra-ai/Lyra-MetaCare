@@ -991,6 +991,23 @@ export async function getUserSubscriptionAssignment(
   };
 }
 
+/**
+ * Mesma regra de `requireFeatureEnabled` para rotinas sem sessão (ex.: a
+ * rotina diária do coach): administradores têm tudo; os demais, o que o
+ * plano vigente libera.
+ */
+export async function recursoHabilitado(
+  userId: string,
+  role: string,
+  featureKey: PlanFeatureKey
+) {
+  if (role === 'admin') {
+    return true;
+  }
+  const { feature } = await fetchFeatureAccess(userId, role, featureKey);
+  return feature.enabled;
+}
+
 export async function requireFeatureEnabled(
   session: AppSession,
   featureKey: PlanFeatureKey

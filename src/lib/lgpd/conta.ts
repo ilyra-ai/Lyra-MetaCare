@@ -237,6 +237,8 @@ const TABELAS_DO_TITULAR = [
   ['professionals', 'user_id'],
   ['user_assessments', 'user_id'],
   ['user_streaks', 'user_id'],
+  ['daily_briefings', 'user_id'],
+  ['user_notifications', 'user_id'],
   ['feature_usage_counters', 'user_id'],
   ['subscription_audit_events', 'user_id'],
 ] as const;

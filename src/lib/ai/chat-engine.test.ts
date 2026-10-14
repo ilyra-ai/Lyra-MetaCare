@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { getAstrologicalContext } from '@/lib/astrology/engine';
+import { gerarBriefingLocal } from '@/lib/coach/gerador-local';
 
 import { buildSkillsContext, generateLocalAssistantReply } from './chat-engine';
 
@@ -102,6 +103,46 @@ describe('contexto de skills', () => {
         '### Skill 1: A\nconteúdo A',
         '### Skill 2: B [cat]\nconteúdo B',
       ].join('\n\n')
+    );
+  });
+});
+
+describe('o dia de hoje no chat', () => {
+  const SP = {
+    rotulo: 'São Paulo, São Paulo, Brasil',
+    latitude: -23.5475,
+    longitude: -46.63611,
+    fuso: 'America/Sao_Paulo',
+  };
+  const seuDia = gerarBriefingLocal({
+    contexto: {
+      userId: 'teste',
+      data: '2026-10-14',
+      perfil: {
+        nascimento: { data: '1990-05-15', hora: '08:30', local: SP },
+        moradia: SP,
+        localDoDia: SP,
+        faltando: [],
+      },
+      pessoa: { nome: 'Ana', objetivos: [], ciclo: null },
+      hoje: null,
+      historico: [],
+    },
+    agora: new Date('2026-10-14T09:00:00Z'),
+  });
+
+  it('responde com os períodos e focos do coach', () => {
+    const resposta = responder('como vai ser meu dia?', { seuDia });
+    expect(resposta).toContain(`Seu dia (São Paulo): ${seuDia.manchete}.`);
+    for (const periodo of seuDia.periodos) {
+      expect(resposta).toContain(`${periodo.nome} (${periodo.horario})`);
+    }
+    expect(resposta).toContain('"Meu dia"');
+  });
+
+  it('sem o briefing, explica o que falta no perfil', () => {
+    expect(responder('como vai ser meu dia?', { seuDia: null })).toContain(
+      'escolha no perfil a cidade onde você mora'
     );
   });
 });

@@ -106,7 +106,7 @@ describe('POST /api/auth/register e /api/auth/login', () => {
       [email]
     );
     expect(consentimentos).toEqual([
-      { consent_type: 'privacy_policy', document_version: '2026-10-12' },
+      { consent_type: 'privacy_policy', document_version: '2026-10-14' },
       { consent_type: 'terms_of_use', document_version: '2026-10-12' },
     ]);
 

@@ -49,6 +49,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/components/ui/chart';
+import { SeuDiaCard } from '@/components/coach/SeuDiaCard';
 import { BotaoRegistroDoDia } from '@/components/metricas/RegistroDoDia';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -382,6 +383,9 @@ export function Dashboard() {
       <div className="w-full relative z-20">
         <PuckClientRenderer documentKey="dashboard" />
       </div>
+
+      {/* Coach diário (tarefa 42): o feed de dicas de IA do plano. */}
+      {aiTipsEnabled ? <SeuDiaCard /> : null}
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <Card className="min-w-0 md:col-span-2">
