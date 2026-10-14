@@ -69,10 +69,23 @@ describe('aderência por streaks', () => {
   it('30 dias ou mais em todos os tipos é aderência máxima', () => {
     expect(
       calculateAdherenceScore([
+        streak('daily_metrics', 30),
+        streak('sleep_hygiene', 31),
+        streak('movement', 30),
         streak('meditation', 45),
         streak('hydration', 30),
       ])
     ).toEqual({ score: 100, level: 'consistente' });
+  });
+
+  it('sequências ainda não iniciadas contam como zero no máximo', () => {
+    // Só meditação (1,5) e hidratação (1,0) completas: 2,5 × 30 de 7 × 30.
+    expect(
+      calculateAdherenceScore([
+        streak('meditation', 45),
+        streak('hydration', 30),
+      ])
+    ).toEqual({ score: 36, level: 'média' });
   });
 
   it('pondera os tipos de streak', () => {
@@ -87,15 +100,27 @@ describe('aderência por streaks', () => {
       streak('hydration', 15),
     ]);
     expect(metrica.score).toBeGreaterThan(hidratacao.score);
-    expect(metrica.score).toBe(33); // (15·2) / (30·2 + 30·1) = 33,3 %
+    // (15·2) / (30 · (2 + 1,5 + 1,5 + 1 + 1)) = 14,3 %
+    expect(metrica.score).toBe(14);
   });
 
   it('classifica nas faixas baixa < 30 ≤ média < 60 ≤ alta < 85 ≤ consistente', () => {
-    expect(calculateAdherenceScore([streak('x', 8)]).level).toBe('baixa');
-    expect(calculateAdherenceScore([streak('x', 9)]).level).toBe('média');
-    expect(calculateAdherenceScore([streak('x', 18)]).level).toBe('alta');
-    expect(calculateAdherenceScore([streak('x', 26)]).level).toBe(
-      'consistente'
-    );
+    // As cinco sequências com n dias: aderência = n / 30.
+    const todas = (n: number) =>
+      calculateAdherenceScore(
+        [
+          'daily_metrics',
+          'sleep_hygiene',
+          'movement',
+          'meditation',
+          'hydration',
+        ].map((tipo) => streak(tipo, n))
+      );
+    expect(todas(8).level).toBe('baixa');
+    expect(todas(9).level).toBe('média');
+    expect(todas(18).level).toBe('alta');
+    expect(todas(26).level).toBe('consistente');
+    // Tipos desconhecidos não contam.
+    expect(calculateAdherenceScore([streak('x', 30)]).score).toBe(0);
   });
 });

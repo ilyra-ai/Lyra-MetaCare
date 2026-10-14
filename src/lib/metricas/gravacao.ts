@@ -1,8 +1,18 @@
 import { randomUUID } from 'node:crypto';
 
+import { atualizarMetasESequencias } from '@/lib/metas/servico';
 import { executeStatement, queryRows } from '@/lib/mysql/pool';
 
 import { recalcularEscoresDesde } from './escores-do-dia';
+
+/**
+ * O que a IA faz sozinha depois de cada gravação: prontidão e recuperação do
+ * dia (e dos 7 seguintes), metas automáticas, prazos e sequências.
+ */
+async function depoisDeGravar(userId: string, data: string) {
+  await recalcularEscoresDesde(userId, data);
+  await atualizarMetasESequencias(userId);
+}
 
 import {
   CAMPOS_DO_REGISTRO,
@@ -64,7 +74,7 @@ export async function gravarRegistroDoDia(
        metrics_updated_at = novo.metrics_updated_at`,
     [randomUUID(), userId, registro.data, ...valores]
   );
-  await recalcularEscoresDesde(userId, registro.data);
+  await depoisDeGravar(userId, registro.data);
 
   return lerRegistroDoDia(userId, registro.data);
 }
@@ -128,7 +138,7 @@ export async function gravarSessaoDoSensor(
       sessao.rmssd === null ? null : Math.round(sessao.rmssd * 10) / 10,
     ]
   );
-  await recalcularEscoresDesde(userId, sessao.data);
+  await depoisDeGravar(userId, sessao.data);
 
   return lerRegistroDoDia(userId, sessao.data);
 }

@@ -121,6 +121,12 @@ export interface GoalRow extends AuditedRow {
   target_value: number | null;
   current_value: number;
   unit: string | null;
+  /** Métrica do registro do dia (meta automática); null em metas manuais. */
+  metric_key: string | null;
+  metric_direction: string | null;
+  deadline: DateString | null;
+  auto_sample_days: number | null;
+  auto_updated_at: string | null;
   status: string;
 }
 

@@ -212,24 +212,16 @@ describe('avaliações, streaks e efemérides', () => {
     expect(invalida.status).toBe(400);
   });
 
-  it('streaks validam os tipos e contam repetidos uma vez', async () => {
+  it('streaks são só leitura: sem registro do dia não há sequência', async () => {
     const pessoa = await criarUsuario('patient', 'Streak');
-    expect(
-      (
-        await chamar(streaks.POST, {
-          method: 'POST',
-          body: { activityTypes: ['<script>'] },
-          usuario: pessoa,
-        })
-      ).status
-    ).toBe(400);
-    const resposta = await chamar(streaks.POST, {
-      method: 'POST',
-      body: { activityTypes: ['hydration', 'hydration', 'meditation'] },
-      usuario: pessoa,
-    });
+    const resposta = await chamar(streaks.GET, { usuario: pessoa });
     expect(resposta.status).toBe(200);
-    expect((resposta.json as { streaks: unknown[] }).streaks).toHaveLength(2);
+    expect(resposta.json).toEqual({
+      success: true,
+      streaks: [],
+      adherence: { score: 0, level: 'baixa' },
+    });
+    expect((await chamar(streaks.GET, { usuario: null })).status).toBe(401);
   });
 
   it('efemérides: data inválida 400, válida 200', async () => {

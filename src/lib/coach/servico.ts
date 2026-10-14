@@ -3,6 +3,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { LocalSemNascerDoSolError } from '@/lib/astrology/panchang';
 import { dataLocal, partesLocais } from '@/lib/astrology/tempo';
 import { HttpError } from '@/lib/http-error';
+import { atualizarMetasESequencias } from '@/lib/metas/servico';
 import { executeStatement, queryRows } from '@/lib/mysql/pool';
 import { criarNotificacao } from '@/lib/notificacoes/servico';
 import { registrarErroInterno } from '@/lib/observability/log-seguro';
@@ -228,6 +229,9 @@ export async function executarRotinaDoCoach(
       }
       const estado = await obterBriefingDoDia(pessoa.id, agora);
       if (estado.estado === 'pronto') gerados += 1;
+      // Virada do dia: prazos de metas vencidos e sequências que não
+      // continuaram ontem são atualizados mesmo sem novo check-in.
+      await atualizarMetasESequencias(pessoa.id, agora);
     } catch (error) {
       falhas += 1;
       registrarErroInterno('coach:rotina', error);

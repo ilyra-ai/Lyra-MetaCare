@@ -214,11 +214,28 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'target_value',
       'current_value',
       'unit',
+      'metric_key',
+      'metric_direction',
+      'deadline',
+      'auto_sample_days',
+      'auto_updated_at',
       'status',
       'created_at',
       'updated_at',
     ],
     userScopedBy: 'user_id',
+    // Metas automáticas nascem e são recalculadas no servidor, a partir do
+    // registro do dia (/api/metas).
+    colunasSoPorRotaPropria: {
+      colunas: [
+        'metric_key',
+        'metric_direction',
+        'auto_sample_days',
+        'auto_updated_at',
+      ],
+      mensagem:
+        'Metas automáticas são criadas e recalculadas pelo servidor (/api/metas).',
+    },
   },
   habits: {
     columns: ['id', 'user_id', 'name', 'is_active', 'frequency', 'created_at'],
@@ -321,6 +338,8 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'updated_at',
     ],
     userScopedBy: 'user_id',
+    escritaSoPorRotaPropria:
+      'As sequências são calculadas pelo servidor a partir do registro do dia.',
   },
 };
 

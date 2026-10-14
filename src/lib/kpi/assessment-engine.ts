@@ -92,23 +92,30 @@ export function calculateAdherenceScore(streaks: UserStreak[]): {
     return { score: 0, level: 'baixa' };
   }
 
-  // Peso por tipo de streak (exemplo)
+  // Peso de cada sequência na aderência: o registro diário é a base de todo
+  // o resto (2); sono e meditação têm o maior efeito sobre recuperação (1,5);
+  // movimento e hidratação completam (1). O máximo considera sempre as cinco
+  // sequências, mesmo as ainda não iniciadas (antes, quem tinha só uma
+  // sequência chegava a 100%).
   const weights: Record<string, number> = {
-    meditation: 1.5,
-    hydration: 1.0,
     daily_metrics: 2.0,
     sleep_hygiene: 1.5,
+    meditation: 1.5,
+    movement: 1.0,
+    hydration: 1.0,
   };
+  const porTipo = new Map(streaks.map((s) => [s.streak_type, s]));
 
   let totalScore = 0;
   let maxPossible = 0;
 
-  for (const streak of streaks) {
-    const weight = weights[streak.streak_type] || 1.0;
-    maxPossible += weight * 30; // Considerando 30 dias como máximo de peso
-
-    // Cap in 30 days for score calculation purposes
-    const effectiveStreak = Math.min(streak.current_streak, 30);
+  for (const [tipo, weight] of Object.entries(weights)) {
+    // Até 30 dias contam para a aderência.
+    maxPossible += weight * 30;
+    const effectiveStreak = Math.min(
+      porTipo.get(tipo)?.current_streak ?? 0,
+      30
+    );
     totalScore += effectiveStreak * weight;
   }
 

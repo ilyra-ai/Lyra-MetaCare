@@ -49,6 +49,14 @@ const formSchema = z.object({
     .number<number | string>()
     .min(0, 'O progresso inicial não pode ser negativo.'),
   unit: z.string().trim(),
+  // Prazo opcional: vencido sem o alvo, a meta fica "Em atraso".
+  deadline: z
+    .string()
+    .trim()
+    .refine(
+      (value) => value.length === 0 || /^\d{4}-\d{2}-\d{2}$/.test(value),
+      'Informe uma data válida.'
+    ),
 });
 
 type FormInput = z.input<typeof formSchema>;
@@ -72,6 +80,7 @@ export function CreateGoalModal({ children, onCreated }: CreateGoalModalProps) {
       target_value: '',
       current_value: 0,
       unit: '',
+      deadline: '',
     },
   });
 
@@ -100,6 +109,7 @@ export function CreateGoalModal({ children, onCreated }: CreateGoalModalProps) {
       target_value: targetValue,
       current_value: currentValue,
       unit,
+      deadline: data.deadline || null,
       status,
     });
 
@@ -117,6 +127,7 @@ export function CreateGoalModal({ children, onCreated }: CreateGoalModalProps) {
       target_value: '',
       current_value: 0,
       unit: '',
+      deadline: '',
     });
     onCreated();
   };
@@ -135,6 +146,7 @@ export function CreateGoalModal({ children, onCreated }: CreateGoalModalProps) {
             target_value: '',
             current_value: 0,
             unit: '',
+            deadline: '',
           });
         }
       }}
@@ -245,6 +257,20 @@ export function CreateGoalModal({ children, onCreated }: CreateGoalModalProps) {
                       {...field}
                       rows={4}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="deadline"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Prazo (opcional)</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
