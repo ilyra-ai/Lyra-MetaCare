@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 
 import { describe, expect, it } from 'vitest';
 
+import { gravarRegistroDoDia } from '@/lib/metricas/gravacao';
 import { executeStatement, queryRows } from '@/lib/mysql/pool';
 
 import { criarUsuario } from '../../../tests/integration/fixtures';
@@ -12,6 +13,7 @@ import * as streaks from './data/streaks/route';
 import * as avaliacoes from './data/user-assessments/route';
 import * as assistente from './functions/ask-ai-assistant/route';
 import * as score from './functions/calculate-longevity-score/route';
+import type { EscoresDoDia } from '@/lib/ai/score-engine';
 import * as plano from './functions/generate-ai-plan/route';
 import * as conexao from './functions/test-ai-connection/route';
 import * as webhook from './webhooks/stripe/route';
@@ -116,19 +118,67 @@ describe('plano e score', () => {
     expect(salvo).toHaveLength(1);
   });
 
-  it('calcula o score a partir da última métrica', async () => {
+  it('calcula os escores do dia pedido, sem inventar valores', async () => {
     const pessoa = await comObjetivosEMetricas('Score');
+    const hoje = new Date().toISOString().slice(0, 10);
     const resposta = await chamar(score.POST, {
       method: 'POST',
+      body: { data: hoje },
       usuario: pessoa,
     });
     expect(resposta.status).toBe(200);
-    const corpo = resposta.json as {
-      longevityScore: number;
-      readinessScore: number;
-    };
+    const corpo = resposta.json as EscoresDoDia;
+    expect(corpo).toMatchObject({
+      data: hoje,
+      cobertura: 4,
+      totalDeMetricas: 13,
+      // Inserido direto no banco, sem passar pela gravação: sem prontidão.
+      readinessScore: null,
+    });
     expect(corpo.longevityScore).toBeGreaterThanOrEqual(0);
     expect(corpo.longevityScore).toBeLessThanOrEqual(10);
+
+    // O check-in grava a prontidão do dia no servidor.
+    await gravarRegistroDoDia(pessoa.id, {
+      data: hoje,
+      valores: { energia: 4, estresse: 20 },
+    });
+    const depois = (
+      await chamar(score.POST, {
+        method: 'POST',
+        body: { data: hoje },
+        usuario: pessoa,
+      })
+    ).json as EscoresDoDia;
+    expect(depois.readinessScore).toEqual(expect.any(Number));
+    expect(depois.recoveryScore).toEqual(expect.any(Number));
+
+    // Dia sem registro: tudo nulo (antes: longevidade 5 e prontidão 50).
+    const ontem = new Date(Date.now() - 2 * 86_400_000)
+      .toISOString()
+      .slice(0, 10);
+    const vazio = (
+      await chamar(score.POST, {
+        method: 'POST',
+        body: { data: ontem },
+        usuario: pessoa,
+      })
+    ).json as EscoresDoDia;
+    expect(vazio).toEqual({
+      data: ontem,
+      readinessScore: null,
+      recoveryScore: null,
+      longevityScore: null,
+      cobertura: 0,
+      totalDeMetricas: 13,
+    });
+
+    const invalida = await chamar(score.POST, {
+      method: 'POST',
+      body: { data: '2020-01-01' },
+      usuario: pessoa,
+    });
+    expect(invalida.status).toBe(400);
   });
 
   it('teste de conexão da IA é restrito a administradores', async () => {

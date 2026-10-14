@@ -41,7 +41,13 @@ export interface VedicInsights {
   chakras: ChakraAlignmentResult;
   prana: PranicIndexResult;
   koshas: KoshaResult;
-  history: Array<{ date: string; icq: number; prana: number; kosha: number }>;
+  /** null nos dias sem registro. */
+  history: Array<{
+    date: string;
+    icq: number | null;
+    prana: number | null;
+    kosha: number | null;
+  }>;
   loading: boolean;
 }
 
@@ -91,8 +97,9 @@ export function useVedicInsights(enabled = true): VedicInsights {
   const { astrology } = useHealthOrchestrator();
   const { metrics, todayMetrics, loading } = useDailyMetrics(7, enabled);
 
+  // Sem registro hoje, os motores recebem só ausências (nunca zeros).
   const snapshot = useMemo(
-    () => buildMetricSnapshot(todayMetrics),
+    () => (todayMetrics?.registrado ? buildMetricSnapshot(todayMetrics) : null),
     [todayMetrics]
   );
 
@@ -217,23 +224,25 @@ export function useVedicInsights(enabled = true): VedicInsights {
     return calculateKoshas(snapshot, astrology);
   }, [snapshot, astrology]);
 
+  // Tendência dos 7 dias em ordem cronológica (do mais antigo ao de hoje).
+  // Só os sinais do corpo de cada dia: o céu muda dia a dia e aplicar o de
+  // hoje aos dias passados distorcia a curva. Dias sem registro ficam nulos
+  // (lacuna no gráfico), em vez de zeros que pareciam quedas reais.
   const history = useMemo(() => {
-    return [...metrics].reverse().map((m) => {
-      const snap = buildMetricSnapshot(m);
-      if (!snap) return { date: m.date, icq: 0, prana: 0, kosha: 0 };
-      const coh = calculateQuantumCoherence(snap, astrology);
-      const pran = calculatePranicIndex(snap, astrology);
-      const ksh = calculateKoshas(snap, astrology);
+    return metrics.map((m) => {
+      const date = new Intl.DateTimeFormat('pt-BR', { weekday: 'short' })
+        .format(new Date(`${m.date}T12:00:00`))
+        .replace('.', '');
+      const snap = m.registrado ? buildMetricSnapshot(m) : null;
+      if (!snap) return { date, icq: null, prana: null, kosha: null };
       return {
-        date: new Intl.DateTimeFormat('pt-BR', { weekday: 'short' })
-          .format(new Date(`${m.date}T12:00:00`))
-          .replace('.', ''),
-        icq: coh.index,
-        prana: pran.index,
-        kosha: ksh.overallScore,
+        date,
+        icq: calculateQuantumCoherence(snap).index,
+        prana: calculatePranicIndex(snap).index,
+        kosha: calculateKoshas(snap).overallScore,
       };
     });
-  }, [metrics, astrology]);
+  }, [metrics]);
 
   return { dosha, coherence, chakras, prana, koshas, history, loading };
 }

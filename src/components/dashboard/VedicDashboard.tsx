@@ -121,13 +121,17 @@ export function VedicDashboard({ featureEnabled = true }: VedicDashboardProps) {
         </p>
       </div>
 
-      {history && history.length > 0 && (
+      {history.filter((dia) => dia.icq !== null).length >= 2 && (
         <Card className="min-w-0">
           <CardHeader className="p-5 pb-2">
             <CardTitle className="flex items-center gap-2">
               <Sparkles aria-hidden="true" className="size-4 text-cosmic" />
               Tendência Quântica-Védica (7 Dias)
             </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Sinais do corpo em cada dia registrado; dias sem registro ficam em
+              branco.
+            </p>
           </CardHeader>
           <CardContent className="h-56 w-full px-5 pb-5">
             <ResponsiveContainer width="100%" height="100%">

@@ -64,7 +64,9 @@ export async function POST(request: Request) {
       `
         SELECT steps, sleep_duration_minutes, hrv_ms, readiness_score, blood_glucose_mgdl
         FROM daily_metrics
-        WHERE user_id = ?
+        -- Só o registro de hoje ou de ontem: uma métrica de semanas atrás
+        -- era apresentada como a leitura atual.
+        WHERE user_id = ? AND date >= UTC_DATE() - INTERVAL 1 DAY
         ORDER BY date DESC
         LIMIT 1
       `,

@@ -226,8 +226,33 @@ export function generateProactiveActions(
     });
   }
 
-  // 9. Nada disparou → reforço de equilíbrio.
-  if (actions.length === 0) {
+  // 9. Nada disparou. Sem nenhum dado hoje não há o que afirmar sobre
+  // equilíbrio: o pedido é registrar o dia. Sem linha de base ainda, avisa
+  // quantos dias faltam. Só com dados e linha de base vem o reforço.
+  const temDadosHoje =
+    isNumber(context.readinessScore) ||
+    Object.values(today).some((valor) => isNumber(valor));
+  if (actions.length === 0 && !temDadosHoje) {
+    actions.push({
+      id: 'checkin',
+      category: 'equilibrio',
+      severity: 'info',
+      priority: 20,
+      title: 'Registre o seu dia',
+      detail:
+        'Ainda não há sono, energia, humor ou movimento registrados hoje. Com o check-in, a Lyra calcula a sua prontidão e ajusta as ações.',
+      cta: { label: 'Abrir o meu dia', href: '/dia' },
+    });
+  } else if (actions.length === 0 && !context.earlyWarning.hasBaseline) {
+    actions.push({
+      id: 'baseline',
+      category: 'equilibrio',
+      severity: 'info',
+      priority: 20,
+      title: 'Construindo a sua linha de base',
+      detail: `${context.earlyWarning.baselineDays} de 3 dias com registro. Com 3 dias, a Lyra compara cada dia com o seu próprio padrão.`,
+    });
+  } else if (actions.length === 0) {
     actions.push({
       id: 'balance',
       category: 'equilibrio',

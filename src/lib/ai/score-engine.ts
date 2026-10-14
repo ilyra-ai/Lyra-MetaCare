@@ -71,6 +71,50 @@ function normalizeConfig(config?: Partial<AIConfigSnapshot>): AIConfigSnapshot {
   };
 }
 
+/** Métricas que entram no escore de longevidade. */
+export const METRICAS_DO_ESCORE = [
+  'hrv_ms',
+  'sleep_duration_minutes',
+  'deep_sleep_minutes',
+  'resting_heart_rate',
+  'active_minutes',
+  'steps',
+  'vo2_max',
+  'sedentary_hours',
+  'protein_g_per_kg',
+  'water_liters',
+  'blood_glucose_mgdl',
+  'sodium_potassium_ratio',
+  'stress_score',
+] as const;
+
+/**
+ * Mínimo de métricas medidas para exibir o escore de longevidade: com menos,
+ * o resultado seria quase todo feito de valores neutros (50) e não diria nada
+ * sobre a pessoa.
+ */
+export const COBERTURA_MINIMA_DO_ESCORE = 3;
+
+/** Resposta de `POST /api/functions/calculate-longevity-score`. */
+export interface EscoresDoDia {
+  data: string;
+  /** Prontidão gravada no registro do dia (null sem sinais suficientes). */
+  readinessScore: number | null;
+  recoveryScore: number | null;
+  /** 0 a 10; null sem registro ou com menos de 3 métricas do escore. */
+  longevityScore: number | null;
+  cobertura: number;
+  totalDeMetricas: number;
+}
+
+/** Quais métricas do escore foram de fato medidas no registro. */
+export function metricasMedidas(metrics: MetricSnapshot | null) {
+  if (!metrics) return [];
+  return METRICAS_DO_ESCORE.filter(
+    (coluna) => metricValue(metrics[coluna]) !== null
+  );
+}
+
 export function calculateLongevityScores(
   metrics: MetricSnapshot | null,
   config?: Partial<AIConfigSnapshot>

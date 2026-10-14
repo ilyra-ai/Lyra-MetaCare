@@ -70,19 +70,19 @@ const integrations: IntegrationItem[] = [
     icon: Brain,
     title: 'Orquestração Lyra',
     description:
-      'A conversa cruza IA, preferências, astrologia computacional e histórico recente de forma local e contextual.',
+      'Cada resposta cruza as suas métricas de hoje e de ontem, os seus objetivos e o céu do dia, calculados nos motores da Lyra.',
   },
   {
     icon: Calendar,
-    title: 'Agenda sincronizada',
+    title: 'O seu dia',
     description:
-      'Consultas, profissionais e próximos compromissos ajudam a guiar respostas práticas dentro do fluxo do app.',
+      'Pergunte "como vai ser o meu dia?": o chat responde com os períodos, focos e cuidados do coach diário.',
   },
   {
     icon: BookOpen,
-    title: 'Perfil e hábitos',
+    title: 'Perfil e objetivos',
     description:
-      'Dados de perfil, hábitos e preferências do usuário moldam a linguagem e a direção das orientações.',
+      'O seu nome, os objetivos e o mapa natal do perfil moldam a linguagem e a direção das orientações.',
   },
   {
     icon: Waves,

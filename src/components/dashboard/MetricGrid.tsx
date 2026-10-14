@@ -78,16 +78,32 @@ const toneStyles: Record<
 const hasMetricValue = (value: number | null | undefined): value is number =>
   value !== null && value !== undefined && Number.isFinite(value);
 
-const formatMinutesToHours = (minutes: number) => {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${hours}h ${mins}m`;
-};
+// Métrica não registrada: valor "—" e status "sem registro" (antes o valor
+// ausente virava 0 e ganhava rótulos como "Ótimo", "Seguro" ou "Saudável").
+const SEM_VALOR = '—';
+const SEM_REGISTRO = 'sem registro hoje';
 
 const formatNumber = (
   value: number | null | undefined,
   formatter: (input: number) => string
-) => (hasMetricValue(value) ? formatter(value) : 'N/A');
+) => (hasMetricValue(value) ? formatter(value) : SEM_VALOR);
+
+const formatMinutesToHours = (minutes: number | null | undefined) =>
+  formatNumber(minutes, (input) => {
+    const hours = Math.floor(input / 60);
+    const mins = Math.round(input % 60);
+    return `${hours}h ${mins}m`;
+  });
+
+/** Status que já é uma frase completa (ou "Sem registro hoje."). */
+const comoFrase = (status: string) =>
+  status === SEM_REGISTRO ? 'Sem registro hoje.' : status;
+
+/** Status só quando a métrica foi medida. */
+const statusDe = (
+  value: number | null | undefined,
+  regra: (input: number) => string
+) => (hasMetricValue(value) ? regra(value) : SEM_REGISTRO);
 
 const formatInteger = (value: number | null | undefined) =>
   formatNumber(value, (input) => Math.round(input).toLocaleString('pt-BR'));
@@ -173,91 +189,109 @@ interface MetricGridProps {
 }
 
 export function MetricGrid({ metrics }: MetricGridProps) {
-  const sleepQuality =
-    metrics.sleep_duration_minutes >= 450
-      ? 'Excelente'
-      : metrics.sleep_duration_minutes >= 360
-        ? 'Bom'
-        : 'Abaixo da meta';
+  const sleepQuality = statusDe(metrics.sleep_duration_minutes, (v) =>
+    v >= 450 ? 'excelente' : v >= 360 ? 'boa' : 'abaixo da meta'
+  );
 
-  const hrvStatus =
-    (metrics.hrv_ms || 0) >= 50
-      ? 'Ótimo'
-      : (metrics.hrv_ms || 0) >= 30
-        ? 'Bom'
-        : 'Baixo';
+  const hrvStatus = statusDe(metrics.hrv_ms, (v) =>
+    v >= 50 ? 'ótima' : v >= 30 ? 'boa' : 'baixa'
+  );
 
   const readinessScore = metrics.readiness_score ?? metrics.recovery_score;
-  const recoveryStatus =
-    (readinessScore || 0) >= 80 ? 'Pronto para o dia' : 'Priorize o descanso';
+  const recoveryStatus = statusDe(readinessScore, (v) =>
+    v >= 75
+      ? 'Pronto para o dia.'
+      : v >= 55
+        ? 'Ritmo moderado.'
+        : 'Priorize o descanso.'
+  );
 
-  const moodStatus =
-    metrics.mood_score === 5
-      ? 'Excelente'
-      : metrics.mood_score && metrics.mood_score >= 3
-        ? 'Neutro'
-        : 'Baixo';
+  const moodStatus = statusDe(metrics.mood_score, (v) =>
+    v >= 5 ? 'excelente' : v >= 3 ? 'neutro' : 'baixo'
+  );
 
-  const hrrStatus = (metrics.hrr_1min_bpm || 0) >= 30 ? 'Excelente' : 'Atenção';
-  const spo2Status = (metrics.spo2_average || 0) >= 95 ? 'Normal' : 'Monitorar';
+  const hrrStatus = statusDe(metrics.hrr_1min_bpm, (v) =>
+    v >= 30 ? 'excelente' : 'atenção'
+  );
+  const spo2Status = statusDe(metrics.spo2_average, (v) =>
+    v >= 95 ? 'normal' : 'monitorar'
+  );
 
-  const moderateVigorousGoal = 150;
-  const activeMinutesStatus =
-    metrics.active_minutes >= moderateVigorousGoal
-      ? 'Meta semanal alcançada'
-      : 'Aumentar atividade';
-  const stepsStatus =
-    metrics.steps >= 8000
-      ? 'Meta de 8 mil passos alcançada'
-      : 'Continue se movendo';
-  const sedentaryStatus = (metrics.sedentary_hours || 0) < 8 ? 'Baixo' : 'Alto';
+  // OMS: 150 min/semana de atividade moderada a vigorosa ≈ 22 min por dia.
+  const activeMinutesStatus = statusDe(metrics.active_minutes, (v) =>
+    v >= 22
+      ? 'Dentro da média diária da meta de 150 min/semana.'
+      : 'Abaixo dos 22 min/dia da meta semanal.'
+  );
+  const stepsStatus = statusDe(metrics.steps, (v) =>
+    v >= 8000 ? 'Meta de 8 mil passos alcançada.' : 'Continue se movendo.'
+  );
+  const sedentaryStatus = statusDe(metrics.sedentary_hours, (v) =>
+    v < 8 ? 'baixo' : 'alto'
+  );
 
-  const tirStatus =
-    (metrics.time_in_range_percent || 0) >= 70
-      ? 'Meta alcançada'
-      : 'Aumentar TIR';
-  const cvStatus =
-    (metrics.glycemic_variability_cv || 0) <= 36
-      ? 'Estável'
-      : 'Alta variabilidade';
-  const gmiStatus = (metrics.gmi_percent || 0) <= 6.5 ? 'Ótimo' : 'Monitorar';
-  const peakStatus =
-    (metrics.post_prandial_peak_mgdl || 0) <= 140 ? 'Normal' : 'Pico elevado';
-  const tbrStatus =
-    (metrics.time_below_range_percent || 0) <= 4 ? 'Seguro' : 'Risco de hipo';
+  const tirStatus = statusDe(metrics.time_in_range_percent, (v) =>
+    v >= 70 ? 'meta alcançada' : 'aumentar TIR'
+  );
+  const cvStatus = statusDe(metrics.glycemic_variability_cv, (v) =>
+    v <= 36 ? 'estável' : 'alta variabilidade'
+  );
+  const gmiStatus = statusDe(metrics.gmi_percent, (v) =>
+    v <= 6.5 ? 'ótima' : 'monitorar'
+  );
+  const peakStatus = statusDe(metrics.post_prandial_peak_mgdl, (v) =>
+    v <= 140 ? 'Normal.' : 'Pico elevado.'
+  );
+  const tbrStatus = statusDe(metrics.time_below_range_percent, (v) =>
+    v <= 4 ? 'Seguro.' : 'Risco de hipoglicemia.'
+  );
 
+  const sistolica = metrics.blood_pressure_systolic;
+  const diastolica = metrics.blood_pressure_diastolic;
   const bpStatus =
-    (metrics.blood_pressure_systolic || 0) < 120 &&
-    (metrics.blood_pressure_diastolic || 0) < 80
-      ? 'Ótima'
-      : 'Atenção';
+    hasMetricValue(sistolica) && hasMetricValue(diastolica)
+      ? sistolica < 120 && diastolica < 80
+        ? 'ótima'
+        : 'atenção'
+      : SEM_REGISTRO;
 
-  const whtrStatus = (metrics.whtr_ratio || 0) <= 0.5 ? 'Saudável' : 'Atenção';
-  const proteinStatus =
-    (metrics.protein_g_per_kg || 0) >= 1.0 ? 'Adequada' : 'Aumentar';
-  const fiberStatus =
-    (metrics.dietary_fiber_grams || 0) >= 25 ? 'Adequada' : 'Aumentar';
-  const eatingWindowStatus =
-    (metrics.eating_window_hours || 0) <= 10 ? 'Restrita' : 'Normal';
-  const naKStatus =
-    (metrics.sodium_potassium_ratio || 0) <= 1.0 ? 'Ideal' : 'Atenção';
-  const hydrationStatus =
-    (metrics.hydration_ml_per_kg || 0) >= 30 ? 'Adequada' : 'Aumentar';
+  const whtrStatus = statusDe(metrics.whtr_ratio, (v) =>
+    v <= 0.5 ? 'saudável' : 'atenção'
+  );
+  const proteinStatus = statusDe(metrics.protein_g_per_kg, (v) =>
+    v >= 1.0 ? 'adequado' : 'aumentar'
+  );
+  const fiberStatus = statusDe(metrics.dietary_fiber_grams, (v) =>
+    v >= 25 ? 'adequada' : 'aumentar'
+  );
+  const eatingWindowStatus = statusDe(metrics.eating_window_hours, (v) =>
+    v <= 10 ? 'restrita' : 'normal'
+  );
+  const naKStatus = statusDe(metrics.sodium_potassium_ratio, (v) =>
+    v <= 1.0 ? 'ideal' : 'atenção'
+  );
+  const hydrationStatus = statusDe(metrics.hydration_ml_per_kg, (v) =>
+    v >= 30 ? 'adequada' : 'aumentar'
+  );
 
-  const pvtStatus =
-    (metrics.reaction_time_pvt_ms || 0) < 300 ? 'Excelente' : 'Monitorar';
-  const lapsesStatus =
-    (metrics.pvt_lapses_count || 0) === 0 ? 'Nenhum lapso' : 'Atenção à fadiga';
-  const cognitiveStatus =
-    (metrics.cognitive_test_score || 0) >= 0.5 ? 'Alto' : 'Monitorar';
-  const hrvStressStatus =
-    (metrics.hrv_stress_index || 0) < 10 ? 'Baixo' : 'Elevado';
-  const edaStatus =
-    (metrics.eda_tonic_microsiemens || 0) < 0.5 ? 'Normal' : 'Pico de estresse';
-  const afibStatus =
-    (metrics.afib_history_percent || 0) === 0
-      ? 'Nenhuma FA detectada'
-      : 'Monitorar';
+  const pvtStatus = statusDe(metrics.reaction_time_pvt_ms, (v) =>
+    v < 300 ? 'excelente' : 'monitorar'
+  );
+  const lapsesStatus = statusDe(metrics.pvt_lapses_count, (v) =>
+    v === 0 ? 'Nenhum lapso.' : 'Atenção à fadiga.'
+  );
+  const cognitiveStatus = statusDe(metrics.cognitive_test_score, (v) =>
+    v >= 0.5 ? 'alta' : 'monitorar'
+  );
+  const hrvStressStatus = statusDe(metrics.hrv_stress_index, (v) =>
+    v < 10 ? 'baixa' : 'elevada'
+  );
+  const edaStatus = statusDe(metrics.eda_tonic_microsiemens, (v) =>
+    v < 0.5 ? 'normal' : 'pico de estresse'
+  );
+  const afibStatus = statusDe(metrics.afib_history_percent, (v) =>
+    v === 0 ? 'Nenhuma FA detectada.' : 'Monitorar.'
+  );
 
   const pillars: PillarConfig[] = [
     {
@@ -275,7 +309,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
         {
           title: 'Prontidão',
           value: formatScore(readinessScore, 100, 0),
-          description: recoveryStatus,
+          description: comoFrase(recoveryStatus),
         },
         {
           title: 'FC repouso',
@@ -314,12 +348,12 @@ export function MetricGrid({ metrics }: MetricGridProps) {
         {
           title: 'Min. mod/vigorosa',
           value: formatDecimal(metrics.active_minutes, 0, 'min'),
-          description: activeMinutesStatus,
+          description: comoFrase(activeMinutesStatus),
         },
         {
           title: 'Passos',
           value: formatInteger(metrics.steps),
-          description: stepsStatus,
+          description: comoFrase(stepsStatus),
         },
         {
           title: 'Carga (EPOC)',
@@ -402,12 +436,12 @@ export function MetricGrid({ metrics }: MetricGridProps) {
         {
           title: 'Pico pós-prandial',
           value: formatDecimal(metrics.post_prandial_peak_mgdl, 0, 'mg/dL'),
-          description: peakStatus,
+          description: comoFrase(peakStatus),
         },
         {
           title: 'Abaixo da faixa',
           value: formatPercent(metrics.time_below_range_percent, 1),
-          description: tbrStatus,
+          description: comoFrase(tbrStatus),
         },
         {
           title: 'iAUC/refeição',
@@ -474,7 +508,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
         {
           title: 'Lapsos PVT',
           value: formatInteger(metrics.pvt_lapses_count),
-          description: lapsesStatus,
+          description: comoFrase(lapsesStatus),
         },
         {
           title: 'Score cognitivo',
@@ -498,7 +532,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
         {
           title: 'FA',
           value: formatPercent(metrics.afib_history_percent, 1),
-          description: afibStatus,
+          description: comoFrase(afibStatus),
         },
         {
           title: 'Humor',
@@ -522,10 +556,9 @@ export function MetricGrid({ metrics }: MetricGridProps) {
         {
           title: 'Pressão arterial',
           value:
-            hasMetricValue(metrics.blood_pressure_systolic) &&
-            hasMetricValue(metrics.blood_pressure_diastolic)
-              ? `${metrics.blood_pressure_systolic}/${metrics.blood_pressure_diastolic} mmHg`
-              : 'N/A',
+            hasMetricValue(sistolica) && hasMetricValue(diastolica)
+              ? `${sistolica}/${diastolica} mmHg`
+              : SEM_VALOR,
           description: `Leitura de pressão: ${bpStatus}.`,
         },
         {

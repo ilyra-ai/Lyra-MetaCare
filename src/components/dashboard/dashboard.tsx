@@ -90,9 +90,19 @@ function formatDelta(delta: number) {
   return `${delta > 0 ? '+' : ''}${delta.toFixed(1)}%`;
 }
 
-function calculateDelta(current: number | null, previous: number | null) {
-  if (!current || !previous || previous === 0) {
-    return 0;
+/** Variação contra o dia anterior; null quando falta um dos dois registros. */
+function calculateDelta(
+  current: number | null | undefined,
+  previous: number | null | undefined
+) {
+  if (
+    current === null ||
+    current === undefined ||
+    previous === null ||
+    previous === undefined ||
+    previous === 0
+  ) {
+    return null;
   }
 
   return ((current - previous) / previous) * 100;
@@ -147,7 +157,8 @@ interface MiniMetricCardProps {
   description: string;
   tone: 'primary' | 'warning' | 'info' | 'success' | 'golden';
   icon: React.ElementType;
-  delta: number;
+  /** null: sem registro hoje ou ontem para comparar. */
+  delta: number | null;
 }
 
 /** Fundo suave + ícone de cada tom (violeta fica só para astral/IA). */
@@ -167,8 +178,8 @@ function MiniMetricCard({
   icon: Icon,
   delta,
 }: MiniMetricCardProps) {
-  const deltaVisual = getDeltaVisual(delta);
-  const DeltaIcon = deltaVisual.icon;
+  const deltaVisual = delta === null ? null : getDeltaVisual(delta);
+  const DeltaIcon = deltaVisual?.icon ?? null;
 
   return (
     <Card className="min-w-0">
@@ -196,17 +207,20 @@ function MiniMetricCard({
           <p className="min-w-0 text-[13px] leading-5 text-muted-foreground">
             {description}
           </p>
-          <div
-            className={cn(
-              'flex shrink-0 items-center gap-1',
-              deltaVisual.className
-            )}
-          >
-            <DeltaIcon aria-hidden="true" className="size-4" />
-            <span className="text-[13px] font-medium">
-              {formatDelta(delta)}
-            </span>
-          </div>
+          {delta !== null && deltaVisual && DeltaIcon ? (
+            <div
+              className={cn(
+                'flex shrink-0 items-center gap-1',
+                deltaVisual.className
+              )}
+            >
+              <DeltaIcon aria-hidden="true" className="size-4" />
+              <span className="text-[13px] font-medium">
+                {formatDelta(delta)}
+                <span className="sr-only"> em relação a ontem</span>
+              </span>
+            </div>
+          ) : null}
         </div>
       </CardContent>
     </Card>
@@ -255,68 +269,103 @@ export function Dashboard() {
   const readinessScore =
     scores?.readinessScore ?? todayMetrics?.readiness_score ?? null;
   const longevityScore = scores?.longevityScore ?? null;
-  const sleepMinutes = todayMetrics?.sleep_duration_minutes ?? 0;
-  const deepSleepMinutes = todayMetrics?.deep_sleep_minutes ?? 0;
-  const remSleepMinutes = todayMetrics?.rem_sleep_minutes ?? 0;
+  // "Bloqueado" só quando o plano não inclui os scores; sem dados, "—".
+  const rotuloDaLongevidade = !aiScoresEnabled
+    ? 'Bloqueado'
+    : longevityScore !== null
+      ? longevityScore.toFixed(1)
+      : '—';
+  const detalheDaLongevidade = !aiScoresEnabled
+    ? 'Disponível em planos com scores de IA.'
+    : scores && longevityScore !== null
+      ? `Escala de 0 a 10, com ${scores.cobertura} de ${scores.totalDeMetricas} métricas medidas hoje.`
+      : `Precisa de pelo menos 3 métricas medidas hoje${
+          scores ? ` (agora: ${scores.cobertura})` : ''
+        }.`;
+  const sleepMinutes = todayMetrics?.sleep_duration_minutes ?? null;
+  const deepSleepMinutes = todayMetrics?.deep_sleep_minutes ?? null;
+  const remSleepMinutes = todayMetrics?.rem_sleep_minutes ?? null;
   const sleepGoalMinutes = 8 * 60;
-  const sleepProgress = Math.min(
-    100,
-    Math.round((sleepMinutes / sleepGoalMinutes) * 100)
-  );
+  const sleepProgress =
+    sleepMinutes === null
+      ? 0
+      : Math.min(100, Math.round((sleepMinutes / sleepGoalMinutes) * 100));
   const stepsDelta = calculateDelta(
-    todayMetrics?.steps ?? 0,
-    previousMetrics?.steps ?? 0
+    todayMetrics?.steps,
+    previousMetrics?.steps
   );
   const hydrationDelta = calculateDelta(
-    todayMetrics?.water_liters ?? 0,
-    previousMetrics?.water_liters ?? 0
+    todayMetrics?.water_liters,
+    previousMetrics?.water_liters
   );
   const meditationDelta = calculateDelta(
-    todayMetrics?.meditation_minutes ?? 0,
-    previousMetrics?.meditation_minutes ?? 0
+    todayMetrics?.meditation_minutes,
+    previousMetrics?.meditation_minutes
   );
   const glucoseDelta = calculateDelta(
-    todayMetrics?.blood_glucose_mgdl ?? 0,
-    previousMetrics?.blood_glucose_mgdl ?? 0
+    todayMetrics?.blood_glucose_mgdl,
+    previousMetrics?.blood_glucose_mgdl
   );
 
-  const pulseValue = todayMetrics?.hrv_ms ?? readinessScore ?? null;
-  const pulseUnit = todayMetrics?.hrv_ms ? 'ms' : '/100';
-  const pulseLabel = todayMetrics?.hrv_ms
-    ? 'Variabilidade cardíaca'
-    : 'Prontidão geral';
+  const hrvHoje = todayMetrics?.hrv_ms ?? null;
+  const pulseValue = hrvHoje ?? readinessScore ?? null;
+  const pulseUnit = hrvHoje !== null ? 'ms' : '/100';
+  const pulseLabel =
+    hrvHoje !== null ? 'Variabilidade cardíaca' : 'Prontidão geral';
 
+  // Dias sem registro ficam null (lacuna no gráfico), nunca 0.
   const pulseTrendData = metrics.map((metric) => ({
     dia: formatWeekday(metric.date),
-    pulso: metric.hrv_ms ?? metric.readiness_score ?? 0,
+    pulso: metric.hrv_ms ?? metric.readiness_score ?? null,
   }));
+  const temTrajetoria = pulseTrendData.some((ponto) => ponto.pulso !== null);
 
-  const weeklyFlowData = metrics.map((metric) => ({
-    dia: formatWeekday(metric.date),
-    prontidao: Math.round(metric.readiness_score ?? metric.recovery_score ?? 0),
-  }));
+  const weeklyFlowData = metrics.map((metric) => {
+    const valor = metric.readiness_score ?? metric.recovery_score;
+    return {
+      dia: formatWeekday(metric.date),
+      prontidao: valor === null ? null : Math.round(valor),
+    };
+  });
+  const temSemana = weeklyFlowData.some((ponto) => ponto.prontidao !== null);
+
+  const passosHoje = todayMetrics?.steps ?? null;
+  const aguaHoje = todayMetrics?.water_liters ?? null;
+  const meditacaoHoje = todayMetrics?.meditation_minutes ?? null;
 
   const miniMetrics: MiniMetricCardProps[] = [
     {
       title: 'Passos do dia',
-      value: (todayMetrics?.steps ?? 0).toLocaleString('pt-BR'),
-      description: 'Ritmo corporal e constância do movimento.',
+      value: passosHoje === null ? '—' : passosHoje.toLocaleString('pt-BR'),
+      description:
+        passosHoje === null
+          ? 'Sem registro hoje: registre no check-in.'
+          : 'Ritmo corporal e constância do movimento.',
       tone: 'primary',
       icon: Activity,
       delta: stepsDelta,
     },
     {
       title: 'Hidratação',
-      value: `${(todayMetrics?.water_liters ?? 0).toFixed(1)} L`,
-      description: 'Presença hídrica ao longo da jornada.',
+      value:
+        aguaHoje === null
+          ? '—'
+          : `${aguaHoje.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} L`,
+      description:
+        aguaHoje === null
+          ? 'Sem registro hoje: registre no check-in.'
+          : 'Presença hídrica ao longo da jornada.',
       tone: 'info',
       icon: Droplets,
       delta: hydrationDelta,
     },
     {
       title: 'Meditação',
-      value: `${todayMetrics?.meditation_minutes ?? 0} min`,
-      description: 'Espaço de regulação e foco suave.',
+      value: meditacaoHoje === null ? '—' : `${meditacaoHoje} min`,
+      description:
+        meditacaoHoje === null
+          ? 'Sem registro hoje: registre no check-in.'
+          : 'Espaço de regulação e foco suave.',
       tone: 'success',
       icon: Waves,
       delta: meditationDelta,
@@ -453,14 +502,20 @@ export function Dashboard() {
                 {pulseLabel}
               </p>
               <p className="font-display text-4xl font-semibold tracking-[-0.03em] text-foreground">
-                {pulseValue ? Math.round(pulseValue) : 'N/A'}
-                {pulseValue ? (
+                {pulseValue !== null ? Math.round(pulseValue) : '—'}
+                {pulseValue !== null ? (
                   <span className="ml-1 text-base font-medium text-muted-foreground">
                     {pulseUnit}
                   </span>
                 ) : null}
               </p>
-              {pulseValue && pulseUnit === '/100' ? (
+              {pulseValue === null ? (
+                <p className="text-[13px] text-muted-foreground">
+                  Sem VFC nem prontidão hoje: faça o check-in ou conecte a
+                  pulseira.
+                </p>
+              ) : null}
+              {pulseValue !== null && pulseUnit === '/100' ? (
                 <Progress
                   aria-label="Prontidão geral de 0 a 100"
                   value={Math.min(100, Math.round(pulseValue))}
@@ -482,9 +537,7 @@ export function Dashboard() {
               </div>
               <div className="rounded-full border border-border bg-background px-3 py-1.5 text-[13px] text-foreground">
                 Longevidade:{' '}
-                <span className="font-semibold">
-                  {longevityScore ? longevityScore.toFixed(1) : 'Bloqueado'}
-                </span>
+                <span className="font-semibold">{rotuloDaLongevidade}</span>
               </div>
             </div>
 
@@ -514,7 +567,7 @@ export function Dashboard() {
             <CardDescription>{pulseChartConfig.pulso.label}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col">
-            {pulseTrendData.length > 0 ? (
+            {temTrajetoria ? (
               <ChartContainer
                 config={pulseChartConfig}
                 className="aspect-auto h-64 w-full border-none bg-transparent p-0"
@@ -615,10 +668,12 @@ export function Dashboard() {
             </div>
             <div className="flex flex-col gap-2">
               <CardTitle className="text-4xl tracking-[-0.03em]">
-                {sleepMinutes > 0 ? formatMinutes(sleepMinutes) : 'Sem dados'}
+                {sleepMinutes !== null
+                  ? formatMinutes(sleepMinutes)
+                  : 'Sem dados'}
               </CardTitle>
               <CardDescription>
-                {sleepMinutes > 0
+                {sleepMinutes !== null
                   ? appConfig.dashboard.sleepDescription
                   : appConfig.dashboard.sleepEmptyDescription}
               </CardDescription>
@@ -647,7 +702,9 @@ export function Dashboard() {
                   {appConfig.dashboard.deepSleepLabel}
                 </p>
                 <p className="mt-1 font-display text-2xl font-semibold tracking-[-0.03em] text-foreground">
-                  {formatMinutes(deepSleepMinutes)}
+                  {deepSleepMinutes !== null
+                    ? formatMinutes(deepSleepMinutes)
+                    : '—'}
                 </p>
               </div>
               <div className="rounded-md border border-border bg-background p-4">
@@ -655,7 +712,9 @@ export function Dashboard() {
                   {appConfig.dashboard.remSleepLabel}
                 </p>
                 <p className="mt-1 font-display text-2xl font-semibold tracking-[-0.03em] text-foreground">
-                  {formatMinutes(remSleepMinutes)}
+                  {remSleepMinutes !== null
+                    ? formatMinutes(remSleepMinutes)
+                    : '—'}
                 </p>
               </div>
             </div>
@@ -709,7 +768,7 @@ export function Dashboard() {
         </CardHeader>
 
         <CardContent className="flex flex-col gap-6">
-          {weeklyFlowData.length > 0 ? (
+          {temSemana ? (
             <ChartContainer
               config={weeklyChartConfig}
               className="aspect-auto h-72 w-full border-none bg-transparent p-0 md:h-80"
@@ -754,14 +813,20 @@ export function Dashboard() {
                 {appConfig.dashboard.currentReadinessLabel}
               </p>
               <p className="font-display text-4xl font-semibold tracking-[-0.03em] text-foreground">
-                {readinessScore ? Math.round(readinessScore) : 'N/A'}
-                {readinessScore ? (
+                {readinessScore !== null ? Math.round(readinessScore) : '—'}
+                {readinessScore !== null ? (
                   <span className="ml-1 text-base font-medium text-muted-foreground">
                     /100
                   </span>
                 ) : null}
               </p>
-              {readinessScore ? (
+              {readinessScore === null ? (
+                <p className="text-[13px] text-muted-foreground">
+                  Registre ao menos dois sinais hoje (sono, energia, humor,
+                  estresse ou a pulseira).
+                </p>
+              ) : null}
+              {readinessScore !== null ? (
                 <Progress
                   aria-label="Prontidão atual de 0 a 100"
                   value={Math.min(100, Math.round(readinessScore))}
@@ -774,7 +839,10 @@ export function Dashboard() {
                 {appConfig.dashboard.longevityLabel}
               </p>
               <p className="font-display text-4xl font-semibold tracking-[-0.03em] text-foreground">
-                {longevityScore ? longevityScore.toFixed(1) : 'Bloqueado'}
+                {rotuloDaLongevidade}
+              </p>
+              <p className="text-[13px] text-muted-foreground">
+                {detalheDaLongevidade}
               </p>
             </div>
             <div className="flex flex-col gap-2 rounded-md border border-border p-4">

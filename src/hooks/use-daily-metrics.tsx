@@ -8,14 +8,18 @@ import { ouvirMetricasAtualizadas } from '@/lib/metricas/evento-de-atualizacao';
 import { toast } from 'sonner';
 import { format, subDays } from 'date-fns';
 
+// Ausência é null, nunca zero: um dia sem registro (ou uma métrica não
+// informada) aparece como "—" e não entra nos cálculos como medida real.
 export interface DailyMetric {
   date: string;
-  steps: number;
-  sleep_duration_minutes: number;
+  /** `true` quando existe registro do dia no banco. */
+  registrado: boolean;
+  steps: number | null;
+  sleep_duration_minutes: number | null;
   resting_heart_rate: number | null;
   calories_burned: number | null;
   hrv_ms: number | null;
-  deep_sleep_minutes: number;
+  deep_sleep_minutes: number | null;
 
   // New 30+ Metrics
   resting_heart_rate_min: number | null;
@@ -23,20 +27,20 @@ export interface DailyMetric {
   spo2_average: number | null;
   respiratory_rate: number | null;
   body_temperature_celsius: number | null;
-  total_distance_km: number;
-  active_minutes: number;
-  workout_calories: number;
+  total_distance_km: number | null;
+  active_minutes: number | null;
+  workout_calories: number | null;
   vo2_max: number | null;
   sleep_latency_minutes: number | null;
-  rem_sleep_minutes: number;
-  light_sleep_minutes: number;
+  rem_sleep_minutes: number | null;
+  light_sleep_minutes: number | null;
   sleep_efficiency: number | null;
   sleep_score: number | null;
-  protein_grams: number;
-  carb_grams: number;
-  fat_grams: number;
-  water_liters: number;
-  caffeine_mg: number;
+  protein_grams: number | null;
+  carb_grams: number | null;
+  fat_grams: number | null;
+  water_liters: number | null;
+  caffeine_mg: number | null;
   stress_score: number | null;
   recovery_score: number | null;
   readiness_score: number | null;
@@ -45,7 +49,7 @@ export interface DailyMetric {
   blood_pressure_diastolic: number | null;
   weight_kg: number | null;
   mood_score: number | null;
-  meditation_minutes: number;
+  meditation_minutes: number | null;
 
   // Registro do dia e pulseira (tarefa 40)
   energy_level: number | null;
@@ -98,22 +102,22 @@ interface UseDailyMetricsResult {
   refresh: () => Promise<void>;
 }
 
+// Dia sem registro: todas as métricas ausentes (null).
 const defaultMetricValues = {
-  steps: 0,
-  sleep_duration_minutes: 0,
-  deep_sleep_minutes: 0,
-  total_distance_km: 0,
-  active_minutes: 0,
-  workout_calories: 0,
-  rem_sleep_minutes: 0,
-  light_sleep_minutes: 0,
-  protein_grams: 0,
-  carb_grams: 0,
-  fat_grams: 0,
-  water_liters: 0,
-  caffeine_mg: 0,
-  meditation_minutes: 0,
-  // Nullable fields default to null
+  steps: null,
+  sleep_duration_minutes: null,
+  deep_sleep_minutes: null,
+  total_distance_km: null,
+  active_minutes: null,
+  workout_calories: null,
+  rem_sleep_minutes: null,
+  light_sleep_minutes: null,
+  protein_grams: null,
+  carb_grams: null,
+  fat_grams: null,
+  water_liters: null,
+  caffeine_mg: null,
+  meditation_minutes: null,
   resting_heart_rate: null,
   calories_burned: null,
   hrv_ms: null,
@@ -219,8 +223,8 @@ export function useDailyMetrics(
         throw new Error(error.message);
       }
 
-      // Garante todos os dias da janela, preenchendo ausências com valores
-      // padrão para manter os gráficos consistentes.
+      // Todos os dias da janela, na ordem; dias sem registro ficam com as
+      // métricas nulas e `registrado: false` (antes viravam zeros).
       const dateMap = new Map(data.map((m) => [m.date, m]));
       const completeMetrics: DailyMetric[] = [];
 
@@ -232,6 +236,7 @@ export function useDailyMetrics(
           date,
           ...defaultMetricValues,
           ...existingData,
+          registrado: existingData !== undefined,
         } as DailyMetric);
       }
 

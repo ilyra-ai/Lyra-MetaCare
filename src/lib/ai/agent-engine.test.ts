@@ -36,6 +36,37 @@ describe('generateProactiveActions', () => {
     expect(actions[0].severity).toBe('positivo');
   });
 
+  it('sem nenhum dado hoje pede o check-in em vez de afirmar equilíbrio', () => {
+    const actions = generateProactiveActions(
+      baseContext({
+        readinessScore: null,
+        today: {
+          steps: null,
+          active_minutes: null,
+          water_liters: null,
+          meditation_minutes: null,
+          sleep_duration_minutes: null,
+        },
+      })
+    );
+    expect(actions.map((a) => a.id)).toEqual(['checkin']);
+    expect(actions[0].cta?.href).toBe('/dia');
+  });
+
+  it('com dados mas sem linha de base, informa os dias que faltam', () => {
+    const actions = generateProactiveActions(
+      baseContext({
+        earlyWarning: {
+          ...emptyEarlyWarning,
+          hasBaseline: false,
+          baselineDays: 1,
+        },
+      })
+    );
+    expect(actions.map((a) => a.id)).toEqual(['baseline']);
+    expect(actions[0].detail).toContain('1 de 3 dias');
+  });
+
   it('prioriza sinais de detecção precoce no topo', () => {
     const earlyWarning: EarlyWarningResult = {
       ...emptyEarlyWarning,

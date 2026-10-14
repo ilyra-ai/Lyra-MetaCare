@@ -1,8 +1,13 @@
 import { NextResponse } from 'next/server';
 
-import { getAstrologicalContext } from '@/lib/astrology/engine';
+import {
+  type BirthReference,
+  getAstrologicalContext,
+} from '@/lib/astrology/engine';
 import { HttpError } from '@/lib/http-error';
 import { respostaDeErro } from '@/lib/http/api';
+import { queryRows } from '@/lib/mysql/pool';
+import { getServerSession } from '@/lib/mysql/server-auth';
 
 export const runtime = 'nodejs';
 
@@ -26,10 +31,25 @@ export async function GET(request: Request) {
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      data: getAstrologicalContext(date),
-    });
+    // Com sessão, o céu do momento vem com o dasha natal da pessoa (o mesmo
+    // mapa do coach); sem sessão, só o céu geral.
+    const sessao = await getServerSession();
+    const [nascimento] = sessao
+      ? await queryRows<BirthReference>(
+          `SELECT birth_date, birth_time, birth_location, birth_latitude,
+                  birth_longitude, birth_timezone
+             FROM profiles WHERE id = ? LIMIT 1`,
+          [sessao.user.id]
+        )
+      : [];
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: getAstrologicalContext(date, nascimento),
+      },
+      sessao ? { headers: { 'Cache-Control': 'private, no-store' } } : undefined
+    );
   } catch (error) {
     return respostaDeErro(error, 'Falha ao calcular efemérides.');
   }

@@ -569,10 +569,16 @@ export function LyraIntelligence2026({
   }, [chronologicalAge, todayMetrics]);
 
   const earlyWarning = React.useMemo<EarlyWarningResult>(() => {
+    // Linha de base só com os dias que têm registro (dias vazios não são
+    // medidas e não podem contar para os 3 dias mínimos).
     const history = metrics
       .slice(0, Math.max(0, metrics.length - 1))
+      .filter((metric) => metric.registrado)
       .map(toEarlyWarningMetric);
-    return evaluateEarlyWarning(toEarlyWarningMetric(todayMetrics), history);
+    return evaluateEarlyWarning(
+      todayMetrics?.registrado ? toEarlyWarningMetric(todayMetrics) : null,
+      history
+    );
   }, [metrics, todayMetrics]);
 
   const cycle = React.useMemo<MenstrualCycleResult | null>(() => {

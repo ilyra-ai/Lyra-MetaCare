@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 
 import { executeStatement, queryRows } from '@/lib/mysql/pool';
 
+import { recalcularEscoresDesde } from './escores-do-dia';
+
 import {
   CAMPOS_DO_REGISTRO,
   NOMES_DOS_CAMPOS,
@@ -18,6 +20,8 @@ const COLUNAS_DO_REGISTRO = [
   'sensor_heart_rate_avg',
   'sensor_minutes',
   'hrv_ms',
+  'readiness_score',
+  'recovery_score',
   'metrics_updated_at',
 ];
 
@@ -60,6 +64,7 @@ export async function gravarRegistroDoDia(
        metrics_updated_at = novo.metrics_updated_at`,
     [randomUUID(), userId, registro.data, ...valores]
   );
+  await recalcularEscoresDesde(userId, registro.data);
 
   return lerRegistroDoDia(userId, registro.data);
 }
@@ -123,6 +128,7 @@ export async function gravarSessaoDoSensor(
       sessao.rmssd === null ? null : Math.round(sessao.rmssd * 10) / 10,
     ]
   );
+  await recalcularEscoresDesde(userId, sessao.data);
 
   return lerRegistroDoDia(userId, sessao.data);
 }
