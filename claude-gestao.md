@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `██████████████████░░` **91%** |
+| Progresso          | `███████████████████░` **93%** |
 | Tarefas totais     | 44                             |
-| 🟢 Finalizadas     | 40                             |
+| 🟢 Finalizadas     | 41                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 3                              |
+| ⚪ A iniciar       | 2                              |
 | Branch de trabalho | `main` (única permitida)       |
-| Última atualização | 2026-10-12                     |
+| Última atualização | 2026-10-14                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (40 ÷ 44 = 90,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (41 ÷ 44 = 93,2%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,9 +43,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                          | O que está sendo realizado                                                                                                                                                                                                                                                                                 |
-| --- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 41  | Mapa védico real de cada pessoa | Local de nascimento e de moradia escolhidos de uma base real de cidades (coordenadas e fuso), mapa natal sidéreo (Lagna, planetas, Rahu e Ketu, nakshatra natal), Vimshottari Mahadasha e Antardasha reais (hoje o campo é um texto fixo) e o Panchang do dia com nascer e pôr do sol do local de moradia. |
+| Nº  | Tarefa                        | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 42  | Coach diário automático de IA | Rotina automática no servidor que, todos os dias, lê o mapa védico e as métricas de cada pessoa e gera o "Seu dia": como será o dia por períodos (madrugada, manhã, tarde, noite) com pontos bons e de atenção (Rahu Kalam, Yamaganda, Gulika, Abhijit, Choghadiya, Chandrashtama, Tara Bala), dicas de saúde, bem-estar, alimentação e exercício; notificação no sino; uso do Gemini quando configurado e motor local quando não. |
 
 ### BLOQUEADAS
 
@@ -56,10 +56,6 @@ Nenhuma tarefa bloqueada.
 ## Tópico 3 · Tarefas a Iniciar
 
 _Pedido do usuário em 2026-10-12: métricas reais e automáticas, IA como coach diário guiado pelo mapa védico e diferenciais de 2026._
-
-### 42 · Coach diário automático de IA
-
-- Rotina automática no servidor que, todos os dias, lê o mapa védico e as métricas de cada pessoa e gera o "Seu dia": como será o dia por períodos (madrugada, manhã, tarde, noite) com pontos bons e de atenção (Rahu Kalam, Yamaganda, Gulika, Abhijit, Choghadiya, Chandrashtama, Tara Bala), dicas de saúde, bem-estar, alimentação e exercício; notificação no sino; uso do Gemini quando configurado e motor local quando não.
 
 ### 43 · O que a IA deve fazer sozinha e ainda não faz
 
@@ -929,3 +925,18 @@ _Pedido do usuário em 2026-10-12: métricas reais e automáticas, IA como coach
   - Navegador (1440 px claro e 390 px escuro): diálogo pelo painel e pelas ações rápidas, erro "Glicemia: o mínimo é 20 mg/dL." com `aria-invalid`, painel de 0 para 9.000 passos e 2,5 L de água logo após salvar, reabertura com os valores do dia, axe sem violações nos dois temas, sem erros de console e sem estouro de largura.
   - **Limite do ambiente:** a conexão Bluetooth real precisa de uma pulseira física e de navegador com Web Bluetooth; foi validada pelos testes de leitura e agregação e pela rota com a sessão agregada.
   - `test` 263/263; `test:integration` 106/106; lint, format, types e `build` com exit 0 e sem avisos.
+
+### 41 · Mapa védico real de cada pessoa
+
+- **Status:** 🟢 finalizada · **Commit:** `c6e064d` · **Push:** `main -> main` (confirmado)
+- **Causa:** o local de nascimento era texto livre (sem coordenadas nem fuso), então não havia como calcular ascendente, casas ou horários do dia; o campo de dasha devolvia um texto fixo ("Vimshottari calculável a partir do timestamp...") e o onboarding pré-preenchia a hora com 12:00, o que geraria ascendente falso.
+- **Implementado:**
+  - **Cidades:** base local `data/geo/cidades.json.gz` (GeoNames, CC BY 4.0; 71.254 cidades com mais de 5 mil habitantes no mundo e com mais de mil no Brasil, coordenadas, fuso e nomes alternativos, UF por sigla), gerada por `pnpm geo:cidades`; busca no servidor (`GET /api/geo/cidades`), sem serviço externo.
+  - **Locais no perfil:** seletor de cidade no onboarding (nascimento obrigatório, moradia opcional) e no perfil (salvo na hora); gravação só por `PATCH /api/perfil/localizacao` com nome, coordenadas e fuso vindos do servidor; a API genérica recusa essas colunas (403). Migration 018.
+  - **Cálculo** (`src/lib/astrology/`): hora local → UTC com horário de verão histórico; ayanamsha Lahiri; grahas, Rahu e Ketu, retrogradação; Lagna e casas por signo inteiro; Vimshottari Mahadasha/Antardasha; Panchang com horário de término; Brahma e Abhijit Muhurta; Rahu Kalam, Yamaganda, Gulika; Choghadiya de dia e de noite; Tara Bala, Chandra Bala e Chandrashtama.
+  - **Rotas e tela:** `GET /api/astrologia/mapa` e `GET /api/astrologia/dia`; cartão "Meu mapa védico" no perfil; o chat e o plano de IA passaram a receber o dasha real. Documentação em `docs/astrologia.md`.
+- **Evidências:**
+  - **Validação independente** com o Swiss Ephemeris 2.10.03 (pyswisseph, `SIDM_LAHIRI`, instalado fora do projeto): ayanamsha a menos de 0,01°, longitudes dos 8 corpos a menos de 0,02° em dois nascimentos (São Paulo 1990 e Nova Délhi 1985), Lagna a menos de 0,05°, nascer e pôr do sol a menos de 2 min, tithi, nakshatra, yoga e karana idênticos e datas do Vimshottari a menos de 2 dias.
+  - Integração (`astrologia.integration.test.ts`, 8 testes): busca com UF, 401 sem sessão, gravação com coordenadas e fuso, limpeza com `null`, 404 e 400, 403 na API genérica, `faltando` sem dados, mapa (Lagna Capricórnio, Lua em Touro/Krittika, Rahu) e dia em Nova Délhi (nascer 06:19, Dvitiya, Swati, Amrit, Kshema, 6ª casa) e data inválida.
+  - Navegador (1440 px e 390 px, `pt-BR`): onboarding recusa avançar sem cidade, escolhe São Paulo e Lisboa pela busca, finaliza; perfil mostra as cidades e o mapa (Capricórnio 13°15', Touro/Krittika pada 3, Rahu/Lua até 28/08/2027); troca da moradia para Campinas e dia védico recalculado; axe sem violações nas três telas; largura do perfil no celular corrigida (o botão de limpar a cidade estourava 9 px).
+  - `test` 306/306; `test:integration` 114/114; `test:launchers` 17/17; lint, format, types e `build` com exit 0 e sem avisos. Usuários de QA removidos.
