@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `███████████████████░` **93%** |
+| Progresso          | `███████████████████░` **95%** |
 | Tarefas totais     | 44                             |
-| 🟢 Finalizadas     | 41                             |
+| 🟢 Finalizadas     | 42                             |
 | 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 2                              |
+| ⚪ A iniciar       | 1                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-14                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (41 ÷ 44 = 93,2%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (42 ÷ 44 = 95,5%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,9 +43,9 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                        | O que está sendo realizado                                                                                                                                                                                                                                                                                                                                                                                                         |
-| --- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 42  | Coach diário automático de IA | Rotina automática no servidor que, todos os dias, lê o mapa védico e as métricas de cada pessoa e gera o "Seu dia": como será o dia por períodos (madrugada, manhã, tarde, noite) com pontos bons e de atenção (Rahu Kalam, Yamaganda, Gulika, Abhijit, Choghadiya, Chandrashtama, Tara Bala), dicas de saúde, bem-estar, alimentação e exercício; notificação no sino; uso do Gemini quando configurado e motor local quando não. |
+| Nº  | Tarefa                                        | O que está sendo realizado                                                                                                                                                                                                                                                                                                                |
+| --- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 43  | O que a IA deve fazer sozinha e ainda não faz | Auditoria de tudo o que a IA deveria fazer automaticamente (dicas, plano, scores, alertas precoces, metas, hábitos, `MapPlaceholder`) e implementação do que falta, incluindo o texto do coach pelo Gemini com a chave do servidor, só com consentimento explícito e revogável da pessoa, dados minimizados e o motor local como reserva. |
 
 ### BLOQUEADAS
 
@@ -56,10 +56,6 @@ Nenhuma tarefa bloqueada.
 ## Tópico 3 · Tarefas a Iniciar
 
 _Pedido do usuário em 2026-10-12: métricas reais e automáticas, IA como coach diário guiado pelo mapa védico e diferenciais de 2026._
-
-### 43 · O que a IA deve fazer sozinha e ainda não faz
-
-- Auditar tudo o que a IA deveria fazer automaticamente (dicas, plano, scores, alertas precoces, metas, hábitos) e implementar o que falta.
 
 ### 44 · Diferenciais de 2026
 
@@ -940,3 +936,21 @@ _Pedido do usuário em 2026-10-12: métricas reais e automáticas, IA como coach
   - Integração (`astrologia.integration.test.ts`, 8 testes): busca com UF, 401 sem sessão, gravação com coordenadas e fuso, limpeza com `null`, 404 e 400, 403 na API genérica, `faltando` sem dados, mapa (Lagna Capricórnio, Lua em Touro/Krittika, Rahu) e dia em Nova Délhi (nascer 06:19, Dvitiya, Swati, Amrit, Kshema, 6ª casa) e data inválida.
   - Navegador (1440 px e 390 px, `pt-BR`): onboarding recusa avançar sem cidade, escolhe São Paulo e Lisboa pela busca, finaliza; perfil mostra as cidades e o mapa (Capricórnio 13°15', Touro/Krittika pada 3, Rahu/Lua até 28/08/2027); troca da moradia para Campinas e dia védico recalculado; axe sem violações nas três telas; largura do perfil no celular corrigida (o botão de limpar a cidade estourava 9 px).
   - `test` 306/306; `test:integration` 114/114; `test:launchers` 17/17; lint, format, types e `build` com exit 0 e sem avisos. Usuários de QA removidos.
+
+### 42 · Coach diário automático de IA
+
+- **Status:** 🟢 finalizada · **Commit:** `7d6a84f` · **Push:** `b013b91..7d6a84f main -> main` (confirmado)
+- **Causa:** a IA só respondia quando a pessoa perguntava no chat; não havia nenhuma rotina que lesse o mapa védico e as métricas todos os dias, nem notificações do servidor (o sino só mostrava consultas e assinatura).
+- **Implementado:**
+  - **Motor do coach** (`src/lib/coach/`, determinístico): prontidão só com sinais medidos (sem neutro inventado), comparando VFC e FC de repouso à média pessoal; quatro períodos no relógio da cidade com nota pela Choghadiya e descontos de Rahu Kalam, Yamaganda e Gulika; melhor janela (Abhijit, Amrit, Shubh, Labh fora das cautelas); tom do dia por Tara Bala, Chandra Bala/Chandrashtama, yoga, karana e tithi; treino pela prontidão, pelo dosha e pela natureza do nakshatra; luz, refeições, cafeína e sono pelo nascer e pôr do sol; água e proteína pelo peso; Ekadashi; ciclo menstrual; sinais precoces. Toda dica tem o "por quê".
+  - **Dados:** migração `019_coach_diario.sql` (`daily_briefings` com hash das entradas, refeito quando o check-in, a pulseira ou a cidade mudam; `user_notifications` com chave única), retenção de 90 dias, exportação LGPD e exclusão em cascata. Política de privacidade na versão 2026-10-14.
+  - **Automático:** rotina no servidor (`src/instrumentation.ts`) a cada 15 min, a partir das 3 h locais, respeitando o plano (`ai_tips_feed`); rota `POST /api/coach/rotina` com segredo para cron externo (`COACH_ROTINA`, `COACH_ROTINA_SEGREDO`).
+  - **Rotas:** `GET /api/coach/hoje`, `POST /api/coach/feedback`, `GET/PATCH /api/notificacoes`.
+  - **Telas** (referências: Oura "Today" com "one big thing", WHOOP Coach, tendências 2026 de IA explicável e vidro com aura): cartão "Seu dia" no topo do painel (manchete, anel de prontidão, faixa das 24 h com o "Agora" ao vivo, período atual, três focos e cuidado do dia); página **Meu dia** (`/dia`) com relógio radial das 24 h, quatro períodos, pontos fortes e cuidados, abas Saúde/Alimentação/Movimento/Mente/Sono, céu de hoje e "o seu dia te ajudou?"; sino com "Seu dia está pronto" e alertas, marcados como lidos ao abrir; "Meu dia" na navegação (logo após o Dashboard, inclusive em configurações já salvas); chat responde sobre o dia com os mesmos horários; atalhos `G + letra` da paleta passaram a funcionar (antes eram só exibidos).
+  - Documentação: `docs/coach.md`, `docs/api.md`, `.env.example`, README.
+- **Fica para a tarefa 43:** texto do coach pelo Gemini (exige consentimento explícito e revogável, porque hoje a política só prevê o Gemini com a chave da própria pessoa no chat).
+- **Evidências:**
+  - Unitários (`coach.test.ts`, 14): períodos contíguos 00:00–24:00 com nota e sugestão, horários iguais ao Panchang, dica sem "por quê" proibida, sem check-in não há prontidão, boa recuperação libera treino intenso e em nakshatra suave não, recuperação baixa vira dia de atenção com 4-7-8 e débito de sono, determinismo, Ekadashi só no 11º tithi, Chandrashtama encontrado no calendário real vira atenção com alerta, ciclo e data da menstruação; chat (2) e navegação (1).
+  - Integração (`coach.integration.test.ts`, 7, e `lgpd`): sem cidade → `sem_local`; gera, reaproveita e refaz após o check-in sem duplicar briefing nem notificação; 401 e 403 pelo plano; avaliação só com briefing (404/400); notificações sem IDOR; rotina não gera antes das 3 h, gera às 7 h e não repete; rota externa 404/401/200; exportação e exclusão LGPD com as tabelas novas.
+  - Navegador (build de produção; 1440 px claro, 390 px e 1440 px escuro): cartão e `/dia` sem estouro, sino "1 notificação nova" → lido ao abrir, check-in no diálogo refaz o dia (prontidão 90), avaliação gravada no banco, atalho `G H`, axe sem violações em todas as telas (o nome do botão do sino foi ajustado para começar pelo número visível, WCAG 2.5.3), sem erros de console. Log do servidor: `[coach:rotina] 1 dia(s) preparado(s), 0 falha(s)`.
+  - `test` 323/323; `test:integration` 121/121; `test:launchers` 17/17; lint, format, types e `build` com exit 0 e sem avisos. Usuários de QA removidos.
