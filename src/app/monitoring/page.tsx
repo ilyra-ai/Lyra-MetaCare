@@ -4,6 +4,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { PageIntro } from '@/components/layout/PageIntro';
 import { useAuth } from '@/context/AuthContext';
 import { SplashScreen } from '@/components/SplashScreen';
+import { WearableConnection } from '@/components/data-connection/WearableConnection';
 import { RealTimeMonitoringContent } from '@/components/monitoring/RealTimeMonitoringContent';
 import { PlanUpgradeNotice } from '@/components/subscription/PlanUpgradeNotice';
 import { useAccountSubscription } from '@/hooks/use-account-subscription';
@@ -23,6 +24,10 @@ export default function MonitoringPage() {
     subscription,
     'voice_monitoring_updates'
   );
+  const wearableEnabled = isPlanFeatureEnabled(
+    subscription,
+    'wearable_bluetooth_connection'
+  );
   const monitoringConfig = appConfig.monitoring;
 
   if (session === undefined || subscriptionLoading) {
@@ -41,10 +46,20 @@ export default function MonitoringPage() {
         description={monitoringConfig.pageDescription}
       />
       {monitoringEnabled ? (
-        <RealTimeMonitoringContent
-          voiceUpdatesEnabled={voiceUpdatesEnabled}
-          currentPlanKey={subscription?.plan.key ?? 'free'}
-        />
+        <>
+          {/* Parear a pulseira aqui mesmo: antes a página só recebia dados se
+              outra aba (painel ou Dispositivos) estivesse conectada. */}
+          {wearableEnabled ? (
+            <WearableConnection
+              config={appConfig.connect}
+              typography={appConfig.typography}
+            />
+          ) : null}
+          <RealTimeMonitoringContent
+            voiceUpdatesEnabled={voiceUpdatesEnabled}
+            currentPlanKey={subscription?.plan.key ?? 'free'}
+          />
+        </>
       ) : (
         <PlanUpgradeNotice
           currentPlanKey={subscription?.plan.key ?? 'free'}

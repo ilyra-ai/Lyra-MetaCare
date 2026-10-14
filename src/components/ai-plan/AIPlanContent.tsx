@@ -19,6 +19,7 @@ import {
   Scale,
   Sparkles,
   SunMedium,
+  Target,
   Utensils,
   Waves,
   Zap,
@@ -56,9 +57,24 @@ interface PillarData {
   items: PlanItemData[];
 }
 
+interface MetaSugerida {
+  metrica: string;
+  alvo: number;
+  porque: string;
+}
+
 interface PlanData {
   summary: string;
   pillars: Record<string, PillarData>;
+  /** Metas automáticas sugeridas pelos objetivos do perfil. */
+  metasSugeridas?: MetaSugerida[];
+  /** Planos gerados a partir da tarefa 43 trazem a validade e a base. */
+  meta?: {
+    data: string;
+    geradoEm: string;
+    origem: 'manual' | 'automatico';
+    base: string[];
+  };
 }
 
 function isPlanData(value: unknown): value is PlanData {
@@ -134,8 +150,107 @@ const toneStyles: Record<
   },
 };
 
-const hasMetricValue = (value: number | null | undefined): value is number =>
-  value !== null && value !== undefined && Number.isFinite(value);
+function dataHoraDoPlano(iso: string) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(iso));
+}
+
+const ROTULO_DA_METRICA: Record<string, string> = {
+  passos: 'passos por dia',
+  sono: 'h de sono por noite',
+  agua: 'L de água por dia',
+  meditacao: 'min de meditação por dia',
+  minutosAtivos: 'min ativos por dia',
+};
+
+/** Metas sugeridas pelo plano: viram metas automáticas com um clique. */
+function MetasSugeridas({ metas }: { metas: MetaSugerida[] }) {
+  const [criadas, setCriadas] = useState<Record<string, boolean>>({});
+  const [enviando, setEnviando] = useState<string | null>(null);
+
+  const adicionar = async (meta: MetaSugerida) => {
+    setEnviando(meta.metrica);
+    try {
+      const resposta = await fetch('/api/metas', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ metrica: meta.metrica, alvo: meta.alvo }),
+      });
+      const corpo = (await resposta.json().catch(() => null)) as {
+        error?: string;
+      } | null;
+      if (!resposta.ok && resposta.status !== 409) {
+        throw new Error(corpo?.error ?? 'Não foi possível criar a meta.');
+      }
+      setCriadas((atual) => ({ ...atual, [meta.metrica]: true }));
+      toast.success(
+        resposta.status === 409
+          ? 'Você já acompanha esta métrica em Metas.'
+          : 'Meta criada: ela avança sozinha com o seu registro do dia.'
+      );
+    } catch (erro) {
+      toast.error(
+        erro instanceof Error ? erro.message : 'Falha ao criar a meta.'
+      );
+    } finally {
+      setEnviando(null);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader className="gap-2">
+        <CardTitle className="flex items-center gap-2 text-xl">
+          <Target className="h-5 w-5 text-primary" aria-hidden="true" />
+          Metas sugeridas pelos seus objetivos
+        </CardTitle>
+        <CardDescription>
+          Cada uma vira uma meta automática em Metas e avança sozinha com o seu
+          registro do dia.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-4 md:grid-cols-3">
+        {metas.map((meta) => (
+          <div
+            key={meta.metrica}
+            className="flex flex-col gap-3 rounded-md border border-border bg-background p-4"
+          >
+            <p className="font-display text-2xl font-semibold text-foreground">
+              {meta.alvo.toLocaleString('pt-BR')}{' '}
+              <span className="text-base font-medium text-muted-foreground">
+                {ROTULO_DA_METRICA[meta.metrica] ?? meta.metrica}
+              </span>
+            </p>
+            <p className="text-sm leading-6 text-muted-foreground">
+              {meta.porque}
+            </p>
+            <Button
+              type="button"
+              variant={criadas[meta.metrica] ? 'secondary' : 'default'}
+              disabled={criadas[meta.metrica] || enviando === meta.metrica}
+              onClick={() => void adicionar(meta)}
+              className="mt-auto"
+            >
+              {criadas[meta.metrica] ? (
+                <>
+                  <CheckCircle2 aria-hidden="true" />
+                  Em Metas
+                </>
+              ) : (
+                'Adicionar como meta'
+              )}
+            </Button>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
 
 function resolveTone(pillarKey: string): ToneKey {
   if (pillarKey.includes('nutrition')) {
@@ -271,7 +386,7 @@ function PillarPanel({
 
 export function AIPlanContent() {
   const { db, session } = useAuth();
-  const { vitals, astrology, isSyncing, syncError } = useHealthOrchestrator();
+  const { astrology, isSyncing, syncError } = useHealthOrchestrator();
   const { config: appConfig } = usePublicSitePageConfig('app');
   const planConfig = appConfig.aiPlan;
   const [plan, setPlan] = useState<PlanData | null>(null);
@@ -280,7 +395,8 @@ export function AIPlanContent() {
 
   const userId = session?.user?.id ?? null;
 
-  // Carrega o plano salvo do usuário (o estado inicial já é "carregando").
+  // Carrega o plano salvo; o servidor o refaz sozinho quando é de outro dia
+  // ou quando o registro do dia mudou (o estado inicial já é "carregando").
   useEffect(() => {
     if (!userId) {
       return;
@@ -289,35 +405,38 @@ export function AIPlanContent() {
     let active = true;
 
     const fetchPlan = async () => {
-      const { data, error } = await db
-        .from('ai_plans')
-        .select('plan_data')
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      if (!active) return;
-
-      if (error) {
-        toast.error('Erro ao carregar o plano salvo.', {
-          description: error.message,
+      try {
+        const resposta = await fetch('/api/plano', {
+          credentials: 'include',
+          cache: 'no-store',
         });
-        setLoading(false);
-        return;
+        const corpo = (await resposta.json().catch(() => null)) as {
+          plano?: unknown;
+          atualizado?: boolean;
+          error?: string;
+        } | null;
+        if (!active) return;
+        if (!resposta.ok) {
+          toast.error('Erro ao carregar o plano salvo.', {
+            description: corpo?.error,
+          });
+          setPlan(null);
+        } else if (corpo?.plano && isPlanData(corpo.plano)) {
+          setPlan(corpo.plano);
+          if (corpo.atualizado) {
+            toast.success('Plano atualizado para hoje com o seu registro.');
+          }
+        } else {
+          setPlan(null);
+        }
+      } catch {
+        if (active) {
+          toast.error('Sem conexão para carregar o plano.');
+          setPlan(null);
+        }
+      } finally {
+        if (active) setLoading(false);
       }
-
-      if (data?.plan_data && isPlanData(data.plan_data)) {
-        setPlan(data.plan_data);
-      } else if (data?.plan_data) {
-        toast.error('Plano persistido em formato inválido.', {
-          description:
-            'O registro encontrado em ai_plans não segue o contrato esperado do motor local.',
-        });
-        setPlan(null);
-      } else {
-        setPlan(null);
-      }
-
-      setLoading(false);
     };
 
     void fetchPlan();
@@ -325,7 +444,7 @@ export function AIPlanContent() {
     return () => {
       active = false;
     };
-  }, [db, userId]);
+  }, [userId]);
 
   const handleGeneratePlan = async () => {
     if (!session?.user) {
@@ -337,52 +456,31 @@ export function AIPlanContent() {
       return;
     }
 
-    if (syncError) {
-      toast.info('Plano seguirá com contexto parcial, porém real.', {
-        description: syncError,
-      });
-    }
-
     setIsGenerating(true);
-    toast.info('Gerando plano com motor local e persistindo em MySQL.');
 
     try {
-      const payload = {
-        metrics: {
-          hrv_ms: null,
-          sleep_duration_minutes: vitals?.sleepDurationMinutes ?? null,
-          steps: null,
-          blood_glucose_mgdl: vitals?.bloodGlucoseMgDl ?? null,
-          weight_kg: vitals?.weightKg ?? null,
-        },
-      };
-
+      // O servidor lê o registro do dia (inclusive as sessões da pulseira já
+      // gravadas), o perfil e o céu: o navegador não envia leituras.
       const { data, error } = await db.functions.invoke<PlanData>(
         'generate-ai-plan',
-        {
-          body: payload,
-        }
+        { body: {} }
       );
 
       if (error) {
-        throw new Error(
-          error.message || 'A infraestrutura local de geração do plano falhou.'
-        );
+        throw new Error(error.message || 'Não foi possível gerar o plano.');
       }
 
       if (!data || !isPlanData(data)) {
-        throw new Error(
-          'O motor respondeu, mas o payload do plano veio fora do contrato esperado.'
-        );
+        throw new Error('O plano gerado veio incompleto. Tente de novo.');
       }
 
       setPlan(data);
-      toast.success('Plano atualizado com sucesso.', {
+      toast.success('Plano atualizado.', {
         description:
-          'A leitura local cruzou sinais reais disponíveis com o contexto astrológico atual.',
+          'Com a média do seu registro dos últimos 7 dias, os seus objetivos e o céu de hoje.',
       });
     } catch (error) {
-      toast.error('Não foi possível concluir a orquestração.', {
+      toast.error('Não foi possível gerar o plano.', {
         description:
           error instanceof Error
             ? error.message
@@ -404,13 +502,8 @@ export function AIPlanContent() {
     (sum, [, pillar]) => sum + pillar.items.length,
     0
   );
-  const availableSignals = [
-    vitals?.heartRate,
-    vitals?.sleepDurationMinutes,
-    vitals?.bloodGlucoseMgDl,
-    vitals?.weightKg,
-    vitals?.moodScore,
-  ].filter(hasMetricValue).length;
+  // Sinais que o servidor de fato usou para este plano.
+  const sinaisUsados = plan?.meta?.base ?? [];
 
   return (
     <div className="space-y-6">
@@ -494,7 +587,7 @@ export function AIPlanContent() {
                 {plan ? totalRecommendations : 0}
               </p>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Ações persistidas a partir do motor local desta conta.
+                Ações do plano salvas na sua conta.
               </p>
             </div>
 
@@ -503,13 +596,24 @@ export function AIPlanContent() {
                 {planConfig.signalsLabel}
               </p>
               <p className="mt-2 font-display text-4xl font-semibold tracking-[-0.02em] text-foreground">
-                {availableSignals}/5
+                {sinaisUsados.length}
               </p>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Leituras ativas reconhecidas na orquestração atual.
+                {sinaisUsados.length > 0
+                  ? sinaisUsados.join(' · ')
+                  : 'Registre o seu dia para o plano usar os seus sinais.'}
               </p>
             </div>
           </CardContent>
+          {plan?.meta ? (
+            <p className="px-6 pb-6 text-xs text-muted-foreground">
+              {plan.meta.origem === 'automatico'
+                ? 'Atualizado automaticamente'
+                : 'Gerado'}{' '}
+              em {dataHoraDoPlano(plan.meta.geradoEm)} · o plano se refaz
+              sozinho a cada dia e quando o seu registro muda.
+            </p>
+          ) : null}
         </Card>
 
         <Card className="min-w-0">
@@ -647,6 +751,10 @@ export function AIPlanContent() {
           ))}
         </Tabs>
       )}
+
+      {plan?.metasSugeridas && plan.metasSugeridas.length > 0 ? (
+        <MetasSugeridas metas={plan.metasSugeridas} />
+      ) : null}
     </div>
   );
 }

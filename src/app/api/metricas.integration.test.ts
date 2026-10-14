@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { queryRows } from '@/lib/mysql/pool';
+import { executeStatement, queryRows } from '@/lib/mysql/pool';
 import { assignPlanToUserByAdmin } from '@/lib/plans/service';
 
 import { criarUsuario } from '../../../tests/integration/fixtures';
@@ -214,6 +214,44 @@ describe('sessão da pulseira (POST /api/metricas/sensor)', () => {
     expect(Number(linha?.sensor_minutes)).toBe(40);
     expect(Number(linha?.resting_heart_rate)).toBe(61);
     expect(Number(linha?.hrv_ms)).toBe(48.2);
+  });
+
+  it('frequência no limite pessoal vira um aviso por dia no sino', async () => {
+    const admin = await criarUsuario('admin', 'Plano');
+    const pessoa = await criarUsuario('patient', 'FcAlta');
+    await assignPlanToUserByAdmin({
+      targetUserId: pessoa.id,
+      actorUserId: admin.id,
+      planKey: 'meta',
+    });
+    const avisos = () =>
+      queryRows<{ title: string }>(
+        `SELECT title FROM user_notifications
+          WHERE user_id = ? AND dedupe_key LIKE 'fc-alta:%'`,
+        [pessoa.id]
+      );
+    const enviar = (fcMaxima: number) =>
+      chamar(sensor.POST, {
+        method: 'POST',
+        body: { ...sessao, fcMaxima },
+        usuario: pessoa,
+      });
+
+    // Sem idade no perfil não há limite: nenhum aviso.
+    expect((await enviar(175)).status).toBe(200);
+    expect(await avisos()).toEqual([]);
+
+    // 40 anos: limite = 0,9 × (208 − 28) = 162 bpm.
+    await executeStatement('UPDATE profiles SET age = 40 WHERE id = ?', [
+      pessoa.id,
+    ]);
+    await enviar(150);
+    expect(await avisos()).toEqual([]);
+    await enviar(170);
+    await enviar(180);
+    expect(await avisos()).toEqual([
+      { title: 'Frequência cardíaca chegou a 170 bpm' },
+    ]);
   });
 
   it('recusa sessão incoerente', async () => {

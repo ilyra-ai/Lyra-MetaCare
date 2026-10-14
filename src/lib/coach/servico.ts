@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 
+import { obterPlanoAtualizado } from '@/lib/ai/plano-do-dia';
 import { LocalSemNascerDoSolError } from '@/lib/astrology/panchang';
 import { dataLocal, partesLocais } from '@/lib/astrology/tempo';
 import { HttpError } from '@/lib/http-error';
@@ -232,6 +233,16 @@ export async function executarRotinaDoCoach(
       // Virada do dia: prazos de metas vencidos e sequências que não
       // continuaram ontem são atualizados mesmo sem novo check-in.
       await atualizarMetasESequencias(pessoa.id, agora);
+      // Plano de IA de quem já tem um: refeito para o novo dia.
+      if (
+        await recursoHabilitado(
+          pessoa.id,
+          pessoa.role ?? 'user',
+          'ai_plan_generations'
+        )
+      ) {
+        await obterPlanoAtualizado(pessoa.id, agora);
+      }
     } catch (error) {
       falhas += 1;
       registrarErroInterno('coach:rotina', error);

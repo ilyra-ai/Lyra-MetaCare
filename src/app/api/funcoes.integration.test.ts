@@ -15,6 +15,7 @@ import * as assistente from './functions/ask-ai-assistant/route';
 import * as score from './functions/calculate-longevity-score/route';
 import type { EscoresDoDia } from '@/lib/ai/score-engine';
 import * as plano from './functions/generate-ai-plan/route';
+import * as planoSalvo from './plano/route';
 import * as conexao from './functions/test-ai-connection/route';
 import * as webhook from './webhooks/stripe/route';
 
@@ -94,28 +95,70 @@ describe('assistente de IA', () => {
 });
 
 describe('plano e score', () => {
-  it('gera e persiste o plano; recusa leituras implausíveis', async () => {
+  it('gera e persiste o plano só com dados do servidor; recusa corpo com leituras', async () => {
     const pessoa = await comObjetivosEMetricas('Plano');
     const invalido = await chamar(plano.POST, {
       method: 'POST',
-      body: { metrics: { steps: -10 } },
+      body: { metrics: { steps: 99999 } },
       usuario: pessoa,
     });
     expect(invalido.status).toBe(400);
 
     const gerado = await chamar(plano.POST, {
       method: 'POST',
-      body: { metrics: { sleep_duration_minutes: 360 } },
       usuario: pessoa,
     });
     expect(gerado.status).toBe(200);
     expect(gerado.json).toMatchObject({
       pillars: { sleep: { title: 'Sono' } },
+      meta: {
+        origem: 'manual',
+        data: new Date().toISOString().slice(0, 10),
+        base: expect.arrayContaining(['Sono médio 6h20 (1 dia)']),
+      },
     });
     const salvo = await queryRows('SELECT id FROM ai_plans WHERE user_id = ?', [
       pessoa.id,
     ]);
     expect(salvo).toHaveLength(1);
+  });
+
+  it('o plano salvo se refaz sozinho quando o registro do dia muda, sem cota', async () => {
+    const pessoa = await comObjetivosEMetricas('PlanoAuto');
+    expect((await chamar(planoSalvo.GET, { usuario: pessoa })).json).toEqual({
+      plano: null,
+      atualizado: false,
+    });
+    await chamar(plano.POST, { method: 'POST', usuario: pessoa });
+    const usosAntes = await queryRows<{ used_value: number }>(
+      `SELECT used_value FROM feature_usage_counters
+        WHERE user_id = ? AND feature_key = 'ai_plan_generations'`,
+      [pessoa.id]
+    );
+
+    const mesmo = (await chamar(planoSalvo.GET, { usuario: pessoa })).json as {
+      atualizado: boolean;
+    };
+    expect(mesmo.atualizado).toBe(false);
+
+    await gravarRegistroDoDia(pessoa.id, {
+      data: new Date().toISOString().slice(0, 10),
+      valores: { sono: 480 },
+    });
+    const refeito = (await chamar(planoSalvo.GET, { usuario: pessoa }))
+      .json as {
+      atualizado: boolean;
+      plano: { meta: { origem: string; base: string[] } };
+    };
+    expect(refeito.atualizado).toBe(true);
+    expect(refeito.plano.meta.origem).toBe('automatico');
+    expect(refeito.plano.meta.base).toContain('Sono médio 8h00 (1 dia)');
+    const usosDepois = await queryRows<{ used_value: number }>(
+      `SELECT used_value FROM feature_usage_counters
+        WHERE user_id = ? AND feature_key = 'ai_plan_generations'`,
+      [pessoa.id]
+    );
+    expect(usosDepois).toEqual(usosAntes);
   });
 
   it('calcula os escores do dia pedido, sem inventar valores', async () => {

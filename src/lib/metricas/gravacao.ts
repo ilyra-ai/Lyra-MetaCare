@@ -1,6 +1,8 @@
 import { randomUUID } from 'node:crypto';
 
+import { limiteDeFrequencia } from '@/lib/health/limite-de-frequencia';
 import { atualizarMetasESequencias } from '@/lib/metas/servico';
+import { criarNotificacao } from '@/lib/notificacoes/servico';
 import { executeStatement, queryRows } from '@/lib/mysql/pool';
 
 import { recalcularEscoresDesde } from './escores-do-dia';
@@ -12,6 +14,27 @@ import { recalcularEscoresDesde } from './escores-do-dia';
 async function depoisDeGravar(userId: string, data: string) {
   await recalcularEscoresDesde(userId, data);
   await atualizarMetasESequencias(userId);
+}
+
+/**
+ * Sessão da pulseira com frequência máxima no limite pessoal (90% da FC
+ * máxima estimada pela idade) vira aviso no sino, um por dia.
+ */
+async function avisarFrequenciaAlta(userId: string, sessao: SessaoDoSensor) {
+  const [perfil] = await queryRows<{ age: number | null }>(
+    'SELECT age FROM profiles WHERE id = ? LIMIT 1',
+    [userId]
+  );
+  const limite = limiteDeFrequencia(perfil?.age ?? null);
+  if (limite === null || sessao.fcMaxima < limite) return;
+  await criarNotificacao({
+    userId,
+    tipo: 'coach_alerta',
+    titulo: `Frequência cardíaca chegou a ${Math.round(sessao.fcMaxima)} bpm`,
+    corpo: `Acima de ${limite} bpm, 90% da sua frequência máxima estimada. Se não estava treinando, observe como se sente e, se houver sintomas, procure orientação.`,
+    link: '/monitoring',
+    chave: `fc-alta:${sessao.data}`,
+  });
 }
 
 import {
@@ -139,6 +162,7 @@ export async function gravarSessaoDoSensor(
     ]
   );
   await depoisDeGravar(userId, sessao.data);
+  await avisarFrequenciaAlta(userId, sessao);
 
   return lerRegistroDoDia(userId, sessao.data);
 }

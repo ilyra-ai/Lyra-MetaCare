@@ -16,7 +16,10 @@ import {
 } from 'lucide-react';
 import { RealTimeMetricCard } from './RealTimeMetricCard';
 import { LiveHeartRateChart } from './LiveHeartRateChart';
-import { MapPlaceholder } from './MapPlaceholder';
+import { FluxoDeEventos } from './FluxoDeEventos';
+import { useAuth } from '@/context/AuthContext';
+import { useKeyedResource } from '@/hooks/use-keyed-resource';
+import { limiteDeFrequencia } from '@/lib/health/limite-de-frequencia';
 import { Button } from '@/components/ui/button';
 import { PlanKey } from '@/types/subscription';
 import { Badge } from '@/components/ui/badge';
@@ -31,15 +34,37 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { scaleRem } from '@/lib/site-page-config/runtime';
 
-// Exibe um alerta push real baseado em limites de biomarcadores
-const showPushAlert = (metric: string, value: number, threshold: number) => {
+interface AlertaDaSessao {
+  horario: string;
+  frequencia: number;
+}
+
+// Aviso no navegador quando a frequência passa do limite pessoal.
+const avisarFrequenciaAlta = (valor: number, limite: number) => {
   if ('vibrate' in navigator) {
-    navigator.vibrate(200); // Vibra por 200ms
+    navigator.vibrate(200);
   }
-  toast.warning('Alerta de Métrica', {
-    description: `${metric} atingiu ${value}, que está acima do seu limite de ${threshold}.`,
+  toast.warning('Frequência cardíaca alta', {
+    description: `${valor} bpm, acima de ${limite} bpm (90% da sua frequência máxima estimada). Se não estiver treinando, pare e observe como se sente.`,
   });
 };
+
+async function lerIdade(
+  dbCliente: ReturnType<typeof useAuth>['db'],
+  userId: string
+) {
+  const { data, error } = await dbCliente
+    .from('profiles')
+    .select('age')
+    .eq('id', userId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data?.age ?? null;
+}
+
+function avisarFalhaDaIdade(falha: unknown) {
+  console.error('Falha ao ler a idade para o limite de frequência:', falha);
+}
 
 export function RealTimeMonitoringContent({
   voiceUpdatesEnabled = true,
@@ -57,6 +82,24 @@ export function RealTimeMonitoringContent({
     lastUpdatedAt: null as string | null,
   });
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [alertas, setAlertas] = useState<AlertaDaSessao[]>([]);
+  const { db: dbCliente, session } = useAuth();
+  const userId = session?.user.id ?? null;
+  const lerIdadeDaPessoa = React.useCallback(
+    () => (userId ? lerIdade(dbCliente, userId) : Promise.resolve(null)),
+    [dbCliente, userId]
+  );
+  const { data: idade } = useKeyedResource<number | null>(
+    userId ? `idade:${userId}` : null,
+    lerIdadeDaPessoa,
+    avisarFalhaDaIdade,
+    null
+  );
+  const limite = limiteDeFrequencia(idade);
+  const limiteRef = React.useRef<number | null>(null);
+  useEffect(() => {
+    limiteRef.current = limite;
+  }, [limite]);
   const hasLiveData = liveData.lastUpdatedAt !== null;
   const monitoringConfig = appConfig.monitoring;
   const titleStyle = {
@@ -98,9 +141,24 @@ export function RealTimeMonitoringContent({
           lastUpdatedAt: new Date().toISOString(),
         });
 
-        // Lógica de Alerta
-        if (newData.heartRate && newData.heartRate > 120) {
-          showPushAlert('Frequência Cardíaca', newData.heartRate, 120);
+        // Aviso pelo limite pessoal (90% da FC máxima estimada pela idade).
+        const limiteAtual = limiteRef.current;
+        if (
+          limiteAtual !== null &&
+          newData.heartRate !== null &&
+          newData.heartRate >= limiteAtual
+        ) {
+          avisarFrequenciaAlta(newData.heartRate, limiteAtual);
+          const frequencia = newData.heartRate;
+          setAlertas((atual) =>
+            [
+              {
+                horario: new Date().toLocaleTimeString('pt-BR'),
+                frequencia,
+              },
+              ...atual,
+            ].slice(0, 10)
+          );
         }
       })
       .subscribe();
@@ -171,7 +229,7 @@ export function RealTimeMonitoringContent({
             <RealTimeMetricCard
               icon={HeartPulse}
               label="Batimentos"
-              value={liveData.heartRate ?? 0}
+              value={liveData.heartRate}
               unit="BPM"
               accent="primary"
               isActive={hasLiveData}
@@ -179,7 +237,7 @@ export function RealTimeMonitoringContent({
             <RealTimeMetricCard
               icon={Zap}
               label="HRV"
-              value={liveData.hrv ?? 0}
+              value={liveData.hrv}
               unit="ms"
               accent="info"
               isActive={hasLiveData}
@@ -187,7 +245,7 @@ export function RealTimeMonitoringContent({
             <RealTimeMetricCard
               icon={Wind}
               label="Respiração"
-              value={liveData.respiratoryRate ?? 0}
+              value={liveData.respiratoryRate}
               unit="RPM"
               accent="info"
               isActive={hasLiveData}
@@ -195,7 +253,7 @@ export function RealTimeMonitoringContent({
             <RealTimeMetricCard
               icon={Thermometer}
               label="Temperatura"
-              value={liveData.temperature ?? 0}
+              value={liveData.temperature}
               unit="°C"
               accent="primary"
               isActive={hasLiveData}
@@ -234,10 +292,10 @@ export function RealTimeMonitoringContent({
 
       <div className="grid min-h-0 gap-6 xl:grid-cols-[minmax(0,1.2fr)_0.8fr]">
         <div className="min-h-96">
-          <LiveHeartRateChart initialData={liveData.heartRate ?? 0} />
+          <LiveHeartRateChart />
         </div>
         <div className="min-h-96">
-          <MapPlaceholder />
+          <FluxoDeEventos />
         </div>
       </div>
 
@@ -282,9 +340,21 @@ export function RealTimeMonitoringContent({
                 variant="secondary"
                 style={buttonStyle}
                 onClick={() =>
-                  toast.info(monitoringConfig.alertsTitle, {
-                    description: monitoringConfig.alertsDescription,
-                  })
+                  toast.info(
+                    alertas.length
+                      ? `${alertas.length} ${alertas.length === 1 ? 'aviso' : 'avisos'} nesta sessão`
+                      : 'Nenhum aviso nesta sessão',
+                    {
+                      description:
+                        limite === null
+                          ? 'Informe a sua idade no perfil para ativar o aviso de frequência alta.'
+                          : alertas.length
+                            ? alertas
+                                .map((a) => `${a.horario}: ${a.frequencia} bpm`)
+                                .join(' · ')
+                            : `O aviso dispara a partir de ${limite} bpm (90% da sua frequência máxima estimada).`,
+                    }
+                  )
                 }
               >
                 <Bell data-icon="inline-start" aria-hidden="true" />

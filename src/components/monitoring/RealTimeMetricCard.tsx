@@ -8,7 +8,8 @@ import { cn } from '@/lib/utils';
 interface RealTimeMetricCardProps {
   icon: React.ElementType;
   label: string;
-  value: number;
+  /** null: a pulseira não mede este sinal ou ainda não enviou leitura. */
+  value: number | null;
   unit: string;
   accent?: 'primary' | 'accent' | 'cosmic' | 'info';
   isActive?: boolean;
@@ -38,9 +39,15 @@ export function RealTimeMetricCard({
             <p className="text-sm font-medium text-muted-foreground">{label}</p>
             <div className="flex flex-wrap items-end gap-x-2">
               <span className="font-display text-3xl font-semibold tracking-[-0.02em] text-foreground">
-                {value}
+                {value === null ? '—' : value}
               </span>
-              <span className="pb-1 text-sm text-muted-foreground">{unit}</span>
+              {value === null ? (
+                <span className="sr-only">sem leitura</span>
+              ) : (
+                <span className="pb-1 text-sm text-muted-foreground">
+                  {unit}
+                </span>
+              )}
             </div>
           </div>
           <div
@@ -58,8 +65,10 @@ export function RealTimeMetricCard({
             <Activity className="size-4" aria-hidden="true" />
             <span>Atualização contínua</span>
           </div>
-          <Badge variant={isActive ? 'success' : 'secondary'}>
-            {isActive ? (
+          <Badge variant={isActive && value !== null ? 'success' : 'secondary'}>
+            {isActive && value === null ? (
+              'não medido'
+            ) : isActive ? (
               <>
                 <ArrowUpRight aria-hidden="true" />
                 ao vivo

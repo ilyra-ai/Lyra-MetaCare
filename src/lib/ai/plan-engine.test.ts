@@ -94,4 +94,50 @@ describe('plano local de bem-estar', () => {
     expect(new Set(ids).size).toBe(ids.length);
     expect(titulos(resultado, 'exercise')).toContain('Quebrar sedentarismo');
   });
+
+  it('cada objetivo do perfil vira uma ação e sugere até 3 metas sem repetir métrica', () => {
+    const resultado = plano({}, [
+      'reduce_stress',
+      'regulate_sleep_duration',
+      'optimize_hrv',
+      'gain_muscle',
+      'lose_weight',
+      'objetivo_desconhecido',
+    ]);
+    expect(
+      (
+        resultado.pillars as Record<string, { items: { title: string }[] }>
+      ).goals.items.map((item) => item.title)
+    ).toEqual([
+      'Respiração lenta duas vezes ao dia',
+      'De 7 a 9 horas por noite',
+      'Proteger a VFC',
+      'Força progressiva 3 vezes por semana',
+      'Déficit leve e sustentável',
+    ]);
+    expect(resultado.metasSugeridas.map((m) => m.metrica)).toEqual([
+      'meditacao',
+      'sono',
+      'minutosAtivos',
+    ]);
+    expect('goals' in plano({}).pillars).toBe(false);
+    expect(plano({}).metasSugeridas).toEqual([]);
+  });
+
+  it('prontidão baixa gravada no dia também prioriza recuperação', () => {
+    const resultado = generateLocalWellnessPlan({
+      metrics: {
+        hrv_ms: null,
+        sleep_duration_minutes: null,
+        steps: null,
+        blood_glucose_mgdl: null,
+        weight_kg: null,
+      },
+      astrology: ASTROLOGIA,
+      goals: [],
+      readiness: 42,
+    });
+    expect(resultado.summary).toContain('Prontidão de hoje: 42/100.');
+    expect(titulos(resultado, 'exercise')).toContain('Reduzir intensidade');
+  });
 });
