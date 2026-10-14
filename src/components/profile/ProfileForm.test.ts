@@ -35,7 +35,6 @@ describe('profileSchema', () => {
     gender: 'male',
     birth_date: new Date(1994, 0, 1),
     birth_time: '14:30',
-    birth_location: 'New York, USA',
   };
 
   it('should validate correct data', () => {
@@ -58,7 +57,6 @@ describe('profileSchema', () => {
     const dataWithEmptyStrings = {
       ...validData,
       birth_time: '',
-      birth_location: '',
     };
     const result = profileSchema.safeParse(dataWithEmptyStrings);
     expect(result.success).toBe(true);
@@ -178,12 +176,10 @@ describe('profileSchema', () => {
         ...validData,
         birth_date: null,
         birth_time: '',
-        birth_location: '',
       });
 
       expect(payload.birth_date).toBeNull();
       expect(payload.birth_time).toBeNull();
-      expect(payload.birth_location).toBeNull();
     });
 
     it('should keep filled optional profile fields intact', () => {
@@ -191,7 +187,12 @@ describe('profileSchema', () => {
 
       expect(payload.birth_date).toBe('1994-01-01');
       expect(payload.birth_time).toBe('14:30');
-      expect(payload.birth_location).toBe('New York, USA');
+    });
+
+    it('não envia o local de nascimento (muda pela rota de localização)', () => {
+      expect(buildProfileUpdatePayload(validData)).not.toHaveProperty(
+        'birth_location'
+      );
     });
 
     it('grava nível de atividade e metas do onboarding (sem metas → nulo)', () => {

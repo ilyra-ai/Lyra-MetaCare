@@ -53,6 +53,12 @@ interface TableConfig {
    * de mesclagem; a API genérica apenas lê. O texto é a mensagem do 403.
    */
   escritaSoPorRotaPropria?: string;
+  /**
+   * Colunas que a API genérica só lê: mudam por uma rota própria que grava
+   * junto dados derivados (ex.: o local de nascimento com coordenadas e
+   * fuso). Vale também para administradores.
+   */
+  colunasSoPorRotaPropria?: { colunas: readonly string[]; mensagem: string };
 }
 
 export const TABLE_CONFIG: Record<TableName, TableConfig> = {
@@ -71,6 +77,9 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'birth_date',
       'birth_time',
       'birth_location',
+      'birth_city_id',
+      'residence_location',
+      'residence_city_id',
       'avatar_url',
       'tracks_menstrual_cycle',
       'last_menstrual_period',
@@ -81,6 +90,19 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'updated_at',
     ],
     userScopedBy: 'id',
+    // Local de nascimento e de moradia vêm da base de cidades, com
+    // coordenadas e fuso (que nem passam pela API genérica): só pela rota
+    // /api/perfil/localizacao.
+    colunasSoPorRotaPropria: {
+      colunas: [
+        'birth_location',
+        'birth_city_id',
+        'residence_location',
+        'residence_city_id',
+      ],
+      mensagem:
+        'O local de nascimento e o de moradia são escolhidos na lista de cidades (/api/perfil/localizacao).',
+    },
     // Gestão de contas: identificação, papel e status do onboarding. Data,
     // hora e local de nascimento, gênero, idade, metas, atividade e ciclo
     // menstrual ficam só com o titular.

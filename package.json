@@ -25,6 +25,7 @@
     "db:restore": "node scripts/mysql-upgrade.mjs --restaurar",
     "db:stop": "docker compose --env-file .env.local down",
     "db:logs": "docker compose --env-file .env.local logs -f mysql",
+    "geo:cidades": "node scripts/gerar-cidades.mjs",
     "lyra-customaze:install": "python3 implement_elementor_lyra.py"
   },
   "dependencies": {

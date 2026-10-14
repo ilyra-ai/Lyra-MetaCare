@@ -307,7 +307,9 @@ describe('segregação: dados do titular longe do administrador', () => {
       method: 'PATCH',
       params: { table: 'profiles' },
       body: {
-        values: { birth_location: 'Outro lugar' },
+        // Dado sensível gravável pelo titular (o local de nascimento agora só
+        // muda pela rota de localização, para qualquer pessoa).
+        values: { birth_time: '08:00' },
         filters: [{ type: 'eq', column: 'id', value: pessoa.id }],
       },
       usuario: admin,

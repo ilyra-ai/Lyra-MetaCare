@@ -27,6 +27,10 @@ export interface ProfileRow extends AuditedRow {
   birth_date: DateString | null;
   birth_time: TimeString | null;
   birth_location: string | null;
+  /** Ids GeoNames das cidades escolhidas (coordenadas e fuso ficam no servidor). */
+  birth_city_id: number | null;
+  residence_location: string | null;
+  residence_city_id: number | null;
   avatar_url: string | null;
   tracks_menstrual_cycle: boolean;
   last_menstrual_period: DateString | null;

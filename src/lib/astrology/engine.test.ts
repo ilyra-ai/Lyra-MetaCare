@@ -61,12 +61,27 @@ describe('contexto astrológico', () => {
     ).toBe('Áries');
   });
 
-  it('só informa a dasha quando há o instante de nascimento em UTC', () => {
+  it('calcula a dasha real só com data, local (coordenadas) e fuso', () => {
     expect(getAstrologicalContext(new Date()).currentDasha).toBeUndefined();
+    // Texto livre de local, sem coordenadas: sem dasha.
     expect(
       getAstrologicalContext(new Date(), {
-        birth_timestamp_utc: '1990-05-20T07:30:00Z',
+        birth_date: '1990-12-01',
+        birth_time: '10:30:00',
+        birth_location: 'São Paulo',
       }).currentDasha
-    ).toContain('1990-05-20T07:30:00Z');
+    ).toBeUndefined();
+    // Mesmo nascimento do teste contra o Swiss Ephemeris (sideral.test.ts).
+    expect(
+      getAstrologicalContext(new Date('2026-10-12T12:00:00Z'), {
+        birth_date: '1990-12-01',
+        birth_time: '10:30:00',
+        birth_latitude: '-23.547500',
+        birth_longitude: '-46.636100',
+        birth_timezone: 'America/Sao_Paulo',
+      }).currentDasha
+    ).toMatch(
+      /^Mahadasha de Rahu, Antardasha de Lua \(Chandra\) \(até 2[89]\/08\/2027\)$/
+    );
   });
 });

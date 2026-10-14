@@ -284,6 +284,11 @@ function protectWriteColumns(
   const config = TABLE_CONFIG[table];
   const admin = isAdmin(session);
 
+  const rotaPropria = config.colunasSoPorRotaPropria;
+  if (rotaPropria?.colunas.some((coluna) => coluna in payload)) {
+    throw new HttpError(rotaPropria.mensagem, 403);
+  }
+
   if (!admin) {
     for (const column of config.adminOnlyColumns ?? []) {
       if (!(column in payload)) {

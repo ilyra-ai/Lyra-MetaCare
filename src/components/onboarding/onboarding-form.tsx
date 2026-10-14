@@ -64,6 +64,7 @@ import { cn } from '@/lib/utils';
 import { DatePicker } from '@/components/ui/date-picker';
 import { differenceInYears, format } from 'date-fns';
 import { TimeInput } from '@/components/ui/time-input';
+import { SeletorDeCidade } from '@/components/geo/SeletorDeCidade';
 
 const onboardingSchema = z.object({
   first_name: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres.'),
@@ -82,7 +83,16 @@ const onboardingSchema = z.object({
       if (val === '' || val === undefined) return true;
       return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
     }, 'Formato de hora inválido (HH:MM).'),
-  birth_location: z.string().min(3, 'Local de nascimento é obrigatório.'),
+  // Cidades da base local: viram coordenadas e fuso no servidor (mapa védico).
+  birth_city: z
+    .object({ id: z.number().int().positive(), rotulo: z.string() })
+    .nullable()
+    .refine((cidade) => cidade !== null, {
+      message: 'Escolha a cidade de nascimento na lista.',
+    }),
+  residence_city: z
+    .object({ id: z.number().int().positive(), rotulo: z.string() })
+    .nullable(),
   // O input type="number" entrega string no onChange; a coerção converte.
   age: z.coerce
     .number<number | string>()
@@ -137,8 +147,11 @@ export function OnboardingForm() {
       activity_level: NIVEL_DE_ATIVIDADE.padrao,
       goals: [],
       consent: false,
-      birth_time: '12:00',
-      birth_location: '',
+      // Sem hora pré-preenchida: um horário inventado daria um ascendente
+      // (Lagna) errado no mapa védico.
+      birth_time: '',
+      birth_city: null,
+      residence_city: null,
       birth_date: undefined,
     },
   });
@@ -258,10 +271,42 @@ export function OnboardingForm() {
           : null,
       birth_date: formattedBirthDate,
       birth_time: formattedBirthTime,
-      birth_location: profileData.birth_location,
       onboarding_completed: true,
       updated_at: new Date().toISOString(),
     };
+
+    // Locais primeiro: o perfil só é dado como completo com a cidade de
+    // nascimento gravada (com coordenadas e fuso).
+    try {
+      const locais: Array<['nascimento' | 'moradia', number]> = [];
+      if (profileData.birth_city) {
+        locais.push(['nascimento', profileData.birth_city.id]);
+      }
+      if (profileData.residence_city) {
+        locais.push(['moradia', profileData.residence_city.id]);
+      }
+      for (const [tipo, cidadeId] of locais) {
+        const resposta = await fetch('/api/perfil/localizacao', {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tipo, cidadeId }),
+        });
+        if (!resposta.ok) {
+          const corpo = (await resposta.json().catch(() => null)) as {
+            error?: string;
+          } | null;
+          throw new Error(corpo?.error ?? `HTTP ${resposta.status}`);
+        }
+      }
+    } catch (falha: unknown) {
+      setIsSubmitting(false);
+      console.error('Erro ao gravar os locais do perfil:', falha);
+      toast.error('Não foi possível salvar a cidade agora.', {
+        description: falha instanceof Error ? falha.message : undefined,
+      });
+      return;
+    }
 
     const { error } = await db
       .from('profiles')
@@ -504,10 +549,11 @@ export function OnboardingForm() {
                           Hora Exata (HH:MM)
                         </FormLabel>
                         <FormControl>
-                          <TimeInput placeholder="12:00" {...field} />
+                          <TimeInput placeholder="Ex.: 14:35" {...field} />
                         </FormControl>
                         <FormDescription className="text-xs">
-                          Usado para cronobiologia. (Opcional)
+                          Define o ascendente (Lagna) e as casas do seu mapa
+                          védico. Se não souber, deixe em branco.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -515,7 +561,7 @@ export function OnboardingForm() {
                   />
                   <FormField
                     control={form.control}
-                    name="birth_location"
+                    name="birth_city"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center text-sm font-medium">
@@ -523,16 +569,45 @@ export function OnboardingForm() {
                             className="h-4 w-4 mr-1.5 text-cosmic"
                             aria-hidden
                           />{' '}
-                          Local de Nascimento
+                          Cidade de nascimento
                         </FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Ex: São Paulo, SP, Brasil"
-                            {...field}
+                          <SeletorDeCidade
+                            valor={field.value ?? null}
+                            aoEscolher={field.onChange}
+                            textoVazio="Escolha na lista"
                           />
                         </FormControl>
                         <FormDescription className="text-xs">
-                          Cidade, Estado e País.
+                          Coordenadas e fuso da cidade calculam o seu mapa.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="residence_city"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel className="flex items-center text-sm font-medium">
+                          <MapPin
+                            className="h-4 w-4 mr-1.5 text-cosmic"
+                            aria-hidden
+                          />{' '}
+                          Cidade onde você mora hoje (opcional)
+                        </FormLabel>
+                        <FormControl>
+                          <SeletorDeCidade
+                            valor={field.value ?? null}
+                            aoEscolher={field.onChange}
+                            textoVazio="A mesma do nascimento"
+                            permitirLimpar
+                          />
+                        </FormControl>
+                        <FormDescription className="text-xs">
+                          O nascer do sol e os horários do seu dia são
+                          calculados para este lugar.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -558,7 +633,8 @@ export function OnboardingForm() {
                         'last_name',
                         'birth_date',
                         'birth_time',
-                        'birth_location',
+                        'birth_city',
+                        'residence_city',
                         'age',
                         'gender',
                       ])

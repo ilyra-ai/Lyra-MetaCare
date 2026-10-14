@@ -26,7 +26,7 @@ import {
   CardDescription,
   CardFooter,
 } from '@/components/ui/card';
-import { TrendingUp, Calendar, Clock, MapPin, LogOut } from 'lucide-react';
+import { TrendingUp, Calendar, Clock, LogOut } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -55,6 +55,10 @@ import { MenstrualCycleSettings } from './MenstrualCycleSettings';
 import { AccountEmailCard } from './AccountEmailCard';
 import { PrivacyDataCard } from './PrivacyDataCard';
 import { PurchaseHistoryCard } from './PurchaseHistoryCard';
+import { LocaisDoPerfil } from './LocaisDoPerfil';
+import { MapaVedicoCard } from './MapaVedicoCard';
+import { avisarMapaAtualizado } from '@/lib/astrology/evento-do-mapa';
+import type { CidadeEscolhida } from '@/components/geo/SeletorDeCidade';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -78,7 +82,6 @@ export const profileSchema = z.object({
       if (val === '' || val === undefined) return true;
       return /^(?:[01][0-9]|2[0-3]):[0-5][0-9]$/.test(val);
     }, 'Formato de hora inválido (HH:MM).'),
-  birth_location: z.string().optional().or(z.literal('')),
 
   age: z.coerce
     // Com coerção, um campo vazio vira NaN e cai no erro de tipo numérico.
@@ -128,14 +131,13 @@ export function buildProfileUpdatePayload(data: ProfileValues) {
     ? format(data.birth_date, 'yyyy-MM-dd')
     : null;
   const formattedBirthTime = data.birth_time === '' ? null : data.birth_time;
-  const formattedBirthLocation =
-    data.birth_location === '' ? null : data.birth_location;
 
+  // O local de nascimento não vai neste payload: muda pela rota de
+  // localização (LocaisDoPerfil), com coordenadas e fuso.
   return {
     ...data,
     birth_date: formattedBirthDate,
     birth_time: formattedBirthTime,
-    birth_location: formattedBirthLocation,
     activity_level: data.activity_level ?? null,
     // Mesma regra do onboarding: nenhuma meta escolhida é gravada como nulo.
     goals: data.goals && data.goals.length > 0 ? data.goals : null,
@@ -287,6 +289,11 @@ export function ProfileForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(true);
   const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+  const [locais, setLocais] = React.useState<{
+    nascimento: CidadeEscolhida | null;
+    moradia: CidadeEscolhida | null;
+    localAntigo: string | null;
+  }>({ nascimento: null, moradia: null, localAntigo: null });
 
   const form = useForm<ProfileInput, unknown, ProfileValues>({
     resolver: zodResolver(profileSchema),
@@ -297,7 +304,6 @@ export function ProfileForm() {
       gender: 'prefer_not-to-say',
       birth_date: null,
       birth_time: '',
-      birth_location: '',
       activity_level: NIVEL_DE_ATIVIDADE.padrao,
       goals: [],
     },
@@ -330,7 +336,7 @@ export function ProfileForm() {
       const { data, error } = await db
         .from('profiles')
         .select(
-          'first_name, last_name, age, gender, birth_date, birth_time, birth_location, avatar_url, activity_level, goals'
+          'first_name, last_name, age, gender, birth_date, birth_time, birth_location, birth_city_id, residence_location, residence_city_id, avatar_url, activity_level, goals'
         )
         .eq('id', profileUserId)
         .maybeSingle();
@@ -349,6 +355,17 @@ export function ProfileForm() {
             : undefined;
 
         setAvatarUrl(data.avatar_url);
+        setLocais({
+          nascimento:
+            data.birth_city_id && data.birth_location
+              ? { id: data.birth_city_id, rotulo: data.birth_location }
+              : null,
+          moradia:
+            data.residence_city_id && data.residence_location
+              ? { id: data.residence_city_id, rotulo: data.residence_location }
+              : null,
+          localAntigo: data.birth_city_id ? null : data.birth_location,
+        });
 
         form.reset({
           first_name: data.first_name ?? '',
@@ -358,7 +375,6 @@ export function ProfileForm() {
             (data.gender as ProfileValues['gender']) ?? 'prefer_not-to-say',
           birth_date: validBirthDate,
           birth_time: horaParaCampo(data.birth_time),
-          birth_location: data.birth_location ?? '',
           activity_level: data.activity_level ?? NIVEL_DE_ATIVIDADE.padrao,
           // Metas gravadas que não existem mais na lista são descartadas
           // para não travar a validação do formulário.
@@ -394,6 +410,8 @@ export function ProfileForm() {
       });
     } else {
       toast.success('Perfil atualizado com sucesso!');
+      // Data e hora de nascimento mudam o mapa natal.
+      avisarMapaAtualizado();
     }
   };
 
@@ -554,35 +572,21 @@ export function ProfileForm() {
                         Hora Exata (HH:MM)
                       </FormLabel>
                       <FormControl>
-                        <TimeInput placeholder="12:00" {...field} />
+                        <TimeInput placeholder="Ex.: 14:35" {...field} />
                       </FormControl>
-                      <FormDescription>Opcional.</FormDescription>
+                      <FormDescription>
+                        Define o ascendente (Lagna) e as casas do mapa védico.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="birth_location"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        <MapPin
-                          className="mr-1 inline-block h-4 w-4 align-text-bottom text-muted-foreground"
-                          aria-hidden="true"
-                        />{' '}
-                        Local de Nascimento
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Ex: São Paulo, SP, Brasil"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>Opcional.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                {/* Remonta quando o perfil carrega para receber os valores. */}
+                <LocaisDoPerfil
+                  key={`${locais.nascimento?.id ?? 'sem'}-${locais.moradia?.id ?? 'sem'}`}
+                  nascimentoInicial={locais.nascimento}
+                  moradiaInicial={locais.moradia}
+                  localAntigo={locais.localAntigo}
                 />
                 <FormField
                   control={form.control}
@@ -690,6 +694,7 @@ export function ProfileForm() {
             </Card>
           </form>
         </Form>
+        <MapaVedicoCard />
         {session?.user && <ProgressChart userId={session.user.id} db={db} />}
       </div>
 

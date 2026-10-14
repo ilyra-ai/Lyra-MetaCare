@@ -42,8 +42,13 @@ export async function POST(request: Request) {
       birth_date: string | null;
       birth_time: string | null;
       birth_location: string | null;
+      birth_latitude: string | null;
+      birth_longitude: string | null;
+      birth_timezone: string | null;
     }>(
-      'SELECT first_name, goals, birth_date, birth_time, birth_location FROM profiles WHERE id = ? LIMIT 1',
+      `SELECT first_name, goals, birth_date, birth_time, birth_location,
+              birth_latitude, birth_longitude, birth_timezone
+         FROM profiles WHERE id = ? LIMIT 1`,
       [session.user.id]
     );
     const [latestMetric] = await queryRows<{
