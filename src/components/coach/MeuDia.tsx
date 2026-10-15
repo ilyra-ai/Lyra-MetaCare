@@ -15,11 +15,8 @@ import {
   ShieldAlert,
   Sparkles,
   Sunrise,
-  ThumbsDown,
-  ThumbsUp,
   TriangleAlert,
 } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { BotaoRegistroDoDia } from '@/components/metricas/RegistroDoDia';
 import { Button } from '@/components/ui/button';
@@ -40,6 +37,7 @@ import {
   TOM,
 } from './partes';
 import { LeituraDoDia } from './LeituraDoDia';
+import { ReflexaoDaNoite } from './ReflexaoDaNoite';
 import { EstadoSemDia, MolduraDoDia } from './SeuDiaCard';
 
 const SECOES = [
@@ -63,80 +61,6 @@ function ListaDeDicas({
         <DicaComPorque key={dica.texto} dica={dica} icone={icone} />
       ))}
     </ul>
-  );
-}
-
-function Avaliacao({
-  data,
-  inicial,
-}: {
-  data: string;
-  inicial: 1 | -1 | null;
-}) {
-  const [valor, setValor] = React.useState(inicial);
-  const [enviando, setEnviando] = React.useState(false);
-
-  const avaliar = async (util: boolean) => {
-    setEnviando(true);
-    try {
-      const resposta = await fetch('/api/coach/feedback', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data, util }),
-      });
-      if (!resposta.ok) {
-        const corpo = (await resposta.json().catch(() => null)) as {
-          error?: string;
-        } | null;
-        throw new Error(
-          corpo?.error ?? 'Não foi possível registrar a sua avaliação.'
-        );
-      }
-      setValor(util ? 1 : -1);
-      toast.success('Obrigado! A sua avaliação ajuda o coach a melhorar.');
-    } catch (erro) {
-      toast.error(erro instanceof Error ? erro.message : 'Falha ao avaliar.');
-    } finally {
-      setEnviando(false);
-    }
-  };
-
-  return (
-    <div
-      className="flex flex-wrap items-center gap-3"
-      role="group"
-      aria-labelledby="pergunta-da-avaliacao"
-    >
-      <p
-        id="pergunta-da-avaliacao"
-        className="text-sm font-medium text-foreground"
-      >
-        O seu dia de hoje te ajudou?
-      </p>
-      <Button
-        type="button"
-        variant={valor === 1 ? 'default' : 'outline'}
-        size="sm"
-        aria-pressed={valor === 1}
-        disabled={enviando}
-        onClick={() => void avaliar(true)}
-      >
-        <ThumbsUp aria-hidden="true" />
-        Sim
-      </Button>
-      <Button
-        type="button"
-        variant={valor === -1 ? 'default' : 'outline'}
-        size="sm"
-        aria-pressed={valor === -1}
-        disabled={enviando}
-        onClick={() => void avaliar(false)}
-      >
-        <ThumbsDown aria-hidden="true" />
-        Não
-      </Button>
-    </div>
   );
 }
 
@@ -481,12 +405,12 @@ export function MeuDia() {
         </section>
       ) : null}
 
+      <ReflexaoDaNoite
+        dataDoBriefing={briefing.data}
+        feedbackInicial={estado.feedback}
+      />
+
       <footer className="flex flex-col gap-4 border-t border-border pt-6">
-        <Avaliacao
-          key={briefing.data}
-          data={briefing.data}
-          inicial={estado.feedback}
-        />
         <p className="text-xs leading-relaxed text-muted-foreground">
           Preparado às {horaDoBriefing(briefing.geradoEm, briefing.local.fuso)}{' '}
           pelo motor do coach Lyra com o Panchang de {briefing.local.rotulo}, o

@@ -7,7 +7,7 @@ São orientações de bem-estar e autoconhecimento: não substituem avaliação 
 ## Onde aparece
 
 - **Painel:** cartão "Seu dia" no topo, com manchete, o resumo geral da leitura védica, anel de prontidão, faixa das 24 h com o "Agora" ao vivo, o período atual com as partes emocional, física e espiritual e os três focos do dia.
-- **Meu dia (`/dia`):** relógio radial das 24 h; a **leitura do dia**, na ordem: 1) resumo geral, 2) cada período (madrugada, manhã, tarde e noite) por tópicos, parte emocional, parte física (corpo) e parte espiritual, 3) pontos positivos e pontos negativos, 4) as dicas do mapa védico para a data, cada uma com o fundamento; depois os horários por período, focos e cuidados práticos, recomendações por área, o céu de hoje (Panchang, Tara Bala, dasha, dosha, ciclo) e a avaliação "o seu dia te ajudou?".
+- **Meu dia (`/dia`):** relógio radial das 24 h; a **leitura do dia**, na ordem: 1) resumo geral, 2) cada período (madrugada, manhã, tarde e noite) por tópicos, parte emocional, parte física (corpo) e parte espiritual, 3) pontos positivos e pontos negativos, 4) as dicas do mapa védico para a data, cada uma com o fundamento; depois os horários por período, focos e cuidados práticos, recomendações por área, o céu de hoje (Panchang, Tara Bala, dasha, dosha, ciclo) e a **reflexão da noite** (ver abaixo), junto com a avaliação "a leitura de hoje te ajudou?".
 - **Sino:** "Seu dia está pronto" e os alertas do dia (Chandrashtama e sinais precoces do corpo). Abrir o sino marca como lidas.
 - **Chat:** perguntas sobre o dia ("como vai ser meu dia?", "e a tarde?") respondem com os mesmos períodos e horários.
 - **Atalho:** `G` e depois `H` abre o "Meu dia" (os atalhos `G + letra` da paleta `Ctrl+K` passaram a funcionar).
@@ -46,6 +46,14 @@ Os fatos de cada período, calculados no meio do período e no lugar do dia:
 - **Do dia:** Panchang, Tara Bala, Chandra Bala, trânsitos de Júpiter (favorável nas casas 2, 5, 7, 9 e 11 a partir da Lua) e de Saturno (Sade Sati nas casas 12, 1 e 2; Ashtama Shani na 8ª), dasha vigente e a melhor janela.
 
 O motor da Lyra escreve a leitura com esses fatos; como o céu muda (tithi, nakshatra, dia da semana, horas, ascendente), cada dia sai diferente. Com um modelo de IA configurado (`src/lib/coach/leitura-ia.ts`), o modelo recebe os mesmos fatos e a leitura de ontem, para não repetir, e a resposta só é aceita com o formato completo (Zod), os quatro períodos, horários que existem no dia e resumo diferente do de ontem. Uma falha mantém a leitura da Lyra e uma nova tentativa acontece depois de 30 minutos. Trocar o modelo refaz o dia.
+
+## Reflexão da noite (tarefa 44)
+
+Fecha o ciclo do dia no "Meu dia" (`#reflexao`): a pessoa dá uma nota de 1 a 5 para a parte **emocional**, o **corpo** e a parte **espiritual** (as mesmas dimensões da leitura) e escreve uma frase opcional de até 280 caracteres. Na mesma seção fica a avaliação "a leitura de hoje te ajudou?".
+
+- API `/api/reflexao` (sessão obrigatória, só a própria conta): `GET` lê, `PUT` grava ou substitui, `DELETE` apaga. A data é conferida no servidor pelo fuso da cidade da pessoa (o mesmo "hoje" do coach) e aceita hoje e ontem, para quem reflete depois da meia-noite; qualquer outra data é recusada (400).
+- Validação compartilhada entre a tela e o servidor (`src/lib/reflexao/esquema.ts`): notas inteiras de 1 a 5, frase sem caracteres de controle e sem espaços nas pontas (vazia vira "sem frase"), campos desconhecidos recusados.
+- Tabela `daily_reflections` (migração `024_reflexao_da_noite.sql`), uma por pessoa e data, com `CHECK` das notas; entra na exportação LGPD e é apagada com a conta.
 
 ## Rotina automática
 

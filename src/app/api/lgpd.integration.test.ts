@@ -454,6 +454,11 @@ describe('portabilidade e exclusão da conta', () => {
        VALUES (?, ?, 'coach_dia', 'Seu dia está pronto', 'Dia de teste', 'dia:teste')`,
       [randomUUID(), pessoa.id]
     );
+    await executeStatement(
+      `INSERT INTO daily_reflections (id, user_id, reflection_date, emotional_score, body_score, spiritual_score, note)
+       VALUES (?, ?, CURDATE(), 4, 3, 5, 'Dia sereno')`,
+      [randomUUID(), pessoa.id]
+    );
     const resposta = await chamar(exportacao.GET, { usuario: pessoa });
     expect(resposta.status).toBe(200);
     expect(resposta.headers.get('content-disposition')).toMatch(
@@ -467,6 +472,7 @@ describe('portabilidade e exclusão da conta', () => {
       consentimentos: unknown[];
       daily_metrics: { steps: number }[];
       daily_briefings: { content: { manchete: string } }[];
+      daily_reflections: { note: string; emotional_score: number }[];
       user_notifications: { title: string }[];
     };
     expect(corpo.conta.email).toBe(pessoa.email);
@@ -476,6 +482,12 @@ describe('portabilidade e exclusão da conta', () => {
     expect(
       corpo.daily_briefings.map((linha) => linha.content.manchete)
     ).toEqual(['Dia de teste']);
+    expect(
+      corpo.daily_reflections.map((linha) => [
+        linha.note,
+        linha.emotional_score,
+      ])
+    ).toEqual([['Dia sereno', 4]]);
     expect(corpo.user_notifications.map((linha) => linha.title)).toEqual([
       'Seu dia está pronto',
     ]);
@@ -502,6 +514,11 @@ describe('portabilidade e exclusão da conta', () => {
     await executeStatement(
       `INSERT INTO user_notifications (id, user_id, kind, title, body, dedupe_key)
        VALUES (?, ?, 'coach_alerta', 'Alerta', 'x', 'alerta:teste')`,
+      [randomUUID(), pessoa.id]
+    );
+    await executeStatement(
+      `INSERT INTO daily_reflections (id, user_id, reflection_date, emotional_score, body_score, spiritual_score)
+       VALUES (?, ?, CURDATE(), 2, 2, 2)`,
       [randomUUID(), pessoa.id]
     );
     const { absolute } = resolveStoragePath('avatars', [pessoa.id, 'foto.png']);
@@ -540,6 +557,7 @@ describe('portabilidade e exclusão da conta', () => {
       ['profiles', 'id'],
       ['daily_metrics', 'user_id'],
       ['daily_briefings', 'user_id'],
+      ['daily_reflections', 'user_id'],
       ['user_notifications', 'user_id'],
       ['consent_records', 'user_id'],
       ['user_subscriptions', 'user_id'],
