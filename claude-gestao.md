@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `███████████████████░` **95%** |
+| Progresso          | `████████████████████` **98%** |
 | Tarefas totais     | 44                             |
-| 🟢 Finalizadas     | 42                             |
-| 🔵 Em andamento    | 1                              |
+| 🟢 Finalizadas     | 43                             |
+| 🔵 Em andamento    | 0                              |
 | 🔴 Bloqueadas      | 0                              |
 | ⚪ A iniciar       | 1                              |
 | Branch de trabalho | `main` (única permitida)       |
-| Última atualização | 2026-10-14                     |
+| Última atualização | 2026-10-15                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (42 ÷ 44 = 95,5%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (43 ÷ 44 = 97,7%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo); a tarefa 44 continua a iniciar.
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,9 +43,7 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                                        | O que está sendo realizado                                                                                                                                                                                                                                                                                                                |
-| --- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 43  | O que a IA deve fazer sozinha e ainda não faz | Auditoria de tudo o que a IA deveria fazer automaticamente (dicas, plano, scores, alertas precoces, metas, hábitos, `MapPlaceholder`) e implementação do que falta, incluindo o texto do coach pelo Gemini com a chave do servidor, só com consentimento explícito e revogável da pessoa, dados minimizados e o motor local como reserva. |
+Nenhuma tarefa em andamento.
 
 ### BLOQUEADAS
 
@@ -954,3 +952,19 @@ _Pedido do usuário em 2026-10-12: métricas reais e automáticas, IA como coach
   - Integração (`coach.integration.test.ts`, 7, e `lgpd`): sem cidade → `sem_local`; gera, reaproveita e refaz após o check-in sem duplicar briefing nem notificação; 401 e 403 pelo plano; avaliação só com briefing (404/400); notificações sem IDOR; rotina não gera antes das 3 h, gera às 7 h e não repete; rota externa 404/401/200; exportação e exclusão LGPD com as tabelas novas.
   - Navegador (build de produção; 1440 px claro, 390 px e 1440 px escuro): cartão e `/dia` sem estouro, sino "1 notificação nova" → lido ao abrir, check-in no diálogo refaz o dia (prontidão 90), avaliação gravada no banco, atalho `G H`, axe sem violações em todas as telas (o nome do botão do sino foi ajustado para começar pelo número visível, WCAG 2.5.3), sem erros de console. Log do servidor: `[coach:rotina] 1 dia(s) preparado(s), 0 falha(s)`.
   - `test` 323/323; `test:integration` 121/121; `test:launchers` 17/17; lint, format, types e `build` com exit 0 e sem avisos. Usuários de QA removidos.
+
+### 43 · O que a IA faz sozinha e leitura védica do "Seu dia" por qualquer modelo
+
+- **Status:** 🟢 finalizada · **Commits:** `ff0ad2c` (A: prontidão gravada, ausência de dado deixa de ser zero), `179a6f7` (B: metas automáticas, prazos e sequências), `9d030c4` (C: plano que se refaz, dica do dia pelos sinais, monitoramento real), `7cade87` (D: texto pelo Gemini com consentimento, substituído pela parte E a pedido do usuário), `52040a7` (E: leitura védica por qualquer modelo de IA, inclusive local) · **Push:** `main -> main` (confirmado; `52040a7` = `origin/main`)
+- **Pedido do usuário (2026-10-15):** o "Seu dia" pode ser escrito por qualquer modelo de IA, inclusive local (Ollama, LM Studio, Jan e outros via llama.cpp), sem consentimento separado, diferente a cada dia, com: 1) resumo geral; 2) cada período por parte emocional, física (corpo) e espiritual (escolha do usuário: cada período, não só a manhã); 3) pontos positivos e negativos; 4) dicas do mapa védico para a data.
+- **Implementado (parte E):**
+  - Leitura védica (`src/lib/coach/leitura-vedica.ts`, `leitura-conhecimento.ts`, `src/lib/astrology/horas.ts`): fatos por período (Lua, Tara, casa a partir da Lua natal, ascendente do momento, horas planetárias, relógio do Ayurveda) e do dia (Panchang, trânsitos de Júpiter e Saturno, dasha, melhor janela); texto do motor da Lyra que muda com o céu.
+  - Modelo de IA (`src/lib/ai/cliente-de-ia.ts`, `provedores-catalogo.ts`, `provedor-da-plataforma.ts`, `src/lib/coach/leitura-ia.ts`): 18 opções (locais e em nuvem, APIs OpenAI-compatível, Gemini e Anthropic); saída estruturada por JSON Schema com recaída automática; validação Zod, períodos completos, horários reais, sem repetição entre períodos e diferente de ontem; reserva na leitura da Lyra e nova tentativa após 30 min.
+  - Admin → Modelos de IA (`ProvedorDeIa.tsx`; `GET/PUT /api/admin/ia`, `POST /api/admin/ia/modelos`, `POST /api/admin/ia/testar`); chave cifrada (AES-256-GCM, HKDF do `AUTH_SECRET`) em `ai_provider_settings` (migração `023`), fora da API genérica.
+  - Removidos (prova por grep): consentimento `coach_external_ai`, `/api/perfil/coach-ia`, `CoachIaExterna`, `src/lib/coach/gemini.ts`, `GEMINI_API_KEY` e `ai_config.model_name` (lista fixa `lyra-local-*`); restam só as migrações históricas.
+  - Chat sem BYOK usa o modelo da plataforma apenas quando é local; telas: "Leitura do dia" no Meu dia e tópicos do período atual no painel; política de privacidade 2026-10-15.
+- **Evidências:**
+  - `test` 366/366; `test:integration` 131/131 (servidor HTTP real compatível com a OpenAI em `tests/support`); `test:launchers` OK; lint, format, types e `build` com exit 0.
+  - Navegador (produção, 1440 px claro e 390 px escuro): admin com os provedores e a URL padrão do Ollama; Meu dia com resumo, 4 abas com os 3 tópicos, pontos +5/−3 e 5 dicas; painel com os tópicos do período atual; axe sem violações, sem estouro e sem erros de console.
+  - Modelo local real (llama.cpp `llama_cpp.server` + Qwen2.5 1.5B GGUF, 2 CPUs): buscar modelos, testar conexão (3–5 s) e salvar pela tela; o servidor recusou `json_schema` com HTTP 500 e o cliente passou para `json_object` com esquema, que gerou um JSON válido (Zod ok, 188–217 s). Na jornada completa pelo app (`/api/coach/hoje`, 220 s), a resposta desse modelo minúsculo foi descartada por repetir textos entre períodos e a pessoa recebeu a leitura da Lyra, como projetado.
+- **Limite do ambiente:** o sandbox (2 CPUs, memória limitada) só comporta um modelo de 1,5B, que tem qualidade insuficiente; o processo do modelo foi encerrado por falta de memória quando rodava junto com o navegador. A leitura aceita por um modelo maior (7B ou mais) fica para validar na máquina do usuário.
