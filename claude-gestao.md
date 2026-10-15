@@ -19,18 +19,18 @@
 
 ## Tópico 1 · Andamento Geral
 
-| Indicador          | Valor                          |
-| ------------------ | ------------------------------ |
-| Progresso          | `████████████████████` **98%** |
-| Tarefas totais     | 47                             |
-| 🟢 Finalizadas     | 46                             |
-| 🔵 Em andamento    | 1                              |
-| 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 0                              |
-| Branch de trabalho | `main` (única permitida)       |
-| Última atualização | 2026-10-15                     |
+| Indicador          | Valor                           |
+| ------------------ | ------------------------------- |
+| Progresso          | `████████████████████` **100%** |
+| Tarefas totais     | 47                              |
+| 🟢 Finalizadas     | 47                              |
+| 🔵 Em andamento    | 0                               |
+| 🔴 Bloqueadas      | 0                               |
+| ⚪ A iniciar       | 0                               |
+| Branch de trabalho | `main` (única permitida)        |
+| Última atualização | 2026-10-15                      |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (46 ÷ 47 = 97,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo); o design da tarefa 44 foi aprovado pelo usuário e a implementação está em andamento.
+> Cálculo: tarefas finalizadas ÷ tarefas totais (47 ÷ 47 = 100%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,9 +43,7 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa                          | Situação                                                                                                                                                                                                                                                                                                            |
-| --- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 44  | Diferenciais premium de 2026/27 | Design aprovado pelo usuário em 2026-10-15 ("adorei, pode fazer"). Partes: Aura do dia, Reflexão da noite, Respiração guiada, Sua semana e Agenda no calendário (.ics e assinatura privada), cada uma com commit e push próprios. A identidade oficial pedida junto com a aprovação virou a tarefa 47 (finalizada). |
+Nenhuma tarefa em andamento.
 
 ### BLOQUEADAS
 
@@ -966,6 +964,28 @@ Nenhuma tarefa a iniciar.
   - Navegador (produção, 1440 px claro e 390 px escuro): admin com os provedores e a URL padrão do Ollama; Meu dia com resumo, 4 abas com os 3 tópicos, pontos +5/−3 e 5 dicas; painel com os tópicos do período atual; axe sem violações, sem estouro e sem erros de console.
   - Modelo local real (llama.cpp `llama_cpp.server` + Qwen2.5 1.5B GGUF, 2 CPUs): buscar modelos, testar conexão (3–5 s) e salvar pela tela; o servidor recusou `json_schema` com HTTP 500 e o cliente passou para `json_object` com esquema, que gerou um JSON válido (Zod ok, 188–217 s). Na jornada completa pelo app (`/api/coach/hoje`, 220 s), a resposta desse modelo minúsculo foi descartada por repetir textos entre períodos e a pessoa recebeu a leitura da Lyra, como projetado.
 - **Limite do ambiente:** o sandbox (2 CPUs, memória limitada) só comporta um modelo de 1,5B, que tem qualidade insuficiente; o processo do modelo foi encerrado por falta de memória quando rodava junto com o navegador. A leitura aceita por um modelo maior (7B ou mais) fica para validar na máquina do usuário.
+
+### 44 · Diferenciais premium de 2026/27 (design aprovado)
+
+- **Status:** 🟢 finalizada · **Commits:** `b8cfea7` (A: reflexão da noite), `371f3b9` (B: respiração guiada), `1824b07` (C: agenda no calendário), `5037045` (D: sua semana), `612fd8f` (E: aura do dia e README) · **Push:** `main -> main` (cada um confirmado por `git ls-remote`)
+- **Pedido do usuário (2026-10-15):** implementar o design aprovado ("adorei, pode fazer") a partir da prancha com os cinco diferenciais, pesquisados em tendências de outubro de 2026.
+- **Implementado:**
+  - **Reflexão da noite:** `daily_reflections` (migração 024), `/api/reflexao` (GET, PUT, DELETE) com data conferida no servidor (hoje e ontem), schema compartilhado, seção no Meu dia junto da avaliação da leitura.
+  - **Respiração guiada:** técnicas 4-7-8, quadrada e Nadi Shodhana com posição calculada pelo relógio, recomendação explicável, `/respiracao` com orbe, voz, vibração, Wake Lock e modo sem movimento; `breathing_sessions` (migração 025) e soma em `meditation_minutes` com recálculo de metas e sequências.
+  - **Agenda no calendário:** gerador iCalendar próprio (RFC 5545/7986), `.ics` de hoje, link privado de 7 dias (`calendar_feeds`, migração 026: SHA-256 + AES-256-GCM, troca e revogação, 404 uniforme, limite por link), política de privacidade atualizada.
+  - **Sua semana:** `/api/semana` e `/semana` com indicadores, gráfico com ★ do Tara favorável, metas dia a dia, reflexões, céu da semana, tabela e percepções só com 2+ dias em cada grupo.
+  - **Aura do dia:** halo do tom no anel da prontidão, selo da Lua e ações Respirar, Levar para o calendário e Reflexão da noite.
+  - Navegação com "Sua semana" e "Respiração" (também em configurações salvas antes delas); LGPD com as três tabelas novas na exportação e na exclusão.
+- **Causas raiz tratadas no caminho:**
+  - Orbe nascia cheio: a transição CSS longa não tinha valor de partida; a escala passou a ser calculada pelo relógio.
+  - Recomendação noturna sugeria respiração que "desperta": regra própria das 18 h às 2 h.
+  - Contagem dupla da prática: a respiração já entra em `meditation_minutes`, então a prática do dia é esse total (`praticaDoDia`).
+  - Rótulos: "Sáb, 10 De Out" por `capitalize` e unidade colada ao valor para leitores de tela.
+- **Evidências:** `test` 401/401, `test:integration` 154/154, `test:launchers` 17/17, lint, format, types e `build` com exit 0; QA no navegador (build de produção) de cada parte em 1440 px claro e 390 px escuro, com axe sem violações; sessão de respiração cronometrada (64,2 s para 64 s); `.ics` e feed validados pela biblioteca `icalendar` do Python, com os horários reais de São Paulo em 15/10/2026 (Brahma 04:02–04:48, Abhijit 11:27–12:17, Rahu Kalam 13:27–15:01, pôr do sol 18:11).
+- **Limites e observações:**
+  - Google Agenda e Outlook na nuvem só leem o link de assinatura com o app publicado num endereço da internet (`APP_BASE_URL`); em `localhost` a tela avisa e só o calendário do mesmo computador consegue assinar.
+  - Os formatos de atalho direto para Google e Outlook não têm documentação oficial; por isso a tela oferece copiar o link, `webcal://` e os passos de cada app.
+  - Observado na QA: quando o roteiro recarrega a página no meio de uma busca do sino (`/api/notificacoes`, código anterior à tarefa), o aborto da requisição (`ERR_ABORTED`) aparece como `console.error`. Não afeta as telas da tarefa 44; fica registrado para tratamento próprio.
 
 ### 45 · Verificação dos launchers `run.py` (WSL2 Ubuntu) e `run.sh` (Windows 11) após as tarefas 42 e 43
 
