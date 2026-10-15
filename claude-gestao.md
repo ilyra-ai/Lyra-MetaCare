@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `████████████████████` **98%** |
-| Tarefas totais     | 44                             |
-| 🟢 Finalizadas     | 43                             |
-| 🔵 Em andamento    | 0                              |
+| Progresso          | `███████████████████░` **96%** |
+| Tarefas totais     | 46                             |
+| 🟢 Finalizadas     | 44                             |
+| 🔵 Em andamento    | 1                              |
 | 🔴 Bloqueadas      | 0                              |
 | ⚪ A iniciar       | 1                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-15                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (43 ÷ 44 = 97,7%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo); a tarefa 44 continua a iniciar.
+> Cálculo: tarefas finalizadas ÷ tarefas totais (44 ÷ 46 = 95,7%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,9 @@
 
 ### ANDAMENTO
 
-Nenhuma tarefa em andamento.
+| Nº  | Tarefa            | O que está sendo realizado                                                                                                    |
+| --- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| 46  | README atualizado | Revisão do README.md contra o sistema real (tarefas 40 a 45): funcionalidades, IA local, launchers, variáveis e documentação. |
 
 ### BLOQUEADAS
 
@@ -968,3 +970,14 @@ _Pedido do usuário em 2026-10-12: métricas reais e automáticas, IA como coach
   - Navegador (produção, 1440 px claro e 390 px escuro): admin com os provedores e a URL padrão do Ollama; Meu dia com resumo, 4 abas com os 3 tópicos, pontos +5/−3 e 5 dicas; painel com os tópicos do período atual; axe sem violações, sem estouro e sem erros de console.
   - Modelo local real (llama.cpp `llama_cpp.server` + Qwen2.5 1.5B GGUF, 2 CPUs): buscar modelos, testar conexão (3–5 s) e salvar pela tela; o servidor recusou `json_schema` com HTTP 500 e o cliente passou para `json_object` com esquema, que gerou um JSON válido (Zod ok, 188–217 s). Na jornada completa pelo app (`/api/coach/hoje`, 220 s), a resposta desse modelo minúsculo foi descartada por repetir textos entre períodos e a pessoa recebeu a leitura da Lyra, como projetado.
 - **Limite do ambiente:** o sandbox (2 CPUs, memória limitada) só comporta um modelo de 1,5B, que tem qualidade insuficiente; o processo do modelo foi encerrado por falta de memória quando rodava junto com o navegador. A leitura aceita por um modelo maior (7B ou mais) fica para validar na máquina do usuário.
+
+### 45 · Verificação dos launchers `run.py` (WSL2 Ubuntu) e `run.sh` (Windows 11) após as tarefas 42 e 43
+
+- **Status:** 🟢 finalizada · **Commit:** `a0b2eac` · **Push:** `56b6a42..a0b2eac main -> main` (confirmado por `git ls-remote`)
+- **Pedido do usuário (2026-10-15):** verificar o `run.py` (WSL2 Ubuntu) e o launcher do Windows 11. O repositório não tem `run.bat`; o usuário confirmou que se referia aos launchers existentes (`run.sh` no Git Bash e `run_windows.py` no PowerShell/CMD).
+- **Causa raiz encontrada:** o `.env.local` continuava com variáveis que o app não usa mais (`GEMINI_API_KEY`, removida na tarefa 43, e `APP_PORT`, dos launchers antigos) e nenhum diagnóstico avisava, deixando um segredo esquecido. Agora o `doctor` do `run.py` e do `run.sh` e o `pnpm env:init` avisam, sem apagar a linha (a chave pode precisar ser revogada no provedor antes).
+- **Evidências (Ubuntu 24.04, Python 3.13, Node 24.21, Docker 29.8, Compose 5.5, 25 migrations):**
+  - `run.py`: `doctor` (Docker parado → erro com correção, exit 1); `fix` (3 variáveis novas acrescentadas sem alterar valores); `up` com `/api/health`, `/`, `/login` e login do admin; segundo `up` sem duplicar processo; `status`; `logs app`; `stop app` com porta liberada; `up --prod`; porta 3000 ocupada por terceiro (aplicação na 3001, PID do terceiro intacto); `up` com Docker parado (exit 1); reinício com o banco existente (dados preservados); `stop`.
+  - `run.sh` (Linux, bash 5.2): `doctor`, `up`, segundo `up` idempotente, `status`, `logs app`, `stop app`, `up --prod`; parada cruzada (o `run.py stop` encerrou a aplicação do `run.sh` e o `run.sh status` mostrou tudo parado).
+  - Estático: `bash -n` e `shellcheck -S warning` sem achados; `ruff check`, `ruff format --check` e `mypy --strict` (venv do launcher) sem achados no `run.py` e no `run_windows.py`; `test:launchers` 17/17; `test` 367/367; `test:integration` 131/131; lint, format, types e `build` com exit 0.
+- **Limite do ambiente:** a execução real no Windows 11 (Git Bash e PowerShell) depende de uma máquina Windows; o sandbox é Linux.
