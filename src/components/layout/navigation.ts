@@ -3,6 +3,7 @@ import {
   BarChart3,
   BrainCircuit,
   CalendarDays,
+  CalendarRange,
   ClipboardList,
   Compass,
   Gem,
@@ -60,6 +61,15 @@ export const navigationItems: NavigationDefinition[] = [
     section: 'Principal',
     sectionKey: 'principal',
     shortcut: 'G H',
+  },
+  {
+    href: '/semana',
+    label: 'Sua semana',
+    description:
+      'Retrospectiva dos últimos 7 dias: prontidão, sono, prática, reflexões, metas e o céu de cada dia.',
+    icon: CalendarRange,
+    section: 'Principal',
+    sectionKey: 'principal',
   },
   {
     href: '/respiracao',

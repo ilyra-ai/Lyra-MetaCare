@@ -360,6 +360,13 @@ const defaultAppPageConfig: AppPageConfig = {
         visible: true,
       },
       {
+        href: '/semana',
+        label: 'Sua semana',
+        description:
+          'Retrospectiva dos últimos 7 dias: prontidão, sono, prática, reflexões, metas e o céu de cada dia.',
+        visible: true,
+      },
+      {
         href: '/respiracao',
         label: 'Respiração',
         description:

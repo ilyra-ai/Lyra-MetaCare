@@ -54,6 +54,17 @@ Fecha o ciclo do dia no "Meu dia" (`#reflexao`): a pessoa dá uma nota de 1 a 5 
 - API `/api/reflexao` (sessão obrigatória, só a própria conta): `GET` lê, `PUT` grava ou substitui, `DELETE` apaga. A data é conferida no servidor pelo fuso da cidade da pessoa (o mesmo "hoje" do coach) e aceita hoje e ontem, para quem reflete depois da meia-noite; qualquer outra data é recusada (400).
 - Validação compartilhada entre a tela e o servidor (`src/lib/reflexao/esquema.ts`): notas inteiras de 1 a 5, frase sem caracteres de controle e sem espaços nas pontas (vazia vira "sem frase"), campos desconhecidos recusados.
 - Tabela `daily_reflections` (migração `024_reflexao_da_noite.sql`), uma por pessoa e data, com `CHECK` das notas; entra na exportação LGPD e é apagada com a conta.
+- As notas e as frases alimentam a retrospectiva "Sua semana" (médias, frases e a percepção sobre prática e nota emocional).
+
+## Sua semana (tarefa 44)
+
+Página `/semana` (item "Sua semana" da navegação) e cartão no "Meu dia". Cobre os últimos 7 dias locais da pessoa (hoje e os 6 anteriores); a semana anterior entra só para a variação.
+
+- **Dados** (`src/lib/semana/servico.ts`, `GET /api/semana`): prontidão, sono e meditação de `daily_metrics`, minutos de respiração guiada, reflexões da noite, metas automáticas diárias (peso fica de fora) e o Tara Bala de cada dia, calculado pelo mapa natal e pelo Panchang da cidade (sem mapa, o céu não aparece e a tela pede os dados de nascimento).
+- **Resumo:** médias só com os dias medidos (dia sem registro é "—", nunca zero); a variação contra a semana anterior só aparece com pelo menos 2 dias medidos em cada semana.
+- **Metas dia a dia:** em quantos dias com registro cada meta foi cumprida, respeitando a direção e a unidade da meta.
+- **Percepções** (`src/lib/semana/analise.ts`, função pura): Tara favorável × prontidão, noites de 7 h ou mais × prontidão e prática (meditação ou respiração) × nota emocional da reflexão. Cada uma só aparece com pelo menos 2 dias em cada grupo e diferença relevante (5 pontos de prontidão ou 0,5 na reflexão), diz em quantos dias se baseia e também aparece quando o padrão vai contra o esperado. A tela lembra que são padrões de uma semana, não conclusões.
+- **Gráfico:** barras finas da prontidão em um só tom, ★ nos dias de Tara favorável; cada barra é um botão (toque ou teclado) que mostra o detalhe do dia, e a tabela "Dia a dia" traz os mesmos dados em texto.
 
 ## Respiração guiada (tarefa 44)
 

@@ -21,6 +21,7 @@ import {
 import { JanelasDeHoje } from '@/components/calendario/JanelasDeHoje';
 import { BotaoRegistroDoDia } from '@/components/metricas/RegistroDoDia';
 import { CartaoDeRespiracao } from '@/components/respiracao/CartaoDeRespiracao';
+import { CartaoDaSemana } from '@/components/semana/CartaoDaSemana';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCoachDoDia } from '@/hooks/use-coach-do-dia';
@@ -272,9 +273,12 @@ export function MeuDia() {
 
       <LeituraDoDia briefing={briefing} agora={agora} />
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         <JanelasDeHoje agora={agora} />
         <CartaoDeRespiracao />
+        <div className="md:col-span-2 xl:col-span-1">
+          <CartaoDaSemana />
+        </div>
       </div>
 
       <section

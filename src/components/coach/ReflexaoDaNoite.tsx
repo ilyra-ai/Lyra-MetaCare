@@ -238,7 +238,7 @@ function FormularioDaReflexao({
         );
       }
       const novo = (await resposta.json()) as EstadoDaReflexao;
-      toast.success('Reflexão guardada.');
+      toast.success('Reflexão guardada. Ela entra na sua semana.');
       avisarReflexaoAtualizada();
       onAtualizada(novo);
     } catch (falha) {
@@ -341,7 +341,8 @@ function FormularioDaReflexao({
                 <AlertDialogTitle>Apagar esta reflexão?</AlertDialogTitle>
                 <AlertDialogDescription>
                   As notas e a frase de {dataPorExtenso(existente.data)} serão
-                  apagadas. Você pode registrar de novo depois.
+                  apagadas e saem da sua semana. Você pode registrar de novo
+                  depois.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -428,7 +429,8 @@ export function ReflexaoDaNoite({
             Como foi o seu dia?
           </h3>
           <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-            Feche o ciclo com as mesmas três dimensões da leitura de hoje.
+            Feche o ciclo com as mesmas três dimensões da leitura de hoje. As
+            notas entram na retrospectiva da sua semana.
           </p>
         </div>
         {hoje && ontem ? (
