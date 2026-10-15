@@ -8,6 +8,8 @@ import { dataLocal } from '@/lib/astrology/tempo';
 import { listaDeTextos } from '@/lib/json-values';
 import { queryRows } from '@/lib/mysql/pool';
 
+import { geminiDisponivel } from './gemini';
+
 /**
  * Entradas reais do coach de uma pessoa em uma data: perfil (nascimento,
  * moradia, ciclo, objetivos) e as métricas de hoje e dos sete dias
@@ -67,6 +69,8 @@ export interface ContextoDoCoach {
     nome: string | null;
     objetivos: string[];
     ciclo: CicloDoPerfil | null;
+    /** Consentimento ativo para o texto do coach pelo Gemini. */
+    iaExterna?: boolean;
   };
   hoje: MetricasDoCoach | null;
   /** Sete dias anteriores a `data`, do mais recente ao mais antigo. */
@@ -85,6 +89,7 @@ interface LinhaDaPessoa {
   menstrual_cycle_length: number | null;
   menstrual_period_length: number | null;
   menstrual_life_stage: string | null;
+  coach_external_ai_since: string | null;
 }
 
 function numeroOuNulo(valor: unknown) {
@@ -122,7 +127,8 @@ export async function lerContextoDoCoach(
   const data = dataLocal(agora, lugar.fuso);
   const [pessoa] = await queryRows<LinhaDaPessoa>(
     `SELECT first_name, goals, tracks_menstrual_cycle, last_menstrual_period,
-            menstrual_cycle_length, menstrual_period_length, menstrual_life_stage
+            menstrual_cycle_length, menstrual_period_length, menstrual_life_stage,
+            coach_external_ai_since
        FROM profiles WHERE id = ? LIMIT 1`,
     [userId]
   );
@@ -154,6 +160,7 @@ export async function lerContextoDoCoach(
               lifeStage: pessoa.menstrual_life_stage,
             }
           : null,
+        iaExterna: Boolean(pessoa?.coach_external_ai_since),
       },
       hoje: metricas.find((m) => m.date === data) ?? null,
       historico: metricas.filter((m) => m.date < data),
@@ -171,6 +178,8 @@ export function hashDasEntradas(contexto: ContextoDoCoach) {
         nascimento: contexto.perfil.nascimento,
         lugar: contexto.perfil.localDoDia,
         pessoa: contexto.pessoa,
+        // Ligar a chave do servidor também refaz o dia de quem consentiu.
+        geminiDisponivel: geminiDisponivel(),
         hoje: contexto.hoje,
         historico: contexto.historico,
       })

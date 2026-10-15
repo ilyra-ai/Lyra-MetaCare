@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { dataLocal } from '@/lib/astrology/tempo';
 import { executarRotinaDoCoach } from '@/lib/coach/servico';
@@ -9,7 +9,9 @@ import { executeStatement, queryRows } from '@/lib/mysql/pool';
 import { contar, criarUsuario } from '../../../tests/integration/fixtures';
 import { chamar } from '../../../tests/integration/http';
 
+import * as consentimentos from './account/consents/route';
 import * as feedback from './coach/feedback/route';
+import * as coachIa from './perfil/coach-ia/route';
 import * as hoje from './coach/hoje/route';
 import * as rotina from './coach/rotina/route';
 import * as registro from './metricas/dia/route';
@@ -321,5 +323,94 @@ describe('rotina diária do coach', () => {
       falhas: 0,
       notificacoesApagadas: expect.any(Number),
     });
+  });
+});
+
+describe('texto do coach pelo Gemini (consentimento revogável)', () => {
+  afterEach(() => {
+    delete process.env.GEMINI_API_KEY;
+    vi.unstubAllGlobals();
+  });
+
+  it('sem chave no servidor não ativa; com chave registra o aceite e usa o Gemini', async () => {
+    const pessoa = await pessoaComCidade('CoachIa');
+    const ler = async () =>
+      (await chamar(coachIa.GET, { usuario: pessoa })).json as {
+        ativo: boolean;
+        disponivel: boolean;
+      };
+    const ativar = (ativo: boolean) =>
+      chamar(coachIa.PATCH, {
+        method: 'PATCH',
+        body: { ativo },
+        usuario: pessoa,
+      });
+
+    expect(await ler()).toMatchObject({ ativo: false, disponivel: false });
+    expect((await ativar(true)).status).toBe(503);
+
+    process.env.GEMINI_API_KEY = 'chave-de-teste';
+    expect((await ativar(true)).status).toBe(200);
+    expect(await ler()).toMatchObject({ ativo: true, disponivel: true });
+    expect(
+      await contar(
+        `SELECT COUNT(*) AS total FROM consent_records
+          WHERE user_id = ? AND consent_type = 'coach_external_ai'`,
+        [pessoa.id]
+      )
+    ).toBe(1);
+
+    // O "Gemini" deste teste devolve um texto válido sem horários novos.
+    const chamadas: string[] = [];
+    vi.stubGlobal('fetch', async (url: string, init?: RequestInit) => {
+      chamadas.push(String(init?.body ?? ''));
+      return new Response(
+        JSON.stringify({
+          candidates: [
+            {
+              content: {
+                parts: [
+                  {
+                    text: JSON.stringify({
+                      manchete: 'Seu dia, com calma e no tempo certo',
+                      resumo:
+                        'Hoje vale escolher bem os horários e cuidar do corpo, com pausas ao longo do dia e uma noite tranquila.',
+                      sugestoes: {},
+                    }),
+                  },
+                ],
+              },
+            },
+          ],
+        }),
+        { status: 200 }
+      );
+    });
+    const comIa = (await chamar(hoje.GET, { usuario: pessoa })).json as Estado;
+    expect(comIa.estado === 'pronto' && comIa.briefing.origem).toBe('gemini');
+    expect(comIa.estado === 'pronto' && comIa.briefing.manchete).toBe(
+      'Seu dia, com calma e no tempo certo'
+    );
+    // O pedido não leva nome, e-mail nem cidade.
+    expect(chamadas).toHaveLength(1);
+    expect(chamadas[0]).not.toContain('CoachIa');
+    expect(chamadas[0]).not.toContain(pessoa.email);
+    expect(chamadas[0]).not.toContain('São Paulo');
+
+    // Revogar vale na hora: o dia é refeito só com o motor local.
+    expect((await ativar(false)).status).toBe(200);
+    const semIa = (await chamar(hoje.GET, { usuario: pessoa })).json as Estado;
+    expect(semIa.estado === 'pronto' && semIa.briefing.origem).toBe('local');
+    expect(chamadas).toHaveLength(1);
+  });
+
+  it('a rota genérica de consentimentos não aceita o da IA externa', async () => {
+    const pessoa = await criarUsuario('patient', 'ConsentimentoIa');
+    const resposta = await chamar(consentimentos.POST, {
+      method: 'POST',
+      body: { types: ['coach_external_ai'] },
+      usuario: pessoa,
+    });
+    expect(resposta.status).toBe(400);
   });
 });

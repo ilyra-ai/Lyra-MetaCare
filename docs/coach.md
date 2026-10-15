@@ -44,7 +44,8 @@ As mesmas entradas geram sempre o mesmo briefing (testes em `src/lib/coach/coach
 ## Dados e privacidade
 
 - Tabelas `daily_briefings` e `user_notifications` (migração `019_coach_diario.sql`), apagadas em cascata com a conta e incluídas na exportação LGPD.
-- Tudo é calculado nos motores da própria Lyra: nenhum dado vai para serviço externo. No chat com a chave própria do Gemini (BYOK), o resumo do dia segue junto da análise local, como já descrito na política de privacidade.
+- Por padrão, tudo é calculado nos motores da própria Lyra e nenhum dado vai para serviço externo. No chat com a chave própria do Gemini (BYOK), o resumo do dia segue junto da análise local, como descrito na política de privacidade.
+- Opcional: com o consentimento específico e revogável da pessoa, o texto do dia é reescrito pelo Google Gemini com a chave do servidor, com dados minimizados e os horários sempre da Lyra. Detalhes em [`ia-automatica.md`](./ia-automatica.md).
 - Plano: o coach é o recurso `ai_tips_feed` (rota, página, cartão, rotina e contexto do chat respeitam o plano).
 
 ## Limites conhecidos

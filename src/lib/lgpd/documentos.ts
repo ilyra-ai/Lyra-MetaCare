@@ -10,6 +10,7 @@
 export const VERSAO_POLITICA_DE_PRIVACIDADE = '2026-10-14';
 export const VERSAO_TERMOS_DE_USO = '2026-10-12';
 export const VERSAO_CONSENTIMENTO_DADOS_DE_SAUDE = '2026-10-12';
+export const VERSAO_CONSENTIMENTO_COACH_IA_EXTERNA = '2026-10-14';
 
 export const TIPOS_DE_CONSENTIMENTO = [
   'terms_of_use',
@@ -17,6 +18,9 @@ export const TIPOS_DE_CONSENTIMENTO = [
   // Art. 11, I, da LGPD: dado de saúde é dado pessoal sensível e exige
   // consentimento específico e destacado para a finalidade informada.
   'health_data_processing',
+  // Opcional e revogável: o texto do "Seu dia" reescrito pelo Google Gemini
+  // com a chave do servidor, com dados minimizados.
+  'coach_external_ai',
 ] as const;
 
 export type TipoDeConsentimento = (typeof TIPOS_DE_CONSENTIMENTO)[number];
@@ -25,12 +29,14 @@ export const VERSAO_POR_TIPO: Record<TipoDeConsentimento, string> = {
   terms_of_use: VERSAO_TERMOS_DE_USO,
   privacy_policy: VERSAO_POLITICA_DE_PRIVACIDADE,
   health_data_processing: VERSAO_CONSENTIMENTO_DADOS_DE_SAUDE,
+  coach_external_ai: VERSAO_CONSENTIMENTO_COACH_IA_EXTERNA,
 };
 
 export const ROTULO_DO_CONSENTIMENTO: Record<TipoDeConsentimento, string> = {
   terms_of_use: 'Termos de uso',
   privacy_policy: 'Política de privacidade',
   health_data_processing: 'Tratamento de dados de saúde',
+  coach_external_ai: 'Texto do coach por IA externa (Google Gemini)',
 };
 
 export const ROTA_POLITICA_DE_PRIVACIDADE = '/privacidade';

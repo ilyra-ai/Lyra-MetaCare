@@ -69,7 +69,8 @@ export default function PoliticaDePrivacidadePage() {
             os dias a partir do seu mapa védico, do céu da sua cidade e das suas
             métricas, a sua resposta a &quot;isso te ajudou?&quot; e as
             notificações do sino. É calculado nos motores da própria Lyra, sem
-            envio a serviços externos.
+            envio a serviços externos, salvo se você ativar o texto do coach por
+            IA externa (veja &quot;Com quem compartilhamos&quot;).
           </li>
           <li>
             <strong>Dados de saúde e bem-estar (dados sensíveis):</strong>{' '}
@@ -164,6 +165,17 @@ export default function PoliticaDePrivacidadePage() {
               sua pergunta e a análise local dos seus indicadores seguem para o
               Gemini para compor a resposta. Sem a sua chave, tudo é calculado
               nos motores da própria Lyra.
+            </li>
+            <li>
+              <strong>Google Gemini, para o texto do coach</strong>, somente se
+              você ativar essa opção em Perfil → Privacidade e dados
+              (consentimento específico, que você pode revogar a qualquer
+              momento, art. 8º, § 5º, e art. 11, I): o texto já pronto do seu
+              dia (manchete, resumo, sugestões e horários dos períodos, focos,
+              cuidados e os nomes do céu do dia) segue para o Gemini reescrever
+              com uma linguagem mais natural. Não seguem o seu nome, e-mail,
+              cidade, data de nascimento, métricas, ciclo menstrual nem sinais
+              do corpo. Os horários e as regras continuam sendo da Lyra.
             </li>
             <li>
               <strong>Monitoramento de erros (Sentry)</strong>, quando

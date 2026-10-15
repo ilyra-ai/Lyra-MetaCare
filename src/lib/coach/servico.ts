@@ -12,6 +12,7 @@ import { recursoHabilitado } from '@/lib/plans/service';
 
 import { hashDasEntradas, lerContextoDoCoach } from './contexto';
 import { gerarBriefingLocal } from './gerador-local';
+import { geminiDisponivel, refinarComGemini } from './gemini';
 import type { BriefingDoDia, EstadoDoCoach } from './tipos';
 
 /**
@@ -119,6 +120,12 @@ export async function obterBriefingDoDia(
       return { estado: 'sem_nascer_do_sol' };
     }
     throw error;
+  }
+
+  // Texto pelo Gemini só com o consentimento da pessoa e a chave do
+  // servidor; qualquer falha mantém o texto do motor local.
+  if (contexto.pessoa.iaExterna && geminiDisponivel()) {
+    briefing = (await refinarComGemini(briefing)) ?? briefing;
   }
 
   await executeStatement(

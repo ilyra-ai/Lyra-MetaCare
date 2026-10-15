@@ -487,9 +487,12 @@ export function MeuDia() {
         <p className="text-xs leading-relaxed text-muted-foreground">
           Preparado às {horaDoBriefing(briefing.geradoEm, briefing.local.fuso)}{' '}
           pelo motor do coach Lyra com o Panchang de {briefing.local.rotulo}, o
-          seu mapa védico e os sinais que você registrou. São orientações de
-          bem-estar e autoconhecimento: não substituem avaliação profissional de
-          saúde.
+          seu mapa védico e os sinais que você registrou
+          {briefing.origem === 'gemini'
+            ? '; o texto foi reescrito pelo Google Gemini, com o seu consentimento (os horários são da Lyra)'
+            : ''}
+          . São orientações de bem-estar e autoconhecimento: não substituem
+          avaliação profissional de saúde.
         </p>
       </footer>
     </div>

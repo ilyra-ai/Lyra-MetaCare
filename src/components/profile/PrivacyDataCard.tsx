@@ -25,6 +25,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/context/AuthContext';
+
+import { CoachIaExterna } from './CoachIaExterna';
 import {
   FRASE_DE_EXCLUSAO,
   ROTA_POLITICA_DE_PRIVACIDADE,
@@ -97,9 +99,15 @@ export function PrivacyDataCard() {
     return encerrar;
   }, []);
 
+  // Recarrega a lista quando um consentimento opcional muda (coach por IA).
+  const [versaoDosConsentimentos, setVersaoDosConsentimentos] =
+    React.useState(0);
   React.useEffect(() => {
     let ativo = true;
-    fetch('/api/account/consents', { credentials: 'include' })
+    fetch('/api/account/consents', {
+      credentials: 'include',
+      cache: 'no-store',
+    })
       .then(async (resposta) => {
         if (!resposta.ok) {
           throw new Error(`HTTP ${resposta.status}`);
@@ -116,7 +124,7 @@ export function PrivacyDataCard() {
     return () => {
       ativo = false;
     };
-  }, []);
+  }, [versaoDosConsentimentos]);
 
   async function baixarDados() {
     setExportando(true);
@@ -248,6 +256,10 @@ export function PrivacyDataCard() {
             </ul>
           )}
         </section>
+
+        <CoachIaExterna
+          aoMudar={() => setVersaoDosConsentimentos((v) => v + 1)}
+        />
 
         <div className="flex flex-col gap-2">
           <Button
