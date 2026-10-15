@@ -22,15 +22,15 @@
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
 | Progresso          | `████████████████████` **98%** |
-| Tarefas totais     | 46                             |
-| 🟢 Finalizadas     | 45                             |
-| 🔵 Em andamento    | 0                              |
-| 🔴 Bloqueadas      | 1                              |
+| Tarefas totais     | 47                             |
+| 🟢 Finalizadas     | 46                             |
+| 🔵 Em andamento    | 1                              |
+| 🔴 Bloqueadas      | 0                              |
 | ⚪ A iniciar       | 0                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-15                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (45 ÷ 46 = 97,8%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo); a tarefa 44 aguarda a aprovação do design pelo usuário.
+> Cálculo: tarefas finalizadas ÷ tarefas totais (46 ÷ 47 = 97,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo); o design da tarefa 44 foi aprovado pelo usuário e a implementação está em andamento.
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,13 +43,13 @@
 
 ### ANDAMENTO
 
-Nenhuma tarefa em andamento.
+| Nº  | Tarefa                          | Situação                                                                                                                                                                                                                                                                                                            |
+| --- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 44  | Diferenciais premium de 2026/27 | Design aprovado pelo usuário em 2026-10-15 ("adorei, pode fazer"). Partes: Aura do dia, Reflexão da noite, Respiração guiada, Sua semana e Agenda no calendário (.ics e assinatura privada), cada uma com commit e push próprios. A identidade oficial pedida junto com a aprovação virou a tarefa 47 (finalizada). |
 
 ### BLOQUEADAS
 
-| Nº  | Tarefa                          | Bloqueio                                                                                                                                                                                                     |
-| --- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 44  | Diferenciais premium de 2026/27 | Interação do usuário: pedido de 2026-10-15 para gerar uma imagem do novo design antes de implementar e aguardar as instruções. A pesquisa de tendências e a imagem foram entregues; a implementação aguarda. |
+Nenhuma tarefa bloqueada.
 
 ---
 
@@ -984,3 +984,17 @@ Nenhuma tarefa a iniciar.
 - **Encontrado:** selo e texto com 314 e 241 + 73 testes (hoje 367 + 131 + 17), nenhuma menção ao coach "Seu dia", ao mapa védico, às métricas reais, às metas automáticas, ao modelo de IA local ou à LGPD; árvore de pastas sem `coach`, `astrology`, `metas`, `lgpd`, `tests` e `run_windows.py`; scripts `env:init`, `db:logs` e `geo:cidades` ausentes.
 - **Atualizado:** novidades de outubro de 2026, recursos, stack (astronomy-engine e GeoNames), passo a passo do modelo de IA local (Ollama, LM Studio, Jan, llama.cpp) com a recomendação de 7B ou mais, `.env.local` (variáveis obsoletas e `AUTH_SECRET` na cifra da chave), scripts, documentação (`launchers.md`, `lgpd.md`), arquitetura, testes, segurança e roadmap.
 - **Evidências:** os 14 links relativos do README apontam para arquivos existentes; `check:format`, `check:lint`, `check:types` e `test` 367/367 com exit 0 (o código não mudou desde a validação completa da tarefa 45).
+
+### 47 · Identidade oficial: logo como marca e favicon, cores do app pelo logo
+
+- **Status:** 🟢 finalizada · **Commit:** `041ae78` · **Push:** `9ed930a..041ae78 main -> main` (confirmado por `git ls-remote`)
+- **Pedido do usuário (2026-10-15):** usar o logo oficial anexado (o "L" em teal abraçando o coração coral) como logo e favicon, e o app precisa seguir as cores do logo.
+- **Implementado:**
+  - Logo original versionado em `docs/marca/lyra-logo-oficial.png`; `scripts/gerar-icones-da-marca.py` converte o fundo branco em transparência ("cor para alfa"), recorta e gera o logo da interface, `favicon.ico` (16–64 px), `icon.png`, `apple-icon.png` e os ícones do manifesto (192, 512 e maskable). Rodar de novo reproduz os arquivos byte a byte (conferido por `md5sum -c`).
+  - Componente `MarcaLyra` (next/image) no lugar do ícone genérico em 7 pontos: sidebar, menu do celular, landing (cabeçalho e rodapé), login, tela de carregamento e erro global. No escuro a marca fica num ladrilho claro, porque o logo foi desenhado sobre branco e perdia os brilhos.
+  - `src/app/manifest.ts` com nome, cores e ícones oficiais.
+  - Paleta dos dois temas recalculada a partir do logo: teal `#087678` (ação), coral `#BE3B13` (astral e IA, antes violeta), neutros petróleo, erro em carmim frio `#B6163C` (afastado do coral), tokens decorativos `brand-teal`/`brand-coral`, gráficos, sombras, rolagem e cor da barra do navegador. O tom "coral" do Puck voltou a ser coral (antes caía no dourado).
+- **Causas raiz tratadas no caminho:**
+  - A marca encolhia no tema escuro: `padding` em % é calculado sobre a largura do elemento pai; o respiro do ladrilho passou para `scale`.
+  - O coral original (`#F87850`) fica abaixo de 3:1 sobre branco: o texto usa a versão escura, e o original fica restrito ao decorativo.
+- **Evidências:** `tema.test.ts` com todos os pares WCAG nos dois temas; axe sem violações em landing, login, painel, menu do celular, `/dia`, `/chat`, `/goals` e `/profile` (1440 e 390 px, claro e escuro), marca carregada no tamanho certo e zero erros de console; `/favicon.ico`, `/icon.png`, `/apple-icon.png`, `/manifest.webmanifest` e `/icones/*` com HTTP 200 e os `<link>` no HTML; `test` 367/367, `test:integration` 131/131, lint, format, types, `ruff` e `build` com exit 0.
