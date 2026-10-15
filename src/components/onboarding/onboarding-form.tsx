@@ -369,7 +369,7 @@ export function OnboardingForm() {
                   </p>
                 </div>
                 <div className="flex justify-center items-center md:col-span-1">
-                  {/* IA: único destaque violeta do fluxo */}
+                  {/* IA: único destaque coral do fluxo */}
                   <div className="rounded-xl bg-cosmic-light p-5">
                     <Sparkles
                       className="h-12 w-12 text-cosmic-strong md:h-16 md:w-16"

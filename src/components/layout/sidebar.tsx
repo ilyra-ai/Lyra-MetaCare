@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import React from 'react';
-import { Settings2, Sparkles } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
+import { MarcaLyra } from '@/components/marca/MarcaLyra';
 import { useAuth } from '@/context/AuthContext';
 import { useIsAdmin } from '@/hooks/use-is-admin';
 import { useAccountSubscription } from '@/hooks/use-account-subscription';
@@ -74,22 +75,7 @@ export function Sidebar() {
           href="/"
           className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-1"
         >
-          <span
-            aria-hidden="true"
-            className="flex shrink-0 items-center justify-center rounded-[9px] bg-primary text-primary-foreground"
-            style={{
-              height: scalePx(32, iconScale),
-              width: scalePx(32, iconScale),
-            }}
-          >
-            <Sparkles
-              strokeWidth={2}
-              style={{
-                height: scalePx(16, iconScale),
-                width: scalePx(16, iconScale),
-              }}
-            />
-          </span>
+          <MarcaLyra tamanho={scalePx(36, iconScale)} prioridade />
           <span className="min-w-0">
             <span
               className="block font-display font-semibold lowercase leading-tight text-foreground"

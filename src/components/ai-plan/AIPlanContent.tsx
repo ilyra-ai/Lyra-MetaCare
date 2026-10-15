@@ -120,7 +120,7 @@ const IconMap: Record<string, ElementType> = {
 
 /*
   Tons por pilar no visual "Lyra Clean": fundo suave chapado + texto do
-  próprio estado. O violeta fica reservado ao conteúdo astral/IA, então
+  próprio estado. O coral fica reservado ao conteúdo astral/IA, então
   movimento usa o tom de alerta e sono o tom informativo.
 */
 type ToneKey = 'primary' | 'warning' | 'info' | 'golden';

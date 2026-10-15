@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-// Tons de estado do Lyra Clean. O violeta (cosmic) fica reservado a
+// Tons de estado do Lyra Clean. O coral (cosmic) fica reservado a
 // conteúdo astral/IA, por isso os pilares fisiológicos não o usam.
 type ToneKey =
   'primary' | 'warning' | 'info' | 'destructive' | 'golden' | 'success';

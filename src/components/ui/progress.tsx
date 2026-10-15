@@ -13,7 +13,7 @@ type ProgressProps = React.ComponentPropsWithoutRef<
    */
   'aria-label': string;
   /**
-   * `astral` usa o violeta reservado a conteúdo astral e de IA; o padrão é
+   * `astral` usa o coral reservado a conteúdo astral e de IA; o padrão é
    * o teal das métricas de saúde.
    */
   tone?: 'default' | 'astral';

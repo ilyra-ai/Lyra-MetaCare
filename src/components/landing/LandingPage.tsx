@@ -13,6 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { MarcaLyra } from '@/components/marca/MarcaLyra';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -42,7 +43,7 @@ import {
 } from '@/lib/lgpd/documentos';
 
 // Visual "Lyra Clean": fundo suave chapado para o ícone de cada item. O
-// violeta fica reservado ao tom astral/IA ("cosmic"); os demais usam o teal
+// coral fica reservado ao tom astral/IA ("cosmic"); os demais usam o teal
 // da marca, o dourado ou o neutro.
 function corDoIconeTonal(tone: ToneKey): string {
   switch (tone) {
@@ -723,12 +724,7 @@ export function LandingPage({
             }}
             className="flex min-w-0 items-center gap-2.5 rounded-[10px] px-1 py-1 text-left focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <span
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary text-primary-foreground"
-              aria-hidden="true"
-            >
-              <Sparkles className="h-5 w-5" />
-            </span>
+            <MarcaLyra tamanho="40px" prioridade />
             <span className="min-w-0">
               <span className="block font-display text-xl font-semibold lowercase leading-tight tracking-tight text-foreground">
                 lyra{' '}
@@ -987,12 +983,7 @@ export function LandingPage({
       <footer className="border-t border-border bg-card px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex min-w-0 items-center gap-2.5">
-            <span
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary text-primary-foreground"
-              aria-hidden="true"
-            >
-              <Sparkles className="h-[18px] w-[18px]" />
-            </span>
+            <MarcaLyra tamanho="40px" />
             <div className="min-w-0">
               <p className="font-display text-lg font-semibold lowercase tracking-tight text-foreground">
                 {config.footer.brandLine}

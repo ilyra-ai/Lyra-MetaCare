@@ -67,6 +67,9 @@
   --color-cosmic-light: hsl(var(--cosmic-light));
   --color-cosmic-strong: hsl(var(--cosmic-strong));
 
+  --color-brand-teal: hsl(var(--brand-teal));
+  --color-brand-coral: hsl(var(--brand-coral));
+
   --color-golden: hsl(var(--golden));
   --color-golden-foreground: hsl(var(--golden-foreground));
   --color-golden-light: hsl(var(--golden-light));
@@ -106,11 +109,11 @@
   --radius-2xl: 20px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px rgba(20, 20, 31, 0.04);
-  --shadow: 0 1px 3px rgba(20, 20, 31, 0.06);
-  --shadow-md: 0 4px 12px rgba(20, 20, 31, 0.06);
-  --shadow-lg: 0 8px 24px rgba(20, 20, 31, 0.08);
-  --shadow-xl: 0 16px 40px rgba(20, 20, 31, 0.1);
+  --shadow-sm: 0 1px 2px rgba(14, 30, 36, 0.04);
+  --shadow: 0 1px 3px rgba(14, 30, 36, 0.06);
+  --shadow-md: 0 4px 12px rgba(14, 30, 36, 0.06);
+  --shadow-lg: 0 8px 24px rgba(14, 30, 36, 0.08);
+  --shadow-xl: 0 16px 40px rgba(14, 30, 36, 0.1);
 }
 
 @theme {
@@ -235,53 +238,65 @@
 
 @layer base {
   /*
-    Paleta "Lyra Clean": fundo neutro #F7F7F9, cartões brancos, teal como cor
-    de ação e violeta reservado ao conteúdo astral e de IA. Todas as cores de
-    texto passam de 4,5:1 sobre branco e sobre o próprio tom a 15% (badges),
-    conforme WCAG 1.4.3.
+    Paleta oficial (tarefa 47), derivada do logo da Lyra: teal profundo
+    (#087878 no "L") como cor de ação e coral (#F87850 no coração) como cor de
+    destaque, reservado ao conteúdo astral e de IA. Os neutros puxam
+    levemente para o azul-petróleo do teal. As versões de texto do coral são
+    mais escuras que o coral do logo, porque o coral original (#F87850) fica
+    abaixo de 3:1 sobre branco; o coral original segue disponível como
+    `--brand-coral`, só para elementos decorativos. Todas as cores de texto
+    passam de 4,5:1 sobre branco e sobre os tons neutros (WCAG 1.4.3).
   */
   :root {
-    --background: 240 14% 97%;
-    --foreground: 240 22% 10%;
+    /* #F6F8F9 */
+    --background: 195 20% 97%;
+    /* #121C21 */
+    --foreground: 200 30% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 22% 10%;
+    --card-foreground: 200 30% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 22% 10%;
+    --popover-foreground: 200 30% 10%;
 
-    /* #187268 */
-    --primary: 173 65% 27%;
+    /* Cores puras do logo, para marca e detalhes decorativos (sem texto). */
+    /* #087878 */
+    --brand-teal: 180 88% 25%;
+    /* #F8764F */
+    --brand-coral: 14 92% 64%;
+
+    /* #087678: teal do logo como cor de ação */
+    --primary: 181 88% 25%;
     --primary-foreground: 0 0% 100%;
-    /* #125850 */
-    --primary-hover: 173 66% 21%;
+    /* #055F61 */
+    --primary-hover: 181 90% 20%;
 
-    --secondary: 240 17% 95%;
-    --secondary-foreground: 240 22% 10%;
+    --secondary: 195 18% 95%;
+    --secondary-foreground: 200 30% 10%;
 
-    --muted: 240 14% 95%;
-    /* #5D5D6E */
-    --muted-foreground: 240 8% 40%;
+    --muted: 195 16% 95%;
+    /* #57646B */
+    --muted-foreground: 200 10% 38%;
 
-    /* #6A4BD6: destaque de IA, sem competir com o teal das ações. */
-    --accent: 253 63% 57%;
+    /* #BE3B13: coral do logo em versão legível, destaque de IA */
+    --accent: 14 82% 41%;
     --accent-foreground: 0 0% 100%;
-    /* #4E35A8 */
-    --accent-hover: 253 52% 43%;
+    /* #A53512 */
+    --accent-hover: 14 80% 36%;
 
-    /* #B42318 */
-    --destructive: 4 77% 40%;
+    /* #B6163C: carmim frio, bem afastado do coral alaranjado de destaque */
+    --destructive: 346 78% 40%;
     --destructive-foreground: 0 0% 100%;
-    --destructive-hover: 4 77% 34%;
-    --destructive-light: 0 81% 96%;
+    --destructive-hover: 346 78% 33%;
+    --destructive-light: 346 80% 96%;
 
-    /* #E6E6EC */
-    --border: 240 14% 91%;
-    --input: 240 14% 88%;
-    /* #848494: contorno de checkbox e trilho de switch desligado (3:1 também
-       sobre os tons neutros, WCAG 1.4.11) */
-    --control: 240 7% 55%;
-    --ring: 173 65% 27%;
+    /* #E1E8EA */
+    --border: 195 16% 90%;
+    --input: 195 14% 86%;
+    /* Contorno de checkbox e trilho de switch desligado (3:1 também sobre os
+       tons neutros, WCAG 1.4.11) */
+    --control: 200 8% 52%;
+    --ring: 181 88% 25%;
 
     /* #0D704B */
     --success: 158 79% 25%;
@@ -298,37 +313,38 @@
     --info-foreground: 0 0% 100%;
     --info-light: 230 69% 95%;
 
-    /* #6A4BD6 sobre #F0ECFC */
-    --cosmic: 253 63% 57%;
+    /* Coral do logo (conteúdo astral e de IA): #BE3B13 sobre #FFF1EB */
+    --cosmic: 14 82% 41%;
     --cosmic-foreground: 0 0% 100%;
-    --cosmic-light: 255 73% 96%;
-    /* #4E35A8: texto violeta de destaque (7,5:1 sobre o tom claro) */
-    --cosmic-strong: 253 52% 43%;
+    --cosmic-light: 18 100% 96%;
+    /* #913012: texto coral de destaque (7:1 sobre o tom claro) */
+    --cosmic-strong: 14 78% 32%;
 
     /* #7A5E00 */
     --golden: 46 100% 24%;
     --golden-foreground: 0 0% 100%;
     --golden-light: 46 79% 92%;
 
-    --chart-1: 173 65% 27%;
-    --chart-2: 253 63% 57%;
-    --chart-3: 231 54% 50%;
+    --chart-1: 181 88% 25%;
+    --chart-2: 14 92% 58%;
+    --chart-3: 205 70% 40%;
     --chart-4: 35 100% 28%;
     --chart-5: 158 79% 25%;
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 240 22% 10%;
-    --sidebar-primary: 173 65% 27%;
+    --sidebar-foreground: 200 30% 10%;
+    --sidebar-primary: 181 88% 25%;
     --sidebar-primary-foreground: 0 0% 100%;
-    /* #E6F3F1: item ativo */
-    --sidebar-accent: 171 35% 93%;
-    --sidebar-accent-foreground: 173 66% 21%;
-    --sidebar-border: 240 14% 91%;
-    --sidebar-ring: 173 65% 27%;
+    /* #E6F5F5: item ativo */
+    --sidebar-accent: 180 42% 93%;
+    --sidebar-accent-foreground: 181 90% 20%;
+    --sidebar-border: 195 16% 90%;
+    --sidebar-ring: 181 88% 25%;
   }
 
   /*
-    Tema escuro (tarefa 34). Superfícies em grafite azulado, nunca preto puro:
+    Tema escuro (tarefa 34, cores do logo na tarefa 47). Superfícies em
+    grafite petróleo, nunca preto puro:
     a elevação vem de superfícies mais claras (fundo → cartão → popover) e da
     borda de 1px, já que sombra quase não aparece no escuro. As cores de
     destaque são versões mais claras e menos saturadas das do tema claro e,
@@ -339,56 +355,63 @@
   .dark {
     color-scheme: dark;
 
-    --background: 240 24% 6%;
-    --foreground: 240 15% 95%;
+    /* #0B1113 */
+    --background: 200 26% 6%;
+    --foreground: 195 15% 95%;
 
-    --card: 240 22% 10%;
-    --card-foreground: 240 15% 95%;
+    --card: 200 22% 10%;
+    --card-foreground: 195 15% 95%;
 
     /* Um degrau acima do cartão: menus e popovers se destacam do conteúdo. */
-    --popover: 240 18% 13%;
-    --popover-foreground: 240 15% 95%;
+    --popover: 200 18% 13%;
+    --popover-foreground: 195 15% 95%;
 
-    --primary: 174 55% 55%;
-    --primary-foreground: 240 24% 6%;
-    --primary-hover: 174 55% 62%;
+    /* Teal e coral do logo, clareados para o fundo escuro. */
+    --brand-teal: 178 62% 52%;
+    --brand-coral: 16 92% 68%;
 
-    --secondary: 240 14% 14%;
-    --secondary-foreground: 240 15% 95%;
+    /* #39D0CB */
+    --primary: 178 62% 52%;
+    --primary-foreground: 200 26% 6%;
+    --primary-hover: 178 62% 60%;
 
-    --muted: 240 12% 16%;
-    --muted-foreground: 240 10% 70%;
+    --secondary: 200 16% 14%;
+    --secondary-foreground: 195 15% 95%;
 
-    --accent: 253 85% 77%;
-    --accent-foreground: 240 24% 6%;
-    --accent-hover: 253 85% 83%;
+    --muted: 200 14% 16%;
+    --muted-foreground: 195 10% 70%;
 
-    --destructive: 0 84% 70%;
-    --destructive-foreground: 240 24% 6%;
-    --destructive-hover: 0 84% 77%;
-    --destructive-light: 0 40% 16%;
+    /* #F88A62 */
+    --accent: 16 92% 68%;
+    --accent-foreground: 200 26% 6%;
+    --accent-hover: 16 92% 75%;
 
-    --border: 240 15% 18%;
+    --destructive: 346 86% 74%;
+    --destructive-foreground: 200 26% 6%;
+    --destructive-hover: 346 86% 81%;
+    --destructive-light: 346 40% 16%;
+
+    --border: 200 16% 18%;
     /* Contorno de campos de texto: 3:1 sobre cartão e popover. */
-    --input: 240 8% 47%;
-    --control: 240 8% 52%;
-    --ring: 174 55% 55%;
+    --input: 200 8% 47%;
+    --control: 200 8% 52%;
+    --ring: 178 62% 52%;
 
     --success: 160 74% 46%;
-    --success-foreground: 240 24% 6%;
+    --success-foreground: 200 26% 6%;
     --success-light: 160 38% 16%;
     --warning: 38 92% 58%;
-    --warning-foreground: 240 24% 6%;
+    --warning-foreground: 200 26% 6%;
     --warning-light: 38 36% 18%;
     --info: 236 90% 78%;
-    --info-foreground: 240 24% 6%;
+    --info-foreground: 200 26% 6%;
     --info-light: 239 35% 17%;
-    --cosmic: 258 90% 76%;
-    --cosmic-foreground: 240 24% 6%;
-    --cosmic-light: 258 35% 18%;
-    --cosmic-strong: 258 90% 82%;
+    --cosmic: 16 92% 68%;
+    --cosmic-foreground: 200 26% 6%;
+    --cosmic-light: 16 40% 18%;
+    --cosmic-strong: 16 96% 80%;
     --golden: 43 78% 54%;
-    --golden-foreground: 240 24% 6%;
+    --golden-foreground: 200 26% 6%;
     --golden-light: 43 36% 18%;
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -397,20 +420,20 @@
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
     --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.5);
 
-    --chart-1: 174 55% 55%;
-    --chart-2: 14 88% 62%;
-    --chart-3: 258 90% 72%;
-    --chart-4: 239 84% 72%;
-    --chart-5: 43 78% 54%;
+    --chart-1: 178 62% 52%;
+    --chart-2: 16 92% 68%;
+    --chart-3: 200 80% 65%;
+    --chart-4: 43 78% 54%;
+    --chart-5: 160 74% 46%;
 
-    --sidebar-background: 240 24% 8%;
-    --sidebar-foreground: 240 15% 95%;
-    --sidebar-primary: 174 55% 55%;
-    --sidebar-primary-foreground: 240 24% 6%;
-    --sidebar-accent: 240 14% 14%;
-    --sidebar-accent-foreground: 240 15% 95%;
-    --sidebar-border: 240 15% 18%;
-    --sidebar-ring: 174 55% 55%;
+    --sidebar-background: 200 24% 8%;
+    --sidebar-foreground: 195 15% 95%;
+    --sidebar-primary: 178 62% 52%;
+    --sidebar-primary-foreground: 200 26% 6%;
+    --sidebar-accent: 200 16% 14%;
+    --sidebar-accent-foreground: 195 15% 95%;
+    --sidebar-border: 200 16% 18%;
+    --sidebar-ring: 178 62% 52%;
   }
 
   /*
@@ -497,23 +520,23 @@
 ::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
-  background: rgba(20, 20, 31, 0.18);
+  background: rgba(14, 30, 36, 0.18);
   background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(20, 20, 31, 0.3);
+  background: rgba(14, 30, 36, 0.3);
   background-clip: padding-box;
 }
 
 /* No tema escuro o polegar escuro some sobre o fundo: usa o tom claro. */
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(236, 236, 245, 0.18);
+  background: rgba(232, 240, 243, 0.18);
   background-clip: padding-box;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(236, 236, 245, 0.32);
+  background: rgba(232, 240, 243, 0.32);
   background-clip: padding-box;
 }
 

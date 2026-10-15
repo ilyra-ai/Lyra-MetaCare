@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Menu, Sparkles } from 'lucide-react';
+import { Menu } from 'lucide-react';
+import { MarcaLyra } from '@/components/marca/MarcaLyra';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -56,22 +57,7 @@ export function MobileSidebar() {
             className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-1"
             onClick={() => setOpen(false)}
           >
-            <span
-              aria-hidden="true"
-              className="flex shrink-0 items-center justify-center rounded-[9px] bg-primary text-primary-foreground"
-              style={{
-                height: scalePx(32, iconScale),
-                width: scalePx(32, iconScale),
-              }}
-            >
-              <Sparkles
-                strokeWidth={2}
-                style={{
-                  height: scalePx(16, iconScale),
-                  width: scalePx(16, iconScale),
-                }}
-              />
-            </span>
+            <MarcaLyra tamanho={scalePx(36, iconScale)} />
             <span className="min-w-0 text-left">
               <SheetTitle
                 className="font-display font-semibold lowercase leading-tight text-foreground"

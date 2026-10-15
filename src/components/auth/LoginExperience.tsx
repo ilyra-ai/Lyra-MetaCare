@@ -3,17 +3,10 @@
 import { CSSProperties, SubmitEvent, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import {
-  ArrowLeft,
-  Eye,
-  EyeOff,
-  Lock,
-  Mail,
-  User,
-  ShieldCheck,
-} from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 
 import { useAuth } from '@/context/AuthContext';
+import { MarcaLyra } from '@/components/marca/MarcaLyra';
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,7 +24,7 @@ import {
 
 type SubmitMode = 'login' | 'register' | null;
 
-// No visual "Lyra Clean" o violeta fica reservado ao que é astral/IA; os
+// No visual "Lyra Clean" o coral fica reservado ao que é astral/IA; os
 // demais destaques usam o teal da marca.
 function corDoIconeDestaque(tone: ToneKey): string {
   return tone === 'cosmic' ? 'text-cosmic' : 'text-primary';
@@ -189,12 +182,7 @@ export function LoginExperience({
           paddingDaColunaEsquerda
         )}
       >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary">
-          <ShieldCheck
-            className="h-5 w-5 text-primary-foreground"
-            aria-hidden
-          />
-        </span>
+        <MarcaLyra tamanho="40px" prioridade />
         <span className="font-display text-xl font-semibold lowercase tracking-tight text-foreground">
           {auth.brandText}
         </span>

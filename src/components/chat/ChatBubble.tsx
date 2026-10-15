@@ -69,7 +69,7 @@ export function ChatBubble({ message, isUser, onRegenerate }: ChatBubbleProps) {
         isUser ? 'ml-auto flex-row-reverse' : 'mr-auto'
       )}
     >
-      {/* Avatar: usuário em teal suave; assistente (IA) em violeta suave. */}
+      {/* Avatar: usuário em teal suave; assistente (IA) em coral suave. */}
       <Avatar className="mt-0.5 h-8 w-8 shrink-0">
         <AvatarFallback
           className={cn(

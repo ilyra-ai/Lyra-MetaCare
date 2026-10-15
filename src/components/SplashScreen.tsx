@@ -1,6 +1,6 @@
 'use client';
 
-import { Sparkles } from 'lucide-react';
+import { MarcaLyra } from '@/components/marca/MarcaLyra';
 
 /*
   Tela de carregamento: marca, mensagem curta e um indicador discreto. O
@@ -13,12 +13,7 @@ export function SplashScreen() {
       className="flex min-h-screen items-center justify-center bg-background px-6"
     >
       <div className="flex w-full max-w-sm flex-col items-center text-center animate-fade-in">
-        <span
-          aria-hidden="true"
-          className="flex h-12 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground"
-        >
-          <Sparkles className="h-6 w-6" strokeWidth={2} />
-        </span>
+        <MarcaLyra tamanho="72px" prioridade />
         <p className="mt-4 font-display text-2xl font-semibold lowercase tracking-tight text-foreground">
           lyra
         </p>

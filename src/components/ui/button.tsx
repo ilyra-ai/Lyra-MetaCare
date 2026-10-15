@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 /*
   Botões do sistema "Lyra Clean": cores chapadas, raio de 10–12px e foco
-  visível. O teal é a ação principal; o violeta (`accent`) fica para ações
+  visível. O teal do logo é a ação principal; o coral (`accent`) fica para ações
   de IA. Sem gradientes, brilhos ou sombras coloridas.
 */
 const buttonVariants = cva(

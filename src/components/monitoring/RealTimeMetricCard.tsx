@@ -23,7 +23,7 @@ export function RealTimeMetricCard({
   accent = 'primary',
   isActive = false,
 }: RealTimeMetricCardProps) {
-  // Fundos suaves chapados por tom (o violeta segue o token `cosmic`).
+  // Fundos suaves chapados por tom (o coral segue o token `cosmic`).
   const accentStyles = {
     primary: 'bg-sidebar-accent text-primary',
     accent: 'bg-cosmic-light text-cosmic-strong',

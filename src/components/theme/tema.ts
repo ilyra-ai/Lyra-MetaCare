@@ -4,6 +4,6 @@
  * layout raiz (componente de servidor) também a usa no `viewport`.
  */
 export const COR_DA_BARRA_DO_NAVEGADOR = {
-  light: '#f6f6f8',
-  dark: '#0c0c13',
+  light: '#f6f8f9',
+  dark: '#0b1113',
 } as const;

@@ -7,7 +7,8 @@ visual anterior ("Cosmic Light", com vidro fosco, orbes e gradientes).
 ## Princípios
 
 - Superfície calma: fundo neutro, cartões brancos com borda fina, uma cor de
-  ação e uma cor de destaque reservada ao que é astral ou de IA.
+  ação (teal do logo) e uma cor de destaque (coral do logo) reservada ao que é
+  astral ou de IA.
 - Uma ação principal clara por tela.
 - Nada decorativo que não informe: sem orbes, gradientes, vidro, sombras
   coloridas, caixa alta espaçada ou animações contínuas.
@@ -16,19 +17,49 @@ visual anterior ("Cosmic Light", com vidro fosco, orbes e gradientes).
 
 ## Tokens (`src/app/globals.css`)
 
+Desde a tarefa 47 a paleta deriva do **logo oficial** (o "L" em teal
+abraçando o coração coral): teal para ação, coral para astral e IA, e neutros
+levemente puxados para o azul-petróleo do teal. Valores do tema claro:
+
 | Uso                           | Classe Tailwind                                                   | Valor                             |
 | ----------------------------- | ----------------------------------------------------------------- | --------------------------------- |
-| Fundo da página               | `bg-background`                                                   | `#F7F7F9`                         |
-| Superfície (cartão, header)   | `bg-card` + `border-border`                                       | `#FFFFFF` / `#E6E6EC`             |
-| Texto / secundário            | `text-foreground` / `text-muted-foreground`                       | `#14141F` / `#5D5D6E`             |
-| Ação principal e item ativo   | `bg-primary`, `hover:bg-primary-hover`                            | `#187268` / `#125850`             |
-| Tom suave do teal             | `bg-sidebar-accent` + `text-sidebar-accent-foreground`            | `#E6F3F1`                         |
-| Astral e IA                   | `text-cosmic`, `bg-cosmic-light`, `text-cosmic-strong`            | `#6A4BD6` / `#F0ECFC` / `#4E35A8` |
+| Fundo da página               | `bg-background`                                                   | `#F6F8F9`                         |
+| Superfície (cartão, header)   | `bg-card` + `border-border`                                       | `#FFFFFF` / `#E1E8EA`             |
+| Texto / secundário            | `text-foreground` / `text-muted-foreground`                       | `#121C21` / `#57646B`             |
+| Ação principal e item ativo   | `bg-primary`, `hover:bg-primary-hover`                            | `#087678` / `#055F61`             |
+| Tom suave do teal             | `bg-sidebar-accent` + `text-sidebar-accent-foreground`            | `#E6F5F5`                         |
+| Astral e IA (coral)           | `text-cosmic`, `bg-cosmic-light`, `text-cosmic-strong`            | `#BE3B13` / `#FFF1EB` / `#913012` |
+| Erro (carmim frio)            | `text-destructive`, `bg-destructive-light`                        | `#B6163C`                         |
 | Estados (texto + fundo claro) | `success`, `warning`, `info`, `destructive`, `golden` + `*-light` | 4,5:1 ou mais                     |
-| Contorno de controle          | `border-control` / `bg-control`                                   | `#8C8C9B` (3,3:1)                 |
+| Contorno de controle          | `border-control` / `bg-control`                                   | `#7B888E` (3,3:1 sobre `muted`)   |
+| Cores puras do logo           | `bg-brand-teal`, `bg-brand-coral` (só decorativo, nunca texto)    | `#087878` / `#F8764F`             |
 
-`accent` também é violeta (`#6A4BD6`) e é usado só para ações de IA (por
-exemplo, o botão "Ações rápidas").
+`accent` também é coral (`#BE3B13`) e é usado só para ações de IA (por
+exemplo, o botão "Ações rápidas"). O coral original do logo (`#F8764F`) fica
+abaixo de 3:1 sobre branco, por isso o texto usa a versão mais escura e o
+original fica restrito a `--brand-coral`. O erro foi deslocado para um carmim
+frio (matiz 346) justamente para não se confundir com o coral de destaque.
+
+## Marca e ícones
+
+- Componente único [`MarcaLyra`](../src/components/marca/MarcaLyra.tsx): logo
+  oficial (`src/assets/marca/lyra-logo.png`, fundo convertido em
+  transparência) usado na sidebar, menu do celular, landing (cabeçalho e
+  rodapé), login, tela de carregamento e erro global. É decorativo (`alt=""`)
+  quando o nome "lyra" aparece ao lado.
+- O logo foi desenhado sobre branco; no tema escuro os brilhos sumiriam, então
+  a marca fica num ladrilho branco arredondado (mesmo recurso do favicon).
+- Ícones gerados a partir do mesmo arquivo: `src/app/favicon.ico` (16, 32,
+  48 e 64 px), `src/app/icon.png` (192 px), `src/app/apple-icon.png` (180 px,
+  fundo branco) e, para o manifesto (`src/app/manifest.ts`),
+  `public/icones/lyra-192.png`, `lyra-512.png` e `lyra-maskable-512.png`
+  (marca dentro da área segura de 80%).
+- Fonte única: o logo oficial original fica em
+  [`docs/marca/lyra-logo-oficial.png`](./marca/lyra-logo-oficial.png) e todos
+  os arquivos acima são gerados por
+  [`scripts/gerar-icones-da-marca.py`](../scripts/gerar-icones-da-marca.py)
+  (Pillow + NumPy; instruções no próprio script). Rodar o script de novo
+  reproduz os mesmos arquivos byte a byte.
 
 ## Forma e tipografia
 

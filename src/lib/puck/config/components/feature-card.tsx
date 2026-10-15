@@ -23,14 +23,14 @@ import type {
 } from '@/lib/puck/types';
 
 /*
- * Fundo do ícone acompanha o tom do título: violeta apenas no tom cósmico
- * (conteúdo astral/IA), teal para os demais e dourado para o tom "coral".
+ * Fundo do ícone acompanha o tom do título: o coral do logo nos tons
+ * cósmico (conteúdo astral/IA) e "coral", e o teal do logo nos demais.
  */
 const classesIconePorTom: Record<LyraFeatureCardBlockProps['tone'], string> = {
   default: 'bg-sidebar-accent text-primary',
   cosmic: 'bg-cosmic-light text-cosmic',
   teal: 'bg-sidebar-accent text-primary',
-  coral: 'bg-golden-light text-golden',
+  coral: 'bg-cosmic-light text-accent',
 };
 
 function LyraFeatureCardBlock({

@@ -29,14 +29,14 @@
 
 O **Lyra MetaCare** transforma dados de wearables, hábitos e contexto pessoal em **orientação acionável de longevidade**. A plataforma cruza biometria contínua (HRV, sono, glicose, VO₂max, oxigenação, entre dezenas de métricas) com motores determinísticos próprios e com uma camada de IA configurável, entregando ao usuário um painel claro, premium e calculado — sempre que possível — **no próprio dispositivo**.
 
-|                          |                                                                                                                                               |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🎯 **Proposta de valor** | Converter sinais fisiológicos dispersos em ações diárias priorizadas, com idade biológica, detecção precoce e saúde da mulher.                |
-| 🧠 **Inteligência**      | Motores isomórficos determinísticos (testáveis) + IA configurável por documentos/skills + modelo de IA da plataforma, local ou em nuvem.      |
-| 🪐 **Coach diário**      | Todos os dias, o "Seu dia" lê o mapa védico da pessoa e o céu da cidade dela e entrega a leitura do dia, período a período.                   |
-| 🔒 **Privacidade**       | Modo Privacidade real: índices calculados no navegador; conversas processadas apenas pelo motor local quando ativado.                         |
-| 🎨 **Experiência**       | Sistema visual "Lyra Clean" (tema claro padrão e tema escuro com alternância, teal + violeta astral, WCAG 2.2 AA), responsivo e em **pt-BR**. |
-| ⚙️ **Operação**          | Subida local de ponta a ponta com um único comando (`run.py` no WSL2, `run.sh` no Git Bash): banco, migrações e aplicação.                    |
+|                          |                                                                                                                                                             |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🎯 **Proposta de valor** | Converter sinais fisiológicos dispersos em ações diárias priorizadas, com idade biológica, detecção precoce e saúde da mulher.                              |
+| 🧠 **Inteligência**      | Motores isomórficos determinísticos (testáveis) + IA configurável por documentos/skills + modelo de IA da plataforma, local ou em nuvem.                    |
+| 🪐 **Coach diário**      | Todos os dias, o "Seu dia" lê o mapa védico da pessoa e o céu da cidade dela e entrega a leitura do dia, período a período.                                 |
+| 🔒 **Privacidade**       | Modo Privacidade real: índices calculados no navegador; conversas processadas apenas pelo motor local quando ativado.                                       |
+| 🎨 **Experiência**       | Sistema visual "Lyra Clean" (tema claro padrão e tema escuro com alternância, cores do logo oficial: teal + coral, WCAG 2.2 AA), responsivo e em **pt-BR**. |
+| ⚙️ **Operação**          | Subida local de ponta a ponta com um único comando (`run.py` no WSL2, `run.sh` no Git Bash): banco, migrações e aplicação.                                  |
 
 ---
 
@@ -46,6 +46,7 @@ O **Lyra MetaCare** transforma dados de wearables, hábitos e contexto pessoal e
 
 | Recurso                                       | O que entrega                                                                                                                                                                                                                                                                                 |
 | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 💚 **Identidade oficial**                     | Logo oficial (o "L" em teal abraçando o coração coral) como marca do app, favicon, ícone da Apple e ícones do manifesto; todas as cores dos dois temas derivadas do logo, com contraste WCAG 2.2 AA verificado por teste. ([design-system.md](./docs/design-system.md))                       |
 | 🪐 **"Seu dia": leitura védica diária**       | 1) resumo geral; 2) cada período (madrugada, manhã, tarde e noite) por parte emocional, física e espiritual; 3) pontos positivos e negativos; 4) dicas do mapa para a data, cada uma com o fundamento. Diferente a cada dia. ([coach.md](./docs/coach.md))                                    |
 | 🧩 **Qualquer modelo de IA, inclusive local** | Admin → Modelos de IA: Ollama, LM Studio, Jan, llama.cpp, vLLM, LocalAI, KoboldCpp, GPT4All, OpenAI, Gemini, Claude, OpenRouter, Groq, Mistral, DeepSeek, Together e xAI, com saída estruturada por JSON Schema e o motor da Lyra como reserva. ([ia-automatica.md](./docs/ia-automatica.md)) |
 | 🗺️ **Mapa védico real**                       | Lagna, planetas, nakshatras e Vimshottari Dasha calculados com efemérides (astronomy-engine) e a cidade de nascimento da base local GeoNames; Panchang, Tara Bala e Chandra Bala do lugar onde a pessoa mora. ([astrologia.md](./docs/astrologia.md))                                         |

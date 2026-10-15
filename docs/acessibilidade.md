@@ -39,6 +39,20 @@ também sobre os tons neutros `muted`/`secondary`). Os dias de outro mês do cal
 biblioteca para o cinza secundário. Resultado: zero violações de contraste
 nas telas da Lyra em 1440px e 390px.
 
+## Paleta do logo oficial (tarefa 47)
+
+As cores passaram a seguir o logo (teal `#087878` e coral `#F87850`). Valores
+de texto no tema claro, com o contraste sobre `muted` (`#F0F3F4`, o fundo
+claro mais escuro): teal `#087678` (4,88:1), coral `#BE3B13` (4,93:1), coral
+forte `#913012` (7,17:1; 7,21:1 sobre `#FFF1EB`), erro `#B6163C` (5,97:1),
+texto secundário `#57646B` (5,48:1) e contorno de controle `#7B888E`
+(3,28:1). O coral puro do logo fica abaixo de 3:1 sobre branco e só é usado
+como `--brand-coral`, em elementos decorativos. O teste
+[`src/app/tema.test.ts`](../src/app/tema.test.ts) verifica todos os pares nos
+dois temas, e a auditoria axe (WCAG 2.2 AA) de landing, login, painel, menu
+do celular, `/dia`, `/chat`, `/goals` e `/profile` em 1440px e 390px, claro e
+escuro, terminou sem violações.
+
 ## Celular (tarefa 33)
 
 Varredura em 390×844 (toque) de todas as rotas, para visitante, paciente,

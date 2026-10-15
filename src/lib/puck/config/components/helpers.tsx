@@ -37,15 +37,16 @@ const iconRegistry: Record<LyraDecorativeIcon, LucideIcon> = {
 
 /*
  * Os valores de tom (`cosmic`, `teal`, `coral`) fazem parte dos documentos
- * publicados e não podem mudar. No visual Lyra Clean o `accent` passou a ser
- * violeta (reservado ao conteúdo astral/IA) e não existe mais token coral, por
- * isso o tom "coral" é renderizado com o dourado quente acessível (`golden`).
+ * publicados e não podem mudar. Com a paleta oficial do logo (tarefa 47) o
+ * coral voltou a existir como cor da marca: o tom "coral" usa o `accent`
+ * (coral legível) e o "cosmic" a variante forte do mesmo coral, reservada ao
+ * conteúdo astral/IA.
  */
 const headingToneClasses: Record<LyraHeadingTone, string> = {
   default: 'text-foreground',
   cosmic: 'text-cosmic-strong',
   teal: 'text-primary',
-  coral: 'text-golden',
+  coral: 'text-accent',
 };
 
 const textAlignClasses: Record<LyraTextAlign, string> = {
@@ -116,7 +117,7 @@ const tileToneClasses: Record<LyraGridTileTone, string> = {
   default: 'border-border bg-card text-foreground',
   cosmic: 'border-cosmic/20 bg-cosmic-light text-foreground',
   teal: 'border-primary/20 bg-sidebar-accent text-foreground',
-  coral: 'border-golden/20 bg-golden-light text-foreground',
+  coral: 'border-accent/35 bg-cosmic-light text-foreground',
 };
 
 /**

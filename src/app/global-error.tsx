@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
+
+import { MarcaLyra } from '@/components/marca/MarcaLyra';
 import './globals.css';
 
 // Fronteira de erro do layout raiz (App Router). Substitui o layout inteiro
@@ -31,9 +33,12 @@ export default function GlobalError({
           className="flex min-h-screen items-center justify-center px-4 py-10"
         >
           <div className="flex w-full max-w-xl flex-col items-center gap-5 rounded-xl border border-border bg-card p-6 text-center sm:p-10">
-            <p className="text-sm font-medium text-muted-foreground">
-              Lyra MetaCare
-            </p>
+            <div className="flex flex-col items-center gap-2">
+              <MarcaLyra tamanho="56px" />
+              <p className="text-sm font-medium text-muted-foreground">
+                Lyra MetaCare
+              </p>
+            </div>
             <h1 className="font-display text-3xl font-semibold tracking-tight">
               Algo saiu do ritmo por aqui.
             </h1>

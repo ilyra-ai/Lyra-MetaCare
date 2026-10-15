@@ -33,7 +33,7 @@ const camposSomenteLeituraRoot: Partial<
 /*
  * As chaves de tema são valores persistidos nos documentos publicados e
  * permanecem iguais; a renderização usa superfície branca com borda, e o tema
- * de landing recebe apenas um detalhe violeta discreto na borda e no selo.
+ * de landing recebe apenas um detalhe coral discreto na borda e no selo.
  */
 const classesPorTema: Record<LyraPuckThemeVariant, string> = {
   aurora: 'border-cosmic/30 bg-card',

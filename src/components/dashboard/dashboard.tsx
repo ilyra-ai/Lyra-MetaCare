@@ -161,7 +161,7 @@ interface MiniMetricCardProps {
   delta: number | null;
 }
 
-/** Fundo suave + ícone de cada tom (violeta fica só para astral/IA). */
+/** Fundo suave + ícone de cada tom (o coral fica só para astral/IA). */
 const miniMetricToneStyles: Record<MiniMetricCardProps['tone'], string> = {
   primary: 'bg-sidebar-accent text-primary',
   warning: 'bg-warning-light text-warning',
