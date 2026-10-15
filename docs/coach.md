@@ -55,6 +55,15 @@ Fecha o ciclo do dia no "Meu dia" (`#reflexao`): a pessoa dá uma nota de 1 a 5 
 - Validação compartilhada entre a tela e o servidor (`src/lib/reflexao/esquema.ts`): notas inteiras de 1 a 5, frase sem caracteres de controle e sem espaços nas pontas (vazia vira "sem frase"), campos desconhecidos recusados.
 - Tabela `daily_reflections` (migração `024_reflexao_da_noite.sql`), uma por pessoa e data, com `CHECK` das notas; entra na exportação LGPD e é apagada com a conta.
 
+## Respiração guiada (tarefa 44)
+
+Página `/respiracao` (item "Respiração" da navegação) e cartão no "Meu dia" com a técnica recomendada agora.
+
+- **Técnicas** (`src/lib/respiracao/tecnicas.ts`): 4-7-8 (inspira 4 s, segura 7 s, solta 8 s), quadrada (4-4-4-4) e Nadi Shodhana (narinas alternadas, 4 s e 6 s, sem retenção). Durações de 1, 3, 5 ou 10 minutos convertidas em ciclos completos.
+- **Ritmo real:** a fase, o contador e a escala do orbe saem do tempo decorrido (`posicaoNaSessao`), não de contadores, então o ritmo não deriva com a aba em segundo plano; pausa e retomada preservam a posição. Com "reduzir movimento" o orbe fica parado e um anel mostra a fase. A tela fica acesa durante a sessão (Screen Wake Lock, quando o navegador oferece); voz (Web Speech, pt-BR) e vibração (Android) são opcionais.
+- **Recomendação explicável:** estresse do registro de hoje ≥ 60 → 4-7-8; das 18 h às 2 h → 4-7-8 (prepara o sono); fase de Vata (2 h–6 h e 14 h–18 h) → Nadi Shodhana; prontidão < 55 → quadrada; Kapha da manhã → quadrada; Pitta do meio-dia → 4-7-8. Cada sugestão traz o "por que agora".
+- **Registro:** ao terminar (ou ao encerrar depois de ao menos um ciclo completo e 30 s), `POST /api/respiracao` grava a sessão em `breathing_sessions` (migração `025_respiracao_guiada.sql`) e soma os minutos a `daily_metrics.meditation_minutes` do dia local da pessoa (limite de 600 min do check-in), o que recalcula a meta automática de meditação e a sequência. O servidor recusa duração incoerente com os ciclos feitos. `GET /api/respiracao` devolve as sessões de hoje, os minutos e a recomendação. Tabela incluída na exportação LGPD e apagada com a conta.
+
 ## Rotina automática
 
 - `src/instrumentation.ts` inicia `src/lib/coach/rotina.ts` no servidor Node.js: a cada 15 minutos prepara o dia de quem já passou das **3 h locais**, tem cidade, concluiu o primeiro acesso, tem o recurso `ai_tips_feed` no plano e ainda não tem o briefing de hoje. Índices únicos tornam seguro rodar em várias instâncias.

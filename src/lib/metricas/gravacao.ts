@@ -103,6 +103,34 @@ export async function gravarRegistroDoDia(
 }
 
 /**
+ * Minutos de uma prática guiada (respiração) somados à meditação do dia, sem
+ * passar do máximo aceito no check-in (`CAMPOS_DO_REGISTRO.meditacao`). Cria
+ * a linha do dia se ainda não existir e recalcula escores, metas e sequências
+ * como qualquer outra gravação.
+ */
+export async function somarMinutosDeMeditacao(
+  userId: string,
+  data: string,
+  minutos: number
+): Promise<LinhaDoRegistro | null> {
+  const maximo = CAMPOS_DO_REGISTRO.meditacao.maximo;
+  await executeStatement(
+    `INSERT INTO daily_metrics (id, user_id, date, meditation_minutes, metrics_updated_at)
+     VALUES (?, ?, ?, LEAST(?, ?), UTC_TIMESTAMP())
+     AS novo
+     ON DUPLICATE KEY UPDATE
+       meditation_minutes = LEAST(
+         COALESCE(daily_metrics.meditation_minutes, 0) + novo.meditation_minutes,
+         ?
+       ),
+       metrics_updated_at = novo.metrics_updated_at`,
+    [randomUUID(), userId, data, minutos, maximo, maximo]
+  );
+  await depoisDeGravar(userId, data);
+  return lerRegistroDoDia(userId, data);
+}
+
+/**
  * Sessão da pulseira: soma ao que já existe no dia sem apagar nada. Mínima e
  * máxima viram o extremo do dia, a média é ponderada pelos minutos de cada
  * sessão, a FC de repouso é a menor estimativa do dia (ou o valor do

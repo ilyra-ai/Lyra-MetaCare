@@ -20,8 +20,31 @@ describe('navegação com configuração salva', () => {
       },
     };
     const hrefs = getVisibleNavigation(false, semMeuDia).map((i) => i.href);
-    expect(hrefs.slice(0, 3)).toEqual(['/', '/dia', '/plan']);
+    expect(hrefs.slice(0, 4)).toEqual(['/', '/dia', '/respiracao', '/plan']);
     expect(hrefs.filter((h) => h === '/dia')).toHaveLength(1);
     expect(hrefs.some((h) => h.startsWith('/admin'))).toBe(false);
+  });
+
+  it('configuração salva antes da Respiração ganha a página depois do Meu dia', () => {
+    const config: AppPageConfig = getDefaultPageConfig('app');
+    const antiga: AppPageConfig = {
+      ...config,
+      sidebar: {
+        ...config.sidebar,
+        items: config.sidebar.items.filter(
+          (item) => item.href !== '/respiracao'
+        ),
+      },
+    };
+    const itens = getVisibleNavigation(false, antiga);
+    expect(itens.map((i) => i.href).slice(0, 4)).toEqual([
+      '/',
+      '/dia',
+      '/respiracao',
+      '/plan',
+    ]);
+    expect(itens.find((i) => i.href === '/respiracao')?.label).toBe(
+      'Respiração'
+    );
   });
 });

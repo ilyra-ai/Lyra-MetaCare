@@ -19,6 +19,7 @@ import {
   Target,
   UserRound,
   UsersRound,
+  Wind,
 } from 'lucide-react';
 
 import type { AppPageConfig } from '@/lib/site-page-config/schema';
@@ -59,6 +60,15 @@ export const navigationItems: NavigationDefinition[] = [
     section: 'Principal',
     sectionKey: 'principal',
     shortcut: 'G H',
+  },
+  {
+    href: '/respiracao',
+    label: 'Respiração',
+    description:
+      'Respiração guiada (4-7-8, quadrada e Nadi Shodhana) com o ritmo real; os minutos entram na sua meditação.',
+    icon: Wind,
+    section: 'Principal',
+    sectionKey: 'principal',
   },
   {
     href: '/plan',

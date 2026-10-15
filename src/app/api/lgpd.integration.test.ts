@@ -521,6 +521,11 @@ describe('portabilidade e exclusão da conta', () => {
        VALUES (?, ?, CURDATE(), 2, 2, 2)`,
       [randomUUID(), pessoa.id]
     );
+    await executeStatement(
+      `INSERT INTO breathing_sessions (id, user_id, session_date, technique, cycles, duration_seconds, minutes_logged)
+       VALUES (?, ?, CURDATE(), 'quadrada', 4, 64, 1)`,
+      [randomUUID(), pessoa.id]
+    );
     const { absolute } = resolveStoragePath('avatars', [pessoa.id, 'foto.png']);
     await mkdir(path.dirname(absolute), { recursive: true });
     await writeFile(absolute, 'x');
@@ -558,6 +563,7 @@ describe('portabilidade e exclusão da conta', () => {
       ['daily_metrics', 'user_id'],
       ['daily_briefings', 'user_id'],
       ['daily_reflections', 'user_id'],
+      ['breathing_sessions', 'user_id'],
       ['user_notifications', 'user_id'],
       ['consent_records', 'user_id'],
       ['user_subscriptions', 'user_id'],

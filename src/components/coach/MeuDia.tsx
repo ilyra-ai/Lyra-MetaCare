@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 
 import { BotaoRegistroDoDia } from '@/components/metricas/RegistroDoDia';
+import { CartaoDeRespiracao } from '@/components/respiracao/CartaoDeRespiracao';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCoachDoDia } from '@/hooks/use-coach-do-dia';
@@ -269,6 +270,8 @@ export function MeuDia() {
       ) : null}
 
       <LeituraDoDia briefing={briefing} agora={agora} />
+
+      <CartaoDeRespiracao />
 
       <section
         aria-labelledby="titulo-periodos"
