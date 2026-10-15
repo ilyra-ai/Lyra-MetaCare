@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   SEGREDOS_GERADOS,
+  chavesObsoletas,
   completarEnv,
   gerarSegredo,
   parseEnvContents,
@@ -78,6 +79,23 @@ describe('completarEnv', () => {
     expect(valores.CHAVE_EXTRA).toBe('valor');
     expect(resultado.adicionadas).not.toContain('MYSQL_PASSWORD');
     expect(valores.AUTH_SECRET).toBe('gerado-AUTH_SECRET');
+    // A chave extra é avisada como obsoleta, mas nunca removida.
+    expect(resultado.obsoletas).toEqual(['CHAVE_EXTRA']);
+  });
+
+  it('avisa variáveis que o app deixou de usar sem apagá-las', () => {
+    const completo = completarEnv(null, exemploReal, geradorFixo).conteudo;
+    const comAntiga = `${completo}GEMINI_API_KEY=AIza-chave-antiga\n`;
+    const resultado = completarEnv(comAntiga, exemploReal, geradorFixo);
+
+    expect(resultado.obsoletas).toEqual(['GEMINI_API_KEY']);
+    expect(resultado.conteudo).toBe(comAntiga);
+    expect(
+      chavesObsoletas(
+        parseEnvContents(comAntiga),
+        parseEnvContents(exemploReal)
+      )
+    ).toEqual(['GEMINI_API_KEY']);
   });
 
   it('preenche no lugar um segredo existente porém vazio', () => {

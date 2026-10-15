@@ -163,6 +163,20 @@ export function completarEnv(
     conteudo: `${linhas.join('\n')}\n`,
     adicionadas,
     preenchidas,
+    obsoletas: chavesObsoletas(atuais, exemplo),
     erros,
   };
+}
+
+/**
+ * Chaves do `.env.local` que o `.env.example` não documenta mais (o app
+ * deixou de usá-las, ex.: `GEMINI_API_KEY` na tarefa 43). Nunca são apagadas
+ * automaticamente, porque podem guardar um segredo que a pessoa queira
+ * revogar no provedor antes; o `env:init` e o `doctor` só avisam.
+ *
+ * @param {Record<string, string>} atuais variáveis do `.env.local`
+ * @param {Record<string, string>} exemplo variáveis do `.env.example`
+ */
+export function chavesObsoletas(atuais, exemplo) {
+  return Object.keys(atuais).filter((chave) => !Object.hasOwn(exemplo, chave));
 }

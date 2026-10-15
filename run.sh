@@ -392,10 +392,11 @@ verificar_env() {
     verif ".env.local" aviso "ausente" "\`./run.sh fix\` (ou \`pnpm env:init\`) cria com segredos gerados."
     return
   fi
-  local faltando
-  if ! faltando="$(LYRA_ENV_LOCAL="$ENV_LOCAL" LYRA_ENV_EXEMPLO="$ENV_EXEMPLO" node --input-type=module -e '
+  local analise faltando obsoletas
+  # Primeira linha: chaves faltando; segunda: chaves que o app não usa mais.
+  if ! analise="$(LYRA_ENV_LOCAL="$ENV_LOCAL" LYRA_ENV_EXEMPLO="$ENV_EXEMPLO" node --input-type=module -e '
     import { readFileSync } from "node:fs";
-    import { parseEnvContents, SEGREDOS_GERADOS } from "./scripts/lib/env-file.mjs";
+    import { chavesObsoletas, parseEnvContents, SEGREDOS_GERADOS } from "./scripts/lib/env-file.mjs";
     const atual = parseEnvContents(readFileSync(process.env.LYRA_ENV_LOCAL, "utf8"));
     const exemplo = parseEnvContents(readFileSync(process.env.LYRA_ENV_EXEMPLO, "utf8"));
     const faltas = [
@@ -403,10 +404,17 @@ verificar_env() {
       ...Object.keys(SEGREDOS_GERADOS).filter((chave) => !atual[chave]),
     ];
     console.log([...new Set(faltas)].join(", "));
+    console.log(chavesObsoletas(atual, exemplo).join(", "));
   ' 2>>"${REGISTRO:-/dev/null}")"; then
     verif ".env.local" erro "não foi possível analisar o arquivo" "Veja o log: ${REGISTRO:-(sem registro)}."
-  elif [[ -n "$faltando" ]]; then
+    return
+  fi
+  faltando="$(printf '%s\n' "$analise" | sed -n '1p')"
+  obsoletas="$(printf '%s\n' "$analise" | sed -n '2p')"
+  if [[ -n "$faltando" ]]; then
     verif ".env.local" aviso "incompleto: $faltando" "\`./run.sh fix\` (ou \`pnpm env:init\`) completa sem alterar valores."
+  elif [[ -n "$obsoletas" ]]; then
+    verif ".env.local" aviso "completo, mas com variáveis que o app não usa mais: $obsoletas" "Apague essas linhas do .env.local; se guardarem uma chave de API, revogue-a no provedor."
   else
     verif ".env.local" ok "completo"
   fi

@@ -75,6 +75,12 @@ async function main() {
     );
   }
 
+  if (resultado.obsoletas.length > 0) {
+    console.log(
+      `[env:init] AVISO: o .env.local tem variáveis que o app não usa mais: ${resultado.obsoletas.join(', ')}. Elas não foram alteradas; se guardarem uma chave de API, revogue-a no provedor e apague a linha.`
+    );
+  }
+
   if (resultado.erros.length > 0) {
     for (const erro of resultado.erros) {
       console.error(`[env:init] ERRO: ${erro}`);

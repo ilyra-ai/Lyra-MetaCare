@@ -847,13 +847,26 @@ def verificar_env() -> Verificacao:
             "incompleto: " + ", ".join(faltando + vazios),
             "`python3 run.py fix` (ou `pnpm env:init`) completa sem alterar valores.",
         )
+    problemas: list[str] = []
+    acoes: list[str] = []
+    # Chaves que o .env.example não documenta mais: nunca são apagadas pelo
+    # launcher (podem guardar uma chave de API a revogar antes).
+    obsoletas = [chave for chave in atuais if chave not in ler_env(ENV_EXEMPLO)]
+    if obsoletas:
+        problemas.append("variáveis que o app não usa mais: " + ", ".join(obsoletas))
+        acoes.append(
+            "Apague essas linhas do .env.local; se guardarem uma chave de API, revogue-a no provedor."
+        )
     modo = ENV_LOCAL.stat().st_mode & 0o777
     if modo & 0o077:
+        problemas.append(f"legível por outros usuários (permissão {modo:o})")
+        acoes.append("`chmod 600 .env.local` (o `pnpm env:init` também corrige).")
+    if problemas:
         return Verificacao(
             ".env.local",
             "aviso",
-            f"completo, mas legível por outros usuários (permissão {modo:o})",
-            "`chmod 600 .env.local` (o `pnpm env:init` também corrige).",
+            "completo, mas " + "; ".join(problemas),
+            " ".join(acoes),
         )
     return Verificacao(".env.local", "ok", "completo (permissão 600)")
 
