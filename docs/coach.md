@@ -64,6 +64,17 @@ Página `/respiracao` (item "Respiração" da navegação) e cartão no "Meu dia
 - **Recomendação explicável:** estresse do registro de hoje ≥ 60 → 4-7-8; das 18 h às 2 h → 4-7-8 (prepara o sono); fase de Vata (2 h–6 h e 14 h–18 h) → Nadi Shodhana; prontidão < 55 → quadrada; Kapha da manhã → quadrada; Pitta do meio-dia → 4-7-8. Cada sugestão traz o "por que agora".
 - **Registro:** ao terminar (ou ao encerrar depois de ao menos um ciclo completo e 30 s), `POST /api/respiracao` grava a sessão em `breathing_sessions` (migração `025_respiracao_guiada.sql`) e soma os minutos a `daily_metrics.meditation_minutes` do dia local da pessoa (limite de 600 min do check-in), o que recalcula a meta automática de meditação e a sequência. O servidor recusa duração incoerente com os ciclos feitos. `GET /api/respiracao` devolve as sessões de hoje, os minutos e a recomendação. Tabela incluída na exportação LGPD e apagada com a conta.
 
+## Agenda védica no calendário (tarefa 44)
+
+Cartão "Janelas de hoje" no "Meu dia" com Brahma Muhurta, Abhijit Muhurta (fora de quarta-feira), Rahu Kalam e o pôr do sol (Sandhya, 1 ghati de 24 minutos), calculados pelo Panchang da cidade da pessoa (`src/lib/calendario/janelas.ts`). A tela, o arquivo e o link usam a mesma fonte.
+
+- **Baixar .ics:** `GET /api/calendario/hoje` (sessão) devolve as janelas de hoje; `GET /api/calendario/janelas` devolve as mesmas em JSON para o cartão.
+- **Assinar agenda:** `POST /api/calendario/assinatura` cria (ou troca) um link privado `/api/calendario/feed/<token>.ics` com hoje e os próximos 6 dias, recalculados a cada leitura e com `REFRESH-INTERVAL` de 12 h; `GET` mostra o link de novo, `DELETE` desativa. O token tem 256 bits; no banco (`calendar_feeds`, migração `026_agenda_no_calendario.sql`) ficam o SHA-256 (para achar a pessoa) e o token cifrado com AES-256-GCM (para mostrar o link à própria pessoa). Trocar o link derruba o anterior na hora. O feed responde 404 igual para token inexistente ou desativado, tem limite de 60 leituras por hora por link e envia `X-Robots-Tag: noindex`.
+- **iCalendar** (`src/lib/calendario/ics.ts`, RFC 5545 e 7986): CRLF, linhas dobradas em até 75 octetos sem partir caracteres UTF-8, textos escapados, horários em UTC (o app mostra no fuso de quem assina), eventos `TRANSP:TRANSPARENT` (não ocupam a agenda) e lembrete `VALARM` 10 minutos antes (`?lembretes=nao` tira). Validado também com a biblioteca `icalendar` do Python na QA.
+- **Apps:** o diálogo oferece copiar o link, abrir por `webcal://` (Apple Calendário e Outlook para desktop) e os passos do Google Agenda ("Do URL"), Apple e Outlook ("Assinar da Web"). O Google pode levar horas para refletir mudanças e não usa os lembretes de agendas assinadas.
+- **Limite:** com o app em `localhost`, só o calendário do mesmo computador lê o link; Google e Outlook na nuvem precisam do app publicado num endereço da internet (`APP_BASE_URL`). A tela avisa quando o endereço é local.
+- **Privacidade:** os horários revelam a cidade aproximada, por isso o link é privado, pode ser trocado ou desativado, e a exportação LGPD traz só quando ele foi criado e lido (sem hash nem token).
+
 ## Rotina automática
 
 - `src/instrumentation.ts` inicia `src/lib/coach/rotina.ts` no servidor Node.js: a cada 15 minutos prepara o dia de quem já passou das **3 h locais**, tem cidade, concluiu o primeiro acesso, tem o recurso `ai_tips_feed` no plano e ainda não tem o briefing de hoje. Índices únicos tornam seguro rodar em várias instâncias.

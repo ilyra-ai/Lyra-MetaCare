@@ -526,6 +526,11 @@ describe('portabilidade e exclusão da conta', () => {
        VALUES (?, ?, CURDATE(), 'quadrada', 4, 64, 1)`,
       [randomUUID(), pessoa.id]
     );
+    await executeStatement(
+      `INSERT INTO calendar_feeds (user_id, token_hash, token_ciphertext)
+       VALUES (?, REPEAT('c', 64), 'v1.x.y.z')`,
+      [pessoa.id]
+    );
     const { absolute } = resolveStoragePath('avatars', [pessoa.id, 'foto.png']);
     await mkdir(path.dirname(absolute), { recursive: true });
     await writeFile(absolute, 'x');
@@ -564,6 +569,7 @@ describe('portabilidade e exclusão da conta', () => {
       ['daily_briefings', 'user_id'],
       ['daily_reflections', 'user_id'],
       ['breathing_sessions', 'user_id'],
+      ['calendar_feeds', 'user_id'],
       ['user_notifications', 'user_id'],
       ['consent_records', 'user_id'],
       ['user_subscriptions', 'user_id'],

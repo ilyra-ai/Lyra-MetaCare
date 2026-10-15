@@ -277,6 +277,12 @@ export async function exportarDadosDoTitular(userId: string) {
     `,
     [userId]
   );
+  // Link da agenda no calendário: só quando foi criado e o último acesso. O
+  // hash e o token cifrado são credenciais, não dados da pessoa.
+  const agendaNoCalendario = await queryRows<RowDataPacket>(
+    'SELECT created_at, last_access_at FROM calendar_feeds WHERE user_id = ?',
+    [userId]
+  );
   const clientesDeCobranca = await queryRows<RowDataPacket>(
     `
       SELECT provider, external_customer_id, email_snapshot, created_at
@@ -296,6 +302,7 @@ export async function exportarDadosDoTitular(userId: string) {
     compras: await listarComprasDoTitular(userId),
     assinaturas,
     clientes_de_cobranca: clientesDeCobranca,
+    agenda_no_calendario: agendaNoCalendario,
     ...tabelas,
   };
 }

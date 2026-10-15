@@ -18,6 +18,7 @@ import {
   TriangleAlert,
 } from 'lucide-react';
 
+import { JanelasDeHoje } from '@/components/calendario/JanelasDeHoje';
 import { BotaoRegistroDoDia } from '@/components/metricas/RegistroDoDia';
 import { CartaoDeRespiracao } from '@/components/respiracao/CartaoDeRespiracao';
 import { Button } from '@/components/ui/button';
@@ -271,7 +272,10 @@ export function MeuDia() {
 
       <LeituraDoDia briefing={briefing} agora={agora} />
 
-      <CartaoDeRespiracao />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <JanelasDeHoje agora={agora} />
+        <CartaoDeRespiracao />
+      </div>
 
       <section
         aria-labelledby="titulo-periodos"

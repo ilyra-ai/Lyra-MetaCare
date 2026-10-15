@@ -67,7 +67,9 @@ export default function PoliticaDePrivacidadePage() {
           <li>
             <strong>Coach diário:</strong> o &quot;Seu dia&quot; preparado todos
             os dias a partir do seu mapa védico, do céu da sua cidade e das suas
-            métricas, a sua resposta a &quot;isso te ajudou?&quot; e as
+            métricas, a sua resposta a &quot;isso te ajudou?&quot;, a reflexão
+            da noite, as sessões de respiração guiada, o link privado da agenda
+            no calendário (guardado como resumo criptográfico e cifrado) e as
             notificações do sino. Horários e recomendações são calculados nos
             motores da própria Lyra; a leitura védica do dia pode ser escrita
             pelo modelo de IA escolhido pela Lyra, só com dados astrológicos
@@ -181,6 +183,17 @@ export default function PoliticaDePrivacidadePage() {
               seguem o seu nome, e-mail, data, hora ou cidade de nascimento,
               métricas, ciclo menstrual nem sinais do corpo. Com um modelo
               local, nada sai da Lyra.
+            </li>
+            <li>
+              <strong>
+                O app de calendário que você escolher, quando você assina a
+                agenda védica
+              </strong>{' '}
+              (Google, Apple, Outlook ou outro): ele lê pelo link privado os
+              horários das janelas do dia (Brahma Muhurta, Abhijit, Rahu Kalam e
+              pôr do sol) e o nome da sua cidade. Nenhum dado de saúde vai no
+              link. Você troca ou desativa o link quando quiser no &quot;Meu
+              dia&quot;.
             </li>
             <li>
               <strong>Monitoramento de erros (Sentry)</strong>, quando
