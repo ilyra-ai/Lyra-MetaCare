@@ -43,24 +43,29 @@ export const QUALIDADE: Record<
   },
 };
 
-export const TOM: Record<Tom, { rotulo: string; aura: string; selo: string }> =
-  {
-    favoravel: {
-      rotulo: 'Dia favorável',
-      aura: 'from-success/25 via-cosmic/15',
-      selo: 'border-success/30 bg-success-light text-foreground',
-    },
-    misto: {
-      rotulo: 'Dia de equilíbrio',
-      aura: 'from-cosmic/25 via-golden/15',
-      selo: 'border-cosmic/30 bg-cosmic-light text-foreground',
-    },
-    atencao: {
-      rotulo: 'Dia de atenção',
-      aura: 'from-warning/25 via-cosmic/10',
-      selo: 'border-warning/30 bg-warning-light text-foreground',
-    },
-  };
+export const TOM: Record<
+  Tom,
+  { rotulo: string; aura: string; selo: string; halo: string }
+> = {
+  favoravel: {
+    rotulo: 'Dia favorável',
+    aura: 'from-success/25 via-cosmic/15',
+    selo: 'border-success/30 bg-success-light text-foreground',
+    halo: 'bg-success/10 ring-success/30',
+  },
+  misto: {
+    rotulo: 'Dia de equilíbrio',
+    aura: 'from-cosmic/25 via-golden/15',
+    selo: 'border-cosmic/30 bg-cosmic-light text-foreground',
+    halo: 'bg-cosmic/10 ring-cosmic/30',
+  },
+  atencao: {
+    rotulo: 'Dia de atenção',
+    aura: 'from-warning/25 via-cosmic/10',
+    selo: 'border-warning/30 bg-warning-light text-foreground',
+    halo: 'bg-warning/10 ring-warning/30',
+  },
+};
 
 /** "Bom dia", "Boa tarde" ou "Boa noite" pela hora do lugar do briefing. */
 export function saudacao(agora: number, fuso: string, nome: string | null) {
@@ -178,10 +183,16 @@ export function AnelDeProntidao({
   valor,
   rotulo,
   tamanho = 112,
+  aura = null,
 }: {
   valor: number | null;
   rotulo: string;
   tamanho?: number;
+  /**
+   * "Aura do dia" (tarefa 44): halo chapado em volta do anel, na cor do tom
+   * do dia (sem brilho nem desfoque, como pede o Lyra Clean).
+   */
+  aura?: Tom | null;
 }) {
   const raio = 44;
   const circunferencia = 2 * Math.PI * raio;
@@ -206,9 +217,18 @@ export function AnelDeProntidao({
       className="relative shrink-0"
       style={{ width: tamanho, height: tamanho }}
     >
+      {aura ? (
+        <span
+          aria-hidden="true"
+          className={cn(
+            'absolute -inset-3 rounded-full ring-1 ring-inset',
+            TOM[aura].halo
+          )}
+        />
+      ) : null}
       <svg
         viewBox="0 0 100 100"
-        className="h-full w-full -rotate-90"
+        className="relative h-full w-full -rotate-90"
         aria-hidden="true"
       >
         <circle

@@ -8,14 +8,17 @@ import {
   BedDouble,
   Brain,
   CalendarClock,
+  CalendarPlus,
   Dumbbell,
   HeartPulse,
   Moon,
+  MoonStar,
   Orbit,
   ShieldAlert,
   Sparkles,
   Sunrise,
   TriangleAlert,
+  Wind,
 } from 'lucide-react';
 
 import { JanelasDeHoje } from '@/components/calendario/JanelasDeHoje';
@@ -170,8 +173,11 @@ function CeuDeHoje({ briefing }: { briefing: BriefingDoDia }) {
 
 /**
  * Página "Meu dia" (tarefa 42): o briefing completo do coach, com o relógio
- * radial das 24 h, os quatro períodos, as recomendações por área, o céu do
- * dia e a avaliação "isso te ajudou?".
+ * radial das 24 h, os quatro períodos, as recomendações por área e o céu do
+ * dia. Desde a tarefa 44: a "Aura do dia" no topo (anel da prontidão com o
+ * halo na cor do tom do dia e as ações Respirar, Levar para o calendário e
+ * Reflexão da noite), as janelas de hoje, a respiração guiada, a semana e a
+ * reflexão da noite junto da avaliação da leitura.
  */
 export function MeuDia() {
   const { estado, carregando, agora } = useCoachDoDia();
@@ -212,6 +218,9 @@ export function MeuDia() {
               >
                 {TOM[briefing.tom].rotulo}
               </span>
+              <span className="rounded-full border border-border bg-background/70 px-2 py-0.5 font-medium text-foreground">
+                Lua em {briefing.ceu.nakshatra}
+              </span>
             </div>
             <p className="text-sm text-muted-foreground">
               {saudacao(
@@ -229,12 +238,40 @@ export function MeuDia() {
             <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
               {briefing.resumo}
             </p>
-            <div className="mt-2 flex flex-wrap items-center gap-5">
-              <AnelDeProntidao
-                valor={briefing.prontidao.valor}
-                rotulo={briefing.prontidao.rotulo}
-                tamanho={96}
-              />
+            <nav
+              aria-label="Ações do dia"
+              className="flex flex-wrap items-center gap-2"
+            >
+              <Button asChild size="sm">
+                <Link href="/respiracao">
+                  <Wind aria-hidden="true" />
+                  Respirar agora
+                </Link>
+              </Button>
+              <Button asChild size="sm" variant="outline">
+                <a href="#janelas">
+                  <CalendarPlus aria-hidden="true" />
+                  Levar para o calendário
+                </a>
+              </Button>
+              <Button asChild size="sm" variant="outline">
+                <a href="#reflexao">
+                  <MoonStar aria-hidden="true" />
+                  Reflexão da noite
+                </a>
+              </Button>
+            </nav>
+            <div className="mt-3 flex flex-wrap items-center gap-6">
+              {/* Margem do tamanho do halo (-inset-3), para ele não encostar
+                  na borda do cartão. */}
+              <div className="m-3">
+                <AnelDeProntidao
+                  valor={briefing.prontidao.valor}
+                  rotulo={briefing.prontidao.rotulo}
+                  tamanho={104}
+                  aura={briefing.tom}
+                />
+              </div>
               <div className="flex min-w-0 flex-[1_1_14rem] flex-col gap-2">
                 <p className="text-sm font-semibold text-foreground">
                   {briefing.prontidao.rotulo}

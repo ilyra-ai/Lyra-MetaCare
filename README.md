@@ -11,7 +11,7 @@
 [![MySQL](https://img.shields.io/badge/MySQL-9.7_LTS-4479A1?style=flat-square&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-24_LTS-5FA04E?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Stripe](https://img.shields.io/badge/Stripe-Billing-635BFF?style=flat-square&logo=stripe&logoColor=white)](https://stripe.com/)
-[![Vitest](https://img.shields.io/badge/Vitest-498_testes-6E9F18?style=flat-square&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-555_testes-6E9F18?style=flat-square&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![IA local](https://img.shields.io/badge/IA-local_ou_nuvem-7C3AED?style=flat-square)](./docs/ia-automatica.md)
 [![pnpm](https://img.shields.io/badge/pnpm-workspace-F69220?style=flat-square&logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![Licença](https://img.shields.io/badge/Licença-MIT-22C55E?style=flat-square)](#-licença)
@@ -46,6 +46,11 @@ O **Lyra MetaCare** transforma dados de wearables, hábitos e contexto pessoal e
 
 | Recurso                                       | O que entrega                                                                                                                                                                                                                                                                                 |
 | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ✨ **Aura do dia**                            | Topo do "Meu dia" com o anel da prontidão envolto pelo halo na cor do tom do dia e as ações Respirar, Levar para o calendário e Reflexão da noite. ([coach.md](./docs/coach.md))                                                                                                              |
+| 🌬️ **Respiração guiada**                      | 4-7-8, quadrada e Nadi Shodhana com orbe no ritmo real (pelo relógio), voz e vibração opcionais e modo sem movimento; os minutos entram na meditação do dia e nas metas.                                                                                                                      |
+| 📅 **Agenda védica no calendário**            | Brahma Muhurta, Abhijit, Rahu Kalam e pôr do sol em .ics e num link privado de assinatura (Google, Apple, Outlook), recalculado a cada leitura.                                                                                                                                               |
+| 🗓️ **Sua semana**                             | Retrospectiva dos últimos 7 dias (prontidão, sono, prática, reflexões, metas e Tara de cada dia) com percepções só quando os registros sustentam.                                                                                                                                             |
+| 🌙 **Reflexão da noite**                      | Notas de 1 a 5 para emocional, corpo e espiritual e uma frase, junto da avaliação da leitura do dia.                                                                                                                                                                                          |
 | 💚 **Identidade oficial**                     | Logo oficial (o "L" em teal abraçando o coração coral) como marca do app, favicon, ícone da Apple e ícones do manifesto; todas as cores dos dois temas derivadas do logo, com contraste WCAG 2.2 AA verificado por teste. ([design-system.md](./docs/design-system.md))                       |
 | 🪐 **"Seu dia": leitura védica diária**       | 1) resumo geral; 2) cada período (madrugada, manhã, tarde e noite) por parte emocional, física e espiritual; 3) pontos positivos e negativos; 4) dicas do mapa para a data, cada uma com o fundamento. Diferente a cada dia. ([coach.md](./docs/coach.md))                                    |
 | 🧩 **Qualquer modelo de IA, inclusive local** | Admin → Modelos de IA: Ollama, LM Studio, Jan, llama.cpp, vLLM, LocalAI, KoboldCpp, GPT4All, OpenAI, Gemini, Claude, OpenRouter, Groq, Mistral, DeepSeek, Together e xAI, com saída estruturada por JSON Schema e o motor da Lyra como reserva. ([ia-automatica.md](./docs/ia-automatica.md)) |
@@ -298,7 +303,7 @@ run_windows.py         # Atalho para PowerShell/CMD que executa o run.sh
 
 ## 🧪 Testes & Qualidade
 
-- **367 testes unitários** (motores de domínio, mapa védico, coach e leitura, cliente de IA, cifra, autenticação, segurança, sanitização, Puck, configuração) e **131 testes de integração** contra um MySQL real isolado (API de dados, rotas administrativas, coach, modelos de IA, metas, métricas, LGPD, planos, billing e webhook da Stripe), além de **17 testes dos launchers** (`pnpm test:launchers`). As integrações de IA usam um servidor HTTP real compatível com a OpenAI (`tests/support`), não respostas simuladas.
+- **401 testes unitários** (motores de domínio, mapa védico, coach e leitura, cliente de IA, cifra, autenticação, segurança, sanitização, Puck, configuração, contraste WCAG dos temas, iCalendar, respiração guiada, reflexão e retrospectiva da semana) e **154 testes de integração** contra um MySQL real isolado (API de dados, rotas administrativas, coach, modelos de IA, metas, métricas, reflexão, respiração, agenda no calendário, semana, LGPD, planos, billing e webhook da Stripe), além de **17 testes dos launchers** (`pnpm test:launchers`). As integrações de IA usam um servidor HTTP real compatível com a OpenAI (`tests/support`), não respostas simuladas.
 - Portões de qualidade obrigatórios antes de cada entrega:
 
 ```bash

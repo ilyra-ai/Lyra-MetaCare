@@ -47,6 +47,10 @@ Os fatos de cada período, calculados no meio do período e no lugar do dia:
 
 O motor da Lyra escreve a leitura com esses fatos; como o céu muda (tithi, nakshatra, dia da semana, horas, ascendente), cada dia sai diferente. Com um modelo de IA configurado (`src/lib/coach/leitura-ia.ts`), o modelo recebe os mesmos fatos e a leitura de ontem, para não repetir, e a resposta só é aceita com o formato completo (Zod), os quatro períodos, horários que existem no dia e resumo diferente do de ontem. Uma falha mantém a leitura da Lyra e uma nova tentativa acontece depois de 30 minutos. Trocar o modelo refaz o dia.
 
+## Aura do dia (tarefa 44)
+
+O topo do "Meu dia" passou a ser a **Aura do dia**: o anel da prontidão envolto por um halo chapado na cor do tom do dia (verde no dia favorável, coral no dia de equilíbrio, âmbar no dia de atenção; sem brilho nem desfoque, como pede o Lyra Clean), o selo do tom e da Lua do dia ("Lua em Jyeshtha") e três ações à mão: **Respirar agora** (abre `/respiracao` com a técnica recomendada), **Levar para o calendário** (leva às janelas de hoje, com o .ics e a assinatura) e **Reflexão da noite** (leva à seção de reflexão). Logo abaixo da leitura do dia ficam, em grade, as janelas de hoje, a respiração guiada e a semana.
+
 ## Reflexão da noite (tarefa 44)
 
 Fecha o ciclo do dia no "Meu dia" (`#reflexao`): a pessoa dá uma nota de 1 a 5 para a parte **emocional**, o **corpo** e a parte **espiritual** (as mesmas dimensões da leitura) e escreve uma frase opcional de até 280 caracteres. Na mesma seção fica a avaliação "a leitura de hoje te ajudou?".
