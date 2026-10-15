@@ -1,104 +1,72 @@
 import { NextResponse } from 'next/server';
 
 import { generateLocalAssistantReply } from '@/lib/ai/chat-engine';
+import { ErroDoProvedor, gerarTexto } from '@/lib/ai/cliente-de-ia';
 import { generateLocalWellnessPlan } from '@/lib/ai/plan-engine';
+import {
+  conexaoDoProvedor,
+  lerProvedorDaPlataforma,
+} from '@/lib/ai/provedor-da-plataforma';
 import { calculateLongevityScores } from '@/lib/ai/score-engine';
 import { getAstrologicalContext } from '@/lib/astrology/engine';
 import { mensagemDeErro, statusDeErro } from '@/lib/http/api';
-import { requireServerSession } from '@/lib/mysql/server-auth';
+import { requireAdminSession } from '@/lib/mysql/server-auth';
 
 export const runtime = 'nodejs';
 
-async function testGeminiConnection() {
-  const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-
-  if (!apiKey) {
+/** Testa o provedor de IA salvo (o mesmo usado pelo "Seu dia"). */
+async function testarProvedorSalvo() {
+  const provedor = await lerProvedorDaPlataforma();
+  const conexao = conexaoDoProvedor(provedor);
+  if (!conexao) {
     return {
-      configured: false,
-      ok: false,
-      provider: 'gemini',
-      message:
-        'Gemini não configurado no ambiente local. Os motores locais continuam disponíveis.',
+      configurado: false,
+      ok: provedor.tipo === 'lyra_local',
+      tipo: provedor.tipo,
+      mensagem:
+        provedor.tipo === 'lyra_local'
+          ? 'Só o motor da Lyra: nenhum modelo generativo configurado.'
+          : 'Provedor incompleto (modelo, URL ou chave): o motor da Lyra responde no lugar.',
     };
   }
-
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-    {
-      method: 'POST',
-      // Chave no cabeçalho, nunca na URL (que aparece em logs de proxy).
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey,
-      },
-      signal: AbortSignal.timeout(20_000),
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: 'Responda apenas com OK para validar a conexão administrativa.',
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: 0,
-          maxOutputTokens: 8,
-        },
-      }),
-      cache: 'no-store',
-    }
-  );
-
-  const payload = (await response.json()) as {
-    candidates?: Array<{
-      content?: {
-        parts?: Array<{ text?: string }>;
-      };
-    }>;
-    error?: {
-      message?: string;
-    };
-  };
-
-  if (!response.ok) {
+  const inicio = performance.now();
+  try {
+    const resposta = await gerarTexto(conexao, {
+      sistema: 'Responda apenas com a palavra OK.',
+      usuario: 'Teste de conexão administrativa.',
+      maximoDeTokens: 16,
+    });
     return {
-      configured: true,
+      configurado: true,
+      ok: true,
+      tipo: provedor.tipo,
+      modelo: provedor.modelo,
+      milissegundos: Math.round(performance.now() - inicio),
+      resposta: resposta.slice(0, 120),
+    };
+  } catch (erro) {
+    return {
+      configurado: true,
       ok: false,
-      provider: 'gemini',
-      model,
-      status: response.status,
-      error: payload.error?.message || 'Falha ao consultar o Gemini.',
+      tipo: provedor.tipo,
+      modelo: provedor.modelo,
+      milissegundos: Math.round(performance.now() - inicio),
+      erro:
+        erro instanceof ErroDoProvedor
+          ? erro.message
+          : 'Falha inesperada ao consultar o provedor.',
     };
   }
-
-  const preview =
-    payload.candidates
-      ?.flatMap((candidate) => candidate.content?.parts ?? [])
-      .map((part) => part.text?.trim() || '')
-      .filter(Boolean)
-      .join(' ') || '';
-
-  return {
-    configured: true,
-    ok: preview.toLowerCase().includes('ok'),
-    provider: 'gemini',
-    model,
-    preview,
-  };
 }
 
+/**
+ * Autoteste administrativo: executa os motores locais com um conjunto fixo
+ * de entradas de referência (para conferir que calculam em runtime) e testa
+ * o provedor de IA salvo.
+ */
 export async function POST() {
   try {
-    const session = await requireServerSession();
-    if (session.user.role !== 'admin') {
-      return NextResponse.json(
-        { success: false, error: 'Acesso restrito a administradores.' },
-        { status: 403 }
-      );
-    }
+    await requireAdminSession();
 
     const astrology = getAstrologicalContext();
     const scoreCheck = calculateLongevityScores({
@@ -141,29 +109,9 @@ export async function POST() {
       },
       astrology,
     });
-    // Falha de rede ou timeout do Gemini é resultado do teste, não erro da rota.
-    const geminiCheck = await testGeminiConnection().catch(
-      (error: unknown) => ({
-        configured: true,
-        ok: false,
-        provider: 'gemini',
-        error:
-          error instanceof Error
-            ? `Sem resposta do Gemini: ${error.message}`
-            : 'Sem resposta do Gemini.',
-      })
-    );
 
     return NextResponse.json({
       success: true,
-      models: [
-        {
-          id: 'lyra-local-orchestrator-v1',
-          label: 'Lyra Local Orchestrator v1',
-        },
-        { id: 'lyra-local-readiness-v1', label: 'Readiness Local v1' },
-        { id: 'lyra-local-chat-v1', label: 'Assistente Local v1' },
-      ],
       checks: {
         score_engine: {
           ok: Number.isFinite(scoreCheck.longevityScore),
@@ -180,10 +128,10 @@ export async function POST() {
           ok: assistantCheck.length > 0,
           preview: assistantCheck,
         },
-        gemini: geminiCheck,
+        provedor: await testarProvedorSalvo(),
       },
       message:
-        'Motores locais testados em runtime. Quando configurado, o Gemini também é validado em tempo real por esta rota administrativa.',
+        'Motores locais testados em runtime e provedor de IA salvo consultado em tempo real.',
     });
   } catch (error) {
     // 401/403 preservados (antes toda falha virava 500).

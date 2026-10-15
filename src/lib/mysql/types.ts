@@ -171,7 +171,6 @@ export interface AIConfigRow {
   weight_sleep: number;
   weight_activity: number;
   weight_nutrition: number;
-  model_name: string | null;
   updated_at: DateTimeString;
 }
 

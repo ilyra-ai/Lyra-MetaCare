@@ -25,7 +25,6 @@ describe('.env.example', () => {
       expect(valores[chave]).toBe('');
     }
     for (const chave of [
-      'GEMINI_API_KEY',
       'STRIPE_SECRET_KEY',
       'STRIPE_WEBHOOK_SECRET',
       'SENTRY_AUTH_TOKEN',

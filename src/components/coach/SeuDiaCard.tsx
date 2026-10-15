@@ -180,6 +180,9 @@ export function SeuDiaCard() {
 
   const { briefing } = estado;
   const atual = periodoAtual(briefing, agora);
+  const leituraAtual = atual
+    ? (briefing.leitura.periodos.find((p) => p.chave === atual.chave) ?? null)
+    : null;
   const cuidado = briefing.alertas[0] ?? briefing.cuidados[0] ?? null;
 
   return (
@@ -219,7 +222,7 @@ export function SeuDiaCard() {
               {briefing.manchete}
             </h2>
             <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              {briefing.resumo}
+              {briefing.leitura.resumoGeral}
             </p>
           </div>
           <AnelDeProntidao
@@ -240,6 +243,29 @@ export function SeuDiaCard() {
               </span>
               {atual.sugestao}
             </p>
+          ) : null}
+          {leituraAtual ? (
+            <dl className="grid gap-2 sm:grid-cols-3">
+              {(
+                [
+                  ['Emocional', leituraAtual.emocional],
+                  ['Corpo', leituraAtual.fisico],
+                  ['Espiritual', leituraAtual.espiritual],
+                ] as const
+              ).map(([rotulo, texto]) => (
+                <div
+                  key={rotulo}
+                  className="min-w-0 rounded-xl border border-border bg-card/80 px-3 py-2"
+                >
+                  <dt className="text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+                    {rotulo}
+                  </dt>
+                  <dd className="mt-0.5 line-clamp-3 text-xs leading-relaxed text-foreground">
+                    {texto}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           ) : null}
         </div>
 
@@ -280,7 +306,11 @@ export function SeuDiaCard() {
           <p className="text-xs text-muted-foreground">
             Preparado às{' '}
             {horaDoBriefing(briefing.geradoEm, briefing.local.fuso)} com o seu
-            mapa védico e os seus sinais · atualiza com o check-in.
+            mapa védico e os seus sinais
+            {briefing.leitura.autor.tipo === 'ia'
+              ? ` · leitura por ${briefing.leitura.autor.provedor}`
+              : ''}{' '}
+            · atualiza com o check-in.
           </p>
           <Button asChild variant="secondary">
             <Link href="/dia">

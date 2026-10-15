@@ -34,15 +34,27 @@ interface ChatContext {
 }
 
 function resumoDoDia(dia: BriefingDoDia) {
+  const leituraDo = (chave: string) =>
+    dia.leitura.periodos.find((p) => p.chave === chave);
   const linhas = [
     `Seu dia (${dia.local.rotulo.split(',')[0]}): ${dia.manchete}.`,
-    ...dia.periodos.map(
-      (p) =>
-        `- ${p.nome} (${p.horario}): ${p.qualidade === 'favoravel' ? 'favorável' : p.qualidade === 'neutro' ? 'neutro' : 'cautela'}. ${p.sugestao}`
-    ),
+    dia.leitura.resumoGeral,
+    ...dia.periodos.map((p) => {
+      const leitura = leituraDo(p.chave);
+      return `- ${p.nome} (${p.horario}): ${p.qualidade === 'favoravel' ? 'favorável' : p.qualidade === 'neutro' ? 'neutro' : 'cautela'}. ${p.sugestao}${
+        leitura
+          ? ` Emocional: ${leitura.emocional} Físico: ${leitura.fisico} Espiritual: ${leitura.espiritual}`
+          : ''
+      }`;
+    }),
     `Focos: ${dia.focos.map((f) => f.texto).join(' ')}`,
     `Cuidados: ${dia.cuidados.map((c) => c.texto).join(' ')}`,
   ];
+  linhas.push(
+    `Pontos positivos: ${dia.leitura.pontosPositivos.join(' ')}`,
+    `Pontos negativos: ${dia.leitura.pontosNegativos.join(' ')}`,
+    `Dicas do mapa: ${dia.leitura.dicas.map((d) => d.texto).join(' ')}`
+  );
   if (dia.alertas.length > 0) {
     linhas.push(`Atenção: ${dia.alertas.map((a) => a.texto).join(' ')}`);
   }

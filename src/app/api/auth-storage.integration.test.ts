@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import { SESSION_COOKIE_NAME } from '@/lib/auth/session';
+import {
+  VERSAO_POLITICA_DE_PRIVACIDADE,
+  VERSAO_TERMOS_DE_USO,
+} from '@/lib/lgpd/documentos';
 import { executeStatement, queryRows } from '@/lib/mysql/pool';
 
 import { criarUsuario } from '../../../tests/integration/fixtures';
@@ -106,8 +110,11 @@ describe('POST /api/auth/register e /api/auth/login', () => {
       [email]
     );
     expect(consentimentos).toEqual([
-      { consent_type: 'privacy_policy', document_version: '2026-10-14' },
-      { consent_type: 'terms_of_use', document_version: '2026-10-12' },
+      {
+        consent_type: 'privacy_policy',
+        document_version: VERSAO_POLITICA_DE_PRIVACIDADE,
+      },
+      { consent_type: 'terms_of_use', document_version: VERSAO_TERMOS_DE_USO },
     ]);
 
     const repetido = await chamar(register.POST, {

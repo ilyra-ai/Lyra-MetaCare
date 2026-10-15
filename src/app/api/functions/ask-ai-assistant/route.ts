@@ -6,6 +6,12 @@ import {
   generateLocalAssistantReply,
   type AiSkillDocument,
 } from '@/lib/ai/chat-engine';
+import { ErroDoProvedor, gerarTexto } from '@/lib/ai/cliente-de-ia';
+import {
+  conexaoDoProvedor,
+  lerProvedorDaPlataforma,
+  provedorPublico,
+} from '@/lib/ai/provedor-da-plataforma';
 import { getAstrologicalContext } from '@/lib/astrology/engine';
 import { obterBriefingDoDia } from '@/lib/coach/servico';
 import type { BriefingDoDia } from '@/lib/coach/tipos';
@@ -118,13 +124,8 @@ export async function POST(request: Request) {
 
     let finalResponse = fallbackResponse;
 
-    // BYOK: a chave vai no cabeçalho x-goog-api-key (nunca na URL, que aparece
-    // em logs de proxy); o motor local é a resposta se o LLM falhar.
-    if (userApiKey) {
-      try {
-        const aiModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-        const skillsContext = buildSkillsContext(skills);
-        const systemPrompt = `Você é o Lyra MetaCare, um assistente de bem-estar integrativo. Não substitui avaliação profissional de saúde.
+    const skillsContext = buildSkillsContext(skills);
+    const systemPrompt = `Você é o Lyra MetaCare, um assistente de bem-estar integrativo. Não substitui avaliação profissional de saúde.
 ${
   skillsContext
     ? `${skillsContext}
@@ -136,6 +137,34 @@ ${
 ${fallbackResponse}
 ---
 Use esta análise como base e siga estritamente as habilidades, skills e treinamentos configurados acima para responder à pergunta do usuário de forma humana, empática e embasada. Responda APENAS com a sua resposta direta.`;
+
+    // Sem chave própria: o modelo da plataforma responde quando roda na
+    // infraestrutura da Lyra (Ollama, LM Studio, Jan, llama.cpp etc.), porque
+    // a análise leva métricas de saúde e elas não saem do servidor. Modelos
+    // em nuvem da plataforma não recebem a conversa.
+    const provedor = userApiKey ? null : await lerProvedorDaPlataforma();
+    const conexao = provedor ? conexaoDoProvedor(provedor) : null;
+    if (provedor && conexao && provedorPublico(provedor).local) {
+      try {
+        finalResponse = await gerarTexto(conexao, {
+          sistema: systemPrompt,
+          usuario: query,
+          maximoDeTokens: 1024,
+        });
+      } catch (erro) {
+        console.error(
+          `[ask-ai-assistant] Modelo local da plataforma indisponível (${
+            erro instanceof ErroDoProvedor ? erro.message : 'falha inesperada'
+          }); usando o motor local.`
+        );
+      }
+    }
+
+    // BYOK: a chave vai no cabeçalho x-goog-api-key (nunca na URL, que aparece
+    // em logs de proxy); o motor local é a resposta se o LLM falhar.
+    if (userApiKey) {
+      try {
+        const aiModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
         const geminiRes = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(aiModel)}:generateContent`,

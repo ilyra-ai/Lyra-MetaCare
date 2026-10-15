@@ -24,6 +24,11 @@ import {
   VARA_INFO,
 } from './conhecimento';
 import type { ContextoDoCoach, MetricasDoCoach } from './contexto';
+import {
+  type EntradaDaLeitura,
+  escreverLeituraLocal,
+  montarEntradaDaLeitura,
+} from './leitura-vedica';
 import { calcularPeriodos } from './periodos';
 import { calcularProntidao, formatarDuracao } from './prontidao';
 import type { BriefingDoDia, Dica, Periodo, Qualidade, Tom } from './tipos';
@@ -230,10 +235,18 @@ export interface EntradaDoGerador {
   agora: Date;
 }
 
-export function gerarBriefingLocal({
-  contexto,
-  agora,
-}: EntradaDoGerador): BriefingDoDia {
+export function gerarBriefingLocal(entrada: EntradaDoGerador): BriefingDoDia {
+  return gerarDiaLocal(entrada).briefing;
+}
+
+/**
+ * Briefing do dia com a leitura védica escrita pelo motor da Lyra, junto dos
+ * fatos astrológicos da leitura (a entrada do modelo de IA, quando houver).
+ */
+export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
+  briefing: BriefingDoDia;
+  entradaDaLeitura: EntradaDaLeitura;
+} {
   const { data, perfil, pessoa, hoje, historico } = contexto;
   const lugar = perfil.localDoDia;
   const fuso = lugar.fuso;
@@ -733,11 +746,25 @@ export function gerarBriefingLocal({
     );
   }
 
-  return {
-    versao: 1,
+  const entradaDaLeitura = montarEntradaDaLeitura({
+    data,
+    fuso,
+    latitude: lugar.latitude,
+    longitude: lugar.longitude,
+    hoje: panchang,
+    ontem,
+    dia,
+    mapa,
+    periodos,
+    melhorJanela: janelas.melhor,
+  });
+
+  const briefing: BriefingDoDia = {
+    versao: 2,
     data,
     geradoEm: agora.toISOString(),
     origem: 'local',
+    leitura: escreverLeituraLocal(entradaDaLeitura),
     local: { rotulo: lugar.rotulo, fuso },
     nome: pessoa.nome,
     tom,
@@ -784,4 +811,5 @@ export function gerarBriefingLocal({
     alertas,
     completar,
   };
+  return { briefing, entradaDaLeitura };
 }

@@ -7,7 +7,6 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 import {
   Loader2,
-  RefreshCw,
   Settings,
   Zap,
   HeartPulse,
@@ -16,9 +15,9 @@ import {
   Apple,
   BrainCircuit,
   Sparkles,
-  Server,
 } from 'lucide-react';
 
+import { ProvedorDeIa } from '@/components/admin/ProvedorDeIa';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
@@ -37,13 +36,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -54,7 +46,6 @@ const aiConfigSchema = z.object({
   weight_sleep: z.coerce.number<number | string>().min(0).max(100),
   weight_activity: z.coerce.number<number | string>().min(0).max(100),
   weight_nutrition: z.coerce.number<number | string>().min(0).max(100),
-  model_name: z.string().min(1, 'Selecione um motor local.'),
 });
 
 type AIConfigRow = {
@@ -65,7 +56,6 @@ type AIConfigRow = {
   weight_sleep: number;
   weight_activity: number;
   weight_nutrition: number;
-  model_name: string | null;
 };
 
 type AIConfigInput = z.input<typeof aiConfigSchema>;
@@ -74,12 +64,8 @@ type AIConfigValues = z.output<typeof aiConfigSchema>;
 export function AIConfigForm() {
   const { db } = useAuth();
   const [configId, setConfigId] = React.useState<string | null>(null);
-  const [availableModels, setAvailableModels] = React.useState<
-    Array<{ id: string; label: string }>
-  >([]);
   const [isLoadingConfig, setIsLoadingConfig] = React.useState(true);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isLoadingModels, setIsLoadingModels] = React.useState(false);
 
   const form = useForm<AIConfigInput, unknown, AIConfigValues>({
     resolver: zodResolver(aiConfigSchema),
@@ -90,7 +76,6 @@ export function AIConfigForm() {
       weight_sleep: 30,
       weight_activity: 25,
       weight_nutrition: 15,
-      model_name: '',
     },
   });
 
@@ -125,14 +110,7 @@ export function AIConfigForm() {
         weight_sleep: Number(row.weight_sleep),
         weight_activity: Number(row.weight_activity),
         weight_nutrition: Number(row.weight_nutrition),
-        model_name: String(row.model_name ?? ''),
       });
-
-      if (row.model_name) {
-        setAvailableModels([
-          { id: String(row.model_name), label: String(row.model_name) },
-        ]);
-      }
 
       setIsLoadingConfig(false);
     };
@@ -143,30 +121,6 @@ export function AIConfigForm() {
       active = false;
     };
   }, [form, db]);
-
-  const loadLocalModels = async () => {
-    setIsLoadingModels(true);
-    const { data, error } = await db.functions.invoke<{
-      success: boolean;
-      models: Array<{ id: string; label: string }>;
-      error?: string;
-    }>('test-ai-connection');
-    setIsLoadingModels(false);
-
-    if (error || !data?.success) {
-      toast.error('Falha ao consultar catálogo local.', {
-        description:
-          error?.message || data?.error || 'Motores locais indisponíveis.',
-      });
-      return;
-    }
-
-    setAvailableModels(data.models);
-    if (data.models[0]) {
-      form.setValue('model_name', data.models[0].id, { shouldValidate: true });
-    }
-    toast.success('Motores locais carregados.');
-  };
 
   const onSubmit = async (values: AIConfigValues) => {
     if (!configId) {
@@ -210,21 +164,24 @@ export function AIConfigForm() {
   return (
     <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
       <div className="min-w-0 space-y-6 lg:col-span-8">
-        {/* Bloco 1: Seleção do Motor (Em destaque) */}
+        {/* Bloco 1: modelo de IA da plataforma (local ou em nuvem). */}
+        <ProvedorDeIa />
+
+        {/* Bloco 2: diretrizes e calibração dos motores determinísticos. */}
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-3 text-xl">
+            <h2 className="flex items-center gap-3 font-display text-xl font-semibold leading-tight tracking-tight text-card-foreground">
               <span
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic"
                 aria-hidden="true"
               >
                 <BrainCircuit className="h-5 w-5" />
               </span>
-              Motor de Orquestração
-            </CardTitle>
+              Diretrizes e calibração
+            </h2>
             <CardDescription>
-              Selecione e calibre o motor de IA responsável pelas inferências
-              locais no backend MySQL.
+              Missão, objetivos e pesos dos biomarcadores usados pelos motores
+              de score e de plano da Lyra.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -234,70 +191,8 @@ export function AIConfigForm() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 id="ai-config-form"
               >
-                <FormField
-                  control={form.control}
-                  name="model_name"
-                  render={({ field }) => (
-                    <FormItem className="rounded-md border border-border bg-background p-5">
-                      <FormLabel className="flex items-center gap-2 font-semibold text-foreground">
-                        <Server
-                          className="h-4 w-4 text-primary"
-                          aria-hidden="true"
-                        />
-                        Motor Local Ativo
-                      </FormLabel>
-                      <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-                        <div className="min-w-0 flex-1">
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione um motor local operante..." />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {availableModels.map((model) => (
-                                <SelectItem
-                                  key={model.id}
-                                  value={model.id}
-                                  className="cursor-pointer"
-                                >
-                                  {model.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={loadLocalModels}
-                          disabled={isLoadingModels}
-                          className="h-11"
-                        >
-                          {isLoadingModels ? (
-                            <Loader2
-                              className="mr-2 h-4 w-4 animate-spin text-primary"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <RefreshCw
-                              className="mr-2 h-4 w-4 text-primary"
-                              aria-hidden="true"
-                            />
-                          )}
-                          Escanear Rede
-                        </Button>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Bloco 2: Diretrizes Comportamentais integrado no form */}
-                <div className="space-y-5 border-t border-border pt-6">
+                {/* Diretrizes Comportamentais */}
+                <div className="space-y-5">
                   <h3 className="flex items-center gap-3 font-display text-lg font-semibold tracking-tight text-foreground">
                     <span
                       className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic"
@@ -487,11 +382,11 @@ export function AIConfigForm() {
               </span>
               <div className="min-w-0">
                 <h3 className="font-display text-lg font-semibold tracking-tight text-foreground">
-                  Salvar Configurações
+                  Salvar diretrizes
                 </h3>
                 <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                  Aplique todas as alterações feitas no motor e pesos na tabela
-                  ai_config.
+                  Grava a missão, os objetivos e os pesos dos biomarcadores. O
+                  modelo de IA é salvo no próprio cartão dele.
                 </p>
               </div>
             </div>

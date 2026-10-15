@@ -11,16 +11,8 @@ import { requireServerSession } from '@/lib/mysql/server-auth';
 
 export const runtime = 'nodejs';
 
-// O consentimento do texto do coach por IA externa liga também a preferência
-// no perfil: só pela rota própria (/api/perfil/coach-ia), que permite revogar.
-const TIPOS_DESTA_ROTA = [
-  'terms_of_use',
-  'privacy_policy',
-  'health_data_processing',
-] as const satisfies readonly (typeof TIPOS_DE_CONSENTIMENTO)[number][];
-
 const registroSchema = z.object({
-  types: z.array(z.enum(TIPOS_DESTA_ROTA)).min(1).max(3),
+  types: z.array(z.enum(TIPOS_DE_CONSENTIMENTO)).min(1).max(3),
 });
 
 /** Consentimentos dados pela própria conta (documento, versão e data). */

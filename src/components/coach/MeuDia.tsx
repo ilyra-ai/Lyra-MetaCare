@@ -39,6 +39,7 @@ import {
   saudacao,
   TOM,
 } from './partes';
+import { LeituraDoDia } from './LeituraDoDia';
 import { EstadoSemDia, MolduraDoDia } from './SeuDiaCard';
 
 const SECOES = [
@@ -343,6 +344,8 @@ export function MeuDia() {
         </section>
       ) : null}
 
+      <LeituraDoDia briefing={briefing} agora={agora} />
+
       <section
         aria-labelledby="titulo-periodos"
         className="flex flex-col gap-4"
@@ -352,7 +355,7 @@ export function MeuDia() {
             id="titulo-periodos"
             className="font-display text-xl font-semibold text-foreground"
           >
-            O seu dia por período
+            Horários do dia por período
           </h3>
           <p className="text-xs text-muted-foreground">
             Horários de {briefing.local.rotulo.split(',')[0]}
@@ -379,7 +382,7 @@ export function MeuDia() {
             className="mb-4 flex items-center gap-2 font-display text-lg font-semibold text-foreground"
           >
             <Sparkles className="h-5 w-5 text-success" aria-hidden="true" />
-            Pontos fortes do dia
+            Focos práticos do dia
           </h3>
           <ListaDeDicas
             dicas={briefing.focos}
@@ -398,7 +401,7 @@ export function MeuDia() {
               className="h-5 w-5 text-warning"
               aria-hidden="true"
             />
-            Com o que tomar cuidado
+            Cuidados práticos
           </h3>
           <ListaDeDicas
             dicas={briefing.cuidados}
@@ -488,8 +491,8 @@ export function MeuDia() {
           Preparado às {horaDoBriefing(briefing.geradoEm, briefing.local.fuso)}{' '}
           pelo motor do coach Lyra com o Panchang de {briefing.local.rotulo}, o
           seu mapa védico e os sinais que você registrou
-          {briefing.origem === 'gemini'
-            ? '; o texto foi reescrito pelo Google Gemini, com o seu consentimento (os horários são da Lyra)'
+          {briefing.leitura.autor.tipo === 'ia'
+            ? `; a leitura do dia foi escrita por ${briefing.leitura.autor.provedor} (${briefing.leitura.autor.modelo}) só com os dados astrológicos, e os horários são calculados pela Lyra`
             : ''}
           . São orientações de bem-estar e autoconhecimento: não substituem
           avaliação profissional de saúde.

@@ -10,10 +10,19 @@ import { criarNotificacao } from '@/lib/notificacoes/servico';
 import { registrarErroInterno } from '@/lib/observability/log-seguro';
 import { recursoHabilitado } from '@/lib/plans/service';
 
+import {
+  assinaturaDoProvedor,
+  conexaoDoProvedor,
+  lerProvedorDaPlataforma,
+  provedorPublico,
+} from '@/lib/ai/provedor-da-plataforma';
+import { presetPorId } from '@/lib/ai/provedores-catalogo';
+
 import { hashDasEntradas, lerContextoDoCoach } from './contexto';
-import { gerarBriefingLocal } from './gerador-local';
-import { geminiDisponivel, refinarComGemini } from './gemini';
-import type { BriefingDoDia, EstadoDoCoach } from './tipos';
+import { gerarDiaLocal } from './gerador-local';
+import { escreverLeituraComIa } from './leitura-ia';
+import type { EntradaDaLeitura } from './leitura-vedica';
+import type { BriefingDoDia, EstadoDoCoach, LeituraVedica } from './tipos';
 
 /**
  * Serviço do coach diário: lê ou gera o "Seu dia" da pessoa, refaz quando as
@@ -35,13 +44,37 @@ interface LinhaDoBriefing {
   feedback: number | null;
 }
 
+/** Intervalo mínimo para tentar de novo a leitura pela IA após uma falha. */
+const NOVA_TENTATIVA_DA_IA_MS = 30 * 60_000;
+
 function briefingValido(valor: unknown): valor is BriefingDoDia {
   return (
     typeof valor === 'object' &&
     valor !== null &&
-    (valor as { versao?: unknown }).versao === 1 &&
-    Array.isArray((valor as { periodos?: unknown }).periodos)
+    (valor as { versao?: unknown }).versao === 2 &&
+    Array.isArray((valor as { periodos?: unknown }).periodos) &&
+    typeof (valor as { leitura?: unknown }).leitura === 'object'
   );
+}
+
+function diaAnterior(data: string) {
+  const instante = new Date(`${data}T12:00:00Z`);
+  instante.setUTCDate(instante.getUTCDate() - 1);
+  return instante.toISOString().slice(0, 10);
+}
+
+/** Leitura da véspera, para o modelo não repetir o texto. */
+async function leituraDeOntem(
+  userId: string,
+  data: string
+): Promise<LeituraVedica | null> {
+  const [linha] = await queryRows<{ content: unknown }>(
+    `SELECT content FROM daily_briefings
+      WHERE user_id = ? AND briefing_date = ? LIMIT 1`,
+    [userId, diaAnterior(data)]
+  );
+  const ontem = linha ? conteudo(linha.content) : null;
+  return briefingValido(ontem) ? ontem.leitura : null;
 }
 
 function conteudo(valor: unknown): unknown {
@@ -82,20 +115,42 @@ async function notificar(userId: string, briefing: BriefingDoDia) {
   }
 }
 
+// Pedidos simultâneos do mesmo dia (cartão do painel, página e chat) esperam
+// a mesma geração, em vez de chamar o modelo de IA várias vezes.
+const geracoesEmAndamento = new Map<string, Promise<EstadoDoCoach>>();
+
 /**
  * Briefing de hoje (data local do lugar do dia). Gera na primeira leitura do
- * dia e refaz quando as entradas mudaram desde a última geração.
+ * dia e refaz quando as entradas mudaram desde a última geração. A leitura
+ * védica é escrita pelo modelo de IA configurado pelo administrador (local
+ * ou em nuvem) e, sem modelo ou em qualquer falha, pelo motor da Lyra.
  */
 export async function obterBriefingDoDia(
   userId: string,
   agora: Date = new Date()
+): Promise<EstadoDoCoach> {
+  const chave = `${userId}:${agora.toISOString().slice(0, 13)}`;
+  const andamento = geracoesEmAndamento.get(chave);
+  if (andamento) return andamento;
+  const promessa = prepararBriefingDoDia(userId, agora).finally(() =>
+    geracoesEmAndamento.delete(chave)
+  );
+  geracoesEmAndamento.set(chave, promessa);
+  return promessa;
+}
+
+async function prepararBriefingDoDia(
+  userId: string,
+  agora: Date
 ): Promise<EstadoDoCoach> {
   const resultado = await lerContextoDoCoach(userId, agora);
   if (resultado.estado === 'sem_local') {
     return { estado: 'sem_local', faltando: resultado.perfil.faltando };
   }
   const { contexto } = resultado;
-  const hash = hashDasEntradas(contexto);
+  const provedor = await lerProvedorDaPlataforma();
+  const conexao = conexaoDoProvedor(provedor);
+  const hash = hashDasEntradas(contexto, assinaturaDoProvedor(provedor));
 
   const [existente] = await queryRows<LinhaDoBriefing>(
     `SELECT content, inputs_hash, feedback FROM daily_briefings
@@ -104,17 +159,28 @@ export async function obterBriefingDoDia(
   );
   const guardado = existente ? conteudo(existente.content) : null;
   if (existente && existente.inputs_hash === hash && briefingValido(guardado)) {
-    return {
-      estado: 'pronto',
-      briefing: guardado,
-      feedback: feedbackDe(existente.feedback),
-      atualizado: false,
-    };
+    // Com um modelo configurado, uma leitura que ficou com o motor da Lyra
+    // (ex.: o servidor local estava desligado) é tentada de novo depois de
+    // um intervalo.
+    const tentarDeNovo =
+      conexao !== null &&
+      guardado.origem === 'local' &&
+      agora.getTime() - new Date(guardado.geradoEm).getTime() >=
+        NOVA_TENTATIVA_DA_IA_MS;
+    if (!tentarDeNovo) {
+      return {
+        estado: 'pronto',
+        briefing: guardado,
+        feedback: feedbackDe(existente.feedback),
+        atualizado: false,
+      };
+    }
   }
 
   let briefing: BriefingDoDia;
+  let entradaDaLeitura: EntradaDaLeitura;
   try {
-    briefing = gerarBriefingLocal({ contexto, agora });
+    ({ briefing, entradaDaLeitura } = gerarDiaLocal({ contexto, agora }));
   } catch (error) {
     if (error instanceof LocalSemNascerDoSolError) {
       return { estado: 'sem_nascer_do_sol' };
@@ -122,10 +188,26 @@ export async function obterBriefingDoDia(
     throw error;
   }
 
-  // Texto pelo Gemini só com o consentimento da pessoa e a chave do
-  // servidor; qualquer falha mantém o texto do motor local.
-  if (contexto.pessoa.iaExterna && geminiDisponivel()) {
-    briefing = (await refinarComGemini(briefing)) ?? briefing;
+  if (conexao && provedor.modelo) {
+    const publico = provedorPublico(provedor);
+    const resultadoDaIa = await escreverLeituraComIa({
+      conexao,
+      autor: {
+        provedor: presetPorId(provedor.preset)?.nome ?? provedor.tipo,
+        modelo: provedor.modelo,
+        local: publico.local,
+      },
+      entrada: entradaDaLeitura,
+      base: briefing.leitura,
+      ontem: await leituraDeOntem(userId, contexto.data),
+    });
+    if (resultadoDaIa.ok) {
+      briefing = { ...briefing, origem: 'ia', leitura: resultadoDaIa.leitura };
+    } else {
+      console.error(
+        `[coach:ia] Leitura do modelo descartada (${resultadoDaIa.motivo}); mantida a leitura da Lyra.`
+      );
+    }
   }
 
   await executeStatement(

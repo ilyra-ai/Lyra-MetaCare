@@ -58,11 +58,41 @@ export interface Prontidao {
   base: string[];
 }
 
+/** Como o mapa védico fala de cada período: emoções, corpo e espírito. */
+export interface LeituraDoPeriodo {
+  chave: Periodo['chave'];
+  emocional: string;
+  fisico: string;
+  espiritual: string;
+}
+
+/** Quem escreveu a leitura: o motor da Lyra ou o modelo de IA configurado. */
+export type AutorDaLeitura =
+  | { tipo: 'lyra' }
+  | { tipo: 'ia'; provedor: string; modelo: string; local: boolean };
+
+/**
+ * Leitura védica do dia (tarefa 43): resumo geral, os quatro períodos por
+ * Emocional, Físico e Espiritual, pontos positivos e negativos e as dicas que
+ * o mapa traz para a data. Feita só com dados astrológicos.
+ */
+export interface LeituraVedica {
+  resumoGeral: string;
+  periodos: LeituraDoPeriodo[];
+  pontosPositivos: string[];
+  pontosNegativos: string[];
+  /** Dica com o fundamento no mapa em `porque`. */
+  dicas: Dica[];
+  autor: AutorDaLeitura;
+}
+
 export interface BriefingDoDia {
-  versao: 1;
+  versao: 2;
   data: string;
   geradoEm: string;
-  origem: 'local' | 'gemini';
+  /** `ia`: a leitura foi escrita pelo modelo configurado; `local`: pela Lyra. */
+  origem: 'local' | 'ia';
+  leitura: LeituraVedica;
   local: { rotulo: string; fuso: string };
   /** Primeiro nome, para a saudação (que a tela monta pela hora local). */
   nome: string | null;

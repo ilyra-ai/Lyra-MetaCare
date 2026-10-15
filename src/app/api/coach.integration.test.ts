@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { dataLocal } from '@/lib/astrology/tempo';
 import { executarRotinaDoCoach } from '@/lib/coach/servico';
@@ -8,10 +8,16 @@ import { executeStatement, queryRows } from '@/lib/mysql/pool';
 
 import { contar, criarUsuario } from '../../../tests/integration/fixtures';
 import { chamar } from '../../../tests/integration/http';
+import {
+  iniciarServidorOpenAiCompativel,
+  type ServidorOpenAiCompativel,
+} from '../../../tests/support/servidor-openai-compativel';
 
-import * as consentimentos from './account/consents/route';
+import * as adminIa from './admin/ia/route';
+import * as adminModelos from './admin/ia/modelos/route';
+import * as adminTestar from './admin/ia/testar/route';
 import * as feedback from './coach/feedback/route';
-import * as coachIa from './perfil/coach-ia/route';
+import * as dados from './data/[table]/route';
 import * as hoje from './coach/hoje/route';
 import * as rotina from './coach/rotina/route';
 import * as registro from './metricas/dia/route';
@@ -50,6 +56,16 @@ async function pessoaComCidade(nome: string) {
 afterEach(() => {
   delete process.env.COACH_ROTINA_SEGREDO;
 });
+
+/** Volta o provedor da plataforma ao padrão (só o motor da Lyra). */
+async function voltarAoMotorDaLyra() {
+  await executeStatement(
+    `UPDATE ai_provider_settings
+        SET provider_type = 'lyra_local', preset = 'lyra', base_url = NULL,
+            model = NULL, api_key_ciphertext = NULL, api_key_last4 = NULL
+      WHERE id = 1`
+  );
+}
 
 describe('coach diário (GET /api/coach/hoje)', () => {
   it('sem cidade, informa o que falta em vez de inventar o dia', async () => {
@@ -326,91 +342,272 @@ describe('rotina diária do coach', () => {
   });
 });
 
-describe('texto do coach pelo Gemini (consentimento revogável)', () => {
-  afterEach(() => {
-    delete process.env.GEMINI_API_KEY;
-    vi.unstubAllGlobals();
+describe('provedor de IA da plataforma (rotas administrativas)', () => {
+  let servidor: ServidorOpenAiCompativel;
+  beforeAll(async () => {
+    servidor = await iniciarServidorOpenAiCompativel();
+  });
+  afterAll(async () => {
+    await servidor.fechar();
+  });
+  afterEach(async () => {
+    servidor.falharCom(null);
+    await voltarAoMotorDaLyra();
   });
 
-  it('sem chave no servidor não ativa; com chave registra o aceite e usa o Gemini', async () => {
-    const pessoa = await pessoaComCidade('CoachIa');
-    const ler = async () =>
-      (await chamar(coachIa.GET, { usuario: pessoa })).json as {
-        ativo: boolean;
-        disponivel: boolean;
-      };
-    const ativar = (ativo: boolean) =>
-      chamar(coachIa.PATCH, {
-        method: 'PATCH',
-        body: { ativo },
-        usuario: pessoa,
-      });
+  const ollama = () => ({
+    tipo: 'openai_compativel',
+    preset: 'ollama',
+    baseUrl: servidor.baseUrl,
+    modelo: 'qwen2.5:7b-instruct',
+    tempoMaximoSegundos: 10,
+    temperatura: 0.7,
+  });
 
-    expect(await ler()).toMatchObject({ ativo: false, disponivel: false });
-    expect((await ativar(true)).status).toBe(503);
-
-    process.env.GEMINI_API_KEY = 'chave-de-teste';
-    expect((await ativar(true)).status).toBe(200);
-    expect(await ler()).toMatchObject({ ativo: true, disponivel: true });
+  it('só administradores leem e alteram; a chave nunca volta e fica cifrada no banco', async () => {
+    const admin = await criarUsuario('admin', 'AdminIa');
+    const pessoa = await criarUsuario('patient', 'PacienteIa');
+    expect((await chamar(adminIa.GET, { usuario: null })).status).toBe(401);
+    expect((await chamar(adminIa.GET, { usuario: pessoa })).status).toBe(403);
     expect(
-      await contar(
-        `SELECT COUNT(*) AS total FROM consent_records
-          WHERE user_id = ? AND consent_type = 'coach_external_ai'`,
-        [pessoa.id]
-      )
-    ).toBe(1);
+      (
+        await chamar(adminIa.PUT, {
+          method: 'PUT',
+          body: ollama(),
+          usuario: pessoa,
+        })
+      ).status
+    ).toBe(403);
 
-    // O "Gemini" deste teste devolve um texto válido sem horários novos.
-    const chamadas: string[] = [];
-    vi.stubGlobal('fetch', async (url: string, init?: RequestInit) => {
-      chamadas.push(String(init?.body ?? ''));
-      return new Response(
-        JSON.stringify({
-          candidates: [
-            {
-              content: {
-                parts: [
-                  {
-                    text: JSON.stringify({
-                      manchete: 'Seu dia, com calma e no tempo certo',
-                      resumo:
-                        'Hoje vale escolher bem os horários e cuidar do corpo, com pausas ao longo do dia e uma noite tranquila.',
-                      sugestoes: {},
-                    }),
-                  },
-                ],
-              },
-            },
-          ],
-        }),
-        { status: 200 }
-      );
+    const leitura = await chamar(adminIa.GET, { usuario: admin });
+    expect(leitura.status).toBe(200);
+    expect(leitura.json).toMatchObject({
+      provedor: { tipo: 'lyra_local', temChave: false, local: true },
     });
-    const comIa = (await chamar(hoje.GET, { usuario: pessoa })).json as Estado;
-    expect(comIa.estado === 'pronto' && comIa.briefing.origem).toBe('gemini');
-    expect(comIa.estado === 'pronto' && comIa.briefing.manchete).toBe(
-      'Seu dia, com calma e no tempo certo'
+    const presets = (leitura.json as { presets: Array<{ id: string }> })
+      .presets;
+    expect(presets.map((p) => p.id)).toEqual(
+      expect.arrayContaining(['ollama', 'lm_studio', 'jan', 'llama_cpp'])
     );
-    // O pedido não leva nome, e-mail nem cidade.
-    expect(chamadas).toHaveLength(1);
-    expect(chamadas[0]).not.toContain('CoachIa');
-    expect(chamadas[0]).not.toContain(pessoa.email);
-    expect(chamadas[0]).not.toContain('São Paulo');
 
-    // Revogar vale na hora: o dia é refeito só com o motor local.
-    expect((await ativar(false)).status).toBe(200);
-    const semIa = (await chamar(hoje.GET, { usuario: pessoa })).json as Estado;
-    expect(semIa.estado === 'pronto' && semIa.briefing.origem).toBe('local');
-    expect(chamadas).toHaveLength(1);
+    const openai = {
+      ...ollama(),
+      preset: 'openai',
+      baseUrl: servidor.baseUrl,
+      modelo: 'gpt-modelo',
+    };
+    const semChave = await chamar(adminIa.PUT, {
+      method: 'PUT',
+      body: openai,
+      usuario: admin,
+    });
+    expect(semChave.status).toBe(400);
+
+    const comChave = await chamar(adminIa.PUT, {
+      method: 'PUT',
+      body: { ...openai, chave: 'sk-teste-segredo-123456' },
+      usuario: admin,
+    });
+    expect(comChave.status).toBe(200);
+    expect(comChave.json).toMatchObject({
+      provedor: { temChave: true, finalDaChave: '3456', local: true },
+    });
+    expect(JSON.stringify(comChave.json)).not.toContain('sk-teste-segredo');
+    const [linha] = await queryRows<{ api_key_ciphertext: string }>(
+      'SELECT api_key_ciphertext FROM ai_provider_settings WHERE id = 1'
+    );
+    expect(linha.api_key_ciphertext).toMatch(/^v1\./);
+    expect(linha.api_key_ciphertext).not.toContain('sk-teste-segredo');
+
+    // Sem o campo "chave", a chave salva continua; com null, é apagada (e
+    // a OpenAI exige chave).
+    const mantida = await chamar(adminIa.PUT, {
+      method: 'PUT',
+      body: { ...openai, modelo: 'gpt-outro' },
+      usuario: admin,
+    });
+    expect(mantida.json).toMatchObject({ provedor: { temChave: true } });
+    const apagada = await chamar(adminIa.PUT, {
+      method: 'PUT',
+      body: { ...openai, chave: null },
+      usuario: admin,
+    });
+    expect(apagada.status).toBe(400);
+
+    // A tabela não existe para a API genérica de dados.
+    const generica = await chamar(dados.GET, {
+      path: '/api/data/ai_provider_settings',
+      params: { table: 'ai_provider_settings' },
+      usuario: admin,
+    });
+    expect(generica.status).not.toBe(200);
   });
 
-  it('a rota genérica de consentimentos não aceita o da IA externa', async () => {
-    const pessoa = await criarUsuario('patient', 'ConsentimentoIa');
-    const resposta = await chamar(consentimentos.POST, {
+  it('lista os modelos e testa a conexão do servidor local, com o erro real quando falha', async () => {
+    const admin = await criarUsuario('admin', 'AdminModelos');
+    const modelos = await chamar(adminModelos.POST, {
       method: 'POST',
-      body: { types: ['coach_external_ai'] },
-      usuario: pessoa,
+      body: ollama(),
+      usuario: admin,
     });
-    expect(resposta.status).toBe(400);
+    expect(modelos.status).toBe(200);
+    expect(modelos.json).toEqual({
+      modelos: ['llama3.2:3b', 'qwen2.5:7b-instruct'],
+    });
+
+    servidor.responder('Krittika, conexão funcionando.');
+    const teste = await chamar(adminTestar.POST, {
+      method: 'POST',
+      body: ollama(),
+      usuario: admin,
+    });
+    expect(teste.status).toBe(200);
+    expect(teste.json).toMatchObject({
+      ok: true,
+      resposta: 'Krittika, conexão funcionando.',
+      milissegundos: expect.any(Number),
+    });
+
+    servidor.falharCom(503);
+    const falha = await chamar(adminTestar.POST, {
+      method: 'POST',
+      body: ollama(),
+      usuario: admin,
+    });
+    expect(falha.status).toBe(502);
+    expect(falha.json).toMatchObject({ ok: false });
+    expect((falha.json as { error: string }).error).toMatch(/HTTP 503/);
+
+    const semModelo = await chamar(adminTestar.POST, {
+      method: 'POST',
+      body: { ...ollama(), tipo: 'lyra_local', preset: 'lyra' },
+      usuario: admin,
+    });
+    expect(semModelo.status).toBe(400);
+  });
+});
+
+describe('leitura védica do "Seu dia" pelo modelo configurado', () => {
+  let servidor: ServidorOpenAiCompativel;
+  beforeAll(async () => {
+    servidor = await iniciarServidorOpenAiCompativel();
+  });
+  afterAll(async () => {
+    await servidor.fechar();
+    await voltarAoMotorDaLyra();
+  });
+
+  // O "modelo" lê os fatos enviados e responde uma leitura válida para os
+  // períodos daquele dia, citando o Rahu Kalam real.
+  function leituraValida(corpo: unknown) {
+    const pedido = corpo as { messages: Array<{ content: string }> };
+    const texto = pedido.messages[1].content;
+    const inicio = texto.indexOf('Fatos do dia:\n') + 'Fatos do dia:\n'.length;
+    const fim = texto.indexOf('\n', inicio);
+    const fatos = JSON.parse(texto.slice(inicio, fim)) as {
+      ceu: { rahuKalam: string; nakshatra: string };
+      periodos: Array<{ chave: string; nome: string }>;
+    };
+    const periodo = (nome: string) => ({
+      emocional: `${nome}: emoções sob a Lua em ${fatos.ceu.nakshatra}, com acolhimento.`,
+      fisico: `${nome}: corpo pede movimento consciente e hidratação constante.`,
+      espiritual: `${nome}: alguns minutos de japa e silêncio reconectam a intenção.`,
+    });
+    return JSON.stringify({
+      resumoGeral: `Leitura do modelo local: a Lua em ${fatos.ceu.nakshatra} pede presença, e o Rahu Kalam (${fatos.ceu.rahuKalam}) pede pausa nos começos.`,
+      periodos: Object.fromEntries(
+        fatos.periodos.map((p) => [p.chave, periodo(p.nome)])
+      ),
+      pontosPositivos: [
+        'Céu que favorece o essencial.',
+        'Boa janela pela manhã.',
+      ],
+      pontosNegativos: [
+        `Rahu Kalam ${fatos.ceu.rahuKalam}.`,
+        'Evite excessos à noite.',
+      ],
+      dicas: [
+        {
+          texto: 'Japa do mantra do dia.',
+          porque: 'Regente do dia da semana.',
+        },
+        {
+          texto: 'Estudo inspirador.',
+          porque: 'Trânsito de Júpiter pela Lua.',
+        },
+        { texto: 'Silêncio ao entardecer.', porque: 'Sandhya do pôr do sol.' },
+      ],
+    });
+  }
+
+  it('sem consentimento e só com dados astrológicos; troca de modelo refaz o dia e falha volta ao motor da Lyra', async () => {
+    const admin = await criarUsuario('admin', 'AdminLeitura');
+    const pessoa = await pessoaComCidade('LeituraIa');
+    const configurar = (modelo: string) =>
+      chamar(adminIa.PUT, {
+        method: 'PUT',
+        body: {
+          tipo: 'openai_compativel',
+          preset: 'ollama',
+          baseUrl: servidor.baseUrl,
+          modelo,
+          tempoMaximoSegundos: 10,
+          temperatura: 0.7,
+        },
+        usuario: admin,
+      });
+    expect((await configurar('qwen2.5:7b-instruct')).status).toBe(200);
+    servidor.responder(leituraValida);
+
+    const antes = servidor.requisicoes.length;
+    const primeira = (await chamar(hoje.GET, { usuario: pessoa }))
+      .json as Estado;
+    expect(primeira.estado).toBe('pronto');
+    if (primeira.estado !== 'pronto') return;
+    expect(primeira.briefing.origem).toBe('ia');
+    expect(primeira.briefing.leitura.autor).toEqual({
+      tipo: 'ia',
+      provedor: 'Ollama',
+      modelo: 'qwen2.5:7b-instruct',
+      local: true,
+    });
+    expect(primeira.briefing.leitura.resumoGeral).toMatch(
+      /^Leitura do modelo local/
+    );
+    expect(primeira.briefing.leitura.periodos).toHaveLength(4);
+    const novas = servidor.requisicoes.slice(antes);
+    expect(novas).toHaveLength(1);
+    const enviado = JSON.stringify(novas[0].corpo);
+    for (const proibido of [
+      pessoa.email,
+      'LeituraIa',
+      '1988-03-21',
+      '07:15',
+      'São Paulo',
+      'America/Sao_Paulo',
+    ]) {
+      expect(enviado).not.toContain(proibido);
+    }
+
+    // Reaproveita o dia guardado: nenhuma chamada nova ao modelo.
+    const segunda = (await chamar(hoje.GET, { usuario: pessoa }))
+      .json as Estado;
+    expect(segunda.estado === 'pronto' && segunda.atualizado).toBe(false);
+    expect(servidor.requisicoes.length).toBe(antes + 1);
+
+    // Outro modelo refaz o dia; com o servidor falhando, fica a leitura da
+    // Lyra, sem erro para a pessoa.
+    servidor.falharCom(500);
+    expect((await configurar('llama3.2:3b')).status).toBe(200);
+    const comFalha = (await chamar(hoje.GET, { usuario: pessoa }))
+      .json as Estado;
+    servidor.falharCom(null);
+    expect(comFalha.estado === 'pronto' && comFalha.atualizado).toBe(true);
+    expect(comFalha.estado === 'pronto' && comFalha.briefing.origem).toBe(
+      'local'
+    );
+    expect(
+      comFalha.estado === 'pronto' && comFalha.briefing.leitura.autor
+    ).toEqual({ tipo: 'lyra' });
   });
 });

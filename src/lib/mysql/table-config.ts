@@ -258,7 +258,6 @@ export const TABLE_CONFIG: Record<TableName, TableConfig> = {
       'weight_sleep',
       'weight_activity',
       'weight_nutrition',
-      'model_name',
       'updated_at',
     ],
     adminOnlyCrud: true,

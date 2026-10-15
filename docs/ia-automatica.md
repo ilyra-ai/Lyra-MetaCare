@@ -6,12 +6,13 @@ Princípio geral: **ausência de dado não é zero**. O que não foi medido apar
 
 ## Gatilhos
 
-| Gatilho                                                                        | O que acontece                                                                                                         |
-| ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| Check-in do dia ou avaliação de humor (`POST /api/metricas/dia`)               | prontidão e recuperação do dia (e dos 7 seguintes), metas automáticas, prazos e sequências                             |
-| Sessão da pulseira (`POST /api/metricas/sensor`)                               | o mesmo, e aviso no sino se a frequência chegou ao limite pessoal                                                      |
-| Rotina diária no servidor (a partir das 3 h locais, `src/lib/coach/rotina.ts`) | "Seu dia" e notificações; metas com prazo vencido; sequências que não continuaram; plano de IA refeito para o novo dia |
-| Abrir o app                                                                    | coach, escores, dica do dia, plano e metas releem os dados e se refazem quando o registro mudou                        |
+| Gatilho                                                                        | O que acontece                                                                                                                              |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Check-in do dia ou avaliação de humor (`POST /api/metricas/dia`)               | prontidão e recuperação do dia (e dos 7 seguintes), metas automáticas, prazos e sequências                                                  |
+| Sessão da pulseira (`POST /api/metricas/sensor`)                               | o mesmo, e aviso no sino se a frequência chegou ao limite pessoal                                                                           |
+| Rotina diária no servidor (a partir das 3 h locais, `src/lib/coach/rotina.ts`) | "Seu dia" com a leitura védica e notificações; metas com prazo vencido; sequências que não continuaram; plano de IA refeito para o novo dia |
+| Abrir o app                                                                    | coach, escores, dica do dia, plano e metas releem os dados e se refazem quando o registro mudou                                             |
+| Administrador troca o modelo de IA                                             | o "Seu dia" de cada pessoa é refeito com o novo modelo na próxima leitura                                                                   |
 
 ## Automações
 
@@ -30,15 +31,37 @@ Princípio geral: **ausência de dado não é zero**. O que não foi medido apar
   - **Aviso de frequência alta:** a partir de 90% da FC máxima estimada pela idade (Tanaka: 208 − 0,7 × idade). Antes eram 120 bpm fixos.
   - **Sino:** o aviso também é gravado no sino a partir da sessão.
 - **Insights védicos:** a tendência de 7 dias sai em ordem cronológica, só com dias registrados. A efeméride traz o dasha natal da pessoa logada.
-- **Chat:** usa só as métricas de hoje ou de ontem e responde sobre o dia com os mesmos períodos do coach.
+- **Chat:** usa só as métricas de hoje ou de ontem e responde sobre o dia com os mesmos períodos, a leitura de cada período, os pontos e as dicas do coach.
 
-## Texto do coach por IA externa (opcional)
+## Leitura védica do "Seu dia" por qualquer modelo de IA
 
-Com o consentimento específico da pessoa (Perfil → Privacidade e dados), revogável a qualquer momento, o texto do "Seu dia" é reescrito pelo Google Gemini com a chave do servidor (`GEMINI_API_KEY`).
+Todo dia a Lyra escreve, para cada pessoa, a leitura do mapa védico para a data:
 
-- **Dados minimizados:** seguem só o texto já pronto do dia e os nomes do céu. Não seguem nome, e-mail, cidade, data de nascimento, métricas, ciclo nem sinais do corpo.
-- **Horários sob controle da Lyra:** o Gemini só reescreve a manchete, o resumo e as sugestões dos períodos.
-  - Uma resposta fora do formato ou com horário que não existe no dia é descartada.
-  - Qualquer falha mantém o texto local.
-- **Consentimento registrado:** o aceite fica em `consent_records` (tipo `coach_external_ai`, versão e data). A preferência fica em `profiles.coach_external_ai_since` (migração `022`).
-- **Sem chave no servidor:** a opção aparece como indisponível.
+1. o resumo geral do dia;
+2. cada período (madrugada, manhã, tarde e noite) por tópicos: parte emocional, parte física (corpo) e parte espiritual;
+3. os pontos positivos e os pontos negativos;
+4. as dicas do mapa para a data, cada uma com o fundamento.
+
+Os fatos usados e as regras estão em [`coach.md`](./coach.md#leitura-védica-do-dia-srclibcoachleitura-vedicats).
+
+### Modelos aceitos
+
+O administrador escolhe o modelo em **Admin → Modelos de IA** (`src/components/admin/ProvedorDeIa.tsx`). O catálogo fica em `src/lib/ai/provedores-catalogo.ts` e o cliente HTTP em `src/lib/ai/cliente-de-ia.ts`.
+
+| Família                           | Provedores e URL padrão                                                                                                                                                                             |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Local, compatível com a OpenAI    | Ollama (`localhost:11434/v1`), LM Studio (`localhost:1234/v1`), Jan (`localhost:1337/v1`), llama.cpp `llama-server` (`localhost:8080/v1`), vLLM (`localhost:8000/v1`), LocalAI, KoboldCpp e GPT4All |
+| Em nuvem, compatível com a OpenAI | OpenAI, OpenRouter, Groq, Mistral, DeepSeek, Together AI, xAI e qualquer outro servidor com `/v1/chat/completions`                                                                                  |
+| APIs nativas                      | Google Gemini e Anthropic Claude                                                                                                                                                                    |
+| Sem modelo (padrão)               | Motor védico da Lyra                                                                                                                                                                                |
+
+- **Buscar modelos** lista os modelos do servidor (`GET /v1/models`, ou a listagem do Gemini e da Anthropic) e **Testar conexão** mede o tempo de uma resposta real, antes de salvar.
+- Com a Lyra em contêiner, use `http://host.docker.internal:PORTA/v1` no lugar de `localhost`.
+- Modelos de raciocínio que devolvem `<think>…</think>` e respostas cercadas por ` ```json ` são aceitos: o texto é limpo antes da validação.
+
+### Dados e privacidade
+
+- **Só dados astrológicos:** o modelo recebe os fatos do céu do dia, o mapa natal derivado (signo do Lagna, signo e nakshatra da Lua, dasha, Tara e casas de trânsito), os horários dos períodos e a leitura de ontem. Não recebe nome, e-mail, data, hora ou cidade de nascimento, fuso, métricas de saúde, ciclo nem sinais do corpo. Por isso a leitura não depende de consentimento por pessoa; a finalidade está na política de privacidade (versão 2026-10-15). A migração `023_provedor_de_ia.sql` removeu a preferência `profiles.coach_external_ai_since` criada na `022`.
+- **Chave de API:** cifrada com AES-256-GCM e chave derivada do `AUTH_SECRET` (HKDF), na tabela `ai_provider_settings`, fora da API genérica de dados. A tela só recebe os 4 últimos caracteres. Trocar o `AUTH_SECRET` torna a chave ilegível, e a tela pede para informá-la de novo.
+- **Chat:** sem a chave própria da pessoa (BYOK), o chat usa o modelo da plataforma **apenas quando ele roda localmente** (endereço da máquina ou de rede privada), porque a conversa leva métricas de saúde. Modelos em nuvem da plataforma não recebem a conversa.
+- **Horários:** sempre calculados pela Lyra. Uma resposta que cite horário inexistente no dia é descartada.

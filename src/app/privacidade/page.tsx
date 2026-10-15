@@ -68,9 +68,10 @@ export default function PoliticaDePrivacidadePage() {
             <strong>Coach diário:</strong> o &quot;Seu dia&quot; preparado todos
             os dias a partir do seu mapa védico, do céu da sua cidade e das suas
             métricas, a sua resposta a &quot;isso te ajudou?&quot; e as
-            notificações do sino. É calculado nos motores da própria Lyra, sem
-            envio a serviços externos, salvo se você ativar o texto do coach por
-            IA externa (veja &quot;Com quem compartilhamos&quot;).
+            notificações do sino. Horários e recomendações são calculados nos
+            motores da própria Lyra; a leitura védica do dia pode ser escrita
+            pelo modelo de IA escolhido pela Lyra, só com dados astrológicos
+            (veja &quot;Com quem compartilhamos&quot;).
           </li>
           <li>
             <strong>Dados de saúde e bem-estar (dados sensíveis):</strong>{' '}
@@ -163,19 +164,23 @@ export default function PoliticaDePrivacidadePage() {
               <strong>Google Gemini</strong>, somente quando você informa a sua
               própria chave de IA no chat e o modo privacidade está desligado: a
               sua pergunta e a análise local dos seus indicadores seguem para o
-              Gemini para compor a resposta. Sem a sua chave, tudo é calculado
-              nos motores da própria Lyra.
+              Gemini para compor a resposta. Sem a sua chave, a resposta vem dos
+              motores da própria Lyra ou do modelo de IA da plataforma apenas
+              quando ele roda na infraestrutura da Lyra.
             </li>
             <li>
-              <strong>Google Gemini, para o texto do coach</strong>, somente se
-              você ativar essa opção em Perfil → Privacidade e dados
-              (consentimento específico, que você pode revogar a qualquer
-              momento, art. 8º, § 5º, e art. 11, I): o texto já pronto do seu
-              dia (manchete, resumo, sugestões e horários dos períodos, focos,
-              cuidados e os nomes do céu do dia) segue para o Gemini reescrever
-              com uma linguagem mais natural. Não seguem o seu nome, e-mail,
-              cidade, data de nascimento, métricas, ciclo menstrual nem sinais
-              do corpo. Os horários e as regras continuam sendo da Lyra.
+              <strong>
+                Provedor do modelo de IA escolhido pela Lyra, para a leitura
+                védica do &quot;Seu dia&quot;
+              </strong>{' '}
+              (execução do serviço contratado, art. 7º, V): quando o modelo roda
+              fora da infraestrutura da Lyra (por exemplo, um serviço em nuvem),
+              seguem só dados astrológicos: os fatos do céu do dia, o seu mapa
+              natal já calculado (signo do ascendente, signo e nakshatra da Lua,
+              dasha, Tara e trânsitos) e os horários dos períodos do dia. Não
+              seguem o seu nome, e-mail, data, hora ou cidade de nascimento,
+              métricas, ciclo menstrual nem sinais do corpo. Com um modelo
+              local, nada sai da Lyra.
             </li>
             <li>
               <strong>Monitoramento de erros (Sentry)</strong>, quando

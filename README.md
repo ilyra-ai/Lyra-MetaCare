@@ -90,17 +90,17 @@ Cinco melhorias baseadas em tendências reais de 2026, **todas implementadas de 
 
 ## 🧰 Stack tecnológica
 
-| Camada              | Tecnologias                                                                                                 |
-| ------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Framework**       | Next.js 16 (App Router, Turbopack) · React 19.3 · TypeScript 6                                              |
-| **UI**              | Tailwind CSS 4 (CSS-first) · shadcn/ui (Radix) · lucide-react · Recharts 3 · sonner                         |
-| **Backend**         | Rotas API do Next.js · MySQL 9.7 LTS (mysql2, `caching_sha2_password`) · autenticação com `jose`/`bcryptjs` |
-| **Pagamentos**      | Stripe (checkout, portal, webhooks)                                                                         |
-| **Conteúdo**        | Puck (`@puckeditor/core`) · Site Experience Builder                                                         |
-| **IA**              | Motores determinísticos próprios · Google Gemini opcional via BYOK                                          |
-| **Observabilidade** | Sentry                                                                                                      |
-| **Qualidade**       | Vitest · ESLint · Prettier · TypeScript estrito                                                             |
-| **Infra local**     | Docker Compose (MySQL) · pnpm (via Corepack) · `run.py` (WSL2) · `run.sh` (Git Bash)                        |
+| Camada              | Tecnologias                                                                                                                             |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Framework**       | Next.js 16 (App Router, Turbopack) · React 19.3 · TypeScript 6                                                                          |
+| **UI**              | Tailwind CSS 4 (CSS-first) · shadcn/ui (Radix) · lucide-react · Recharts 3 · sonner                                                     |
+| **Backend**         | Rotas API do Next.js · MySQL 9.7 LTS (mysql2, `caching_sha2_password`) · autenticação com `jose`/`bcryptjs`                             |
+| **Pagamentos**      | Stripe (checkout, portal, webhooks)                                                                                                     |
+| **Conteúdo**        | Puck (`@puckeditor/core`) · Site Experience Builder                                                                                     |
+| **IA**              | Motores determinísticos próprios · modelo da plataforma local (Ollama, LM Studio, Jan, llama.cpp) ou em nuvem · Gemini via BYOK no chat |
+| **Observabilidade** | Sentry                                                                                                                                  |
+| **Qualidade**       | Vitest · ESLint · Prettier · TypeScript estrito                                                                                         |
+| **Infra local**     | Docker Compose (MySQL) · pnpm (via Corepack) · `run.py` (WSL2) · `run.sh` (Git Bash)                                                    |
 
 ---
 
@@ -211,7 +211,7 @@ O `.env.local` é a **fonte única de configuração**, lida pelo Next.js, pelos
 - Mapa das rotas da API (autenticação, entrada, saída, erros e tabelas): [`docs/api.md`](./docs/api.md).
 - Mapa védico e dia védico (método, base de cidades e validação contra o Swiss Ephemeris): [`docs/astrologia.md`](./docs/astrologia.md).
 - Coach diário "Seu dia" (regras, rotina automática, notificações e privacidade): [`docs/coach.md`](./docs/coach.md).
-- O que a IA faz sozinha (prontidão gravada, metas automáticas, sequências, plano que se refaz, dica do dia, monitoramento e o texto do coach pelo Gemini com consentimento): [`docs/ia-automatica.md`](./docs/ia-automatica.md).
+- O que a IA faz sozinha (prontidão gravada, metas automáticas, sequências, plano que se refaz, dica do dia, monitoramento e a leitura védica do "Seu dia" por qualquer modelo de IA, inclusive local): [`docs/ia-automatica.md`](./docs/ia-automatica.md).
 - Modelo de segurança (sessão, CSRF, limites de tentativa, cabeçalhos, XSS, dados de saúde, Stripe e Sentry): [`docs/seguranca.md`](./docs/seguranca.md).
 - Performance (medições por rota, gargalos corrigidos e como medir): [`docs/performance.md`](./docs/performance.md).
 - Acessibilidade (auditoria axe, correções e limitações conhecidas): [`docs/acessibilidade.md`](./docs/acessibilidade.md).

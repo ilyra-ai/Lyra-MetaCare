@@ -6,8 +6,8 @@ São orientações de bem-estar e autoconhecimento: não substituem avaliação 
 
 ## Onde aparece
 
-- **Painel:** cartão "Seu dia" no topo, com manchete, anel de prontidão, faixa das 24 h com o "Agora" ao vivo, o período atual e os três focos do dia.
-- **Meu dia (`/dia`):** relógio radial das 24 h, os quatro períodos, pontos fortes e cuidados, recomendações por área, o céu de hoje (Panchang, Tara Bala, dasha, dosha, ciclo) e a avaliação "o seu dia te ajudou?".
+- **Painel:** cartão "Seu dia" no topo, com manchete, o resumo geral da leitura védica, anel de prontidão, faixa das 24 h com o "Agora" ao vivo, o período atual com as partes emocional, física e espiritual e os três focos do dia.
+- **Meu dia (`/dia`):** relógio radial das 24 h; a **leitura do dia**, na ordem: 1) resumo geral, 2) cada período (madrugada, manhã, tarde e noite) por tópicos, parte emocional, parte física (corpo) e parte espiritual, 3) pontos positivos e pontos negativos, 4) as dicas do mapa védico para a data, cada uma com o fundamento; depois os horários por período, focos e cuidados práticos, recomendações por área, o céu de hoje (Panchang, Tara Bala, dasha, dosha, ciclo) e a avaliação "o seu dia te ajudou?".
 - **Sino:** "Seu dia está pronto" e os alertas do dia (Chandrashtama e sinais precoces do corpo). Abrir o sino marca como lidas.
 - **Chat:** perguntas sobre o dia ("como vai ser meu dia?", "e a tarde?") respondem com os mesmos períodos e horários.
 - **Atalho:** `G` e depois `H` abre o "Meu dia" (os atalhos `G + letra` da paleta `Ctrl+K` passaram a funcionar).
@@ -35,6 +35,18 @@ O SHA-256 dessas entradas fica em `daily_briefings.inputs_hash`. Ao abrir o app,
 
 As mesmas entradas geram sempre o mesmo briefing (testes em `src/lib/coach/coach.test.ts`).
 
+## Leitura védica do dia (`src/lib/coach/leitura-vedica.ts`)
+
+Os fatos de cada período, calculados no meio do período e no lugar do dia:
+
+- **Lua:** signo (elemento e tom emocional), nakshatra e divindade, Tara a partir do nakshatra natal e casa a partir da Lua natal.
+- **Ascendente (Lagna) do momento:** a região do corpo regida pelo signo (Kalapurusha) e o elemento.
+- **Horas planetárias** (`src/lib/astrology/horas.ts`): 12 horas do dia e 12 da noite, a primeira do regente do dia da semana e as seguintes na ordem caldeia; a que mais ocupa o período dá a prática espiritual e o mantra.
+- **Relógio do Ayurveda:** Kapha 6 h–10 h e 18 h–22 h, Pitta 10 h–14 h e 22 h–2 h, Vata 2 h–6 h e 14 h–18 h.
+- **Do dia:** Panchang, Tara Bala, Chandra Bala, trânsitos de Júpiter (favorável nas casas 2, 5, 7, 9 e 11 a partir da Lua) e de Saturno (Sade Sati nas casas 12, 1 e 2; Ashtama Shani na 8ª), dasha vigente e a melhor janela.
+
+O motor da Lyra escreve a leitura com esses fatos; como o céu muda (tithi, nakshatra, dia da semana, horas, ascendente), cada dia sai diferente. Com um modelo de IA configurado (`src/lib/coach/leitura-ia.ts`), o modelo recebe os mesmos fatos e a leitura de ontem, para não repetir, e a resposta só é aceita com o formato completo (Zod), os quatro períodos, horários que existem no dia e resumo diferente do de ontem. Uma falha mantém a leitura da Lyra e uma nova tentativa acontece depois de 30 minutos. Trocar o modelo refaz o dia.
+
 ## Rotina automática
 
 - `src/instrumentation.ts` inicia `src/lib/coach/rotina.ts` no servidor Node.js: a cada 15 minutos prepara o dia de quem já passou das **3 h locais**, tem cidade, concluiu o primeiro acesso, tem o recurso `ai_tips_feed` no plano e ainda não tem o briefing de hoje. Índices únicos tornam seguro rodar em várias instâncias.
@@ -44,8 +56,9 @@ As mesmas entradas geram sempre o mesmo briefing (testes em `src/lib/coach/coach
 ## Dados e privacidade
 
 - Tabelas `daily_briefings` e `user_notifications` (migração `019_coach_diario.sql`), apagadas em cascata com a conta e incluídas na exportação LGPD.
-- Por padrão, tudo é calculado nos motores da própria Lyra e nenhum dado vai para serviço externo. No chat com a chave própria do Gemini (BYOK), o resumo do dia segue junto da análise local, como descrito na política de privacidade.
-- Opcional: com o consentimento específico e revogável da pessoa, o texto do dia é reescrito pelo Google Gemini com a chave do servidor, com dados minimizados e os horários sempre da Lyra. Detalhes em [`ia-automatica.md`](./ia-automatica.md).
+- Horários, janelas, prontidão e recomendações são sempre calculados nos motores da própria Lyra.
+- A leitura védica do dia (resumo geral, as partes emocional, física e espiritual de cada período, pontos positivos e negativos e as dicas do mapa) é escrita pelo modelo de IA escolhido pelo administrador, local (Ollama, LM Studio, Jan, llama.cpp e outros) ou em nuvem, ou pelo motor da Lyra quando não há modelo. O modelo recebe só dados astrológicos, sem nome, e-mail, data, hora ou cidade de nascimento, métricas, ciclo nem sinais do corpo; por isso não há consentimento separado. Detalhes em [`ia-automatica.md`](./ia-automatica.md).
+- No chat com a chave própria do Gemini (BYOK), o resumo do dia segue junto da análise local, como descrito na política de privacidade.
 - Plano: o coach é o recurso `ai_tips_feed` (rota, página, cartão, rotina e contexto do chat respeitam o plano).
 
 ## Limites conhecidos
