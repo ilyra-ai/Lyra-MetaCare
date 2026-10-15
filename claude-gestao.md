@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                          |
 | ------------------ | ------------------------------ |
-| Progresso          | `███████████████████░` **96%** |
+| Progresso          | `████████████████████` **98%** |
 | Tarefas totais     | 46                             |
-| 🟢 Finalizadas     | 44                             |
-| 🔵 Em andamento    | 1                              |
-| 🔴 Bloqueadas      | 0                              |
-| ⚪ A iniciar       | 1                              |
+| 🟢 Finalizadas     | 45                             |
+| 🔵 Em andamento    | 0                              |
+| 🔴 Bloqueadas      | 1                              |
+| ⚪ A iniciar       | 0                              |
 | Branch de trabalho | `main` (única permitida)       |
 | Última atualização | 2026-10-15                     |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (44 ÷ 46 = 95,7%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (45 ÷ 46 = 97,8%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo); a tarefa 44 aguarda a aprovação do design pelo usuário.
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,23 +43,19 @@
 
 ### ANDAMENTO
 
-| Nº  | Tarefa            | O que está sendo realizado                                                                                                    |
-| --- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| 46  | README atualizado | Revisão do README.md contra o sistema real (tarefas 40 a 45): funcionalidades, IA local, launchers, variáveis e documentação. |
+Nenhuma tarefa em andamento.
 
 ### BLOQUEADAS
 
-Nenhuma tarefa bloqueada.
+| Nº  | Tarefa                          | Bloqueio                                                                                                                                                                                                     |
+| --- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 44  | Diferenciais premium de 2026/27 | Interação do usuário: pedido de 2026-10-15 para gerar uma imagem do novo design antes de implementar e aguardar as instruções. A pesquisa de tendências e a imagem foram entregues; a implementação aguarda. |
 
 ---
 
 ## Tópico 3 · Tarefas a Iniciar
 
-_Pedido do usuário em 2026-10-12: métricas reais e automáticas, IA como coach diário guiado pelo mapa védico e diferenciais de 2026._
-
-### 44 · Diferenciais de 2026
-
-- Pesquisar tendências de 2026 e implementar diferenciais inovadores e reais para a Lyra.
+Nenhuma tarefa a iniciar.
 
 ---
 
@@ -981,3 +977,10 @@ _Pedido do usuário em 2026-10-12: métricas reais e automáticas, IA como coach
   - `run.sh` (Linux, bash 5.2): `doctor`, `up`, segundo `up` idempotente, `status`, `logs app`, `stop app`, `up --prod`; parada cruzada (o `run.py stop` encerrou a aplicação do `run.sh` e o `run.sh status` mostrou tudo parado).
   - Estático: `bash -n` e `shellcheck -S warning` sem achados; `ruff check`, `ruff format --check` e `mypy --strict` (venv do launcher) sem achados no `run.py` e no `run_windows.py`; `test:launchers` 17/17; `test` 367/367; `test:integration` 131/131; lint, format, types e `build` com exit 0.
 - **Limite do ambiente:** a execução real no Windows 11 (Git Bash e PowerShell) depende de uma máquina Windows; o sandbox é Linux.
+
+### 46 · README atualizado com o sistema real
+
+- **Status:** 🟢 finalizada · **Commit:** `0389d8b` · **Push:** `01c2d81..0389d8b main -> main` (confirmado por `git ls-remote`)
+- **Encontrado:** selo e texto com 314 e 241 + 73 testes (hoje 367 + 131 + 17), nenhuma menção ao coach "Seu dia", ao mapa védico, às métricas reais, às metas automáticas, ao modelo de IA local ou à LGPD; árvore de pastas sem `coach`, `astrology`, `metas`, `lgpd`, `tests` e `run_windows.py`; scripts `env:init`, `db:logs` e `geo:cidades` ausentes.
+- **Atualizado:** novidades de outubro de 2026, recursos, stack (astronomy-engine e GeoNames), passo a passo do modelo de IA local (Ollama, LM Studio, Jan, llama.cpp) com a recomendação de 7B ou mais, `.env.local` (variáveis obsoletas e `AUTH_SECRET` na cifra da chave), scripts, documentação (`launchers.md`, `lgpd.md`), arquitetura, testes, segurança e roadmap.
+- **Evidências:** os 14 links relativos do README apontam para arquivos existentes; `check:format`, `check:lint`, `check:types` e `test` 367/367 com exit 0 (o código não mudou desde a validação completa da tarefa 45).
