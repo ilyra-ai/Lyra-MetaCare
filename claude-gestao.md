@@ -19,8 +19,8 @@
 
 ## Tópico 1 · Andamento Geral
 
-| Indicador          | Valor                           |
-| ------------------ | ------------------------------- |
+| Indicador          | Valor                            |
+| ------------------ | -------------------------------- |
 | Progresso          | `██████████████████░░` **87,5%** |
 | Tarefas totais     | 56                               |
 | 🟢 Finalizadas     | 49                               |
