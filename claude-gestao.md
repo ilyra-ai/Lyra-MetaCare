@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                            |
 | ------------------ | -------------------------------- |
-| Progresso          | `██████████████████░░` **91,1%** |
+| Progresso          | `███████████████████░` **92,9%** |
 | Tarefas totais     | 56                               |
-| 🟢 Finalizadas     | 51                               |
+| 🟢 Finalizadas     | 52                               |
 | 🔵 Em andamento    | 1                                |
 | 🔴 Bloqueadas      | 0                                |
-| ⚪ A iniciar       | 4                                |
+| ⚪ A iniciar       | 3                                |
 | Branch de trabalho | `main` (única permitida)         |
 | Última atualização | 2026-10-16                       |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (51 ÷ 56 = 91,1%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (52 ÷ 56 = 92,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,7 @@
 
 ### ANDAMENTO
 
-- **52 · Chat redesenhado** 🔵 · `/chat` mais simples e na tendência de 2026.
+- **53 · Auditoria real do page-builder e do Puck** 🔵 · confirmar, no código e no navegador, que `/admin/page-builder` e `/admin/puck` funcionam de verdade, sem simulações, placeholders, hardcode ou cortes.
 
 ### BLOQUEADAS
 
@@ -53,7 +53,6 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-- **53 · Auditoria real do page-builder e do Puck** ⚪ · confirmar, no código e no navegador, que `/admin/page-builder` e `/admin/puck` funcionam de verdade, sem simulações, placeholders, hardcode ou cortes.
 - **54 · Vários modelos de IA com ordem de uso e troca automática** ⚪ · em `/admin/ai-config`, vários provedores e modelos (locais e em nuvem, inclusive o motor da Lyra) ao mesmo tempo, 5 seletores de ordem e troca transparente para o próximo quando um falhar.
 - **55 · Motor da Lyra mestre em astrologia védica e saberes védicos, sem IA** ⚪ · base de conhecimento curada com Vedanta, Upanishads, Upavedas e Vedangas, os três arquivos do usuário (Mapa Lyra DM Samadhi, Livro do Mapa Lyra DM Samadhi e Mapa Quantum Lyra e Arkático), a personalidade e a consciência da Lyra descritas neles e a divisão explícita entre os tipos de mapa.
 - **56 · Todo modelo de IA conectado age como a Lyra** ⚪ · os modelos trabalham junto com o motor, com a identidade, a personalidade e o conhecimento da Lyra, na leitura diária e no chat.
@@ -1078,4 +1077,21 @@ Nenhuma tarefa bloqueada.
 - **Evidências:**
   - Integração: primeiro plano automático sem cota; login antes do onboarding não gera; login depois do onboarding deixa o plano salvo.
   - Navegador (build de produção, login real pela tela): o plano já estava salvo no MySQL antes de abrir `/plan`, origem automática, cota intacta, tela com o plano pronto ("Regenerar plano"), axe sem violações e zero erros de console, em 1440 px claro e 390 px escuro.
+  - `test` 412/412, `test:integration` 156/156, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+
+### 52 · Chat redesenhado, simples e em uma coluna
+
+- **Status:** 🟢 finalizada · **Commit:** `4cbf2e0` · **Push:** `80a891f..4cbf2e0 main -> main` (confirmado por `git ls-remote`)
+- **Pedido do usuário (2026-10-16):** reformular e redesenhar `/chat`, que estava confuso, deixando-o mais simples e na tendência de 2026.
+- **Pesquisa:** padrões de interfaces de conversa com IA de 2026 (coluna única centrada, começo da conversa com perguntas prontas em cartões, campo fixo embaixo, resposta sem caixa, ações discretas, aviso de limites).
+- **Antes:** cabeçalho grande, cartão de conversa, perguntas prontas repetidas embaixo e na lateral e uma lateral técnica ("API local Next.js", "Camadas que sustentam a conversa").
+- **Implementado:**
+  - Uma coluna centrada: barra mínima (marca, estado, "Nova conversa" e "Como a Lyra responde"), começo da conversa com a Lyra e as perguntas em cartões, campo fixo embaixo com o aviso de bem-estar.
+  - Resposta da Lyra em texto corrido com a marca; pergunta em balão; copiar e refazer no hover, no foco e sempre no toque.
+  - Informações e chave própria do Gemini (BYOK, que continua funcionando) no botão de informações.
+  - Causa raiz corrigida no caminho: o campo aceitava 4000 caracteres e o servidor recusa acima de 2000; agora o limite é o mesmo.
+  - Sem o aviso "Mensagem enviada" a cada envio; resposta revelada mais rápido e inteira com movimento reduzido.
+  - Textos padrão novos e rótulos do page builder coerentes; todos os campos da configuração do chat continuam em uso. `QuickReply` removido (sem uso; `grep` sem ocorrências).
+- **Evidências:**
+  - Navegador (build de produção), jornada completa em 1440 px claro e 390 px escuro: pergunta pronta respondida com o dia da pessoa, pergunta digitada com Enter, "Refazer" troca a resposta sem duplicar, painel de informações com a chave própria e "Nova conversa" volta ao começo. axe sem violações (início, conversa e painel), sem estouro horizontal e zero erros de console.
   - `test` 412/412, `test:integration` 156/156, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
