@@ -40,8 +40,16 @@ function dia(parcial: Partial<DiaDaSemana> & { data: string }): DiaDaSemana {
   };
 }
 
-const favoravel = { nome: 'Sampat', qualidade: 'favoravel' as const };
-const desfavoravel = { nome: 'Vipat', qualidade: 'desfavoravel' as const };
+const favoravel = {
+  nome: 'Sampat',
+  tema: 'prosperidade',
+  qualidade: 'favoravel' as const,
+};
+const desfavoravel = {
+  nome: 'Vipat',
+  tema: 'obstáculos',
+  qualidade: 'desfavoravel' as const,
+};
 
 describe('resumo da semana', () => {
   it('médias só com os dias medidos e variação só com dados nas duas semanas', () => {

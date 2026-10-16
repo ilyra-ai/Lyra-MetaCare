@@ -79,8 +79,8 @@ describe('agenda no calendário (/api/calendario)', () => {
       /^attachment; filename="lyra-janelas-\d{4}-\d{2}-\d{2}\.ics"$/
     );
     expect(resposta.texto.startsWith('BEGIN:VCALENDAR\r\n')).toBe(true);
-    expect(resposta.texto).toContain('SUMMARY:Brahma Muhurta · meditar');
-    expect(resposta.texto).toContain('SUMMARY:Rahu Kalam · sem começos');
+    expect(resposta.texto).toContain('SUMMARY:Hora do silêncio · meditar');
+    expect(resposta.texto).toContain('SUMMARY:Pausa para começos · só rotina');
     expect(resposta.texto).toContain('TRIGGER:-PT10M');
     const semLembrete = await chamar(hoje.GET, {
       path: '/api/calendario/hoje?lembretes=nao',

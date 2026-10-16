@@ -190,10 +190,10 @@ export default function PoliticaDePrivacidadePage() {
                 agenda védica
               </strong>{' '}
               (Google, Apple, Outlook ou outro): ele lê pelo link privado os
-              horários das janelas do dia (Brahma Muhurta, Abhijit, Rahu Kalam e
-              pôr do sol) e o nome da sua cidade. Nenhum dado de saúde vai no
-              link. Você troca ou desativa o link quando quiser no &quot;Meu
-              dia&quot;.
+              horários das janelas do dia (hora do silêncio, horário mais forte
+              do dia, pausa para começos e pôr do sol) e o nome da sua cidade.
+              Nenhum dado de saúde vai no link. Você troca ou desativa o link
+              quando quiser no &quot;Meu dia&quot;.
             </li>
             <li>
               <strong>Monitoramento de erros (Sentry)</strong>, quando

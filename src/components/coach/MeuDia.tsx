@@ -9,6 +9,7 @@ import {
   Brain,
   CalendarClock,
   CalendarPlus,
+  ChevronDown,
   Dumbbell,
   HeartPulse,
   Moon,
@@ -37,7 +38,6 @@ import {
   DicaComPorque,
   dataPorExtenso,
   horaDoBriefing,
-  QUALIDADE,
   RelogioDoDia,
   saudacao,
   TOM,
@@ -70,32 +70,21 @@ function ListaDeDicas({
   );
 }
 
+// Tendências do corpo pelo Ayurveda, com o nome tradicional em segundo plano.
+const TENDENCIA_DO_CORPO = {
+  vata: { rotulo: 'Leveza e agitação', tradicional: 'Vata' },
+  pitta: { rotulo: 'Calor e intensidade', tradicional: 'Pitta' },
+  kapha: { rotulo: 'Peso e calma', tradicional: 'Kapha' },
+} as const;
+
+/**
+ * "O céu de hoje" em linguagem simples (tarefa 49): o que o céu e o mapa da
+ * pessoa dizem, sem termos técnicos. Os nomes tradicionais ficam num quadro
+ * recolhido, para quem estuda astrologia védica.
+ */
 function CeuDeHoje({ briefing }: { briefing: BriefingDoDia }) {
-  const { ceu, dosha, ciclo } = briefing;
-  const itens: Array<{ termo: string; valor: string; detalhe?: string }> = [
-    { termo: 'Dia da semana', valor: ceu.vara },
-    { termo: 'Tithi', valor: ceu.tithi, detalhe: ceu.paksha },
-    {
-      termo: 'Nakshatra',
-      valor: ceu.nakshatra,
-      detalhe: `${ceu.naturezaDoNakshatra} · ${ceu.divindade}`,
-    },
-    { termo: 'Lua em', valor: ceu.signoDaLua },
-    { termo: 'Yoga', valor: ceu.yoga },
-    { termo: 'Karana', valor: ceu.karana },
-    {
-      termo: 'Nascer e pôr do sol',
-      valor: `${ceu.nascerDoSol} · ${ceu.porDoSol}`,
-    },
-  ];
-  if (ceu.tara) {
-    itens.push({
-      termo: 'Tara Bala (para você)',
-      valor: `${ceu.tara.nome} · ${QUALIDADE[ceu.tara.qualidade].rotulo}`,
-      detalhe: ceu.tara.sentido,
-    });
-  }
-  if (ceu.dasha) itens.push({ termo: 'Dasha vigente', valor: ceu.dasha });
+  const { ceuSimples, dosha, ciclo } = briefing;
+  const itens = [...ceuSimples.itens];
   if (ciclo) {
     itens.push({
       termo: 'Ciclo',
@@ -106,43 +95,74 @@ function CeuDeHoje({ briefing }: { briefing: BriefingDoDia }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_minmax(0,20rem)]">
-      <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
-        {itens.map((item) => (
-          <div key={item.termo} className="min-w-0 border-b border-border pb-3">
-            <dt className="text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground">
-              {item.termo}
-            </dt>
-            <dd className="mt-1 text-sm font-medium text-foreground">
-              {item.valor}
-            </dd>
-            {item.detalhe ? (
-              <dd className="text-xs text-muted-foreground">{item.detalhe}</dd>
-            ) : null}
-          </div>
-        ))}
-      </dl>
+      <div className="flex min-w-0 flex-col gap-5">
+        <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+          {itens.map((item) => (
+            <div
+              key={item.termo}
+              className="min-w-0 border-b border-border pb-3"
+            >
+              <dt className="text-xs font-medium uppercase tracking-[0.06em] text-muted-foreground">
+                {item.termo}
+              </dt>
+              <dd className="mt-1 text-sm font-medium text-foreground">
+                {item.valor}
+              </dd>
+              {item.detalhe ? (
+                <dd className="text-xs leading-relaxed text-muted-foreground">
+                  {item.detalhe}
+                </dd>
+              ) : null}
+            </div>
+          ))}
+        </dl>
+        <details className="group rounded-2xl border border-border bg-background/60 px-4 py-3">
+          <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between gap-2 rounded-md text-sm font-medium text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+            Nomes tradicionais, para quem estuda astrologia védica
+            <ChevronDown
+              aria-hidden="true"
+              className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none"
+            />
+          </summary>
+          <dl className="mt-3 grid gap-x-6 gap-y-2 text-xs sm:grid-cols-2">
+            {ceuSimples.tradicionais.map((item) => (
+              <div key={item.termo} className="min-w-0">
+                <dt className="font-medium text-muted-foreground">
+                  {item.termo}
+                </dt>
+                <dd className="text-foreground">
+                  {item.valor}
+                  {item.detalhe ? ` · ${item.detalhe}` : ''}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </details>
+      </div>
       <div className="rounded-2xl border border-border bg-background/60 p-5">
         <h4 className="text-sm font-semibold text-foreground">
-          Dosha do dia: {dosha.nome}
+          Seu corpo hoje: {dosha.simples}
         </h4>
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
           {dosha.base === 'metricas'
-            ? 'Calculado com os seus sinais de hoje e a Lua do dia.'
+            ? 'Calculado com os seus sinais de hoje e a Lua do dia, pelas três tendências do corpo no Ayurveda.'
             : 'Sem sinais suficientes hoje: pesa a Lua do dia. Faça o check-in para personalizar.'}
         </p>
         <ul className="mt-4 flex flex-col gap-3">
           {(['vata', 'pitta', 'kapha'] as const).map((d) => (
             <li key={d}>
-              <div className="flex justify-between text-xs">
+              <div className="flex justify-between gap-2 text-xs">
                 <span
                   className={cn(
-                    'capitalize',
                     d === dosha.dominante
                       ? 'font-semibold text-foreground'
                       : 'text-muted-foreground'
                   )}
                 >
-                  {d}
+                  {TENDENCIA_DO_CORPO[d].rotulo}{' '}
+                  <span className="font-normal text-muted-foreground">
+                    ({TENDENCIA_DO_CORPO[d].tradicional})
+                  </span>
                 </span>
                 <span className="tabular-nums text-muted-foreground">
                   {dosha.percentuais[d]}%
@@ -151,7 +171,7 @@ function CeuDeHoje({ briefing }: { briefing: BriefingDoDia }) {
               <div
                 className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted"
                 role="img"
-                aria-label={`${d}: ${dosha.percentuais[d]}%`}
+                aria-label={`${TENDENCIA_DO_CORPO[d].rotulo}: ${dosha.percentuais[d]}%`}
               >
                 <div
                   className={cn(
@@ -219,7 +239,7 @@ export function MeuDia() {
                 {TOM[briefing.tom].rotulo}
               </span>
               <span className="rounded-full border border-border bg-background/70 px-2 py-0.5 font-medium text-foreground">
-                Lua em {briefing.ceu.nakshatra}
+                Lua em {briefing.ceu.signoDaLua}
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -461,8 +481,8 @@ export function MeuDia() {
       <footer className="flex flex-col gap-4 border-t border-border pt-6">
         <p className="text-xs leading-relaxed text-muted-foreground">
           Preparado às {horaDoBriefing(briefing.geradoEm, briefing.local.fuso)}{' '}
-          pelo motor do coach Lyra com o Panchang de {briefing.local.rotulo}, o
-          seu mapa védico e os sinais que você registrou
+          pelo motor do coach Lyra com o céu de {briefing.local.rotulo}, o seu
+          mapa védico e os sinais que você registrou
           {briefing.leitura.autor.tipo === 'ia'
             ? `; a leitura do dia foi escrita por ${briefing.leitura.autor.provedor} (${briefing.leitura.autor.modelo}) só com os dados astrológicos, e os horários são calculados pela Lyra`
             : ''}

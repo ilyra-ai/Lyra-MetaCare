@@ -575,8 +575,8 @@ function Escolha({
           <p className="max-w-xl text-xs leading-relaxed text-muted-foreground">
             Respire sem forçar. Se sentir tontura ou falta de ar, volte à
             respiração natural. Na gestação ou com condições respiratórias ou
-            cardíacas, prefira a Nadi Shodhana (sem retenção) e converse com um
-            profissional de saúde.
+            cardíacas, prefira a respiração alternada (sem retenção) e converse
+            com um profissional de saúde.
           </p>
           <Button type="button" size="lg" onClick={onIniciar}>
             <Play aria-hidden="true" />

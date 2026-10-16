@@ -39,7 +39,9 @@ import { cn } from '@/lib/utils';
 /**
  * "Janelas de hoje" (tarefa 44): Brahma Muhurta, Abhijit, Rahu Kalam e o pôr
  * do sol da cidade da pessoa, com o arquivo .ics de hoje e o link de
- * assinatura privado que mantém o calendário dela atualizado.
+ * assinatura privado que mantém o calendário dela atualizado. Desde a tarefa
+ * 49 aparecem pelos nomes simples (hora do silêncio, horário mais forte do
+ * dia, pausa para começos e pôr do sol).
  */
 
 const SENTIDO: Record<
@@ -52,7 +54,7 @@ const SENTIDO: Record<
     ponto: 'bg-success',
     rotulo: 'Favorável',
   },
-  rahu_kalam: { acao: 'sem começos', ponto: 'bg-warning', rotulo: 'Cautela' },
+  rahu_kalam: { acao: 'só rotina', ponto: 'bg-warning', rotulo: 'Cautela' },
   sandhya: { acao: 'pausa de gratidão', ponto: 'bg-cosmic', rotulo: 'Pausa' },
 };
 

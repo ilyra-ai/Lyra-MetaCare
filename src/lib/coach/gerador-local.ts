@@ -9,7 +9,6 @@ import {
   diaVedicoDoPerfil,
   mapaDoPerfil,
 } from '@/lib/astrology/perfil-astrologico';
-import { NAKSHATRAS } from '@/lib/astrology/sideral';
 import { horaLocal, localParaUtc, partesLocais } from '@/lib/astrology/tempo';
 import { calculateDynamicDosha } from '@/lib/ayurveda/dosha-engine';
 import { calculateMenstrualCycle } from '@/lib/cycle/menstrual-engine';
@@ -24,14 +23,29 @@ import {
   VARA_INFO,
 } from './conhecimento';
 import type { ContextoDoCoach, MetricasDoCoach } from './contexto';
+import { CASA_DA_LUA, DIA_DA_SEMANA } from './leitura-conhecimento';
 import {
   type EntradaDaLeitura,
   escreverLeituraLocal,
   montarEntradaDaLeitura,
 } from './leitura-vedica';
+import {
+  CLIMA_DA_NATUREZA,
+  diaDaLua,
+  DOSHA_SIMPLES,
+  NOME_DO_CHOGHADIYA,
+  TEMA_DA_AREA,
+} from './linguagem-simples';
 import { calcularPeriodos } from './periodos';
 import { calcularProntidao, formatarDuracao } from './prontidao';
-import type { BriefingDoDia, Dica, Periodo, Qualidade, Tom } from './tipos';
+import type {
+  BriefingDoDia,
+  Dica,
+  ItemDoCeu,
+  Periodo,
+  Qualidade,
+  Tom,
+} from './tipos';
 
 /**
  * Motor local do coach: monta o "Seu dia" a partir do Panchang do lugar onde
@@ -113,7 +127,7 @@ function escolherJanelas(
       inicio: panchang.abhijitMuhurta.inicio,
       fim: panchang.abhijitMuhurta.fim,
       nome: 'Abhijit Muhurta',
-      sentido: 'o muhurta mais forte do dia para começar e decidir',
+      sentido: 'o horário mais forte do dia para começar e decidir',
     });
   }
   for (const c of panchang.choghadiyaDoDia) {
@@ -122,7 +136,7 @@ function escolherJanelas(
         inicio: c.inicio,
         fim: c.fim,
         nome: c.nome,
-        sentido: `Choghadiya ${c.nome}: ${c.significado}`,
+        sentido: `um trecho do dia ${NOME_DO_CHOGHADIYA[c.nome]?.toLowerCase() ?? 'favorável'} (${c.significado})`,
       });
     }
   }
@@ -163,7 +177,7 @@ function escolherJanelas(
         inicio: paraMovimento[0].inicio,
         fim: paraMovimento[0].fim,
         nome: paraMovimento[0].nome,
-        sentido: `Choghadiya ${paraMovimento[0].nome}: ${paraMovimento[0].significado}`,
+        sentido: `um trecho do dia ${NOME_DO_CHOGHADIYA[paraMovimento[0].nome]?.toLowerCase() ?? 'favorável'} (${paraMovimento[0].significado})`,
       }
     : null;
 
@@ -184,7 +198,7 @@ function sugestaoDoPeriodo(
 
   if (periodo.chave === 'madrugada') {
     return brahma
-      ? `Se acordar cedo, use o Brahma Muhurta (${brahma.horario}) para respiração e a intenção do dia; antes disso, o sono profundo é a prioridade.`
+      ? `Se acordar cedo, use a hora do silêncio (${brahma.horario}) para respirar e firmar a intenção do dia; antes disso, o sono profundo é a prioridade.`
       : 'O sono profundo é a prioridade: quarto escuro, fresco e sem telas.';
   }
 
@@ -202,7 +216,7 @@ function sugestaoDoPeriodo(
     rahu &&
     new Date(rahu.fim).getTime() - new Date(rahu.inicio).getTime() >=
       15 * 60_000
-      ? ` Entre ${rahu.horario} (Rahu Kalam), fique na rotina.`
+      ? ` Entre ${rahu.horario}, fique na rotina e evite começos.`
       : '';
   if (periodo.qualidade === 'favoravel') {
     const janela = abhijit ?? favoravel;
@@ -301,8 +315,8 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
   const baseDoDosha: 'metricas' | 'lua' = medidos >= 3 ? 'metricas' : 'lua';
   const porqueDoDosha =
     baseDoDosha === 'metricas'
-      ? `${dosha.nome} está mais alto hoje pelos seus sinais do dia e pela Lua em ${panchang.signoDaLua.nome}`
-      : `sem sinais suficientes do corpo hoje, o dosha do dia vem da Lua em ${panchang.signoDaLua.nome} (${dosha.nome})`;
+      ? `pelos seus sinais de hoje e pela Lua em ${panchang.signoDaLua.nome}, o seu corpo pende para ${DOSHA_SIMPLES[dominante]}`
+      : `sem sinais suficientes do corpo hoje, a tendência vem da Lua em ${panchang.signoDaLua.nome}: ${DOSHA_SIMPLES[dominante]}`;
 
   const ciclo = pessoa.ciclo
     ? calculateMenstrualCycle(new Date(`${data}T12:00:00`), pessoa.ciclo)
@@ -317,15 +331,15 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
   const grupo = grupoDoTithi(numeroNoPaksha);
   const ekadashi = numeroNoPaksha === 11;
   const pessoal = dia.pessoal;
-  const proximoNakshatra = NAKSHATRAS[(panchang.nakshatra.indice + 1) % 27];
+  const proximoNakshatra = (panchang.nakshatra.indice + 1) % 27;
 
   const trocaDeNakshatra =
     panchang.nakshatra.termina < panchang.proximoNascerDoSol
       ? {
           instante: panchang.nakshatra.termina,
           descricao: pessoal?.taraDepois
-            ? `A Lua entra em ${proximoNakshatra}: para você, Tara ${pessoal.taraDepois.nome} (${pessoal.taraDepois.sentido}).`
-            : `A Lua entra em ${proximoNakshatra}.`,
+            ? `A Lua muda de clima e passa a favorecer ${NATUREZA[NAKSHATRA_INFO[proximoNakshatra].natureza].favorece}; para você, o tom passa a ser de ${pessoal.taraDepois.tema}.`
+            : `A Lua muda de clima e passa a favorecer ${NATUREZA[NAKSHATRA_INFO[proximoNakshatra].natureza].favorece}.`,
         }
       : null;
 
@@ -384,6 +398,12 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
     tom = 'favoravel';
   }
 
+  // A manchete diz para o que o dia é bom para esta pessoa: a área do mapa
+  // por onde a Lua passa (contada da Lua de nascimento) ou, sem mapa, o que
+  // a Lua do dia favorece.
+  const temaDoDia = pessoal
+    ? TEMA_DA_AREA[pessoal.chandra.casa - 1]
+    : CLIMA_DA_NATUREZA[natureza.natureza].curto;
   let manchete: string;
   if (tom === 'atencao') {
     manchete = prontidaoBaixa
@@ -391,32 +411,35 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
       : corpoEmAlerta
         ? 'Sinais do seu corpo pedem cuidado hoje'
         : chandrashtama
-          ? 'Dia de cautela: a Lua passa pelo seu 8º signo'
-          : 'Dia de cautela: avance devagar e escolha bem os horários';
+          ? 'Dia de prudência: a Lua passa pelo ponto mais sensível do seu mapa'
+          : `Dia de cautela: avance devagar, com foco em ${temaDoDia}`;
   } else if (tom === 'favoravel') {
     manchete =
       prontidao.valor !== null && prontidao.valor >= 75
-        ? 'Corpo pronto e céu a favor: dia de avançar'
-        : 'Dia favorável para avançar no que importa';
+        ? `Corpo pronto e céu a favor: dia de avançar, bom para ${temaDoDia}`
+        : `Dia a seu favor, bom para ${temaDoDia}`;
   } else {
     manchete =
       prontidao.valor !== null && prontidao.valor >= 75
-        ? 'Energia alta em um dia de céu misto: use os horários certos'
-        : 'Dia de equilíbrio: escolha bem os horários';
+        ? `Energia alta em um dia de equilíbrio, bom para ${temaDoDia}`
+        : `Dia de equilíbrio, bom para ${temaDoDia}`;
   }
 
-  const frases = [
-    `A Lua em ${panchang.nakshatra.nome}, de natureza ${sentidoDaNatureza.nome.toLowerCase()}, favorece ${sentidoDaNatureza.favorece}.`,
-  ];
+  const frases: string[] = [];
   if (pessoal) {
     frases.push(
-      `Para você, é um dia ${pessoal.tara.nome} (${pessoal.tara.sentido}).`
+      `Para você, hoje é um dia de ${pessoal.tara.tema}: ${pessoal.tara.conselho}.`,
+      `${primeiraMaiuscula(CASA_DA_LUA[pessoal.chandra.casa - 1])}.`
+    );
+  } else {
+    frases.push(
+      `A Lua de hoje, de clima ${CLIMA_DA_NATUREZA[natureza.natureza].clima}, favorece ${sentidoDaNatureza.favorece}.`
     );
   }
   frases.push(
     janelas.melhor
-      ? `Melhor janela: ${hora(janelas.melhor.inicio)}–${hora(janelas.melhor.fim)}; cautela das ${hora(rahu.inicio)} às ${hora(rahu.fim)} (Rahu Kalam).`
-      : `Cautela das ${hora(rahu.inicio)} às ${hora(rahu.fim)} (Rahu Kalam).`
+      ? `Melhor horário para o que importa: ${hora(janelas.melhor.inicio)}–${hora(janelas.melhor.fim)}; evite começar coisas importantes das ${hora(rahu.inicio)} às ${hora(rahu.fim)}.`
+      : `Evite começar coisas importantes das ${hora(rahu.inicio)} às ${hora(rahu.fim)}.`
   );
   if (prontidao.valor !== null) {
     frases.push(
@@ -452,7 +475,7 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
   }
   saude.push({
     texto: `Dia de ${vara.regente}: atenção a ${vara.corpo}. ${primeiraMaiuscula(vara.pratica)}.`,
-    porque: `${panchang.vara.nome} é regido por ${vara.regente} na tradição védica.`,
+    porque: `${DIA_DA_SEMANA[panchang.vara.indice]} é regido por ${vara.regente} na tradição védica.`,
   });
   saude.push({
     texto: `Pegue luz natural entre ${hora(panchang.nascerDoSol)} e ${hora(new Date(panchang.nascerDoSol.getTime() + HORA))}, de preferência ao ar livre.`,
@@ -475,7 +498,7 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
     {
       texto: `Faça a refeição principal perto do meio-dia solar (${hora(meioDiaSolar)}) e jante até ${hora(jantar)}.`,
       porque:
-        'No Ayurveda, a digestão (Agni) é mais forte no meio do dia; jantar 3 h antes de deitar favorece o sono e a glicemia da noite.',
+        'No Ayurveda, a digestão é mais forte no meio do dia; jantar 3 h antes de deitar favorece o sono e a glicemia da noite.',
     },
   ];
   if (peso) {
@@ -504,8 +527,9 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
   if (ekadashi) {
     alimentacao.push({
       texto:
-        'Ekadashi: a tradição sugere refeições mais leves, com menos grãos. É opcional: só se fizer sentido para você e sem contraindicação.',
-      porque: `Hoje é o 11º tithi (${panchang.tithi.paksha}), dia tradicional de leveza digestiva.`,
+        'Hoje é o 11º dia da Lua: a tradição sugere refeições mais leves, com menos grãos. É opcional: só se fizer sentido para você e sem contraindicação.',
+      porque:
+        'O 11º dia de cada fase da Lua é, na tradição védica, um dia de leveza digestiva.',
     });
   }
   if (cicloAtivo) {
@@ -528,7 +552,7 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
     // vira técnico, sem chegar à exaustão.
     intensidade =
       'Corpo pronto, dia suave: treino bem feito e técnico, de moderado a forte, sem chegar à exaustão';
-    porqueDaIntensidade = `Prontidão ${prontidao.valor} (${prontidao.base.join(', ')}), mas a Lua em ${panchang.nakshatra.nome} é ${sentidoDaNatureza.nome.toLowerCase()} e pede evitar ${sentidoDaNatureza.evite}.`;
+    porqueDaIntensidade = `Prontidão ${prontidao.valor} (${prontidao.base.join(', ')}), mas a Lua de hoje tem clima suave e pede evitar ${sentidoDaNatureza.evite}.`;
   } else if (prontidao.valor >= 75) {
     intensidade = 'Treino intenso cabe hoje: força pesada ou intervalado';
     porqueDaIntensidade = `Prontidão ${prontidao.valor}: ${prontidao.base.join(', ')}.`;
@@ -542,14 +566,14 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
     porqueDaIntensidade = `Prontidão ${prontidao.valor}: o corpo ainda está se recuperando (${prontidao.base.join(', ')}).`;
   }
   if (natureza.natureza === 'mridu' && (prontidao.valor ?? 0) < 75) {
-    porqueDaIntensidade += ` A Lua em ${panchang.nakshatra.nome} é ${sentidoDaNatureza.nome.toLowerCase()}: ${sentidoDaNatureza.evite} não combinam com o dia.`;
+    porqueDaIntensidade += ` A Lua de hoje tem clima suave: ${sentidoDaNatureza.evite} não combinam com o dia.`;
   }
   movimento.push({
     texto: janelas.movimento
       ? `${intensidade}, de preferência entre ${hora(janelas.movimento.inicio)} e ${hora(janelas.movimento.fim)}.`
       : `${intensidade}.`,
     porque: janelas.movimento
-      ? `${porqueDaIntensidade} Horário: ${janelas.movimento.sentido}, fora das janelas de cautela e no melhor momento para ${dosha.nome}.`
+      ? `${porqueDaIntensidade} Horário: ${janelas.movimento.sentido}, fora dos horários de cautela e no melhor momento para o seu corpo hoje.`
       : porqueDaIntensidade,
   });
   movimento.push({
@@ -590,7 +614,7 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
     },
     {
       texto: `Intenção do dia: ${sentidoDaNatureza.favorece}.`,
-      porque: `${panchang.nakshatra.nome} é regido por ${natureza.divindade}; tithi ${panchang.tithi.nome} (${grupo.nome}, ${grupo.sentido}).`,
+      porque: `A Lua de hoje, de clima ${CLIMA_DA_NATUREZA[natureza.natureza].clima}, favorece isso; e o ${diaDaLua(panchang.tithi.indice)} é de ${grupo.sentido}.`,
     },
   ];
   const meditouNaSemana = [hoje, ...historico].some(
@@ -618,7 +642,7 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
     {
       texto: `Deite por volta das ${hora(dormir)} para acordar perto do nascer do sol (${hora(amanhecer)}).`,
       porque:
-        'Dormir cedo e acordar com o sol alinha o relógio biológico; no Ayurveda, deitar no período Kapha (antes das 22 h) facilita o sono profundo.',
+        'Dormir cedo e acordar com o sol alinha o relógio biológico; deitar antes das 22 h, quando o corpo naturalmente desacelera, facilita o sono profundo.',
     },
     {
       texto: 'Telas e luz forte fora da última hora antes de dormir.',
@@ -662,14 +686,14 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
   focos.push(movimento[0]);
   focos.push({
     texto: `${primeiraMaiuscula(sentidoDaNatureza.favorece)}.`,
-    porque: `A Lua em ${panchang.nakshatra.nome}, nakshatra ${sentidoDaNatureza.nome.toLowerCase()} regido por ${natureza.divindade}.`,
+    porque: `A Lua de hoje está num trecho do céu de clima ${CLIMA_DA_NATUREZA[natureza.natureza].clima}, que favorece isso.`,
   });
 
   const cuidados: Dica[] = [
     {
       texto: `Evite começos e decisões grandes entre ${hora(rahu.inicio)} e ${hora(rahu.fim)}.`,
       porque:
-        'Rahu Kalam: o oitavo do dia regido por Rahu, tradicionalmente evitado para começar algo importante.',
+        'Na astrologia védica, este trecho de cada dia é tradicionalmente evitado para começar algo importante.',
     },
   ];
   if (chandrashtama) {
@@ -677,17 +701,17 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
       texto:
         'Evite confrontos, excessos e riscos desnecessários; o dia pede prudência.',
       porque:
-        'Chandrashtama: a Lua do dia está no 8º signo a partir da sua Lua natal, período tradicional de cautela (cerca de 2 dias e meio por mês).',
+        'A Lua passa pelo ponto mais sensível do seu mapa, um período tradicional de cautela de cerca de dois dias e meio por mês.',
     });
   } else if (pessoal && pessoal.tara.qualidade === 'desfavoravel') {
     cuidados.push({
-      texto: `${primeiraMaiuscula(pessoal.tara.sentido)}.`,
-      porque: `Tara ${pessoal.tara.nome}: o nakshatra do dia contado a partir do seu nakshatra natal.`,
+      texto: `${primeiraMaiuscula(pessoal.tara.conselho)}.`,
+      porque: `Contando a partir da posição da Lua quando você nasceu, a Lua de hoje cai num trecho de ${pessoal.tara.tema}.`,
     });
   } else {
     cuidados.push({
       texto: `Evite ${sentidoDaNatureza.evite}.`,
-      porque: `A Lua em ${panchang.nakshatra.nome} é ${sentidoDaNatureza.nome.toLowerCase()}.`,
+      porque: `A Lua de hoje tem clima ${CLIMA_DA_NATUREZA[natureza.natureza].clima}.`,
     });
   }
   if (prontidao.valor !== null && prontidao.valor < 55) {
@@ -699,12 +723,13 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
     cuidados.push({
       texto: `Evite começos importantes ${ate(panchang.karana.termina)}.`,
       porque:
-        'Karana Vishti (Bhadra): meio tithi tradicionalmente evitado para começos.',
+        'Pelo calendário lunar, esta metade do dia é tradicionalmente evitada para começos.',
     });
   } else if (panchang.yoga.qualidade === 'desfavoravel') {
     cuidados.push({
       texto: `Prefira rotina a novidades ${ate(panchang.yoga.termina)}.`,
-      porque: `Yoga ${panchang.yoga.nome}, tradicionalmente desfavorável para começos.`,
+      porque:
+        'A combinação do Sol com a Lua até esse horário é tradicionalmente desfavorável para começos.',
     });
   }
 
@@ -716,8 +741,9 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
     }));
   if (chandrashtama) {
     alertas.push({
-      texto: 'Chandrashtama hoje: dia de prudência.',
-      porque: 'A Lua do dia está no 8º signo a partir da sua Lua natal.',
+      texto: 'Dia de prudência para você.',
+      porque:
+        'A Lua passa pelo ponto mais sensível do seu mapa (cerca de dois dias e meio por mês).',
     });
   }
 
@@ -725,10 +751,12 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
   const completar: string[] = [];
   if (!perfil.nascimento.local || !perfil.nascimento.data) {
     completar.push(
-      'Informe a data e a cidade de nascimento no perfil para o coach ler o seu mapa natal (Tara Bala, Chandrashtama e dasha).'
+      'Informe a data e a cidade de nascimento no perfil para o coach ler o seu mapa de nascimento e personalizar o dia.'
     );
   } else if (!perfil.nascimento.hora) {
-    completar.push('Informe a hora de nascimento para Lagna e dasha precisos.');
+    completar.push(
+      'Informe a hora de nascimento para o seu ascendente e as fases da sua vida ficarem precisos.'
+    );
   }
   if (!perfil.moradia) {
     completar.push(
@@ -759,8 +787,89 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
     melhorJanela: janelas.melhor,
   });
 
+  // ------------------------------------------- o céu em linguagem simples
+  const meuMapa = entradaDaLeitura.mapa;
+  const itensDoCeu: ItemDoCeu[] = [
+    {
+      termo: 'Dia da semana',
+      valor: `${DIA_DA_SEMANA[panchang.vara.indice]}, dia de ${vara.regente}`,
+      detalhe: primeiraMaiuscula(entradaDaLeitura.regenteDoDia.tema),
+    },
+    {
+      termo: 'Fase da Lua',
+      valor: primeiraMaiuscula(diaDaLua(panchang.tithi.indice)),
+      detalhe: primeiraMaiuscula(grupo.sentido),
+    },
+    {
+      termo: 'Lua em',
+      valor: panchang.signoDaLua.nome,
+      detalhe: `Clima ${CLIMA_DA_NATUREZA[natureza.natureza].clima}: favorece ${sentidoDaNatureza.favorece}`,
+    },
+    {
+      termo: 'Nascer e pôr do sol',
+      valor: `${hora(panchang.nascerDoSol)} · ${hora(panchang.porDoSol)}`,
+    },
+  ];
+  if (meuMapa) {
+    itensDoCeu.push(
+      {
+        termo: 'Para você hoje',
+        valor: `Dia de ${meuMapa.tara.tema}`,
+        detalhe: primeiraMaiuscula(meuMapa.tara.conselho),
+      },
+      {
+        termo: 'Sua Lua de nascimento',
+        valor: meuMapa.lua.signo,
+        detalhe: `${primeiraMaiuscula(meuMapa.lua.jeito)}; a Lua de hoje ${meuMapa.lua.sintoniaComHoje}`,
+      }
+    );
+    if (meuMapa.lagna) {
+      itensDoCeu.push({
+        termo: 'Seu ascendente',
+        valor: meuMapa.lagna,
+        detalhe: 'O signo que nascia no horizonte na hora do seu nascimento',
+      });
+    }
+    if (meuMapa.dasha) {
+      itensDoCeu.push({
+        termo: 'Sua fase de vida',
+        valor: primeiraMaiuscula(meuMapa.dasha.temaDoMahadasha),
+        detalhe: `Até ${meuMapa.dasha.fimDoMahadasha}; até ${meuMapa.dasha.fimDoAntardasha}, uma etapa de ${meuMapa.dasha.temaDoAntardasha}`,
+      });
+    }
+  }
+  const tradicionais: ItemDoCeu[] = [
+    { termo: 'Vara', valor: panchang.vara.nome },
+    {
+      termo: 'Tithi',
+      valor: `${panchang.tithi.nome} · ${panchang.tithi.paksha}`,
+    },
+    {
+      termo: 'Nakshatra',
+      valor: `${panchang.nakshatra.nome} · ${sentidoDaNatureza.nome}`,
+      detalhe: natureza.divindade,
+    },
+    { termo: 'Yoga', valor: panchang.yoga.nome },
+    { termo: 'Karana', valor: panchang.karana.nome },
+  ];
+  if (pessoal) {
+    tradicionais.push({ termo: 'Tara Bala', valor: pessoal.tara.nome });
+  }
+  if (mapa) {
+    tradicionais.push({
+      termo: 'Lua natal',
+      valor: `${mapa.lua.nomeDoSigno} (${mapa.lua.rashi}) · ${mapa.lua.nomeDoNakshatra}`,
+    });
+  }
+  if (mapa?.dasha) {
+    tradicionais.push({
+      termo: 'Dasha',
+      valor: `Mahadasha de ${mapa.dasha.mahadasha.nome} · Antardasha de ${mapa.dasha.antardasha.nome}`,
+    });
+  }
+
   const briefing: BriefingDoDia = {
-    versao: 2,
+    versao: 3,
     data,
     geradoEm: agora.toISOString(),
     origem: 'local',
@@ -799,12 +908,14 @@ export function gerarDiaLocal({ contexto, agora }: EntradaDoGerador): {
         ? `Mahadasha de ${mapa.dasha.mahadasha.nome} · Antardasha de ${mapa.dasha.antardasha.nome}`
         : null,
     },
+    ceuSimples: { itens: itensDoCeu, tradicionais },
     ciclo: cicloAtivo
       ? { fase: cicloAtivo.phaseLabel, dia: cicloAtivo.cycleDay }
       : null,
     dosha: {
       dominante,
       nome: dosha.nome,
+      simples: DOSHA_SIMPLES[dominante],
       percentuais: resultadoDoDosha.percentages,
       base: baseDoDosha,
     },

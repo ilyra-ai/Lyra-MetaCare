@@ -177,7 +177,8 @@ export const DOSHA_INFO: Record<
       'pratos frescos e menos condimentados: folhas, pepino, coco, frutas doces, arroz e leguminosas',
     movimento:
       'natação, ciclismo leve ou yoga, evitando treinar no calor do meio-dia',
-    mente: 'pausas sem competição e respiração refrescante (Shitali)',
+    mente:
+      'pausas sem competição e respiração refrescante (inspire pela boca, com a língua enrolada como um canudo, e solte pelo nariz)',
     evite: 'pimenta, frituras, álcool e cobrança excessiva',
   },
   kapha: {
@@ -186,7 +187,7 @@ export const DOSHA_INFO: Record<
       'refeições leves e aquecidas, com legumes, leguminosas e especiarias estimulantes (gengibre, pimenta-do-reino, cúrcuma); pouco açúcar e laticínios',
     movimento: 'treino vigoroso e aeróbico, de preferência pela manhã',
     mente:
-      'variedade, novidade e respiração energizante (Kapalabhati, se não houver contraindicação)',
+      'variedade, novidade e respiração energizante (expirações curtas e rápidas pelo nariz, se não houver contraindicação)',
     evite: 'cochilos longos, refeições pesadas à noite e sedentarismo',
   },
 };
@@ -200,8 +201,7 @@ export function respiracaoDoDia(
     return {
       nome: 'Respiração 4-7-8',
       como: 'inspire em 4 tempos, segure 7 e solte em 8; 4 ciclos',
-      porque:
-        'a expiração longa ativa o sistema parassimpático e reduz a ativação',
+      porque: 'a expiração longa acalma o sistema nervoso e reduz a tensão',
     };
   }
   if (prontidao !== null && prontidao >= 75) {
@@ -212,9 +212,9 @@ export function respiracaoDoDia(
     };
   }
   return {
-    nome: 'Nadi Shodhana (narinas alternadas)',
+    nome: 'Respiração alternada',
     como: 'alterne as narinas a cada respiração, em ritmo calmo; 5 minutos',
     porque:
-      'equilibra ativação e calma e é a prática clássica de Pranayama para o dia a dia',
+      'equilibra ativação e calma, a prática clássica de respiração do yoga para o dia a dia',
   };
 }

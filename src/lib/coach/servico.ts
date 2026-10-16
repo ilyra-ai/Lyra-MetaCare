@@ -51,7 +51,9 @@ function briefingValido(valor: unknown): valor is BriefingDoDia {
   return (
     typeof valor === 'object' &&
     valor !== null &&
-    (valor as { versao?: unknown }).versao === 2 &&
+    // Versão 3 (tarefa 49): os briefings guardados antes da linguagem
+    // simples são refeitos na próxima leitura.
+    (valor as { versao?: unknown }).versao === 3 &&
     Array.isArray((valor as { periodos?: unknown }).periodos) &&
     typeof (valor as { leitura?: unknown }).leitura === 'object'
   );

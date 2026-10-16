@@ -88,7 +88,7 @@ describe('leitura védica do dia (motor da Lyra)', () => {
   it('traz resumo, os três tópicos de cada período, pontos e dicas com fundamento', () => {
     const { briefing } = dia('2026-10-14');
     const leitura = briefing.leitura;
-    expect(briefing.versao).toBe(2);
+    expect(briefing.versao).toBe(3);
     expect(leitura.autor).toEqual({ tipo: 'lyra' });
     expect(leitura.resumoGeral.length).toBeGreaterThan(80);
     expect(leitura.periodos.map((p) => p.chave)).toEqual([
@@ -107,8 +107,9 @@ describe('leitura védica do dia (motor da Lyra)', () => {
     expect(leitura.dicas.length).toBeGreaterThanOrEqual(3);
     for (const dica of leitura.dicas)
       expect(dica.porque.length).toBeGreaterThan(10);
-    // O dasha natal aparece no resumo e nas dicas.
-    expect(leitura.resumoGeral).toMatch(/Mahadasha/);
+    // A fase da vida (dasha natal) aparece no resumo, em linguagem simples.
+    expect(leitura.resumoGeral).toMatch(/Nesta fase da sua vida/);
+    expect(leitura.resumoGeral).not.toMatch(/Mahadasha|Antardasha/);
   });
 
   it('cada dia é diferente: resumo e textos dos períodos mudam de um dia para o outro', () => {
@@ -157,7 +158,10 @@ describe('leitura védica do dia (motor da Lyra)', () => {
     expect(entradaDaLeitura.mapa).toBeNull();
     expect(briefing.leitura.periodos).toHaveLength(4);
     expect(briefing.leitura.pontosPositivos.length).toBeGreaterThanOrEqual(2);
-    expect(briefing.leitura.resumoGeral).not.toMatch(/Mahadasha/);
+    expect(briefing.leitura.resumoGeral).not.toMatch(/fase da sua vida/);
+    expect(briefing.leitura.resumoGeral).toContain(
+      'Com a sua data e a cidade de nascimento no perfil'
+    );
   });
 });
 
@@ -176,23 +180,26 @@ function respostaValida(
       entrada.periodos.map((p) => [p.chave, periodo(p.nome)])
     ),
     pontosPositivos: [
-      'Tara favorável para avançar.',
-      'Yoga que sustenta o dia.',
+      'Para você, um dia de prosperidade para avançar.',
+      'A combinação do Sol com a Lua sustenta o dia.',
     ],
     pontosNegativos: [
-      `Rahu Kalam ${entrada.ceu.rahuKalam}: evite começos.`,
+      `Das ${entrada.ceu.rahuKalam.replace('–', ' às ')}, evite começos.`,
       'Evite excessos à noite.',
     ],
     dicas: [
       {
-        texto: 'Faça japa do mantra do dia.',
-        porque: 'Regente do dia da semana.',
+        texto: 'Repita o mantra do dia por alguns minutos.',
+        porque: 'Ligado ao planeta que rege o dia da semana.',
       },
       {
         texto: 'Estude algo inspirador.',
-        porque: 'Trânsito de Júpiter pela Lua.',
+        porque: 'Júpiter está numa posição que apoia o seu crescimento.',
       },
-      { texto: 'Silêncio ao entardecer.', porque: 'Sandhya do pôr do sol.' },
+      {
+        texto: 'Silêncio ao entardecer.',
+        porque: 'O pôr do sol marca a passagem do dia.',
+      },
     ],
   };
 }
@@ -220,7 +227,7 @@ describe('leitura védica pelo modelo de IA (servidor compatível com a OpenAI)'
 
   it('aceita a resposta válida, mesmo com raciocínio <think> e cerca ```json', async () => {
     const { briefing, entradaDaLeitura } = dia('2026-10-14');
-    const resumo = `Hoje a Lua em ${entradaDaLeitura.ceu.nakshatra} pede presença e escuta; use ${entradaDaLeitura.melhorJanela?.horario ?? 'a manhã'} para o que mais importa no seu dia.`;
+    const resumo = `Hoje a Lua em ${entradaDaLeitura.ceu.signoDaLua} pede presença e escuta; use ${entradaDaLeitura.melhorJanela?.horario ?? 'a manhã'} para o que mais importa no seu dia.`;
     servidor.responder(
       `<think>vou montar o JSON</think>\n\`\`\`json\n${JSON.stringify(respostaValida(entradaDaLeitura, resumo))}\n\`\`\``
     );
@@ -312,6 +319,24 @@ describe('leitura védica pelo modelo de IA (servidor compatível com a OpenAI)'
       ok: false,
       motivo: 'texto repetido entre períodos',
     });
+
+    // Termo técnico (tarefa 49): a leitura é para leigos.
+    const tecnica = respostaValida(
+      entradaDaLeitura,
+      `Um dia Tara Pratyari, com a Lua em ${entradaDaLeitura.ceu.nakshatra}: escolha suas batalhas e poupe energia ao longo de hoje.`
+    );
+    servidor.responder(JSON.stringify(tecnica));
+    expect(await chamar()).toEqual({
+      ok: false,
+      motivo: 'termo técnico na leitura ("Tara")',
+    });
+    // O pedido explica a regra ao modelo.
+    const sistema = (
+      servidor.requisicoes.at(-1)?.corpo as {
+        messages: Array<{ content: string }>;
+      }
+    ).messages[0].content;
+    expect(sistema).toContain('nada de termos técnicos nem nomes em sânscrito');
 
     // O pedido leva o JSON Schema com os períodos do dia, todos obrigatórios.
     const pedido = servidor.requisicoes.at(-1)?.corpo as {

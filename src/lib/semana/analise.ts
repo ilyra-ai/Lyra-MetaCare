@@ -22,7 +22,11 @@ export interface DiaDaSemana {
     espiritual: number;
     frase: string | null;
   } | null;
-  tara: { nome: string; qualidade: Qualidade } | null;
+  /**
+   * Tom do dia para a pessoa pelo mapa (Tara Bala): `tema` em linguagem
+   * simples ("resistências"); `nome` é o tradicional.
+   */
+  tara: { nome: string; tema: string; qualidade: Qualidade } | null;
   /** Valores das métricas das metas (unidade da coluna). */
   metricas: Record<string, number | null>;
 }

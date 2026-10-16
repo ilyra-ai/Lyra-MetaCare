@@ -28,7 +28,7 @@ export function eventosDoDia(
   }
 ): JanelaDoCalendario[] {
   const lembrete = opcoes.lembretes ? MINUTOS_DE_LEMBRETE : null;
-  const origem = `Calculado pela Lyra MetaCare com o Panchang de ${opcoes.lugar}.`;
+  const origem = `Calculado pela Lyra MetaCare com o céu de ${opcoes.lugar}.`;
   const uid = (tipo: TipoDeJanela) =>
     `${tipo}-${panchang.data}-${opcoes.chaveDoUid}@lyra-metacare`;
 
@@ -38,8 +38,8 @@ export function eventosDoDia(
       uid: uid('brahma_muhurta'),
       inicio: panchang.brahmaMuhurta.inicio,
       fim: panchang.brahmaMuhurta.fim,
-      titulo: 'Brahma Muhurta · meditar',
-      descricao: `Janela antes do nascer do sol para meditar e firmar a intenção do dia. ${origem}`,
+      titulo: 'Hora do silêncio · meditar',
+      descricao: `Antes do nascer do sol: o momento mais sutil do dia para meditar e firmar a intenção. ${origem}`,
       lembreteMinutos: lembrete,
     },
   ];
@@ -49,8 +49,8 @@ export function eventosDoDia(
       uid: uid('abhijit'),
       inicio: panchang.abhijitMuhurta.inicio,
       fim: panchang.abhijitMuhurta.fim,
-      titulo: 'Abhijit Muhurta · o mais importante',
-      descricao: `Janela forte para começos e decisões (o 8º muhurta do dia). ${origem}`,
+      titulo: 'Horário mais forte · o mais importante',
+      descricao: `O horário mais forte do dia para começar e decidir. ${origem}`,
       lembreteMinutos: lembrete,
     });
   }
@@ -60,7 +60,7 @@ export function eventosDoDia(
       uid: uid('rahu_kalam'),
       inicio: panchang.rahuKalam.inicio,
       fim: panchang.rahuKalam.fim,
-      titulo: 'Rahu Kalam · sem começos',
+      titulo: 'Pausa para começos · só rotina',
       descricao: `Evite começar coisas novas e assinar compromissos nesta janela. ${origem}`,
       lembreteMinutos: lembrete,
     },
@@ -69,7 +69,7 @@ export function eventosDoDia(
       uid: uid('sandhya'),
       inicio: panchang.porDoSol,
       fim: new Date(panchang.porDoSol.getTime() + GHATI_MS),
-      titulo: 'Pôr do sol · Sandhya',
+      titulo: 'Pôr do sol · pausa de gratidão',
       descricao: `Pausa de gratidão na passagem do dia para a noite. ${origem}`,
       lembreteMinutos: lembrete,
     }

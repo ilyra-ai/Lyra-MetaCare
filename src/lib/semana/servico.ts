@@ -149,7 +149,11 @@ export async function lerSemana(
     try {
       const pessoal = diaVedicoDoPerfil(perfil, mapa, data)?.pessoal;
       return pessoal
-        ? { nome: pessoal.tara.nome, qualidade: pessoal.tara.qualidade }
+        ? {
+            nome: pessoal.tara.nome,
+            tema: pessoal.tara.tema,
+            qualidade: pessoal.tara.qualidade,
+          }
         : null;
     } catch (error) {
       if (error instanceof LocalSemNascerDoSolError) return null;

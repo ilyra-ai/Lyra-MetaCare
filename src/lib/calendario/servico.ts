@@ -136,7 +136,7 @@ export function calendarioDaAgenda(
 ) {
   return gerarCalendario({
     nome: NOME_DO_CALENDARIO,
-    descricao: `Brahma Muhurta, Abhijit Muhurta, Rahu Kalam e pôr do sol de ${agenda.lugar}, calculados pela Lyra MetaCare.`,
+    descricao: `Hora do silêncio, horário mais forte do dia, pausa para começos e pôr do sol de ${agenda.lugar}, calculados pela Lyra MetaCare.`,
     atualizarACadaHoras: 12,
     eventos: agenda.eventos,
     geradoEm,

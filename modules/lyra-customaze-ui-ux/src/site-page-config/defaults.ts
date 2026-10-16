@@ -370,7 +370,7 @@ const defaultAppPageConfig: AppPageConfig = {
         href: '/respiracao',
         label: 'Respiração',
         description:
-          'Respiração guiada (4-7-8, quadrada e Nadi Shodhana) com o ritmo real; os minutos entram na sua meditação.',
+          'Respiração guiada (4-7-8, quadrada e alternada) com o ritmo real; os minutos entram na sua meditação.',
         visible: true,
       },
       {

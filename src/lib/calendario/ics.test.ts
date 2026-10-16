@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { calcularPanchang } from '@/lib/astrology/panchang';
+import { termoTecnicoEm } from '@/lib/coach/linguagem-simples';
 import { buscarCidades } from '@/lib/geo/cidades';
 
 import { dobrarLinha, escaparTexto, formatarUtc, gerarCalendario } from './ics';
@@ -103,14 +104,18 @@ describe('janelas do dia no calendário', () => {
       ])
     );
     expect(porTitulo).toEqual({
-      'Brahma Muhurta · meditar': '04:02–04:48',
-      'Abhijit Muhurta · o mais importante': '11:27–12:17',
-      'Rahu Kalam · sem começos': '13:27–15:01',
-      'Pôr do sol · Sandhya': '18:11–18:35',
+      'Hora do silêncio · meditar': '04:02–04:48',
+      'Horário mais forte · o mais importante': '11:27–12:17',
+      'Pausa para começos · só rotina': '13:27–15:01',
+      'Pôr do sol · pausa de gratidão': '18:11–18:35',
     });
     expect(eventos.every((e) => e.lembreteMinutos === 10)).toBe(true);
     expect(eventos[0].uid).toBe('brahma_muhurta-2026-10-15-abc@lyra-metacare');
-    expect(eventos[0].descricao).toContain('Panchang de São Paulo, SP');
+    expect(eventos[0].descricao).toContain('céu de São Paulo, SP');
+    // Linguagem simples (tarefa 49): nada de termos técnicos no calendário.
+    for (const evento of eventos) {
+      expect(termoTecnicoEm(`${evento.titulo} ${evento.descricao}`)).toBeNull();
+    }
   });
 
   it('na quarta-feira não há Abhijit, e sem lembretes não há alarme', () => {
@@ -120,9 +125,9 @@ describe('janelas do dia no calendário', () => {
       lembretes: false,
     });
     expect(eventos.map((e) => e.titulo)).toEqual([
-      'Brahma Muhurta · meditar',
-      'Rahu Kalam · sem começos',
-      'Pôr do sol · Sandhya',
+      'Hora do silêncio · meditar',
+      'Pausa para começos · só rotina',
+      'Pôr do sol · pausa de gratidão',
     ]);
     expect(eventos.every((e) => e.lembreteMinutos === null)).toBe(true);
   });

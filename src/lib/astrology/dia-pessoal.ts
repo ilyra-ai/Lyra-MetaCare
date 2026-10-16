@@ -8,55 +8,68 @@ import type { Qualidade } from './panchang';
  * período tradicional de cautela).
  */
 
+// `tema` e `conselho` contam o Tara em linguagem simples (tarefa 49);
+// `sentido` junta os dois ("tema: conselho").
 const TARAS: ReadonlyArray<{
   nome: string;
   qualidade: Qualidade;
-  sentido: string;
+  tema: string;
+  conselho: string;
 }> = [
   {
     nome: 'Janma',
     qualidade: 'neutro',
-    sentido: 'dia do seu nakshatra natal: sensibilidade maior, cuide do corpo',
+    tema: 'sensibilidade',
+    conselho:
+      'a Lua volta ao ponto em que estava quando você nasceu; cuide do corpo e das emoções',
   },
   {
     nome: 'Sampat',
     qualidade: 'favoravel',
-    sentido: 'prosperidade: bom para avançar em metas',
+    tema: 'prosperidade',
+    conselho: 'bom para avançar em metas',
   },
   {
     nome: 'Vipat',
     qualidade: 'desfavoravel',
-    sentido: 'obstáculos: evite exageros e riscos',
+    tema: 'obstáculos',
+    conselho: 'evite exageros e riscos',
   },
   {
     nome: 'Kshema',
     qualidade: 'favoravel',
-    sentido: 'bem-estar: bom para rotina e cuidado',
+    tema: 'bem-estar',
+    conselho: 'bom para rotina e cuidado',
   },
   {
     nome: 'Pratyari',
     qualidade: 'desfavoravel',
-    sentido: 'resistências: escolha batalhas e preserve energia',
+    tema: 'resistências',
+    conselho: 'escolha suas batalhas e poupe energia',
   },
   {
     nome: 'Sadhana',
     qualidade: 'favoravel',
-    sentido: 'realização: bom para disciplina e prática',
+    tema: 'realização',
+    conselho: 'bom para disciplina e prática',
   },
   {
     nome: 'Naidhana',
     qualidade: 'desfavoravel',
-    sentido: 'desgaste: priorize recuperação e evite decisões grandes',
+    tema: 'desgaste',
+    conselho: 'priorize a recuperação e evite decisões grandes',
   },
   {
     nome: 'Mitra',
     qualidade: 'favoravel',
-    sentido: 'amizade: bom para encontros e apoio',
+    tema: 'amizade',
+    conselho: 'bom para encontros e apoio',
   },
   {
     nome: 'Parama Mitra',
     qualidade: 'favoravel',
-    sentido: 'grande aliado: um dos dias mais favoráveis do ciclo',
+    tema: 'grande apoio',
+    conselho: 'um dos dias mais favoráveis do seu ciclo',
   },
 ];
 
@@ -66,6 +79,11 @@ const CASAS_FAVORAVEIS_DA_LUA = new Set([1, 3, 6, 7, 10, 11]);
 export interface TaraBala {
   nome: string;
   qualidade: Qualidade;
+  /** Tema do dia em uma ou duas palavras ("resistências"). */
+  tema: string;
+  /** O que fazer com ele ("escolha suas batalhas e poupe energia"). */
+  conselho: string;
+  /** "tema: conselho". */
   sentido: string;
   nakshatraDoDia: string;
 }
@@ -76,7 +94,11 @@ export function taraBala(
 ): TaraBala {
   const contagem = ((nakshatraDoDia - nakshatraNatal + 27) % 27) + 1;
   const tara = TARAS[(contagem - 1) % 9];
-  return { ...tara, nakshatraDoDia: NAKSHATRAS[nakshatraDoDia] };
+  return {
+    ...tara,
+    sentido: `${tara.tema}: ${tara.conselho}`,
+    nakshatraDoDia: NAKSHATRAS[nakshatraDoDia],
+  };
 }
 
 export interface ChandraBala {

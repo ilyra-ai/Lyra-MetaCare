@@ -26,7 +26,7 @@ export const VARAS = [
   'Sábado (Shanivara, Saturno)',
 ] as const;
 
-const TITHIS = [
+export const TITHIS = [
   'Pratipada',
   'Dvitiya',
   'Tritiya',

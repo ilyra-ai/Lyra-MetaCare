@@ -15,6 +15,7 @@ import {
   type MetricasDoCoach,
 } from './contexto';
 import { gerarBriefingLocal } from './gerador-local';
+import { termoTecnicoEm } from './linguagem-simples';
 import { calcularProntidao, type SinaisDaProntidao } from './prontidao';
 import type { BriefingDoDia, Dica } from './tipos';
 
@@ -292,8 +293,8 @@ describe('briefing do dia (motor local)', () => {
       gerarBriefingLocal({ contexto: contexto({ data }), agora: AGORA })
         .recomendacoes.alimentacao.map((d) => d.texto)
         .join(' ');
-    expect(textos(ekadashi as string)).toContain('Ekadashi');
-    expect(textos(comum as string)).not.toContain('Ekadashi');
+    expect(textos(ekadashi as string)).toContain('11º dia da Lua');
+    expect(textos(comum as string)).not.toContain('11º dia da Lua');
   });
 
   it('no Chandrashtama da pessoa o dia é de atenção, com alerta', () => {
@@ -315,7 +316,13 @@ describe('briefing do dia (motor local)', () => {
     });
     expect(b.ceu.chandrashtama).toBe(true);
     expect(b.tom).toBe('atencao');
-    expect(b.alertas.map((a) => a.texto).join(' ')).toContain('Chandrashtama');
+    expect(b.manchete).toBe(
+      'Dia de prudência: a Lua passa pelo ponto mais sensível do seu mapa'
+    );
+    expect(b.alertas.map((a) => a.texto).join(' ')).toContain('prudência');
+    expect(b.alertas.map((a) => a.porque).join(' ')).toContain(
+      'ponto mais sensível do seu mapa'
+    );
   });
 
   it('considera a fase do ciclo quando acompanhada e pede a data quando falta', () => {
@@ -355,3 +362,105 @@ describe('briefing do dia (motor local)', () => {
     expect(semData.completar.join(' ')).toContain('última menstruação');
   });
 });
+
+/** Todos os textos que a pessoa lê no "Meu dia" (fora os nomes tradicionais). */
+function textosParaAPessoa(b: BriefingDoDia): string[] {
+  return [
+    b.manchete,
+    b.resumo,
+    ...b.periodos.flatMap((p) => [
+      p.sugestao,
+      ...[...p.destaques, ...p.cuidados].flatMap((j) => [j.nome, j.sentido]),
+    ]),
+    ...todasAsDicas(b).flatMap((d) => [d.texto, d.porque]),
+    ...b.completar,
+    ...b.ceuSimples.itens.flatMap((i) => [i.termo, i.valor, i.detalhe ?? '']),
+    b.dosha.simples,
+    b.leitura.resumoGeral,
+    ...b.leitura.periodos.flatMap((p) => [p.emocional, p.fisico, p.espiritual]),
+    ...b.leitura.pontosPositivos,
+    ...b.leitura.pontosNegativos,
+    ...b.leitura.dicas.flatMap((d) => [d.texto, d.porque]),
+  ];
+}
+
+describe('linguagem simples (tarefa 49)', () => {
+  it('detecta termos técnicos com fronteira de palavra e acentos', () => {
+    expect(termoTecnicoEm('Lua em Mula, nakshatra cortante')).toBe('Mula');
+    expect(termoTecnicoEm('Evite o Rahu Kalam')).toBe('Rahu');
+    expect(termoTecnicoEm('a Lua na 7ª casa')).toBe('7ª casa');
+    expect(termoTecnicoEm('Yoga Shobhana sustenta o dia')).toBe('Shobhana');
+    // Palavras comuns que contêm um termo não são confundidas com ele.
+    expect(termoTecnicoEm('Faça yoga e alongamento, sem pressa.')).toBeNull();
+    expect(termoTecnicoEm('Uma mulher caminha na praça.')).toBeNull();
+    expect(termoTecnicoEm('Cuide da sua saúde com calma.')).toBeNull();
+  });
+
+  it('nenhum texto do dia usa termos técnicos, com e sem mapa, em 60 dias', () => {
+    const perfis = [
+      perfil(),
+      perfil({ data: '1972-12-03', hora: '23:40' }),
+      perfil({ local: null }),
+    ];
+    const achados: string[] = [];
+    for (const [indice, p] of perfis.entries()) {
+      for (let i = 0; i < 60; i++) {
+        const data = diasAntes('2026-12-31', i);
+        const b = gerarBriefingLocal({
+          contexto: contexto({
+            data,
+            perfil: p,
+            hoje: i % 2 === 0 ? bemRecuperadaHoje(data) : null,
+          }),
+          agora: AGORA,
+        });
+        for (const texto of textosParaAPessoa(b)) {
+          const termo = termoTecnicoEm(texto);
+          if (termo)
+            achados.push(`perfil ${indice} ${data}: "${termo}" em "${texto}"`);
+        }
+      }
+    }
+    expect(achados).toEqual([]);
+  });
+
+  it('fala do mapa da pessoa: tom do dia, área do mapa, Lua de nascimento e fase da vida', () => {
+    const b = gerarBriefingLocal({ contexto: contexto(), agora: AGORA });
+    expect(b.leitura.resumoGeral).toContain('Para você, hoje é um dia de');
+    expect(b.leitura.resumoGeral).toContain('A sua Lua de nascimento, em');
+    expect(b.leitura.resumoGeral).toContain('Nesta fase da sua vida');
+    expect(b.resumo).toContain('Para você, hoje é um dia de');
+    const termos = b.ceuSimples.itens.map((i) => i.termo);
+    expect(termos).toEqual(
+      expect.arrayContaining([
+        'Para você hoje',
+        'Sua Lua de nascimento',
+        'Seu ascendente',
+        'Sua fase de vida',
+      ])
+    );
+    // Os nomes tradicionais continuam disponíveis, à parte.
+    expect(b.ceuSimples.tradicionais.map((i) => i.termo)).toEqual(
+      expect.arrayContaining(['Nakshatra', 'Tithi', 'Tara Bala', 'Dasha'])
+    );
+  });
+
+  it('a manchete diz para o que o dia é bom para a pessoa', () => {
+    const b = gerarBriefingLocal({ contexto: contexto(), agora: AGORA });
+    expect(b.manchete).not.toContain('escolha bem os horários');
+    expect(b.manchete).toMatch(
+      /bom para|com foco em|recuperação|cuidado|prudência/
+    );
+  });
+});
+
+function bemRecuperadaHoje(data: string) {
+  return metricas(data, {
+    sleep_duration_minutes: 470,
+    hrv_ms: 58,
+    resting_heart_rate: 56,
+    energy_level: 4,
+    mood_score: 4,
+    stress_score: 30,
+  });
+}

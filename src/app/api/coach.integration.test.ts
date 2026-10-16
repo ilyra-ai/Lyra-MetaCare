@@ -497,24 +497,26 @@ describe('leitura védica do "Seu dia" pelo modelo configurado', () => {
     await voltarAoMotorDaLyra();
   });
 
-  // O "modelo" lê os fatos enviados e responde uma leitura válida para os
-  // períodos daquele dia, citando o Rahu Kalam real.
+  // O "modelo" lê os fatos enviados e responde uma leitura válida, em
+  // linguagem simples (tarefa 49), para os períodos daquele dia, citando o
+  // horário de pausa para começos real.
   function leituraValida(corpo: unknown) {
     const pedido = corpo as { messages: Array<{ content: string }> };
     const texto = pedido.messages[1].content;
     const inicio = texto.indexOf('Fatos do dia:\n') + 'Fatos do dia:\n'.length;
     const fim = texto.indexOf('\n', inicio);
     const fatos = JSON.parse(texto.slice(inicio, fim)) as {
-      ceu: { rahuKalam: string; nakshatra: string };
+      ceu: { rahuKalam: string; signoDaLua: string };
       periodos: Array<{ chave: string; nome: string }>;
     };
+    const pausa = fatos.ceu.rahuKalam.replace('–', ' às ');
     const periodo = (nome: string) => ({
-      emocional: `${nome}: emoções sob a Lua em ${fatos.ceu.nakshatra}, com acolhimento.`,
+      emocional: `${nome}: emoções sob a Lua em ${fatos.ceu.signoDaLua}, com acolhimento.`,
       fisico: `${nome}: corpo pede movimento consciente e hidratação constante.`,
-      espiritual: `${nome}: alguns minutos de japa e silêncio reconectam a intenção.`,
+      espiritual: `${nome}: alguns minutos de silêncio reconectam a intenção.`,
     });
     return JSON.stringify({
-      resumoGeral: `Leitura do modelo local: a Lua em ${fatos.ceu.nakshatra} pede presença, e o Rahu Kalam (${fatos.ceu.rahuKalam}) pede pausa nos começos.`,
+      resumoGeral: `Leitura do modelo local: a Lua em ${fatos.ceu.signoDaLua} pede presença, e das ${pausa} vale pausar os começos.`,
       periodos: Object.fromEntries(
         fatos.periodos.map((p) => [p.chave, periodo(p.nome)])
       ),
@@ -523,19 +525,22 @@ describe('leitura védica do "Seu dia" pelo modelo configurado', () => {
         'Boa janela pela manhã.',
       ],
       pontosNegativos: [
-        `Rahu Kalam ${fatos.ceu.rahuKalam}.`,
+        `Das ${pausa}, evite começos.`,
         'Evite excessos à noite.',
       ],
       dicas: [
         {
-          texto: 'Japa do mantra do dia.',
-          porque: 'Regente do dia da semana.',
+          texto: 'Repita o mantra do dia.',
+          porque: 'Ligado ao planeta que rege o dia da semana.',
         },
         {
           texto: 'Estudo inspirador.',
-          porque: 'Trânsito de Júpiter pela Lua.',
+          porque: 'Júpiter apoia o seu crescimento.',
         },
-        { texto: 'Silêncio ao entardecer.', porque: 'Sandhya do pôr do sol.' },
+        {
+          texto: 'Silêncio ao entardecer.',
+          porque: 'O pôr do sol marca a passagem do dia.',
+        },
       ],
     });
   }

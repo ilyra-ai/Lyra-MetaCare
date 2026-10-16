@@ -79,7 +79,7 @@ export const DEFINICOES: Record<Tecnica, DefinicaoDaTecnica> = {
   },
   nadi_shodhana: {
     id: 'nadi_shodhana',
-    nome: 'Nadi Shodhana',
+    nome: 'Alternada',
     resumo: 'Respiração alternada pelas narinas, sem retenção',
     indicacao:
       'Prática do yoga para equilibrar a energia que oscila: acalma sem dar sono.',

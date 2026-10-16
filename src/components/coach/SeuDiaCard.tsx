@@ -111,9 +111,9 @@ export function EstadoSemDia({
         </h2>
         <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
           Para dizer como será o seu dia, período a período, o coach precisa da
-          cidade onde você mora ou nasceu (os horários do nascer do sol, Rahu
-          Kalam e Choghadiya dependem dela) e, para ler o seu mapa védico, da
-          data e da hora de nascimento.
+          cidade onde você mora ou nasceu (o nascer do sol e os horários bons e
+          de cautela dependem dela) e, para ler o seu mapa védico, da data e da
+          hora de nascimento.
         </p>
         <Button asChild>
           <Link href="/profile">

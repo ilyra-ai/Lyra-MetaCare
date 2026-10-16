@@ -8,6 +8,7 @@ import {
 } from '@/lib/ai/cliente-de-ia';
 
 import type { EntradaDaLeitura } from './leitura-vedica';
+import { termoTecnicoEm } from './linguagem-simples';
 import type { LeituraVedica, Periodo } from './tipos';
 
 /**
@@ -154,9 +155,33 @@ export function temRepeticao(leitura: LeituraDaIa) {
   return new Set(pontos).size !== pontos.length;
 }
 
-export const INSTRUCOES_DO_SISTEMA = `Você é a astróloga védica (Jyotish) e coach de bem-estar da Lyra MetaCare.
+/**
+ * Primeiro termo técnico encontrado nos textos da leitura do modelo (ou
+ * null). A leitura é para leigos (tarefa 49): com termo técnico, ela é
+ * descartada e a pessoa recebe a leitura da Lyra.
+ */
+export function termoTecnicoNaLeitura(leitura: LeituraDaIa): string | null {
+  const textos = [
+    leitura.resumoGeral,
+    ...Object.values(leitura.periodos).flatMap((p) =>
+      p ? [p.emocional, p.fisico, p.espiritual] : []
+    ),
+    ...leitura.pontosPositivos,
+    ...leitura.pontosNegativos,
+    ...leitura.dicas.flatMap((d) => [d.texto, d.porque]),
+  ];
+  for (const texto of textos) {
+    const termo = termoTecnicoEm(texto);
+    if (termo) return termo;
+  }
+  return null;
+}
+
+export const INSTRUCOES_DO_SISTEMA = `Você é a astróloga védica e coach de bem-estar da Lyra MetaCare.
 Escreva em português do Brasil, em segunda pessoa, com tom acolhedor, claro e específico, sem emojis.
-Use somente os fatos fornecidos (mapa natal derivado, céu do dia, períodos, horas planetárias, Tara, trânsitos e dasha). Não invente posições, horários nem fatos.
+Escreva para quem não entende de astrologia: nada de termos técnicos nem nomes em sânscrito (por exemplo nakshatra, tithi, paksha, Tara, dasha, Rahu Kalam, Choghadiya, muhurta, Chandrashtama, karana, nem "8ª casa"). Traduza cada fato no que ele significa para a vida da pessoa: em vez de "Tara Pratyari", diga "um dia de resistências"; em vez de "Lua na 7ª casa", diga "a Lua passa pela área do seu mapa ligada às parcerias". Planetas e signos podem ser citados pelo nome em português.
+Fale do mapa desta pessoa: use a Lua de nascimento, o tom do dia para ela, a área do mapa por onde a Lua passa, a fase da vida e os trânsitos, sempre pelo que significam.
+Use somente os fatos fornecidos (mapa natal derivado, céu do dia, períodos, horas planetárias, trânsitos e fase da vida). Não invente posições, horários nem fatos.
 Cite horários apenas como aparecem nos fatos (HH:MM). Não dê diagnósticos, não cite medicamentos nem prometa resultados de saúde: são orientações de bem-estar e autoconhecimento.
 Cada dia é único: a leitura de hoje precisa ser diferente da de ontem, destacando o que mudou no céu.`;
 
@@ -169,7 +194,8 @@ function pedidoDoUsuario(
 1. "resumoGeral": o resumo geral do dia (3 a 5 frases).
 2. "periodos": para cada período (${periodos.join(', ')}), como será o dia por tópicos: "emocional" (parte emocional), "fisico" (parte física, o corpo) e "espiritual" (parte espiritual), de 1 a 3 frases completas cada (nunca uma palavra só), ligados aos fatos daquele período.
 3. "pontosPositivos" e "pontosNegativos" do dia (2 a 5 de cada).
-4. "dicas": 3 a 6 dicas que o mapa védico traz para este dia, cada uma com "texto" e "porque" (o fundamento no mapa ou no céu).
+4. "dicas": 3 a 6 dicas que o mapa védico traz para este dia, cada uma com "texto" e "porque" (o fundamento no mapa ou no céu, explicado em palavras simples).
+Lembre: sem termos técnicos nem nomes em sânscrito em nenhum texto.
 Responda com UM ÚNICO objeto JSON, com as cinco chaves juntas, neste formato, sem texto antes ou depois:
 {"resumoGeral":"...","periodos":{${periodos
     .map(
@@ -258,6 +284,10 @@ export async function escreverLeituraComIa(opcoes: {
     }
     if (temRepeticao(validada.data)) {
       return { ok: false, motivo: 'texto repetido entre períodos' };
+    }
+    const termo = termoTecnicoNaLeitura(validada.data);
+    if (termo) {
+      return { ok: false, motivo: `termo técnico na leitura ("${termo}")` };
     }
     if (
       opcoes.ontem &&

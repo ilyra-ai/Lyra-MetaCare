@@ -5,6 +5,7 @@ import type {
 } from '@/lib/astrology/panchang';
 import { horaLocal, localParaUtc } from '@/lib/astrology/tempo';
 
+import { NOME_DA_JANELA, NOME_DO_CHOGHADIYA } from './linguagem-simples';
 import type { Janela, Periodo, Qualidade } from './tipos';
 
 /**
@@ -114,20 +115,20 @@ export function calcularPeriodos(entrada: EntradaDosPeriodos): Periodo[] {
   const cautelas = [
     {
       tipo: 'rahu_kalam' as const,
-      nome: 'Rahu Kalam',
+      nome: NOME_DA_JANELA.rahu_kalam,
       intervalo: hoje.rahuKalam,
       sentido:
         'evite começar algo importante, assinar ou tomar decisões grandes',
     },
     {
       tipo: 'yamaganda' as const,
-      nome: 'Yamaganda',
+      nome: NOME_DA_JANELA.yamaganda,
       intervalo: hoje.yamaganda,
       sentido: 'energia de perda: poupe esforços e riscos',
     },
     {
       tipo: 'gulika' as const,
-      nome: 'Gulika Kalam',
+      nome: NOME_DA_JANELA.gulika,
       intervalo: hoje.gulikaKalam,
       sentido:
         'o que começa aqui tende a se repetir: bom para rotina, não para começos',
@@ -155,7 +156,7 @@ export function calcularPeriodos(entrada: EntradaDosPeriodos): Periodo[] {
         }
         const item = janela(
           'choghadiya',
-          `Choghadiya ${c.nome}`,
+          NOME_DO_CHOGHADIYA[c.nome] ?? c.nome,
           c.qualidade,
           recorte,
           c.significado,
@@ -194,7 +195,7 @@ export function calcularPeriodos(entrada: EntradaDosPeriodos): Periodo[] {
             destaques.unshift(
               janela(
                 'abhijit',
-                'Abhijit Muhurta',
+                NOME_DA_JANELA.abhijit,
                 'favoravel',
                 recorte,
                 'o momento mais forte do dia para começar e decidir',
@@ -210,7 +211,7 @@ export function calcularPeriodos(entrada: EntradaDosPeriodos): Periodo[] {
         destaques.unshift(
           janela(
             'brahma_muhurta',
-            'Brahma Muhurta',
+            NOME_DA_JANELA.brahma_muhurta,
             'favoravel',
             brahma,
             'silêncio da madrugada: meditação, respiração e intenção do dia',
@@ -228,7 +229,7 @@ export function calcularPeriodos(entrada: EntradaDosPeriodos): Periodo[] {
         destaques.push(
           janela(
             'troca_de_nakshatra',
-            'Troca de nakshatra',
+            NOME_DA_JANELA.troca_de_nakshatra,
             'neutro',
             { inicio: troca.instante, fim: troca.instante },
             troca.descricao,

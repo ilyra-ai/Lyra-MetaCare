@@ -153,7 +153,8 @@ export const GRAHA_INFO: Record<
     natureza: 'benefico',
     tema: 'intelecto, comunicação e aprendizado',
     corpo: 'sistema nervoso, pele e respiração',
-    pratica: 'estudo de um texto inspirador (svadhyaya) e japa',
+    pratica:
+      'a leitura de um texto inspirador e a repetição de uma frase que te fortaleça',
     mantra: 'Om Budhaya Namah',
     cor: 'verde',
   },
@@ -173,7 +174,7 @@ export const GRAHA_INFO: Record<
     natureza: 'benefico',
     tema: 'harmonia, afeto e beleza',
     corpo: 'rins, pele e sistema reprodutivo',
-    pratica: 'devoção (bhakti), música e um gesto de beleza',
+    pratica: 'música, gratidão e um gesto de beleza',
     mantra: 'Om Shukraya Namah',
     cor: 'branco e rosa-claro',
   },
@@ -183,7 +184,7 @@ export const GRAHA_INFO: Record<
     natureza: 'malefico',
     tema: 'disciplina, paciência e responsabilidade',
     corpo: 'ossos, articulações e resistência',
-    pratica: 'serviço (seva), silêncio e desapego',
+    pratica: 'ajudar alguém sem esperar retorno, silêncio e desapego',
     mantra: 'Om Shanaishcharaya Namah',
     cor: 'azul-escuro',
   },
@@ -214,15 +215,15 @@ export function grahaPorNome(nome: string) {
   return Object.values(GRAHA_INFO).find((g) => g.nome === nome) ?? null;
 }
 
-/** Dia da semana com o nome sânscrito, sem o regente (domingo = 0). */
+/** Dia da semana por extenso (domingo = 0). */
 export const DIA_DA_SEMANA: readonly string[] = [
-  'Domingo (Ravivara)',
-  'Segunda-feira (Somavara)',
-  'Terça-feira (Mangalavara)',
-  'Quarta-feira (Budhavara)',
-  'Quinta-feira (Guruvara)',
-  'Sexta-feira (Shukravara)',
-  'Sábado (Shanivara)',
+  'Domingo',
+  'Segunda-feira',
+  'Terça-feira',
+  'Quarta-feira',
+  'Quinta-feira',
+  'Sexta-feira',
+  'Sábado',
 ];
 
 /** Dosha predominante pelo relógio do Ayurveda (hora local). */
@@ -236,15 +237,14 @@ export function doshaDoRelogio(hora: number): {
       dosha: 'vata',
       faixa: '2 h–6 h',
       sentido:
-        'é a fase de Vata, com a mente sutil e leve, ideal para acordar e meditar',
+        'a mente fica leve e sutil, a melhor hora para acordar e meditar',
     };
   }
   if (hora >= 6 && hora < 10) {
     return {
       dosha: 'kapha',
       faixa: '6 h–10 h',
-      sentido:
-        'é a fase de Kapha, em que o corpo pesa se ficar parado e o movimento desperta',
+      sentido: 'o corpo tende a pesar se ficar parado, e o movimento desperta',
     };
   }
   if (hora >= 10 && hora < 14) {
@@ -252,7 +252,7 @@ export function doshaDoRelogio(hora: number): {
       dosha: 'pitta',
       faixa: '10 h–14 h',
       sentido:
-        'é a fase de Pitta, com digestão e foco no auge, a hora da refeição principal',
+        'a digestão e o foco estão no auge, a hora da refeição principal',
     };
   }
   if (hora >= 14 && hora < 18) {
@@ -260,38 +260,40 @@ export function doshaDoRelogio(hora: number): {
       dosha: 'vata',
       faixa: '14 h–18 h',
       sentido:
-        'é a fase de Vata, boa para criar e comunicar, com energia que oscila; um lanche morno ajuda',
+        'a energia oscila, boa para criar e conversar; um lanche morno ajuda',
     };
   }
   if (hora >= 18 && hora < 22) {
     return {
       dosha: 'kapha',
       faixa: '18 h–22 h',
-      sentido:
-        'é a fase de Kapha, em que o corpo desacelera e se prepara para dormir',
+      sentido: 'o corpo desacelera e começa a se preparar para dormir',
     };
   }
   return {
     dosha: 'pitta',
     faixa: '22 h–2 h',
-    sentido: 'é a fase de Pitta, em que o corpo digere e se repara no sono',
+    sentido: 'o corpo digere e se repara durante o sono',
   };
 }
 
-/** A Lua do dia contada a partir da Lua natal (Chandra Gochara). */
+/**
+ * A Lua do dia contada a partir da Lua natal (Chandra Gochara), em linguagem
+ * simples: a área do mapa da pessoa por onde a Lua passa e o que isso pede.
+ */
 export const CASA_DA_LUA: ReadonlyArray<string> = [
-  'a Lua sobre a sua Lua natal, que aumenta a sensibilidade e pede cuidado com o corpo',
-  'a Lua na 2ª casa, que pede atenção à fala, à família e aos gastos',
-  'a Lua na 3ª casa, que traz coragem e iniciativa para resolver pendências',
-  'a Lua na 4ª casa, que volta as emoções para o lar, com alguma inquietação',
-  'a Lua na 5ª casa, que deixa a mente criativa, porém agitada',
-  'a Lua na 6ª casa, que dá força para vencer obstáculos e cuidar da saúde',
-  'a Lua na 7ª casa, boa para parcerias, encontros e acordos',
-  'a Lua na 8ª casa (Chandrashtama), que pede prudência, sem confrontos nem riscos',
-  'a Lua na 9ª casa, que favorece a fé e o estudo em ritmo moderado',
-  'a Lua na 10ª casa, que coloca o trabalho em evidência',
-  'a Lua na 11ª casa, que favorece ganhos, amizades e desejos realizados',
-  'a Lua na 12ª casa, que pede recolhimento, bom sono e atenção aos gastos',
+  'a Lua passa pelo mesmo ponto em que estava quando você nasceu, o que aumenta a sensibilidade e pede cuidado com o corpo',
+  'a Lua passa pela área do seu mapa ligada à fala, à família e ao dinheiro: cuidado com o que diz e com os gastos',
+  'a Lua passa pela área do seu mapa ligada à coragem e à iniciativa: bom para resolver pendências',
+  'a Lua passa pela área do seu mapa ligada ao lar: as emoções se voltam para a casa, com alguma inquietação',
+  'a Lua passa pela área do seu mapa ligada à criatividade: a mente fica criativa, porém agitada',
+  'a Lua passa pela área do seu mapa ligada a vencer obstáculos: força para resolver problemas e cuidar da saúde',
+  'a Lua passa pela área do seu mapa ligada às parcerias: bom para encontros, conversas e acordos',
+  'a Lua passa pelo ponto mais sensível do seu mapa (cerca de dois dias e meio por mês): prudência, sem confrontos nem riscos',
+  'a Lua passa pela área do seu mapa ligada à fé e ao estudo: bom para aprender, em ritmo tranquilo',
+  'a Lua passa pela área do seu mapa ligada ao trabalho e à imagem pública: o trabalho fica em evidência',
+  'a Lua passa pela área do seu mapa ligada a ganhos e amizades: bom para colher resultados e encontrar amigos',
+  'a Lua passa pela área do seu mapa ligada ao descanso: pede recolhimento, bom sono e atenção aos gastos',
 ];
 
 /** Júpiter contado a partir da Lua natal (casas favoráveis: 2, 5, 7, 9, 11). */
@@ -300,34 +302,36 @@ export function transitoDeJupiter(casa: number) {
   return {
     favoravel,
     sentido: favoravel
-      ? `Júpiter transita a ${casa}ª casa a partir da sua Lua, uma fase de apoio, crescimento e boas oportunidades`
-      : `Júpiter transita a ${casa}ª casa a partir da sua Lua, uma fase de crescimento mais lento, que pede paciência e estudo`,
+      ? 'Júpiter, o planeta do crescimento, está numa posição que apoia você neste ano: fase de boas oportunidades para crescer'
+      : 'Júpiter, o planeta do crescimento, está numa posição mais neutra para você neste ano: o crescimento vem devagar, com paciência e estudo',
   };
 }
 
 /**
  * Saturno contado a partir da Lua natal: favorável nas casas 3, 6 e 11;
- * Sade Sati nas casas 12, 1 e 2; Ashtama Shani na 8ª.
+ * Sade Sati nas casas 12, 1 e 2; Ashtama Shani na 8ª. O texto conta cada
+ * caso sem os nomes técnicos (tarefa 49).
  */
 export function transitoDeSaturno(casa: number) {
   if ([12, 1, 2].includes(casa)) {
     return {
       favoravel: false,
-      sentido: `Saturno transita a ${casa}ª casa a partir da sua Lua (Sade Sati), uma fase de amadurecimento que pede disciplina, descanso e simplicidade`,
+      sentido:
+        'Saturno, o planeta da disciplina, passa perto da sua Lua de nascimento, um ciclo de amadurecimento de cerca de sete anos e meio que pede disciplina, descanso e simplicidade',
     };
   }
   if (casa === 8) {
     return {
       favoravel: false,
       sentido:
-        'Saturno transita a 8ª casa a partir da sua Lua (Ashtama Shani), uma fase de cuidado redobrado com a saúde e com riscos',
+        'Saturno, o planeta da disciplina, passa pelo ponto mais sensível do seu mapa (uma fase de cerca de dois anos e meio): cuidado redobrado com a saúde e com riscos',
     };
   }
   const favoravel = [3, 6, 11].includes(casa);
   return {
     favoravel,
     sentido: favoravel
-      ? `Saturno transita a ${casa}ª casa a partir da sua Lua: o esforço constante traz resultado concreto`
-      : `Saturno transita a ${casa}ª casa a partir da sua Lua: as responsabilidades pedem constância`,
+      ? 'Saturno, o planeta da disciplina, está numa posição que recompensa o seu esforço: a constância traz resultado concreto'
+      : 'Saturno, o planeta da disciplina, pede constância nas responsabilidades desta fase',
   };
 }

@@ -14,6 +14,12 @@ import { horaLocal, partesLocais } from '@/lib/astrology/tempo';
 
 import { grupoDoTithi, NAKSHATRA_INFO, NATUREZA } from './conhecimento';
 import {
+  CLIMA_DA_NATUREZA,
+  diaDaLua,
+  mesEAno,
+  sintoniaDosElementos,
+} from './linguagem-simples';
+import {
   CASA_DA_LUA,
   DIA_DA_SEMANA,
   doshaDoRelogio,
@@ -71,7 +77,15 @@ export interface PeriodoDaEntrada {
     emocao: string;
     nakshatra: string;
     divindade: string;
-    tara: { nome: string; qualidade: Qualidade; sentido: string } | null;
+    /** O que a Lua do período favorece, em linguagem simples. */
+    favorece: string;
+    tara: {
+      nome: string;
+      qualidade: Qualidade;
+      tema: string;
+      conselho: string;
+      sentido: string;
+    } | null;
     casaAPartirDaLuaNatal: number | null;
   };
   ascendente: { signo: string; elemento: string; corpo: string };
@@ -92,9 +106,17 @@ export interface EntradaDaLeitura {
   ceu: {
     tithi: string;
     paksha: string;
+    /** "6º dia da Lua crescente", "Lua cheia". */
+    diaDaLua: string;
     grupoDoTithi: string;
     nakshatra: string;
-    natureza: { nome: string; favorece: string; evite: string };
+    natureza: {
+      nome: string;
+      /** Clima em palavras simples ("de limpeza e corte"). */
+      clima: string;
+      favorece: string;
+      evite: string;
+    };
     divindade: string;
     yoga: { nome: string; qualidade: Qualidade };
     karana: { nome: string; qualidade: Qualidade };
@@ -110,14 +132,31 @@ export interface EntradaDaLeitura {
   /** Sem data e cidade de nascimento no perfil, não há mapa natal. */
   mapa: {
     lagna: string | null;
-    lua: { signo: string; nakshatra: string };
+    lua: {
+      signo: string;
+      nakshatra: string;
+      /** O jeito de sentir da Lua de nascimento. */
+      jeito: string;
+      /** Como a Lua de hoje conversa com esse jeito de sentir. */
+      sintoniaComHoje: string;
+    };
     dasha: {
       mahadasha: string;
       antardasha: string;
       temaDoMahadasha: string;
       temaDoAntardasha: string;
+      /** "2031": fim da fase longa (Mahadasha). */
+      fimDoMahadasha: string;
+      /** "março de 2027": fim da subfase (Antardasha). */
+      fimDoAntardasha: string;
     } | null;
-    tara: { nome: string; qualidade: Qualidade; sentido: string };
+    tara: {
+      nome: string;
+      qualidade: Qualidade;
+      tema: string;
+      conselho: string;
+      sentido: string;
+    };
     chandra: { casa: number; sentido: string; chandrashtama: boolean };
     jupiter: { casa: number; favoravel: boolean; sentido: string };
     saturno: { casa: number; favoravel: boolean; sentido: string };
@@ -205,10 +244,13 @@ export function montarEntradaDaLeitura(fatos: FatosDoDia): EntradaDaLeitura {
         emocao: infoDaLua.emocao,
         nakshatra: NAKSHATRAS[lua.nakshatra],
         divindade: NAKSHATRA_INFO[lua.nakshatra].divindade,
+        favorece: NATUREZA[NAKSHATRA_INFO[lua.nakshatra].natureza].favorece,
         tara: tara
           ? {
               nome: tara.nome,
               qualidade: tara.qualidade,
+              tema: tara.tema,
+              conselho: tara.conselho,
               sentido: tara.sentido,
             }
           : null,
@@ -246,20 +288,33 @@ export function montarEntradaDaLeitura(fatos: FatosDoDia): EntradaDaLeitura {
     const casaJupiter = casaContada(mapa.lua.signo, jupiter.signo);
     const casaSaturno = casaContada(mapa.lua.signo, saturno.signo);
     const casaDaLua = dia.pessoal.chandra.casa;
+    const luaNatal = SIGNO_INFO[mapa.lua.signo];
     mapaDaEntrada = {
       lagna: mapa.lagna ? mapa.lagna.nomeDoSigno : null,
-      lua: { signo: mapa.lua.nomeDoSigno, nakshatra: mapa.lua.nomeDoNakshatra },
+      lua: {
+        signo: mapa.lua.nomeDoSigno,
+        nakshatra: mapa.lua.nomeDoNakshatra,
+        jeito: luaNatal.emocao,
+        sintoniaComHoje: sintoniaDosElementos(
+          luaNatal.elemento,
+          SIGNO_INFO[hoje.signoDaLua.indice].elemento
+        ),
+      },
       dasha: mapa.dasha
         ? {
             mahadasha: GRAHA_INFO[mapa.dasha.mahadasha.graha].nome,
             antardasha: GRAHA_INFO[mapa.dasha.antardasha.graha].nome,
             temaDoMahadasha: GRAHA_INFO[mapa.dasha.mahadasha.graha].tema,
             temaDoAntardasha: GRAHA_INFO[mapa.dasha.antardasha.graha].tema,
+            fimDoMahadasha: String(mapa.dasha.mahadasha.fim.getUTCFullYear()),
+            fimDoAntardasha: mesEAno(mapa.dasha.antardasha.fim),
           }
         : null,
       tara: {
         nome: dia.pessoal.tara.nome,
         qualidade: dia.pessoal.tara.qualidade,
+        tema: dia.pessoal.tara.tema,
+        conselho: dia.pessoal.tara.conselho,
         sentido: dia.pessoal.tara.sentido,
       },
       chandra: {
@@ -272,9 +327,15 @@ export function montarEntradaDaLeitura(fatos: FatosDoDia): EntradaDaLeitura {
     };
   }
 
+  // A virada da Lua no meio do dia, contada pelo efeito para a pessoa.
+  const taraDepois = dia.pessoal?.taraDepois ?? null;
   const troca =
     hoje.nakshatra.termina < hoje.proximoNascerDoSol
-      ? `às ${hora(hoje.nakshatra.termina)} a Lua entra em ${NAKSHATRAS[(hoje.nakshatra.indice + 1) % 27]}`
+      ? `às ${hora(hoje.nakshatra.termina)} a Lua muda de clima${
+          taraDepois
+            ? `, e para você o tom passa a ser de ${taraDepois.tema}`
+            : ''
+        }`
       : null;
 
   return {
@@ -289,10 +350,12 @@ export function montarEntradaDaLeitura(fatos: FatosDoDia): EntradaDaLeitura {
     ceu: {
       tithi: hoje.tithi.nome,
       paksha: hoje.tithi.paksha,
+      diaDaLua: diaDaLua(hoje.tithi.indice),
       grupoDoTithi: `${grupo.nome} (${grupo.sentido})`,
       nakshatra: hoje.nakshatra.nome,
       natureza: {
         nome: sentido.nome,
+        clima: CLIMA_DA_NATUREZA[natureza.natureza].clima,
         favorece: sentido.favorece,
         evite: sentido.evite,
       },
@@ -319,13 +382,16 @@ export function montarEntradaDaLeitura(fatos: FatosDoDia): EntradaDaLeitura {
 }
 
 // ---------------------------------------------------------------- texto local
+//
+// Linguagem simples (tarefa 49): cada fato do mapa é contado pelo que ele
+// significa para a pessoa, sem termos técnicos nem nomes em sânscrito.
 
 const SOBRE_A_QUALIDADE: Record<Qualidade, string> = {
   favoravel:
-    'O Choghadiya está a favor das emoções: bom momento para conversas e gestos de afeto.',
+    'Os horários deste período estão a favor das emoções: bom momento para conversas e gestos de afeto.',
   neutro: 'As emoções ficam estáveis: siga no seu ritmo.',
   desfavoravel:
-    'O Choghadiya pede cautela: respire antes de responder e adie discussões.',
+    'Este período pede cautela: respire antes de responder e adie discussões.',
 };
 
 function deGraha(nome: string) {
@@ -334,12 +400,12 @@ function deGraha(nome: string) {
 
 function taraDoPeriodo(p: PeriodoDaEntrada) {
   return p.lua.tara
-    ? ` No seu mapa, a Lua passa por Tara ${p.lua.tara.nome} (${p.lua.tara.sentido}).`
+    ? ` Para você, é um momento de ${p.lua.tara.tema}: ${p.lua.tara.conselho}.`
     : '';
 }
 
 function emocional(p: PeriodoDaEntrada, entrada: EntradaDaLeitura): string {
-  const lua = `a Lua em ${p.lua.signo}, signo de ${p.lua.elemento}, no nakshatra ${p.lua.nakshatra}, traz ${p.lua.emocao}`;
+  const lua = `a Lua em ${p.lua.signo} traz ${p.lua.emocao}`;
   switch (p.chave) {
     case 'madrugada':
       return `Durante o sono, ${lua}; os sonhos e o descanso refletem esse tom.${taraDoPeriodo(p)}`;
@@ -348,15 +414,18 @@ function emocional(p: PeriodoDaEntrada, entrada: EntradaDaLeitura): string {
     case 'tarde': {
       const casa =
         p.lua.casaAPartirDaLuaNatal !== null
-          ? ` Para você, é ${CASA_DA_LUA[p.lua.casaAPartirDaLuaNatal - 1]}.`
+          ? ` Para você, ${CASA_DA_LUA[p.lua.casaAPartirDaLuaNatal - 1]}.`
           : '';
-      return `À tarde, a hora ${deGraha(p.regenteDoPeriodo.graha)} traz o tema de ${p.regenteDoPeriodo.tema}. ${SOBRE_A_QUALIDADE[p.qualidade]}${casa}`;
+      return `À tarde, predomina a energia ${deGraha(p.regenteDoPeriodo.graha)}, ligada a ${p.regenteDoPeriodo.tema}. ${SOBRE_A_QUALIDADE[p.qualidade]}${casa}`;
     }
     default: {
-      const fase =
-        entrada.ceu.paksha === 'Shukla Paksha'
-          ? 'a Lua crescente (Shukla Paksha) pede expressão e encontros'
-          : 'a Lua minguante (Krishna Paksha) pede recolhimento e balanço do dia';
+      const fase = entrada.ceu.diaDaLua.includes('crescente')
+        ? 'a Lua crescente pede expressão e encontros'
+        : entrada.ceu.diaDaLua === 'Lua cheia'
+          ? 'a Lua cheia deixa as emoções à flor da pele'
+          : entrada.ceu.diaDaLua === 'Lua nova'
+            ? 'a Lua nova pede silêncio e novas intenções'
+            : 'a Lua minguante pede recolhimento e balanço do dia';
       const troca = entrada.ceu.trocaDeNakshatra
         ? ` Fique atento à virada: ${entrada.ceu.trocaDeNakshatra}.`
         : '';
@@ -369,14 +438,14 @@ function fisico(p: PeriodoDaEntrada, entrada: EntradaDaLeitura): string {
   const elemento = Object.values(ELEMENTO_INFO).find(
     (e) => e.nome === p.ascendente.elemento
   );
-  const ascendente = `O ascendente do período está em ${p.ascendente.signo}, que rege ${p.ascendente.corpo}${elemento ? `; ${elemento.corpo}` : ''}.`;
-  const relogio = `Pelo relógio do Ayurveda (${p.relogioDoAyurveda.faixa}), ${p.relogioDoAyurveda.sentido}.`;
+  const ascendente = `Neste período, o signo que nasce no horizonte é ${p.ascendente.signo}, que rege ${p.ascendente.corpo}${elemento ? `: ${elemento.corpo}` : ''}.`;
+  const relogio = `Pelo relógio natural do corpo (${p.relogioDoAyurveda.faixa}), ${p.relogioDoAyurveda.sentido}.`;
   if (p.chave === 'madrugada') {
     return `Fase de reparo do corpo: quarto escuro, fresco e silencioso. ${relogio} ${ascendente}`;
   }
   const cautela =
     p.qualidade === 'desfavoravel'
-      ? ' Com o Choghadiya desfavorável, poupe o corpo de esforços extremos.'
+      ? ' Como este período pede cautela, poupe o corpo de esforços extremos.'
       : p.qualidade === 'favoravel' && p.chave === 'manha'
         ? ' Bom trecho para o treino do dia.'
         : '';
@@ -388,16 +457,16 @@ function fisico(p: PeriodoDaEntrada, entrada: EntradaDaLeitura): string {
 }
 
 function espiritual(p: PeriodoDaEntrada, entrada: EntradaDaLeitura): string {
-  const hora = `Predomina a hora ${deGraha(p.regenteDoPeriodo.graha)}, que pede ${p.regenteDoPeriodo.pratica} (mantra "${p.regenteDoPeriodo.mantra}").`;
+  const hora = `Predomina a energia ${deGraha(p.regenteDoPeriodo.graha)}, que pede ${p.regenteDoPeriodo.pratica}.`;
   switch (p.chave) {
     case 'madrugada':
-      return `Brahma Muhurta (${entrada.ceu.brahmaMuhurta}) é o momento mais sutil do dia para meditar e firmar a intenção. ${hora}`;
+      return `A hora do silêncio, antes do amanhecer (${entrada.ceu.brahmaMuhurta}), é o momento mais sutil do dia para meditar e firmar a intenção. ${hora}`;
     case 'manha':
-      return `${hora} O nakshatra ${p.lua.nakshatra} é regido por ${p.lua.divindade}; uma intenção nessa direção abre bem o dia.`;
+      return `${hora} A Lua desta manhã favorece ${p.lua.favorece}: uma intenção nessa direção abre bem o dia.`;
     case 'tarde':
       return `${hora} Uma pausa de 3 minutos de respiração consciente reconecta o propósito no meio do dia.`;
     default:
-      return `No pôr do sol (${entrada.ceu.porDoSol}), a Sandhya convida a uma pausa de gratidão. ${hora}`;
+      return `O pôr do sol (${entrada.ceu.porDoSol}) convida a uma pausa de gratidão pela passagem do dia. ${hora}`;
   }
 }
 
@@ -405,7 +474,7 @@ function pontosPositivos(entrada: EntradaDaLeitura): string[] {
   const pontos: string[] = [];
   if (entrada.mapa?.tara.qualidade === 'favoravel') {
     pontos.push(
-      `Tara ${entrada.mapa.tara.nome} (${entrada.mapa.tara.sentido}).`
+      `Para você, hoje é um dia de ${entrada.mapa.tara.tema}: ${entrada.mapa.tara.conselho}.`
     );
   }
   if (
@@ -417,14 +486,16 @@ function pontosPositivos(entrada: EntradaDaLeitura): string[] {
   }
   if (entrada.melhorJanela) {
     pontos.push(
-      `Janela forte para começos e decisões: ${entrada.melhorJanela.nome}, ${entrada.melhorJanela.horario}.`
+      `Horário forte para começos e decisões: ${entrada.melhorJanela.horario}.`
     );
   }
   pontos.push(
-    `Lua em ${entrada.ceu.nakshatra}, nakshatra ${entrada.ceu.natureza.nome.toLowerCase()}, que favorece ${entrada.ceu.natureza.favorece}.`
+    `A Lua de hoje, de clima ${entrada.ceu.natureza.clima}, favorece ${entrada.ceu.natureza.favorece}.`
   );
   if (entrada.ceu.yoga.qualidade !== 'desfavoravel') {
-    pontos.push(`Yoga ${entrada.ceu.yoga.nome}, que sustenta o dia.`);
+    pontos.push(
+      'A combinação do Sol com a Lua hoje é favorável e ajuda a sustentar o que você fizer.'
+    );
   }
   if (entrada.mapa?.jupiter.favoravel) {
     pontos.push(`${entrada.mapa.jupiter.sentido}.`);
@@ -447,38 +518,36 @@ function pontosNegativos(entrada: EntradaDaLeitura): string[] {
   const pontos: string[] = [];
   if (entrada.mapa?.chandra.chandrashtama) {
     pontos.push(
-      'Chandrashtama: a Lua passa pelo 8º signo a partir da sua Lua natal; prudência e nada de riscos.'
+      'A Lua passa pelo ponto mais sensível do seu mapa (cerca de dois dias e meio por mês): prudência e nada de riscos.'
     );
   }
   pontos.push(
-    `Rahu Kalam das ${entrada.ceu.rahuKalam.replace('–', ' às ')}: evite começos e assinaturas.`
+    `Das ${entrada.ceu.rahuKalam.replace('–', ' às ')}, evite começar coisas importantes e assinar compromissos.`
   );
   if (entrada.mapa?.tara.qualidade === 'desfavoravel') {
     pontos.push(
-      `Tara ${entrada.mapa.tara.nome} (${entrada.mapa.tara.sentido}).`
+      `Para você, hoje é um dia de ${entrada.mapa.tara.tema}: ${entrada.mapa.tara.conselho}.`
     );
   }
   if (entrada.ceu.karana.qualidade === 'desfavoravel') {
     pontos.push(
-      `Karana ${entrada.ceu.karana.nome}: meio tithi tradicionalmente evitado para começos.`
+      'Em parte do dia, o calendário lunar desaconselha começos importantes.'
     );
   }
   if (entrada.ceu.yoga.qualidade === 'desfavoravel') {
     pontos.push(
-      `Yoga ${entrada.ceu.yoga.nome}: prefira a rotina às novidades.`
+      'A combinação do Sol com a Lua hoje é desfavorável: prefira a rotina às novidades.'
     );
   }
   if (entrada.ceu.grupoDoTithi.startsWith('Rikta')) {
     pontos.push(
-      `Tithi ${entrada.ceu.tithi} (Rikta): dia de concluir, não de começar.`
+      `Hoje é o ${entrada.ceu.diaDaLua}, um dia de concluir e organizar, não de começar.`
     );
   }
   if (entrada.mapa && !entrada.mapa.saturno.favoravel) {
     pontos.push(`${entrada.mapa.saturno.sentido}.`);
   }
-  pontos.push(
-    `A natureza do nakshatra pede evitar ${entrada.ceu.natureza.evite}.`
-  );
+  pontos.push(`A Lua de hoje pede evitar ${entrada.ceu.natureza.evite}.`);
   const pior = [...entrada.periodos]
     .filter((p) => p.chave !== 'madrugada')
     .sort((a, b) => a.nota - b.nota)[0];
@@ -490,43 +559,59 @@ function pontosNegativos(entrada: EntradaDaLeitura): string[] {
   return pontos.slice(0, 5);
 }
 
+/**
+ * A fase da vida (Vimshottari) em linguagem simples: Rahu e Ketu, pouco
+ * conhecidos fora da astrologia védica, entram só pelo tema.
+ */
+function faseDaVida(
+  dasha: NonNullable<NonNullable<EntradaDaLeitura['mapa']>['dasha']>
+) {
+  const conhecido = (nome: string) => nome !== 'Rahu' && nome !== 'Ketu';
+  const regida = conhecido(dasha.mahadasha)
+    ? `, regida por ${dasha.mahadasha}`
+    : '';
+  return `Nesta fase da sua vida${regida}, que vai até ${dasha.fimDoMahadasha}, o tema é ${dasha.temaDoMahadasha}; até ${dasha.fimDoAntardasha}, uma etapa de ${dasha.temaDoAntardasha} dá o tom dos seus dias.`;
+}
+
 function dicas(entrada: EntradaDaLeitura): Dica[] {
   const lista: Dica[] = [];
   if (entrada.mapa?.dasha) {
     const dasha = entrada.mapa.dasha;
     const antar = grahaPorNome(dasha.antardasha);
     lista.push({
-      texto: `Reserve um momento para o tema do seu Antardasha (${dasha.temaDoAntardasha})${antar ? `, com ${antar.pratica}` : ''}.`,
-      porque: `Você está no Mahadasha ${deGraha(dasha.mahadasha)} (${dasha.temaDoMahadasha}) e no Antardasha ${deGraha(dasha.antardasha)}, que dão o tom destes meses.`,
+      texto: `Reserve um momento para ${dasha.temaDoAntardasha}${antar ? `, com ${antar.pratica}` : ''}.`,
+      porque: faseDaVida(dasha),
     });
   }
   lista.push({
-    texto: `Repita 9 ou 108 vezes o mantra do dia, "${entrada.regenteDoDia.mantra}", e use ${entrada.regenteDoDia.cor} se quiser marcar a intenção.`,
-    porque: `${entrada.diaDaSemana} está sob a regência ${deGraha(entrada.regenteDoDia.graha)} (${entrada.regenteDoDia.tema}).`,
+    texto: `Se gostar de mantras, repita 9 ou 108 vezes "${entrada.regenteDoDia.mantra}"; para marcar a intenção, use ${entrada.regenteDoDia.cor}.`,
+    porque: `${entrada.diaDaSemana} é o dia ${deGraha(entrada.regenteDoDia.graha)}, ligado a ${entrada.regenteDoDia.tema}.`,
   });
   lista.push({
     texto: `Intenção do dia: ${entrada.ceu.natureza.favorece}.`,
-    porque: `A Lua está em ${entrada.ceu.nakshatra}, nakshatra ${entrada.ceu.natureza.nome.toLowerCase()} regido por ${entrada.ceu.divindade}.`,
+    porque: `A Lua de hoje está num trecho do céu de clima ${entrada.ceu.natureza.clima}, que favorece isso.`,
   });
   if (entrada.mapa) {
     lista.push({
       texto: entrada.mapa.jupiter.favoravel
-        ? 'Aproveite a fase de Júpiter para estudar, pedir orientação ou dar um passo de crescimento.'
-        : 'Cresça devagar: estudo e paciência rendem mais que pressa nesta fase de Júpiter.',
+        ? 'Aproveite o bom momento de Júpiter para estudar, pedir orientação ou dar um passo de crescimento.'
+        : 'Cresça devagar: estudo e paciência rendem mais que pressa neste ano.',
       porque: `${entrada.mapa.jupiter.sentido}.`,
     });
   }
   if (entrada.ceu.ekadashi) {
     lista.push({
       texto:
-        'Ekadashi: a tradição sugere refeições mais leves e mais tempo de prática espiritual (opcional, sem contraindicação).',
-      porque: `Hoje é o 11º tithi da ${entrada.ceu.paksha}.`,
+        'Hoje é o 11º dia da Lua: a tradição sugere refeições mais leves e mais tempo de prática espiritual (opcional, sem contraindicação).',
+      porque:
+        'O 11º dia de cada fase da Lua é tradicionalmente dedicado à leveza e à interiorização.',
     });
   }
   if (entrada.melhorJanela) {
     lista.push({
       texto: `Guarde ${entrada.melhorJanela.horario} para o que mais importa hoje.`,
-      porque: `${entrada.melhorJanela.nome}, fora das janelas de cautela do Panchang.`,
+      porque:
+        'É o trecho mais forte do dia para começar e decidir, fora dos horários de cautela.',
     });
   }
   return lista.slice(0, 6);
@@ -541,25 +626,32 @@ function comRegente(pontos: string[], entrada: EntradaDaLeitura) {
   ];
 }
 
+/**
+ * Resumo do dia contado a partir do mapa da pessoa: o tom do dia para ela,
+ * a área do mapa por onde a Lua passa, como a Lua de hoje conversa com a Lua
+ * de nascimento, a fase da vida e os horários que mais pesam.
+ */
 function resumoGeral(entrada: EntradaDaLeitura): string {
-  const frases = [
-    `${entrada.diaDaSemana}, sob a regência ${deGraha(entrada.regenteDoDia.graha)}, favorece ${entrada.regenteDoDia.tema}. A Lua está em ${entrada.ceu.nakshatra}, no signo de ${entrada.ceu.signoDaLua}, e o tithi é ${entrada.ceu.tithi} da ${entrada.ceu.paksha}.`,
-  ];
-  if (entrada.mapa) {
-    frases.push(
-      `No seu mapa, é um dia Tara ${entrada.mapa.tara.nome} (${entrada.mapa.tara.sentido}), com ${entrada.mapa.chandra.sentido}.`
-    );
-    if (entrada.mapa.dasha) {
-      frases.push(
-        `O Antardasha ${deGraha(entrada.mapa.dasha.antardasha)}, dentro do Mahadasha ${deGraha(entrada.mapa.dasha.mahadasha)}, colore o dia com ${entrada.mapa.dasha.temaDoAntardasha}.`
-      );
-    }
+  const rahu = entrada.ceu.rahuKalam.replace('–', ' às ');
+  const horarios = entrada.melhorJanela
+    ? `Use ${entrada.melhorJanela.horario} para o que mais importa e evite começar coisas importantes das ${rahu}.`
+    : `Evite começar coisas importantes das ${rahu}.`;
+  if (!entrada.mapa) {
+    return [
+      `${entrada.diaDaSemana} é o dia ${deGraha(entrada.regenteDoDia.graha)}, ligado a ${entrada.regenteDoDia.tema}.`,
+      `A Lua em ${entrada.ceu.signoDaLua}, de clima ${entrada.ceu.natureza.clima}, favorece ${entrada.ceu.natureza.favorece}.`,
+      horarios,
+      'Com a sua data e a cidade de nascimento no perfil, a leitura passa a falar do seu mapa.',
+    ].join(' ');
   }
-  frases.push(
-    entrada.melhorJanela
-      ? `Use ${entrada.melhorJanela.horario} para o que importa e evite começos no Rahu Kalam (${entrada.ceu.rahuKalam}).`
-      : `Evite começos no Rahu Kalam (${entrada.ceu.rahuKalam}).`
-  );
+  const { mapa } = entrada;
+  const frases = [
+    `Para você, hoje é um dia de ${mapa.tara.tema}: ${mapa.tara.conselho}.`,
+    `${primeiraMaiuscula(mapa.chandra.sentido)}.`,
+    `A sua Lua de nascimento, em ${mapa.lua.signo}, fala de ${mapa.lua.jeito}; a Lua de hoje, em ${entrada.ceu.signoDaLua}, ${mapa.lua.sintoniaComHoje}.`,
+  ];
+  if (mapa.dasha) frases.push(faseDaVida(mapa.dasha));
+  frases.push(horarios);
   return frases.join(' ');
 }
 

@@ -122,8 +122,8 @@ export function LocaisDoPerfil({
           id="perfil-cidade-moradia-ajuda"
           className="text-xs leading-5 text-muted-foreground"
         >
-          Nascer do sol, Rahu Kalam e os períodos do seu dia são calculados para
-          este lugar.
+          O nascer do sol, os horários bons e de cautela e os períodos do seu
+          dia são calculados para este lugar.
         </p>
       </div>
     </div>

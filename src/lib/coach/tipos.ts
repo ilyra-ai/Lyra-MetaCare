@@ -86,8 +86,19 @@ export interface LeituraVedica {
   autor: AutorDaLeitura;
 }
 
+/** Linha do quadro "O céu de hoje" em linguagem simples (tarefa 49). */
+export interface ItemDoCeu {
+  termo: string;
+  valor: string;
+  detalhe?: string;
+}
+
 export interface BriefingDoDia {
-  versao: 2;
+  /**
+   * 3 desde a tarefa 49 (textos em linguagem simples e `ceuSimples`): um
+   * briefing guardado com versão anterior é refeito na próxima leitura.
+   */
+  versao: 3;
   data: string;
   geradoEm: string;
   /** `ia`: a leitura foi escrita pelo modelo configurado; `local`: pela Lyra. */
@@ -127,10 +138,20 @@ export interface BriefingDoDia {
     chandrashtama: boolean;
     dasha: string | null;
   };
+  /**
+   * O céu de hoje e o seu mapa em linguagem simples (`itens`) e, à parte, os
+   * nomes tradicionais para quem estuda astrologia védica (`tradicionais`).
+   */
+  ceuSimples: {
+    itens: ItemDoCeu[];
+    tradicionais: ItemDoCeu[];
+  };
   ciclo: { fase: string; dia: number | null } | null;
   dosha: {
     dominante: 'vata' | 'pitta' | 'kapha';
     nome: string;
+    /** "calor e intensidade". */
+    simples: string;
     percentuais: { vata: number; pitta: number; kapha: number };
     /** `metricas`: calculado dos sinais do dia; `lua`: sem sinais suficientes, pesa a Lua do dia. */
     base: 'metricas' | 'lua';

@@ -42,7 +42,7 @@ function detalhe(dia: DiaDaSemana) {
   if (pratica > 0) partes.push(`${pratica} min de prática`);
   if (dia.tara) {
     partes.push(
-      `Tara ${dia.tara.nome}${dia.tara.qualidade === 'favoravel' ? ' (favorável)' : dia.tara.qualidade === 'desfavoravel' ? ' (cautela)' : ''}`
+      `para você, dia de ${dia.tara.tema}${dia.tara.qualidade === 'favoravel' ? ' (favorável)' : dia.tara.qualidade === 'desfavoravel' ? ' (cautela)' : ''}`
     );
   }
   return partes.join(' · ');
@@ -65,8 +65,8 @@ export function GraficoDaSemana({
   return (
     <figure className="flex flex-col gap-3">
       <figcaption className="sr-only">
-        Prontidão de cada dia da semana; a estrela marca os dias de Tara
-        favorável.
+        Prontidão de cada dia da semana; a estrela marca os dias favoráveis para
+        você pelo seu mapa.
       </figcaption>
       <div
         className="grid grid-cols-7 items-end gap-1.5 sm:gap-2"
