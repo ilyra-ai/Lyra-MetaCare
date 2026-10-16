@@ -129,6 +129,7 @@ describe('mapa natal e dia védico', () => {
     expect(resposta.status).toBe(200);
     expect(resposta.json).toEqual({
       mapa: null,
+      leitura: null,
       faltando: ['data', 'hora', 'local'],
       localDeNascimento: null,
     });
@@ -176,6 +177,31 @@ describe('mapa natal e dia védico', () => {
     });
     expect(corpo.mapa.planetas).toHaveLength(9);
     expect(corpo.mapa.dasha.mahadasha.nome).toBe('Rahu');
+
+    // Leitura do motor da Lyra (tarefa 55), separada por tipo de mapa.
+    const leitura = (
+      resposta.json as {
+        leitura: {
+          tipos: Array<{ tipo: string }>;
+          vedico: { lagna: string; lua: string };
+          samadhi: { terrestre: string };
+          quantum: { indisponivel: string[] };
+          percepcoes: string[];
+        };
+      }
+    ).leitura;
+    expect(leitura.tipos.map((t) => t.tipo)).toEqual([
+      'vedico',
+      'samadhi',
+      'quantum',
+    ]);
+    expect(leitura.vedico.lagna).toMatch(
+      /^Ascendente \(Lagna\) em Capricórnio/
+    );
+    expect(leitura.vedico.lua).toMatch(/Krittika/);
+    expect(leitura.samadhi.terrestre).toMatch(/Roda de Cura/);
+    expect(leitura.quantum.indisponivel.join(' ')).toMatch(/Desenho Humano/);
+    expect(leitura.percepcoes.length).toBeGreaterThanOrEqual(3);
 
     // Nova Délhi, 12/10/2026: nascer do sol às 06:19 IST (00:49:46 UTC no
     // Swiss Ephemeris), Dvitiya, Swati; Krittika natal → Swati é Kshema.

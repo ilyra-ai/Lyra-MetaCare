@@ -6,6 +6,7 @@ import {
 } from '@/lib/astrology/perfil-astrologico';
 import { mapaParaJson } from '@/lib/astrology/serializacao';
 import { respostaDeErro } from '@/lib/http/api';
+import { lerMapaComoLyra } from '@/lib/lyra/leitura-do-mapa';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 
 export const runtime = 'nodejs';
@@ -22,6 +23,8 @@ export async function GET() {
     const mapa = mapaDoPerfil(perfil);
     return NextResponse.json({
       mapa: mapa ? mapaParaJson(mapa) : null,
+      // Leitura do motor da Lyra (tarefa 55), separada por tipo de mapa.
+      leitura: mapa ? lerMapaComoLyra(mapa) : null,
       faltando: perfil.faltando,
       localDeNascimento: perfil.nascimento.local?.rotulo ?? null,
     });

@@ -5,6 +5,8 @@ import { calculateQuantumCoherence } from '@/lib/quantum/coherence-engine';
 import { calculateChakraAlignment } from '@/lib/chakra/alignment-engine';
 import { calculatePranicIndex } from '@/lib/prana/prana-engine';
 import { calculateKoshas } from '@/lib/vedanta/kosha-engine';
+import { IDENTIDADE_DA_LYRA } from '@/lib/lyra/personalidade';
+import { type ContextoDaLyra, responderComoLyra } from '@/lib/lyra/responder';
 
 export interface AiSkillDocument {
   title: string;
@@ -31,6 +33,9 @@ interface ChatContext {
   // "Seu dia" do coach diário (tarefa 42), quando o plano inclui o coach e o
   // perfil tem cidade: o chat responde sobre o dia com os mesmos horários.
   seuDia?: BriefingDoDia | null;
+  // Mapa natal da pessoa para o motor da Lyra (tarefa 55): leitura védica,
+  // Mapa Lyra DM Samādhi, Mapa Quantum e a base de saberes védicos.
+  lyra?: Omit<ContextoDaLyra, 'nome'>;
 }
 
 function resumoDoDia(dia: BriefingDoDia) {
@@ -114,6 +119,19 @@ export function generateLocalAssistantReply(
 ): string {
   const text = query.toLowerCase();
   const name = context.profile?.first_name ?? 'usuário';
+
+  // Motor da Lyra (tarefa 55): mapa natal, os três tipos de mapa, Vedanta,
+  // Upavedas e Vedangas, respondidos pela base curada, sem modelo de IA.
+  const daLyra = responderComoLyra(query, {
+    nome: context.profile?.first_name ?? null,
+    mapa: context.lyra?.mapa ?? null,
+    faltando: context.lyra?.faltando,
+    agora: context.lyra?.agora,
+    fuso: context.lyra?.fuso,
+  });
+  if (daLyra) {
+    return daLyra.texto;
+  }
   const goals = context.profile?.goals?.length
     ? context.profile.goals.join(', ')
     : 'longevidade geral e bem-estar sistêmico';
@@ -252,7 +270,7 @@ export function generateLocalAssistantReply(
   // 2. Resposta de Saudação
   if (isGreeting && text.length < 30) {
     responses.push(
-      `Olá, ${name}! Sou seu assistente de saúde inteligente da Lyra MetaCare. Analiso seus dados fisiológicos e a influência astrológica atual para te orientar. Como posso ajudar a aprimorar seu foco em ${goals} hoje?`
+      `Olá, ${name}! ${IDENTIDADE_DA_LYRA.apresentacao} Como posso te ajudar hoje com ${goals}?`
     );
   }
 
@@ -409,7 +427,7 @@ export function generateLocalAssistantReply(
       `${name}, o motor de análise estruturou seu contexto: Sua meta principal foca em ${goals}. O céu atual (Lua em ${astro.moonSign}, ${astro.tithi}) e suas métricas fisiológicas são monitorados para lhe orientar.`
     );
     responses.push(
-      `Você pode me perguntar especificamente sobre seu SONO, GLICOSE, RECUPERAÇÃO (HRV), EXERCÍCIOS, RESUMO GERAL ou LEITURA ASTROLÓGICA para obter uma análise cruzada e profunda.`
+      `Você pode me perguntar sobre o seu sono, glicose, recuperação (HRV), exercícios, o resumo do dia ou o céu de hoje. Também leio o seu mapa védico (Ascendente, Lua, dasha, casas), o seu Mapa Lyra DM Samādhi e o Score de Ação do Mapa Quantum, e explico Vedanta, Upanishads, Ayurveda, Vastu, música védica e os Vedangas.`
     );
     if (skills.length > 0) {
       responses.push(

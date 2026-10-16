@@ -13,6 +13,10 @@ import {
 } from '@/lib/ai/cadeia-de-modelos';
 import { lerConfiguracaoDeIa } from '@/lib/ai/provedores-da-plataforma';
 import { getAstrologicalContext } from '@/lib/astrology/engine';
+import {
+  lerPerfilAstrologico,
+  mapaDoPerfil,
+} from '@/lib/astrology/perfil-astrologico';
 import { obterBriefingDoDia } from '@/lib/coach/servico';
 import type { BriefingDoDia } from '@/lib/coach/tipos';
 import { lerJson, respostaDeErro } from '@/lib/http/api';
@@ -109,7 +113,17 @@ export async function POST(request: Request) {
       registrarErroInterno('ask-ai-assistant:coach', erro);
     }
 
+    // Mapa natal para o motor da Lyra (tarefa 55); sem dados de nascimento,
+    // a Lyra diz o que falta em vez de inventar.
+    const perfilAstrologico = await lerPerfilAstrologico(session.user.id);
+    const mapaNatal = mapaDoPerfil(perfilAstrologico);
+
     const fallbackResponse = generateLocalAssistantReply(query, {
+      lyra: {
+        mapa: mapaNatal,
+        faltando: perfilAstrologico.faltando,
+        fuso: perfilAstrologico.localDoDia?.fuso ?? null,
+      },
       profile: profile
         ? {
             first_name: profile.first_name,

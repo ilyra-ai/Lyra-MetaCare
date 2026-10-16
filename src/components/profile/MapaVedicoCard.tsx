@@ -20,12 +20,126 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useKeyedResource } from '@/hooks/use-keyed-resource';
 import type { MapaNatalJson } from '@/lib/astrology/serializacao';
 import { ouvirMapaAtualizado } from '@/lib/astrology/evento-do-mapa';
+import type { LeituraDaLyra } from '@/lib/lyra/leitura-do-mapa';
+
+/**
+ * Leitura do motor da Lyra (tarefa 55), em três abas, uma por tipo de mapa:
+ * o védico tradicional, o Lyra DM Samādhi e o Quantum. O que não é
+ * calculável aparece como indisponível, nunca inventado.
+ */
+function LeituraDaLyraPainel({ leitura }: { leitura: LeituraDaLyra }) {
+  const definicao = (tipo: string) =>
+    leitura.tipos.find((t) => t.tipo === tipo);
+  return (
+    <section
+      aria-labelledby="leitura-da-lyra"
+      className="space-y-3 rounded-xl border border-border bg-background p-4"
+    >
+      <h3
+        id="leitura-da-lyra"
+        className="font-display text-base font-semibold text-foreground"
+      >
+        Leitura da Lyra
+      </h3>
+      <ul className="space-y-1.5 text-sm leading-6 text-foreground">
+        {leitura.percepcoes.map((p) => (
+          <li key={p} className="flex gap-2">
+            <span aria-hidden="true" className="text-cosmic">
+              ✦
+            </span>
+            <span>{p}</span>
+          </li>
+        ))}
+      </ul>
+      <Tabs defaultValue="vedico">
+        <TabsList className="grid h-auto w-full grid-cols-3">
+          <TabsTrigger value="vedico" className="whitespace-normal">
+            Védico
+          </TabsTrigger>
+          <TabsTrigger value="samadhi" className="whitespace-normal">
+            Lyra DM Samādhi
+          </TabsTrigger>
+          <TabsTrigger value="quantum" className="whitespace-normal">
+            Quantum
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent
+          value="vedico"
+          className="space-y-3 text-sm leading-6 text-foreground/90"
+        >
+          <p className="text-xs text-muted-foreground">
+            {definicao('vedico')?.definicao}
+          </p>
+          <p>{leitura.vedico.lagna}</p>
+          <p>{leitura.vedico.lua}</p>
+          <p>{leitura.vedico.sol}</p>
+          {leitura.vedico.dasha ? <p>{leitura.vedico.dasha}</p> : null}
+          <p>{leitura.vedico.dosha.texto}</p>
+          <details className="rounded-lg border border-border p-3">
+            <summary className="cursor-pointer font-medium text-foreground">
+              Os nove grahas no seu mapa
+            </summary>
+            <ul className="mt-2 space-y-2">
+              {leitura.vedico.planetas.map((p) => (
+                <li key={p.graha}>{p.texto}</li>
+              ))}
+            </ul>
+          </details>
+        </TabsContent>
+        <TabsContent
+          value="samadhi"
+          className="space-y-3 text-sm leading-6 text-foreground/90"
+        >
+          <p className="text-xs text-muted-foreground">
+            {definicao('samadhi')?.definicao}
+          </p>
+          <p>
+            <strong className="font-semibold">Plano Terrestre:</strong>{' '}
+            {leitura.samadhi.terrestre}
+          </p>
+          <p>
+            <strong className="font-semibold">Plano Sutil:</strong>{' '}
+            {leitura.samadhi.sutil}
+          </p>
+          <p>
+            <strong className="font-semibold">Plano Celestial:</strong>{' '}
+            {leitura.samadhi.celestial}
+          </p>
+          <p>
+            <strong className="font-semibold">Síntese:</strong>{' '}
+            {leitura.samadhi.sintese}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Pela percepção (a Lyra não calcula nem inventa):{' '}
+            {leitura.samadhi.indisponivel.join('; ')}.
+          </p>
+        </TabsContent>
+        <TabsContent
+          value="quantum"
+          className="space-y-3 text-sm leading-6 text-foreground/90"
+        >
+          <p className="text-xs text-muted-foreground">
+            {definicao('quantum')?.definicao}
+          </p>
+          <p>{leitura.quantum.texto}</p>
+          <p className="text-xs text-muted-foreground">
+            Indisponível por enquanto: {leitura.quantum.indisponivel.join('; ')}
+            . No chat, peça &quot;score de ação com energia 6, pressão 4 e tempo
+            20&quot;.
+          </p>
+        </TabsContent>
+      </Tabs>
+    </section>
+  );
+}
 
 interface RespostaDoMapa {
   mapa: MapaNatalJson | null;
+  leitura: LeituraDaLyra | null;
   faltando: Array<'data' | 'hora' | 'local'>;
   localDeNascimento: string | null;
 }
@@ -192,6 +306,10 @@ export function MapaVedicoCard() {
               <p className="text-xs text-muted-foreground">
                 Nascimento em {data.localDeNascimento}.
               </p>
+            ) : null}
+
+            {data.leitura ? (
+              <LeituraDaLyraPainel leitura={data.leitura} />
             ) : null}
           </>
         )}
