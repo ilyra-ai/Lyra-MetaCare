@@ -2,26 +2,21 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  ArrowDown,
   BookOpen,
   Brain,
   Calendar,
-  ChevronDown,
-  Cpu,
   HeartPulse,
-  Sparkles,
+  Info,
+  KeyRound,
+  SquarePen,
   Waves,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { MarcaLyra } from '@/components/marca/MarcaLyra';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import {
   Popover,
   PopoverContent,
@@ -32,11 +27,19 @@ import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { usePrivacyMode } from '@/hooks/use-privacy-mode';
 import { useLocalStorageValue } from '@/hooks/use-local-storage-value';
 import { scaleRem } from '@/lib/site-page-config/runtime';
-import { cn } from '@/lib/utils';
 import { ChatBubble } from './ChatBubble';
 import { ChatInput } from './ChatInput';
-import { QuickReply } from './QuickReply';
 import { TypingIndicator } from './TypingIndicator';
+
+/**
+ * Chat com a Lyra (redesenho da tarefa 52): uma coluna só, centrada, no
+ * padrão das interfaces de conversa de 2026. Sem conversa, a tela mostra a
+ * Lyra, a mensagem de boas-vindas e as perguntas prontas em cartões; com
+ * conversa, só as mensagens e o campo de envio fixo embaixo. O que antes
+ * ocupava a lateral (perguntas repetidas e a explicação das camadas) foi
+ * para o botão de informações, junto da chave própria (BYOK). Todos os
+ * textos continuam vindo da configuração publicada no page builder.
+ */
 
 export interface Message {
   id: number;
@@ -46,6 +49,9 @@ export interface Message {
 
 const WELCOME_MESSAGE_ID = 0;
 const BYOK_STORAGE_KEY = 'lyra_byok_api_key';
+// Mesmo limite da rota `ask-ai-assistant` (antes o campo aceitava 4000 e o
+// servidor recusava a pergunta acima de 2000).
+const LIMITE_DA_PERGUNTA = 2000;
 
 type IntegrationItem = {
   icon: React.ElementType;
@@ -55,20 +61,8 @@ type IntegrationItem = {
 
 const integrations: IntegrationItem[] = [
   {
-    icon: Cpu,
-    title: 'API local Next.js',
-    description:
-      'Camada interna responsável pela autenticação, pelas rotas protegidas e pela orquestração do backend MySQL.',
-  },
-  {
-    icon: HeartPulse,
-    title: 'Contexto fisiológico vivo',
-    description:
-      'Métricas recentes, sinais do dia e leituras de monitoramento ajudam a compor respostas mais situadas.',
-  },
-  {
     icon: Brain,
-    title: 'Orquestração Lyra',
+    title: 'Seus dados de hoje',
     description:
       'Cada resposta cruza as suas métricas de hoje e de ontem, os seus objetivos e o céu do dia, calculados nos motores da Lyra.',
   },
@@ -82,15 +76,118 @@ const integrations: IntegrationItem[] = [
     icon: BookOpen,
     title: 'Perfil e objetivos',
     description:
-      'O seu nome, os objetivos e o mapa natal do perfil moldam a linguagem e a direção das orientações.',
+      'O seu nome, os objetivos e o mapa de nascimento do perfil moldam a linguagem e a direção das orientações.',
+  },
+  {
+    icon: HeartPulse,
+    title: 'Sinais do corpo',
+    description:
+      'Sono, energia, estresse e as leituras dos seus dispositivos ajudam a priorizar respostas gentis e realistas.',
   },
   {
     icon: Waves,
-    title: 'Camada de ritmo diário',
+    title: 'Privacidade',
     description:
-      'Sono, energia e percepção de ritmo ajudam a priorizar respostas mais gentis e realistas.',
+      'No Modo Privacidade a conversa fica só com o motor da Lyra, sem enviar nada a modelos externos.',
   },
 ];
+
+function SobreOChat({
+  titulo,
+  descricao,
+  rotulo,
+  explicacao,
+  chave,
+  aoMudarChave,
+  privacidade,
+}: {
+  titulo: string;
+  descricao: string;
+  rotulo: string;
+  explicacao: string;
+  chave: string;
+  aoMudarChave: (valor: string) => void;
+  privacidade: boolean;
+}) {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="sm" className="gap-1.5">
+          <Info aria-hidden="true" />
+          <span className="hidden sm:inline">{rotulo}</span>
+          <span className="sr-only sm:hidden">{rotulo}</span>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="end"
+        className="w-[min(24rem,calc(100vw-2rem))] border-border bg-popover p-0"
+      >
+        <div className="border-b border-border px-5 py-4">
+          <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
+            {titulo}
+          </h2>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">
+            {descricao}
+          </p>
+          <p className="mt-2 text-xs leading-5 text-muted-foreground">
+            {explicacao}
+          </p>
+        </div>
+        {/* Rolável em telas baixas: focável para quem usa o teclado. */}
+        <ul
+          tabIndex={0}
+          aria-label={titulo}
+          className="max-h-[40dvh] space-y-3 overflow-y-auto px-5 py-4 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
+        >
+          {integrations.map((item) => {
+            const Icon = item.icon;
+            return (
+              <li key={item.title} className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cosmic-light text-cosmic-strong">
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold text-foreground">
+                    {item.title}
+                  </span>
+                  <span className="block text-xs leading-5 text-muted-foreground">
+                    {item.description}
+                  </span>
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+        <div className="border-t border-border bg-background px-5 py-4">
+          <p className="mb-1 flex items-center gap-2 text-sm font-semibold text-foreground">
+            <KeyRound className="size-4 text-primary" aria-hidden="true" />
+            Sua própria chave do Gemini (opcional)
+          </p>
+          <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
+            Fica salva só neste navegador e acompanha cada pergunta até o
+            servidor da Lyra, que a repassa ao Gemini sem gravá-la.
+          </p>
+          <Input
+            type="password"
+            placeholder="AIza..."
+            aria-label="Chave da API do Gemini (opcional)"
+            autoComplete="off"
+            value={chave}
+            onChange={(e) => aoMudarChave(e.target.value)}
+            className="h-9 bg-card text-xs"
+          />
+          <p className="mt-2 text-xs text-muted-foreground" aria-live="polite">
+            {chave
+              ? privacidade
+                ? 'Chave salva neste navegador, mas não enviada: o Modo Privacidade está ativo.'
+                : 'Chave salva neste navegador.'
+              : 'Nenhuma chave salva: a Lyra responde com o modelo da plataforma.'}
+          </p>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 export function ChatAssistantContent() {
   const { db } = useAuth();
@@ -98,8 +195,8 @@ export function ChatAssistantContent() {
   const { privacyMode } = usePrivacyMode();
   const chatConfig = appConfig.chat;
 
-  // A conversa guarda apenas as mensagens trocadas; a mensagem de boas-vindas
-  // é derivada da configuração publicada e sempre aparece em primeiro lugar.
+  // A conversa guarda só as mensagens trocadas; a de boas-vindas vem da
+  // configuração publicada e abre a conversa.
   const [conversation, setConversation] = useState<Message[]>([]);
   const messages = useMemo<Message[]>(
     () => [
@@ -108,7 +205,8 @@ export function ChatAssistantContent() {
     ],
     [chatConfig.welcomeMessage, conversation]
   );
-  // Identificadores sequenciais das mensagens (gerados apenas em handlers).
+  const semConversa = conversation.length === 0;
+  // Identificadores sequenciais das mensagens (gerados só em handlers).
   const nextMessageIdRef = useRef(WELCOME_MESSAGE_ID + 1);
   const createMessageId = () => {
     const id = nextMessageIdRef.current;
@@ -123,10 +221,6 @@ export function ChatAssistantContent() {
   const userApiKey = storedApiKey ?? '';
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleSaveApiKey = (val: string) => {
-    setStoredApiKey(val.length > 0 ? val : null);
-  };
-
   const quickReplies = useMemo(
     () =>
       chatConfig.quickReplies
@@ -135,8 +229,7 @@ export function ChatAssistantContent() {
     [chatConfig.quickReplies]
   );
 
-  // Rola só a lista de mensagens: `scrollIntoView` também rolava a janela e
-  // escondia o topo da página ao abrir o chat.
+  // Rola só a lista de mensagens (a janela fica parada).
   const scrollToBottom = (smooth = true) => {
     const container = messagesContainerRef.current;
     if (!container) return;
@@ -175,8 +268,8 @@ export function ChatAssistantContent() {
     setIsNearBottom(true);
 
     try {
-      // Modo Privacidade: não enviar a chave externa (BYOK); a conversa é
-      // atendida apenas pelo motor determinístico local, sem LLM externo.
+      // Modo Privacidade: a chave própria não é enviada; a conversa fica só
+      // com o motor da Lyra.
       const { data, error } = await db.functions.invoke<{ response: string }>(
         'ask-ai-assistant',
         {
@@ -188,28 +281,26 @@ export function ChatAssistantContent() {
         throw new Error(error.message);
       }
 
-      const newAiMessage: Message = {
-        id: createMessageId(),
-        text: data.response,
-        sender: 'ai',
-      };
-
-      setConversation((prev) => [...prev, newAiMessage]);
+      setConversation((prev) => [
+        ...prev,
+        { id: createMessageId(), text: data.response, sender: 'ai' },
+      ]);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Erro desconhecido.';
 
-      toast.error('Erro ao contatar o assistente.', {
+      toast.error('Erro ao contatar a Lyra.', {
         description: errorMessage,
       });
 
-      const errorAiMessage: Message = {
-        id: createMessageId(),
-        text: `Desculpe, ocorreu um erro ao processar sua solicitação: ${errorMessage}`,
-        sender: 'ai',
-      };
-
-      setConversation((prev) => [...prev, errorAiMessage]);
+      setConversation((prev) => [
+        ...prev,
+        {
+          id: createMessageId(),
+          text: `Desculpe, não consegui responder agora: ${errorMessage}`,
+          sender: 'ai',
+        },
+      ]);
     } finally {
       setIsTyping(false);
     }
@@ -220,13 +311,10 @@ export function ChatAssistantContent() {
       return;
     }
 
-    const newUserMessage: Message = {
-      id: createMessageId(),
-      text,
-      sender: 'user',
-    };
-
-    setConversation((prev) => [...prev, newUserMessage]);
+    setConversation((prev) => [
+      ...prev,
+      { id: createMessageId(), text, sender: 'user' },
+    ]);
     await askAssistant(text);
   };
 
@@ -242,7 +330,7 @@ export function ChatAssistantContent() {
       .find((m) => m.sender === 'user');
 
     if (!previousUserMessage) {
-      toast.error('Não há pergunta anterior para regenerar esta resposta.');
+      toast.error('Não há pergunta anterior para refazer esta resposta.');
       return;
     }
 
@@ -250,367 +338,175 @@ export function ChatAssistantContent() {
     await askAssistant(previousUserMessage.text);
   };
 
+  const novaConversa = () => {
+    setConversation([]);
+    setIsNearBottom(true);
+  };
+
   return (
-    <section className="flex flex-col gap-4">
-      {/* No celular o cabeçalho fica compacto (sem o ícone e sem o texto de
-          apoio) para que a conversa e o campo de mensagem apareçam logo na
-          primeira dobra; a partir de `sm` o cabeçalho completo volta. */}
-      <Card className="min-w-0">
-        <CardHeader className="gap-3 p-4 sm:gap-4 sm:p-5">
-          <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex min-w-0 items-start gap-4">
-              <div className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic-strong sm:flex">
-                <Brain className="h-5 w-5" aria-hidden="true" />
-              </div>
-              <div className="flex min-w-0 flex-col gap-1">
-                <p
-                  className="text-sm font-medium text-muted-foreground"
-                  style={{
-                    fontSize: scaleRem(0.875, appConfig.typography.navLabel),
-                  }}
-                >
+    <section
+      aria-labelledby="titulo-do-chat"
+      className="mx-auto flex h-[calc(100dvh-7rem)] min-h-[28rem] w-full max-w-3xl flex-col lg:h-[calc(100dvh-8.5rem)]"
+    >
+      {/* Barra mínima: quem responde, o estado e as duas ações. */}
+      <header className="flex items-center justify-between gap-3 border-b border-border pb-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="relative">
+            <MarcaLyra tamanho="2.25rem" />
+            <span
+              className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-success"
+              aria-hidden="true"
+            />
+          </span>
+          <div className="min-w-0">
+            <h1
+              id="titulo-do-chat"
+              className="truncate font-display font-semibold tracking-tight text-foreground"
+              style={{
+                fontSize: scaleRem(1.05, appConfig.typography.cardTitle),
+              }}
+            >
+              {chatConfig.assistantTitle}
+            </h1>
+            <p className="truncate text-xs text-muted-foreground">
+              {chatConfig.assistantStatusLabel} ·{' '}
+              {chatConfig.assistantStatusNote}
+            </p>
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-1">
+          {semConversa ? null : (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5"
+              onClick={novaConversa}
+              disabled={isTyping}
+            >
+              <SquarePen aria-hidden="true" />
+              <span className="hidden sm:inline">Nova conversa</span>
+              <span className="sr-only sm:hidden">Nova conversa</span>
+            </Button>
+          )}
+          {chatConfig.showIntegrations ? (
+            <SobreOChat
+              titulo={chatConfig.integrationsTitle}
+              descricao={chatConfig.pageDescription}
+              rotulo={chatConfig.integrationsButtonLabel}
+              explicacao={chatConfig.integrationsDescription}
+              chave={userApiKey}
+              aoMudarChave={(valor) =>
+                setStoredApiKey(valor.length > 0 ? valor : null)
+              }
+              privacidade={privacyMode}
+            />
+          ) : null}
+        </div>
+      </header>
+
+      <div
+        ref={messagesContainerRef}
+        className="relative min-h-0 flex-1 overflow-y-auto py-6"
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'hsl(var(--control)) transparent',
+        }}
+      >
+        {semConversa ? (
+          // Começo da conversa: a Lyra se apresenta e oferece caminhos.
+          <div className="flex min-h-full flex-col justify-center gap-8 px-1">
+            <div className="flex flex-col items-center gap-4 text-center">
+              <MarcaLyra tamanho="3.5rem" />
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
                   {chatConfig.pageEyebrow}
                 </p>
-                <CardTitle
-                  className="text-2xl tracking-[-0.02em]"
+                <h2
+                  className="mx-auto max-w-xl font-display text-2xl font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-3xl"
                   style={{
-                    fontSize: scaleRem(1.5, appConfig.typography.pageTitle),
+                    fontSize: scaleRem(1.75, appConfig.typography.pageTitle),
                   }}
                 >
                   {chatConfig.pageTitle}
-                </CardTitle>
-                <CardDescription
-                  className="hidden max-w-3xl leading-relaxed sm:block"
-                  style={{
-                    fontSize: scaleRem(0.95, appConfig.typography.pageBody),
-                  }}
-                >
-                  {chatConfig.pageDescription}
-                </CardDescription>
+                </h2>
+                <p className="mx-auto max-w-xl text-sm leading-relaxed text-muted-foreground">
+                  {chatConfig.welcomeMessage}
+                </p>
               </div>
             </div>
 
-            {chatConfig.showIntegrations ? (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full shrink-0 sm:w-fit"
-                  >
-                    <Cpu className="text-cosmic" aria-hidden="true" />
-                    {chatConfig.integrationsButtonLabel}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  align="end"
-                  className="w-[min(22rem,calc(100vw-2rem))] border-border bg-popover p-0"
-                >
-                  <div className="border-b border-border px-5 py-4">
-                    <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
-                      {chatConfig.integrationsTitle}
-                    </h2>
-                    <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                      {chatConfig.integrationsDescription}
-                    </p>
-                  </div>
-                  <div className="max-h-[50dvh] space-y-3 overflow-y-auto px-5 py-4">
-                    {integrations.map((item) => {
-                      const Icon = item.icon;
-                      return (
-                        <div
-                          key={item.title}
-                          className="flex items-start gap-3"
-                        >
-                          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic-strong">
-                            <Icon className="h-4 w-4" aria-hidden="true" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-semibold text-foreground">
-                              {item.title}
-                            </p>
-                            <p className="text-xs leading-5 text-muted-foreground">
-                              {item.description}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className="border-t border-border bg-background px-5 py-4">
-                    <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
-                      <Sparkles
-                        className="size-4 text-primary"
-                        aria-hidden="true"
-                      />{' '}
-                      BYOK (sua própria chave)
-                    </p>
-                    <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
-                      Use a sua chave do Google AI Studio (Gemini). Ela fica
-                      salva só neste navegador e acompanha cada pergunta até o
-                      servidor da Lyra, que a repassa ao Gemini sem gravá-la.
-                    </p>
-                    <Input
-                      type="password"
-                      placeholder="AIza..."
-                      aria-label="Chave da API do modelo de linguagem (BYOK)"
-                      autoComplete="off"
-                      value={userApiKey}
-                      onChange={(e) => handleSaveApiKey(e.target.value)}
-                      className="h-9 bg-card text-xs"
-                    />
-                    <p
-                      className="mt-2 text-xs text-muted-foreground"
-                      aria-live="polite"
-                    >
-                      {userApiKey
-                        ? privacyMode
-                          ? 'Chave salva neste navegador, mas não enviada: o Modo Privacidade está ativo.'
-                          : 'Chave salva neste navegador.'
-                        : 'Nenhuma chave salva.'}
-                    </p>
-                  </div>
-                </PopoverContent>
-              </Popover>
+            {chatConfig.showQuickReplies && quickReplies.length > 0 ? (
+              <div className="flex flex-col gap-3">
+                <h3 className="text-center text-sm font-medium text-foreground">
+                  {chatConfig.quickRepliesTitle}
+                </h3>
+                <ul className="grid gap-2 sm:grid-cols-2">
+                  {quickReplies.map((reply) => (
+                    <li key={reply}>
+                      <button
+                        type="button"
+                        onClick={() => void handleSendMessage(reply)}
+                        disabled={isTyping}
+                        className="flex h-full w-full items-start rounded-2xl border border-border bg-card px-4 py-3 text-left text-sm leading-relaxed text-foreground transition-colors hover:border-primary/40 hover:bg-sidebar-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-60"
+                      >
+                        {reply}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-center text-xs text-muted-foreground">
+                  {chatConfig.quickRepliesDescription}
+                </p>
+              </div>
             ) : null}
           </div>
-        </CardHeader>
-      </Card>
-
-      <div className="grid flex-1 gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
-        {/*
-          Altura amarrada à janela: no celular o cartão ocupa quase toda a
-          tela (o cabeçalho rola acima dele); no desktop, cabeçalho da página
-          + cartão de conversa cabem juntos. Só a lista de mensagens rola.
-        */}
-        <Card className="relative flex h-[calc(100dvh-6rem)] min-h-[26rem] min-w-0 flex-col overflow-hidden lg:h-[calc(100dvh-15rem)]">
-          <div className="flex items-center justify-between gap-4 border-b border-border px-4 py-3 sm:px-5">
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cosmic-light text-cosmic-strong">
-                <Brain className="h-5 w-5" aria-hidden="true" />
-                <span
-                  className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-card bg-success"
-                  aria-hidden="true"
+        ) : (
+          <div className="flex flex-col gap-6 px-1" aria-live="polite">
+            {messages.map((msg, index) => (
+              <div
+                key={msg.id}
+                className="animate-in fade-in-50 slide-in-from-bottom-2 motion-reduce:animate-none"
+              >
+                <ChatBubble
+                  message={msg.text}
+                  isUser={msg.sender === 'user'}
+                  onRegenerate={
+                    msg.sender === 'ai' && index > 0
+                      ? () => void handleRegenerate(msg.id)
+                      : undefined
+                  }
                 />
               </div>
-              <div className="flex min-w-0 flex-col gap-0.5">
-                <div className="flex items-center gap-2">
-                  <h2
-                    className="truncate font-display font-semibold tracking-tight text-foreground"
-                    style={{
-                      fontSize: scaleRem(1.05, appConfig.typography.cardTitle),
-                    }}
-                  >
-                    {chatConfig.assistantTitle}
-                  </h2>
-                  <Sparkles
-                    className="h-4 w-4 shrink-0 text-cosmic"
-                    aria-hidden="true"
-                  />
-                </div>
-                <div className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <span
-                      className="h-2 w-2 rounded-full bg-success"
-                      aria-hidden="true"
-                    />
-                    {chatConfig.assistantStatusLabel}
-                  </span>
-                  <span aria-hidden="true">·</span>
-                  <span>{chatConfig.assistantStatusNote}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+            ))}
 
-          <div
-            ref={messagesContainerRef}
-            className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5"
-            style={{
-              scrollbarWidth: 'thin',
-              scrollbarColor: 'hsl(var(--control)) transparent',
+            {isTyping ? <TypingIndicator /> : null}
+          </div>
+        )}
+      </div>
+
+      <div className="relative pb-1 pt-2">
+        {showScrollButton ? (
+          <button
+            onClick={() => {
+              scrollToBottom();
+              setIsNearBottom(true);
             }}
+            type="button"
+            className="absolute -top-12 left-1/2 z-20 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-md transition-colors hover:bg-muted"
+            aria-label="Voltar para o final da conversa"
           >
-            <div className="mx-auto flex max-w-4xl flex-col gap-4">
-              {messages.length === 1 ? (
-                <div className="rounded-md border border-border bg-background p-4">
-                  <p className="text-sm leading-6 text-muted-foreground">
-                    {chatConfig.emptyStateHint}
-                  </p>
-                </div>
-              ) : null}
-
-              {messages.map((msg, index) => (
-                <div
-                  key={msg.id}
-                  className="animate-in fade-in-50 slide-in-from-bottom-4"
-                  style={{
-                    animationDelay: `${index * 50}ms`,
-                    animationFillMode: 'backwards',
-                  }}
-                >
-                  <ChatBubble
-                    message={msg.text}
-                    isUser={msg.sender === 'user'}
-                    onRegenerate={
-                      msg.sender === 'ai' && index > 0
-                        ? () => void handleRegenerate(msg.id)
-                        : undefined
-                    }
-                  />
-                </div>
-              ))}
-
-              {isTyping ? (
-                <div className="animate-in fade-in-50 slide-in-from-bottom-4">
-                  <TypingIndicator />
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          {showScrollButton ? (
-            <button
-              onClick={() => {
-                scrollToBottom();
-                setIsNearBottom(true);
-              }}
-              type="button"
-              className="absolute bottom-32 right-4 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-md transition-colors hover:bg-muted"
-              aria-label="Voltar para o final da conversa"
-            >
-              <ChevronDown className="h-5 w-5" aria-hidden="true" />
-            </button>
-          ) : null}
-
-          <div className="border-t border-border bg-card px-3 py-3 sm:px-5">
-            {chatConfig.showQuickReplies && messages.length <= 2 ? (
-              <div className="mb-3 space-y-2">
-                <div className="flex flex-col gap-1">
-                  <p
-                    className="text-sm font-semibold text-foreground"
-                    style={{
-                      fontSize: scaleRem(0.95, appConfig.typography.cardTitle),
-                    }}
-                  >
-                    {chatConfig.quickRepliesTitle}
-                  </p>
-                  <p
-                    className="hidden text-xs leading-5 text-muted-foreground sm:block"
-                    style={{
-                      fontSize: scaleRem(0.8, appConfig.typography.cardBody),
-                    }}
-                  >
-                    {chatConfig.quickRepliesDescription}
-                  </p>
-                </div>
-                <div className="flex max-h-28 flex-wrap gap-2 overflow-y-auto">
-                  {quickReplies.map((reply, index) => (
-                    <div
-                      key={reply}
-                      className="animate-in fade-in-50 slide-in-from-left-4"
-                      style={{
-                        animationDelay: `${index * 90}ms`,
-                        animationFillMode: 'backwards',
-                      }}
-                    >
-                      <QuickReply text={reply} onSelect={handleSendMessage} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
-            <ChatInput
-              onSendMessage={handleSendMessage}
-              disabled={isTyping}
-              placeholder={chatConfig.inputPlaceholder}
-            />
-          </div>
-        </Card>
-
-        <aside className="flex min-w-0 flex-col gap-4 xl:h-[calc(100dvh-15rem)] xl:min-h-[26rem] xl:overflow-y-auto">
-          <Card>
-            <CardHeader className="gap-2">
-              <CardTitle
-                className="text-lg"
-                style={{
-                  fontSize: scaleRem(1.02, appConfig.typography.cardTitle),
-                }}
-              >
-                {chatConfig.quickRepliesTitle}
-              </CardTitle>
-              <CardDescription
-                style={{
-                  fontSize: scaleRem(0.84, appConfig.typography.cardBody),
-                }}
-              >
-                {chatConfig.quickRepliesDescription}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              {quickReplies.map((reply) => (
-                <button
-                  key={reply}
-                  type="button"
-                  onClick={() => void handleSendMessage(reply)}
-                  className={cn(
-                    'rounded-md border border-border bg-background px-4 py-3 text-left text-sm text-foreground transition-colors hover:border-input hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                  )}
-                >
-                  {reply}
-                </button>
-              ))}
-            </CardContent>
-          </Card>
-
-          {chatConfig.showIntegrations ? (
-            <Card>
-              <CardHeader className="gap-2">
-                <CardTitle
-                  className="text-lg"
-                  style={{
-                    fontSize: scaleRem(1.02, appConfig.typography.cardTitle),
-                  }}
-                >
-                  {chatConfig.integrationsTitle}
-                </CardTitle>
-                <CardDescription
-                  style={{
-                    fontSize: scaleRem(0.84, appConfig.typography.cardBody),
-                  }}
-                >
-                  {chatConfig.integrationsDescription}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {integrations.slice(0, 4).map((item) => {
-                  const Icon = item.icon;
-
-                  return (
-                    <div
-                      key={item.title}
-                      className="rounded-md border border-border bg-background p-4"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-cosmic-light text-cosmic-strong">
-                          <Icon className="h-4 w-4" aria-hidden="true" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-foreground">
-                            {item.title}
-                          </p>
-                          <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                            {item.description}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
-          ) : null}
-        </aside>
+            <ArrowDown className="h-4 w-4" aria-hidden="true" />
+          </button>
+        ) : null}
+        <ChatInput
+          onSendMessage={handleSendMessage}
+          disabled={isTyping}
+          maxLength={LIMITE_DA_PERGUNTA}
+          placeholder={chatConfig.inputPlaceholder}
+        />
+        <p className="mt-2 text-center text-[0.6875rem] leading-4 text-muted-foreground">
+          {chatConfig.emptyStateHint}
+        </p>
       </div>
     </section>
   );

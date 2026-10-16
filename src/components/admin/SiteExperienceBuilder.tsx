@@ -3814,7 +3814,7 @@ export function SiteExperienceBuilder() {
                     }
                   />
                 </FieldBlock>
-                <FieldBlock label="Hint de estado inicial">
+                <FieldBlock label="Aviso abaixo do campo de mensagem">
                   <Textarea
                     value={appDraft.chat.emptyStateHint}
                     onChange={(event) =>
@@ -3886,7 +3886,7 @@ export function SiteExperienceBuilder() {
                 <div className="grid gap-4 xl:grid-cols-2">
                   <SwitchRow
                     title="Mostrar integrações"
-                    description="Mantém o botão e o painel lateral de transparência técnica."
+                    description="Mantém o botão de informações (como a Lyra responde e a chave própria do Gemini) no topo do chat."
                     checked={appDraft.chat.showIntegrations}
                     onCheckedChange={(checked) =>
                       updateDraft(['chat', 'showIntegrations'], checked)
@@ -3894,7 +3894,7 @@ export function SiteExperienceBuilder() {
                   />
                   <SwitchRow
                     title="Mostrar respostas rápidas"
-                    description="Mantém as sugestões iniciais disponíveis ao abrir a conversa."
+                    description="Mostra as perguntas prontas em cartões no começo da conversa."
                     checked={appDraft.chat.showQuickReplies}
                     onCheckedChange={(checked) =>
                       updateDraft(['chat', 'showQuickReplies'], checked)

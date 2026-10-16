@@ -138,7 +138,6 @@ function ChatInput({
             onSendMessage(t);
             setText('');
             inputRef.current?.focus();
-            toast.success('Mensagem enviada');
           }
           stopRecognition();
         }
@@ -163,10 +162,10 @@ function ChatInput({
   const send = useCallback(() => {
     const t = text.trim();
     if (!t || disabled) return;
+    // A mensagem aparece na conversa na hora: sem aviso extra de envio.
     onSendMessage(t);
     setText('');
     inputRef.current?.focus();
-    toast.success('Mensagem enviada');
   }, [text, disabled, onSendMessage]);
 
   const onKeyDown = useCallback(
@@ -185,10 +184,10 @@ function ChatInput({
   const isCritical = charProgress >= CRITICAL_CHAR_THRESHOLD;
 
   return (
-    <div className="relative mx-auto w-full max-w-4xl">
+    <div className="relative mx-auto w-full">
       <div
         className={cn(
-          'relative flex items-end gap-2 rounded-xl border border-input bg-card px-3 py-1.5 transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-ring/25',
+          'relative flex items-end gap-2 rounded-3xl border border-input bg-card py-1.5 pl-4 pr-2 shadow-sm transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-ring/25',
           disabled && 'cursor-not-allowed opacity-50'
         )}
         role="group"
