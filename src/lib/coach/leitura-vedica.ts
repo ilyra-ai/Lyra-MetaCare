@@ -2,6 +2,7 @@ import { horasDoDia, REGENTE_DO_DIA } from '@/lib/astrology/horas';
 import type { Intervalo, Panchang } from '@/lib/astrology/panchang';
 import type { DiaVedico } from '@/lib/astrology/perfil-astrologico';
 import type { MapaNatal } from '@/lib/astrology/mapa-natal';
+import type { DashaAtual } from '@/lib/astrology/vimshottari';
 import { taraBala } from '@/lib/astrology/dia-pessoal';
 import {
   ascendenteSideral,
@@ -300,16 +301,7 @@ export function montarEntradaDaLeitura(fatos: FatosDoDia): EntradaDaLeitura {
           SIGNO_INFO[hoje.signoDaLua.indice].elemento
         ),
       },
-      dasha: mapa.dasha
-        ? {
-            mahadasha: GRAHA_INFO[mapa.dasha.mahadasha.graha].nome,
-            antardasha: GRAHA_INFO[mapa.dasha.antardasha.graha].nome,
-            temaDoMahadasha: GRAHA_INFO[mapa.dasha.mahadasha.graha].tema,
-            temaDoAntardasha: GRAHA_INFO[mapa.dasha.antardasha.graha].tema,
-            fimDoMahadasha: String(mapa.dasha.mahadasha.fim.getUTCFullYear()),
-            fimDoAntardasha: mesEAno(mapa.dasha.antardasha.fim),
-          }
-        : null,
+      dasha: mapa.dasha ? dashaSimples(mapa.dasha) : null,
       tara: {
         nome: dia.pessoal.tara.nome,
         qualidade: dia.pessoal.tara.qualidade,
@@ -563,9 +555,23 @@ function pontosNegativos(entrada: EntradaDaLeitura): string[] {
  * A fase da vida (Vimshottari) em linguagem simples: Rahu e Ketu, pouco
  * conhecidos fora da astrologia védica, entram só pelo tema.
  */
-function faseDaVida(
-  dasha: NonNullable<NonNullable<EntradaDaLeitura['mapa']>['dasha']>
-) {
+export type DashaSimples = NonNullable<
+  NonNullable<EntradaDaLeitura['mapa']>['dasha']
+>;
+
+/** Fase da vida (Vimshottari) com os temas e as datas de fim. */
+export function dashaSimples(dasha: DashaAtual): DashaSimples {
+  return {
+    mahadasha: GRAHA_INFO[dasha.mahadasha.graha].nome,
+    antardasha: GRAHA_INFO[dasha.antardasha.graha].nome,
+    temaDoMahadasha: GRAHA_INFO[dasha.mahadasha.graha].tema,
+    temaDoAntardasha: GRAHA_INFO[dasha.antardasha.graha].tema,
+    fimDoMahadasha: String(dasha.mahadasha.fim.getUTCFullYear()),
+    fimDoAntardasha: mesEAno(dasha.antardasha.fim),
+  };
+}
+
+export function faseDaVida(dasha: DashaSimples) {
   const conhecido = (nome: string) => nome !== 'Rahu' && nome !== 'Ketu';
   const regida = conhecido(dasha.mahadasha)
     ? `, regida por ${dasha.mahadasha}`
