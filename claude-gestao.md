@@ -22,15 +22,15 @@
 | Indicador          | Valor                           |
 | ------------------ | ------------------------------- |
 | Progresso          | `████████████████████` **100%** |
-| Tarefas totais     | 47                              |
-| 🟢 Finalizadas     | 47                              |
+| Tarefas totais     | 48                              |
+| 🟢 Finalizadas     | 48                              |
 | 🔵 Em andamento    | 0                               |
 | 🔴 Bloqueadas      | 0                               |
 | ⚪ A iniciar       | 0                               |
 | Branch de trabalho | `main` (única permitida)        |
-| Última atualização | 2026-10-15                      |
+| Última atualização | 2026-10-16                      |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (47 ÷ 47 = 100%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (48 ÷ 48 = 100%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -985,7 +985,7 @@ Nenhuma tarefa a iniciar.
 - **Limites e observações:**
   - Google Agenda e Outlook na nuvem só leem o link de assinatura com o app publicado num endereço da internet (`APP_BASE_URL`); em `localhost` a tela avisa e só o calendário do mesmo computador consegue assinar.
   - Os formatos de atalho direto para Google e Outlook não têm documentação oficial; por isso a tela oferece copiar o link, `webcal://` e os passos de cada app.
-  - Observado na QA: quando o roteiro recarrega a página no meio de uma busca do sino (`/api/notificacoes`, código anterior à tarefa), o aborto da requisição (`ERR_ABORTED`) aparece como `console.error`. Não afeta as telas da tarefa 44; fica registrado para tratamento próprio.
+  - Observado na QA: quando o roteiro recarrega a página no meio de uma busca do sino (`/api/notificacoes`, código anterior à tarefa), o aborto da requisição (`ERR_ABORTED`) aparece como `console.error`. Resolvido na tarefa 48.
 
 ### 45 · Verificação dos launchers `run.py` (WSL2 Ubuntu) e `run.sh` (Windows 11) após as tarefas 42 e 43
 
@@ -1018,3 +1018,14 @@ Nenhuma tarefa a iniciar.
   - A marca encolhia no tema escuro: `padding` em % é calculado sobre a largura do elemento pai; o respiro do ladrilho passou para `scale`.
   - O coral original (`#F87850`) fica abaixo de 3:1 sobre branco: o texto usa a versão escura, e o original fica restrito ao decorativo.
 - **Evidências:** `tema.test.ts` com todos os pares WCAG nos dois temas; axe sem violações em landing, login, painel, menu do celular, `/dia`, `/chat`, `/goals` e `/profile` (1440 e 390 px, claro e escuro), marca carregada no tamanho certo e zero erros de console; `/favicon.ico`, `/icon.png`, `/apple-icon.png`, `/manifest.webmanifest` e `/icones/*` com HTTP 200 e os `<link>` no HTML; `test` 367/367, `test:integration` 131/131, lint, format, types, `ruff` e `build` com exit 0.
+
+### 48 · Busca cancelada pela saída da página não vira erro no console
+
+- **Status:** 🟢 finalizada · **Commit:** `3f19d7c` · **Push:** `c787b85..3f19d7c main -> main` (confirmado por `git ls-remote`)
+- **Origem:** observação registrada na QA da tarefa 44 (erro no console ao recarregar no meio de uma busca do sino).
+- **Causa raiz:** ao navegar, recarregar ou fechar a aba, o navegador dispara `pagehide` e, em seguida, recusa os `fetch` em andamento com `TypeError: Failed to fetch` (comprovado no Chromium nos três casos). As leituras do app tratavam esse cancelamento como falha e o registravam com `console.error`; o sintoma não era só do sino: sessão, perfil, configuração pública, efemérides e Puck faziam o mesmo.
+- **Implementado:** `src/lib/navegador/saida-da-pagina.ts` marca a saída no `pagehide` e desfaz no `pageshow` (volta do bfcache); `useKeyedResource` (carga inicial e recarga) descarta a recusa da saída, assim como o contexto de sessão, o de saúde (sem acrescentar aviso de falha), cabeçalho, sidebar, home, gráfico de peso, compras, privacidade, busca de cidades e os dois renderizadores do Puck. Falhas reais com a página aberta continuam registradas.
+- **Evidências:**
+  - Roteiro no build de produção com 4 rotas atrasadas 4 s e navegações e recargas no meio: 37 buscas canceladas; código anterior com 5 erros ("Falha ao consultar a sessão: TypeError: Failed to fetch"), código novo com 0.
+  - Controle: `/api/notificacoes` derrubada com a página aberta continua gerando "Falha ao carregar as notificações".
+  - `test` 404/404 (3 novos do detector), `test:integration` 154/154, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
