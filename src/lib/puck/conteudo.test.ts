@@ -39,8 +39,9 @@ describe('documentoPuckTemBlocos', () => {
         )
       )
     ).toBe(true);
+    // Documento inicial nasce vazio (tarefa 53).
     expect(documentoPuckTemBlocos(getInitialPuckData('landing-home'))).toBe(
-      true
+      false
     );
   });
 });

@@ -60,7 +60,28 @@ async function resolverPropsMetricCardDinamicos(
     };
   }
 
-  const assinatura = await obterResumoAssinaturaLyra();
+  let assinatura: Awaited<ReturnType<typeof obterResumoAssinaturaLyra>>;
+  try {
+    assinatura = await obterResumoAssinaturaLyra();
+  } catch {
+    // Visitante sem sessão (ex.: landing pública) ou falha da consulta: o
+    // card mostra um estado neutro em vez de esconder o documento inteiro
+    // (a falha do resolveAllData fazia o PuckDocumentView não exibir nada).
+    return {
+      props: {
+        dynamicSource,
+        eyebrow: 'Seu plano',
+        value: '—',
+        unit: '',
+        description: 'Entre na sua conta para ver os dados do seu plano.',
+        trendLabel: '',
+        trendDirection: 'neutral' as const,
+        badgeLabel: 'Lyra',
+        icon: 'activity' as const,
+      },
+      readOnly: camposSomenteLeituraMetricCard,
+    };
+  }
   const icon: LyraMetricCardBlockProps['icon'] =
     assinatura.tendenciaDirecao === 'down'
       ? 'shield'

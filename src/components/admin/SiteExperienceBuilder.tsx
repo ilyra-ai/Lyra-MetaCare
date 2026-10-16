@@ -16,17 +16,24 @@ import { toast } from 'sonner';
 
 import { LoginExperience } from '@/components/auth/LoginExperience';
 import { LandingPage } from '@/components/landing/LandingPage';
-import {
-  getVisibleNavigation,
-  groupNavigation,
-  navigationItems,
-} from '@/components/layout/navigation';
+import { navigationItems } from '@/components/layout/navigation';
+import { Sidebar } from '@/components/layout/sidebar';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -67,6 +74,7 @@ import {
   LoginPageConfig,
   SitePageKey,
   ToneKey,
+  validatePageConfig,
 } from '@/lib/site-page-config/schema';
 import {
   getSitePageLabel,
@@ -455,90 +463,31 @@ function buildAppNavigationItem(hrefsEmUso: readonly string[]) {
 
 function AppExperiencePreview({ config }: { config: AppPageConfig }) {
   const visibleItems = config.sidebar.items.filter((item) => item.visible);
-  // Mesma composição da sidebar real (rótulos de seção do rascunho e ícones
-  // das rotas conhecidas), vista como administrador.
-  const previewSections = groupNavigation(getVisibleNavigation(true, config));
 
   return (
     <div className="min-h-full bg-background p-6">
-      <div className="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
+      <div className="grid gap-5 xl:grid-cols-[auto_minmax(0,1fr)]">
         {/*
-          Sidebar simulada no visual "Lyra Clean": superfície branca com borda,
-          marca compacta, seções com rótulo discreto e itens de uma linha (sem
-          descrições), com o primeiro item no estado ativo.
+          A sidebar real do app, renderizada com o rascunho (tarefa 53). Antes
+          era uma cópia simulada que podia divergir da sidebar de verdade.
+          `inert`: é só pré-visualização, sem foco nem cliques que tirariam o
+          administrador do construtor.
         */}
-        <div className="flex flex-col gap-5 rounded-xl border border-border bg-card px-3.5 py-5">
-          <div className="flex items-center gap-2.5 px-2.5 py-1">
-            <span
-              aria-hidden="true"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] bg-primary text-primary-foreground"
-            >
-              <Sparkles className="h-4 w-4" strokeWidth={2} />
-            </span>
-            <span className="min-w-0">
-              <span className="block font-display text-lg font-semibold lowercase leading-tight text-foreground">
-                {config.sidebar.brandTitle}
-              </span>
-              <span className="block truncate text-xs text-muted-foreground">
-                {config.sidebar.brandEyebrow}
-              </span>
-            </span>
+        <div className="flex min-w-0 flex-col gap-3">
+          <div inert className="min-w-0">
+            <Sidebar configuracaoPrevia={config} />
           </div>
-
-          <p className="px-2.5 text-xs leading-5 text-muted-foreground">
-            Sidebar prevista com largura de {config.sizing.sidebarWidth}px e{' '}
-            {visibleItems.length} itens visíveis.
-          </p>
-
-          <div className="rounded-md border border-border bg-background px-3 py-2.5">
-            <p className="text-xs font-medium text-muted-foreground">
-              {config.sidebar.statusEyebrow}
+          <div className="rounded-md border border-border bg-card px-3 py-2.5 text-xs leading-5 text-muted-foreground">
+            <p>
+              Largura de {config.sizing.sidebarWidth}px no computador e{' '}
+              {visibleItems.length} itens visíveis.
             </p>
-            <p className="mt-1 text-sm font-medium text-foreground">
-              {config.sidebar.statusTitle}
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-5">
-            {Object.entries(previewSections).map(
-              ([section, items], sectionIndex) => (
-                <div key={section} className="flex flex-col gap-0.5">
-                  <p className="px-2.5 pb-1.5 text-xs font-medium text-muted-foreground">
-                    {section}
-                  </p>
-                  {items.map((item, itemIndex) => {
-                    const isActive = sectionIndex === 0 && itemIndex === 0;
-                    const ItemIcon = item.icon;
-
-                    return (
-                      <div
-                        key={item.href}
-                        className={
-                          isActive
-                            ? 'flex min-h-10 items-center gap-2.5 rounded-[10px] bg-sidebar-accent px-2.5 text-sm font-semibold text-sidebar-accent-foreground'
-                            : 'flex min-h-10 items-center gap-2.5 rounded-[10px] px-2.5 text-sm text-foreground/80'
-                        }
-                      >
-                        <ItemIcon
-                          aria-hidden="true"
-                          className="h-[18px] w-[18px] shrink-0"
-                          strokeWidth={isActive ? 2.1 : 1.8}
-                        />
-                        <span className="truncate">{item.label}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )
-            )}
-          </div>
-
-          <div className="border-t border-border px-2.5 pt-3.5">
-            <p className="text-sm font-semibold text-foreground">
-              {config.sidebar.preferencesTitle}
-            </p>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              {config.sidebar.preferencesDescription}
+            <p className="mt-1">
+              No celular, o menu mostra também:{' '}
+              <span className="font-medium text-foreground">
+                {config.sidebar.statusEyebrow}
+              </span>{' '}
+              · {config.sidebar.statusTitle}
             </p>
           </div>
         </div>
@@ -829,6 +778,14 @@ export function SiteExperienceBuilder() {
   // A página está carregando enquanto o último pageKey carregado for outro.
   const [loadedPageKey, setLoadedPageKey] = useState<SitePageKey | null>(null);
   const loading = loadedPageKey !== pageKey;
+  // Último rascunho confirmado pelo servidor (carga, salvar ou ação): a
+  // diferença para o que está na tela são as edições ainda não salvas.
+  const [rascunhoNoServidor, setRascunhoNoServidor] = useState<EditableDraft>(
+    getDefaultPageConfig('landing')
+  );
+  // Superfície escolhida enquanto há edições não salvas (pede confirmação).
+  const [trocaPendente, setTrocaPendente] = useState<SitePageKey | null>(null);
+  const [errosDoJson, setErrosDoJson] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [meta, setMeta] = useState<{
@@ -857,6 +814,7 @@ export function SiteExperienceBuilder() {
 
         if (!active) return;
         setDraftConfig(payload.draftConfig);
+        setRascunhoNoServidor(payload.draftConfig);
         setPublishedConfig(payload.publishedConfig);
         setMeta({
           updatedAt: payload.updatedAt,
@@ -871,6 +829,7 @@ export function SiteExperienceBuilder() {
 
         const fallback = getDefaultPageConfig(pageKey);
         setDraftConfig(fallback);
+        setRascunhoNoServidor(cloneValue(fallback));
         setPublishedConfig(cloneValue(fallback));
         setMeta({
           updatedAt: null,
@@ -929,6 +888,17 @@ export function SiteExperienceBuilder() {
 
   const hasDraftChanges =
     JSON.stringify(draftConfig) !== JSON.stringify(publishedConfig);
+  const temEdicoesNaoSalvas =
+    JSON.stringify(draftConfig) !== JSON.stringify(rascunhoNoServidor);
+
+  function trocarSuperficie(proxima: SitePageKey) {
+    if (proxima === pageKey) return;
+    if (temEdicoesNaoSalvas) {
+      setTrocaPendente(proxima);
+      return;
+    }
+    setPageKey(proxima);
+  }
 
   const landingDraft = normalizedLandingDraft;
   const loginDraft = normalizedLoginDraft;
@@ -984,6 +954,7 @@ export function SiteExperienceBuilder() {
       }
 
       setDraftConfig(payload.draftConfig);
+      setRascunhoNoServidor(payload.draftConfig);
       setPublishedConfig(payload.publishedConfig);
       setMeta({
         updatedAt: payload.updatedAt,
@@ -1009,7 +980,11 @@ export function SiteExperienceBuilder() {
       const response = await fetch(`/api/admin/page-config/${pageKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action }),
+        // Publicar leva o que está na tela (salvo ou não); restaurar usa o
+        // que está no servidor.
+        body: JSON.stringify(
+          action === 'publish' ? { action, config: draftConfig } : { action }
+        ),
       });
       const payload = (await response.json()) as AdminConfigResponse;
 
@@ -1018,6 +993,7 @@ export function SiteExperienceBuilder() {
       }
 
       setDraftConfig(payload.draftConfig);
+      setRascunhoNoServidor(payload.draftConfig);
       setPublishedConfig(payload.publishedConfig);
       setMeta({
         updatedAt: payload.updatedAt,
@@ -1041,26 +1017,54 @@ export function SiteExperienceBuilder() {
     }
   }
 
-  function applyJsonLocally() {
+  /**
+   * Lê e valida o JSON com o mesmo schema do servidor (tarefa 53): antes, um
+   * JSON com o formato errado era aplicado e a prévia mostrava o padrão sem
+   * dizer o motivo.
+   */
+  function lerJsonValidado(): EditableDraft | null {
+    let bruto: unknown;
     try {
-      setDraftConfig(JSON.parse(jsonValue) as EditableDraft);
-      toast.success('JSON aplicado no preview local.');
+      bruto = JSON.parse(jsonValue);
     } catch (error) {
-      toast.error('JSON inválido.', {
-        description:
-          error instanceof Error ? error.message : 'Falha ao ler o JSON.',
-      });
+      setErrosDoJson([
+        error instanceof Error ? error.message : 'O texto não é um JSON.',
+      ]);
+      return null;
     }
+    const validacao = validatePageConfig(pageKey, bruto);
+    if (!validacao.success) {
+      setErrosDoJson(
+        validacao.error.issues
+          .slice(0, 8)
+          .map(
+            (problema) =>
+              `${problema.path.join('.') || '(raiz)'}: ${problema.message}`
+          )
+      );
+      return null;
+    }
+    setErrosDoJson([]);
+    return validacao.data as EditableDraft;
+  }
+
+  function applyJsonLocally() {
+    const configuracao = lerJsonValidado();
+    if (!configuracao) {
+      toast.error('JSON inválido: veja os campos indicados abaixo.');
+      return;
+    }
+    setDraftConfig(configuracao);
+    toast.success('JSON aplicado na prévia (ainda não salvo).');
   }
 
   async function saveJsonDraft() {
-    try {
-      await saveDraft(JSON.parse(jsonValue) as EditableDraft);
-    } catch {
-      toast.error('JSON inválido.', {
-        description: 'Corrija o JSON antes de salvar no backend.',
-      });
+    const configuracao = lerJsonValidado();
+    if (!configuracao) {
+      toast.error('JSON inválido: veja os campos indicados abaixo.');
+      return;
     }
+    await saveDraft(configuracao);
   }
 
   function renderLandingEditor() {
@@ -2266,7 +2270,7 @@ export function SiteExperienceBuilder() {
               />
               <TypographySliderField
                 label="Título de cards"
-                description="Escala usada em títulos de cards e painéis do app."
+                description="Títulos dos cards do dashboard, do monitoramento, do chat e da agenda. Para todos os cards, use a escala dos cards."
                 value={appDraft.typography.cardTitle}
                 onValueChange={(value) =>
                   updateDraft(['typography', 'cardTitle'], value)
@@ -2274,7 +2278,7 @@ export function SiteExperienceBuilder() {
               />
               <TypographySliderField
                 label="Corpo de cards"
-                description="Escala para descrições, apoio visual e conteúdos internos dos cards."
+                description="Textos dos cards do dashboard, do monitoramento, do chat e da agenda. Para todos os cards, use a escala dos cards."
                 value={appDraft.typography.cardBody}
                 onValueChange={(value) =>
                   updateDraft(['typography', 'cardBody'], value)
@@ -2282,7 +2286,7 @@ export function SiteExperienceBuilder() {
               />
               <TypographySliderField
                 label="Botões"
-                description="Ajusta o tamanho do texto em botões do app."
+                description="Texto dos botões do cabeçalho e do monitoramento. Para todos os botões, use a escala dos botões."
                 value={appDraft.typography.buttonLabel}
                 onValueChange={(value) =>
                   updateDraft(['typography', 'buttonLabel'], value)
@@ -2301,7 +2305,7 @@ export function SiteExperienceBuilder() {
             <div className="grid gap-4 xl:grid-cols-2">
               <TypographySliderField
                 label="Escala dos cards"
-                description="Amplia ou reduz os cards internos do app."
+                description="Amplia ou reduz todos os cards das páginas internas, com o conteúdo junto."
                 value={appDraft.sizing.cardScale}
                 onValueChange={(value) =>
                   updateDraft(['sizing', 'cardScale'], value)
@@ -2309,7 +2313,7 @@ export function SiteExperienceBuilder() {
               />
               <TypographySliderField
                 label="Escala dos ícones"
-                description="Ajusta o tamanho percebido dos ícones da interface."
+                description="Ícones da navegação lateral, do cabeçalho, das notificações e do card de harmonia."
                 value={appDraft.sizing.iconScale}
                 onValueChange={(value) =>
                   updateDraft(['sizing', 'iconScale'], value)
@@ -2317,7 +2321,7 @@ export function SiteExperienceBuilder() {
               />
               <TypographySliderField
                 label="Escala das tabelas"
-                description="Controla a densidade visual das tabelas do app."
+                description="Amplia ou reduz todas as tabelas das páginas internas."
                 value={appDraft.sizing.tableScale}
                 onValueChange={(value) =>
                   updateDraft(['sizing', 'tableScale'], value)
@@ -2325,7 +2329,7 @@ export function SiteExperienceBuilder() {
               />
               <TypographySliderField
                 label="Escala dos botões"
-                description="Ajusta a presença visual dos botões internos."
+                description="Amplia ou reduz todos os botões das páginas internas."
                 value={appDraft.sizing.buttonScale}
                 onValueChange={(value) =>
                   updateDraft(['sizing', 'buttonScale'], value)
@@ -4224,7 +4228,7 @@ export function SiteExperienceBuilder() {
                 role="heading"
                 aria-level={2}
               >
-                Superfícies editáveis do módulo Lyra Customaze UI UX
+                Landing, login e app
               </CardTitle>
               <CardDescription className="max-w-3xl text-sm leading-6">
                 Somente administradores podem editar, salvar rascunho, publicar,
@@ -4239,7 +4243,7 @@ export function SiteExperienceBuilder() {
               type="single"
               value={pageKey}
               onValueChange={(value) =>
-                value && setPageKey(value as SitePageKey)
+                value && trocarSuperficie(value as SitePageKey)
               }
             >
               {lyraCustomazeEditableSurfaces.map((surface) => (
@@ -4279,6 +4283,42 @@ export function SiteExperienceBuilder() {
             </Button>
           </div>
         </div>
+        {temEdicoesNaoSalvas ? (
+          <p role="status" className="text-sm text-muted-foreground">
+            Há edições ainda não salvas nesta superfície. &quot;Publicar
+            agora&quot; publica o que está na tela.
+          </p>
+        ) : null}
+        <AlertDialog
+          open={trocaPendente !== null}
+          onOpenChange={(aberto) => {
+            if (!aberto) setTrocaPendente(null);
+          }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Descartar as edições não salvas?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Você mudou {getSitePageLabel(pageKey).toLowerCase()} e não
+                salvou. Ao trocar de superfície, essas edições se perdem. Salve
+                o rascunho antes, se quiser mantê-las.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Continuar editando</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  if (trocaPendente) setPageKey(trocaPendente);
+                  setTrocaPendente(null);
+                }}
+              >
+                Descartar e trocar
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardHeader>
 
       <CardContent className="p-0">
@@ -4351,8 +4391,26 @@ export function SiteExperienceBuilder() {
                         <Textarea
                           value={jsonValue}
                           onChange={(event) => setJsonValue(event.target.value)}
+                          aria-label="JSON completo da superfície"
+                          aria-invalid={errosDoJson.length > 0}
+                          aria-describedby={
+                            errosDoJson.length > 0 ? 'erros-do-json' : undefined
+                          }
                           className="min-h-[560px] font-mono text-xs leading-6"
                         />
+                        {errosDoJson.length > 0 ? (
+                          <ul
+                            id="erros-do-json"
+                            role="alert"
+                            className="flex flex-col gap-1 rounded-md border border-destructive/40 bg-destructive/5 px-4 py-3 text-xs text-foreground"
+                          >
+                            {errosDoJson.map((erro) => (
+                              <li key={erro} className="font-mono">
+                                {erro}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null}
                         <div className="flex flex-wrap gap-3">
                           <Button
                             variant="secondary"

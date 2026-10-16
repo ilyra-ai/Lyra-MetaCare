@@ -51,41 +51,82 @@ async function resolverPropsHeroDinamicos(props: LyraHeroBlockProps) {
     };
   }
 
-  const perfil = await obterPerfilDinamicoLyra();
+  // Textos montados para quem está vendo a página (resolvidos de novo a cada
+  // exibição). Não incluem e-mail nem papel da conta (tarefa 53): o
+  // documento publicado é público, e o editor salva sem estes textos
+  // (`limparDadosResolvidosPuck`).
+  const semSessao = {
+    props: {
+      dynamicSource,
+      ctaMode,
+      ctaDocumentKey,
+      eyebrow: 'Lyra MetaCare',
+      title: 'Boas-vindas à Lyra.',
+      description:
+        'Entre na sua conta para ver uma mensagem feita para o seu dia.',
+      note: '',
+    },
+    readOnly: camposSomenteLeituraHero,
+  };
+
+  let perfil: Awaited<ReturnType<typeof obterPerfilDinamicoLyra>>;
+  try {
+    perfil = await obterPerfilDinamicoLyra();
+  } catch {
+    return semSessao;
+  }
+
+  if (!perfil.usuarioId) {
+    return semSessao;
+  }
+
+  const primeiroNome = perfil.primeiroNome ?? perfil.nomeExibicao;
 
   if (dynamicSource === 'session-profile') {
-    const primeiroNome = perfil.primeiroNome ?? perfil.nomeExibicao;
+    return {
+      props: {
+        dynamicSource,
+        ctaMode,
+        ctaDocumentKey,
+        eyebrow: 'Para você',
+        title: `${perfil.saudacao}, ${primeiroNome}.`,
+        description:
+          'Que bom ter você por aqui. O seu dia, o seu plano e a Lyra estão a um clique.',
+        note: '',
+      },
+      readOnly: camposSomenteLeituraHero,
+    };
+  }
+
+  try {
+    const assinatura = await obterResumoAssinaturaLyra();
 
     return {
       props: {
         dynamicSource,
         ctaMode,
         ctaDocumentKey,
-        eyebrow: perfil.isAdmin
-          ? 'Sessão administrativa ativa'
-          : 'Sessão autenticada ativa',
-        title: `${perfil.saudacao}, ${primeiroNome}. O editor visual da Lyra está pronto para você.`,
-        description: `Você está autenticada como ${perfil.role ?? 'usuária'} e este bloco agora consome os dados reais da sessão atual para alimentar o canvas do Puck sem conteúdo estático.`,
-        note: `Usuária ${perfil.email ?? 'sem e-mail visível'} • iniciais ${perfil.iniciais}`,
+        eyebrow: `Plano ${assinatura.planoNome}`,
+        title: `${perfil.saudacao}, ${primeiroNome}.`,
+        description: assinatura.descricaoCurta,
+        note: assinatura.tendenciaRotulo,
+      },
+      readOnly: camposSomenteLeituraHero,
+    };
+  } catch {
+    return {
+      props: {
+        dynamicSource,
+        ctaMode,
+        ctaDocumentKey,
+        eyebrow: 'Para você',
+        title: `${perfil.saudacao}, ${primeiroNome}.`,
+        description: 'Os dados do seu plano aparecem aqui em instantes.',
+        note: '',
       },
       readOnly: camposSomenteLeituraHero,
     };
   }
-
-  const assinatura = await obterResumoAssinaturaLyra();
-
-  return {
-    props: {
-      dynamicSource,
-      ctaMode,
-      ctaDocumentKey,
-      eyebrow: `Plano ${assinatura.planoNome}`,
-      title: `${perfil.saudacao}, ${perfil.primeiroNome ?? perfil.nomeExibicao}. Sua experiência está conectada ao contexto real da assinatura.`,
-      description: assinatura.descricaoCurta,
-      note: `${assinatura.tendenciaRotulo} • badge ${assinatura.badgeLabel}`,
-    },
-    readOnly: camposSomenteLeituraHero,
-  };
 }
 
 function LyraHeroBlock({
@@ -127,9 +168,11 @@ function LyraHeroBlock({
               <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </Button>
-          <p className="min-w-0 text-sm leading-6 text-muted-foreground">
-            {note}
-          </p>
+          {note ? (
+            <p className="min-w-0 text-sm leading-6 text-muted-foreground">
+              {note}
+            </p>
+          ) : null}
         </div>
       </CardContent>
     </Card>
@@ -141,15 +184,15 @@ export const lyraHeroBlockConfig: ComponentConfig<LyraHeroBlockProps> = {
   fields: criarCamposBaseHeroLyra(),
   defaultProps: {
     dynamicSource: 'manual',
-    eyebrow: 'Puck inicial da Lyra',
-    title: 'Editor visual real, claro e pronto para evoluir.',
+    eyebrow: 'Novidade',
+    title: 'Um título curto e claro para este espaço',
     description:
-      'Este primeiro documento prova a integração do Puck com a Lyra em modo administrativo, com preview renderizado por Render e persistência real em MySQL.',
+      'Explique em uma ou duas frases o que a pessoa encontra aqui e por que vale a pena.',
     ctaMode: 'manual-url',
-    ctaLabel: 'Abrir experiência pública',
+    ctaLabel: 'Saiba mais',
     ctaHref: '/login',
     ctaDocumentKey: 'login-experience',
-    note: 'Base inicial do Lyra Customaze UI UX com Puck.',
+    note: 'Leva menos de um minuto.',
   },
   resolveFields: (data, params) => {
     const dynamicSource =

@@ -44,7 +44,7 @@ export default function DataConnectionPage() {
         <PlanUpgradeNotice
           currentPlanKey={subscription?.plan.key ?? 'free'}
           title="Conexão Bluetooth indisponível"
-          description="Seu plano atual não inclui a camada de conexão com wearables via Bluetooth. O entitlement é aplicado de forma real na matriz de capacidades."
+          description="A conexão de relógios e cintas por Bluetooth não faz parte do seu plano atual. Conheça os planos que incluem este recurso."
           showAction
           preferredPlanKey="meta"
         />

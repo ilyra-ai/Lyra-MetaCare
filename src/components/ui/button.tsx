@@ -55,6 +55,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <Comp
         ref={ref}
+        // Escala dos botões do construtor de UI (app.sizing.buttonScale).
+        data-slot="button"
         className={cn(buttonVariants({ variant, size, className }))}
         {...props}
       />

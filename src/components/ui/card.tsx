@@ -7,6 +7,9 @@ const Card = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
+    // `data-slot` permite aplicar a escala dos cards do construtor de UI
+    // (app.sizing.cardScale) em todo o app autenticado (ver globals.css).
+    data-slot="card"
     className={cn(
       'rounded-xl border border-border bg-card text-card-foreground',
       className

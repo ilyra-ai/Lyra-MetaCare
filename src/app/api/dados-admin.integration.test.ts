@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { queryRows } from '@/lib/mysql/pool';
+import { executeStatement, queryRows } from '@/lib/mysql/pool';
 
 import {
   criarUsuario,
@@ -506,6 +506,142 @@ describe('rotas administrativas', () => {
       updatedByUserId: null,
       updatedByName: null,
     });
+  });
+
+  it('construtor de UI publica a configuração enviada e a página pública a recebe', async () => {
+    // Base: o rascunho salvo no servidor.
+    const atual = await chamar(paginaAdmin.GET, {
+      params: { pageKey: 'landing' },
+      usuario: admin,
+    });
+    expect(atual.status).toBe(200);
+    const base = (atual.json as { draftConfig: Record<string, unknown> })
+      .draftConfig as {
+      hero: Record<string, unknown>;
+    };
+
+    // Destino de botão fora do formato aceito é recusado.
+    const invalido = await chamar(paginaAdmin.POST, {
+      method: 'POST',
+      params: { pageKey: 'landing' },
+      body: {
+        action: 'publish',
+        config: {
+          ...base,
+          hero: { ...base.hero, primaryCtaHref: 'javascript:alert(1)' },
+        },
+      },
+      usuario: admin,
+    });
+    expect(invalido.status).toBe(400);
+
+    // Publicar com a configuração da tela (sem salvar antes) publica
+    // exatamente o que foi enviado.
+    const publicado = await chamar(paginaAdmin.POST, {
+      method: 'POST',
+      params: { pageKey: 'landing' },
+      body: {
+        action: 'publish',
+        config: {
+          ...base,
+          hero: {
+            ...base.hero,
+            title: 'Título publicado no teste',
+            primaryCtaHref: 'https://exemplo.com.br/entrar',
+          },
+        },
+      },
+      usuario: admin,
+    });
+    expect(publicado.status).toBe(200);
+
+    const publica = await chamar(paginaPublica.GET, {
+      params: { pageKey: 'landing' },
+    });
+    expect(publica.status).toBe(200);
+    expect(publica.json).toMatchObject({
+      config: {
+        hero: {
+          title: 'Título publicado no teste',
+          primaryCtaHref: 'https://exemplo.com.br/entrar',
+        },
+      },
+    });
+  });
+
+  it('configuração antiga sem campos novos é completada com o padrão', async () => {
+    // Simula uma configuração publicada antes de existir `sizing`.
+    const atual = await chamar(paginaAdmin.GET, {
+      params: { pageKey: 'login' },
+      usuario: admin,
+    });
+    const config = {
+      ...(atual.json as { draftConfig: Record<string, unknown> }).draftConfig,
+    };
+    // Garante a linha no banco (ela só nasce no primeiro salvamento).
+    expect(
+      (
+        await chamar(paginaAdmin.POST, {
+          method: 'POST',
+          params: { pageKey: 'login' },
+          body: { action: 'publish', config },
+          usuario: admin,
+        })
+      ).status
+    ).toBe(200);
+    delete config.sizing;
+    (config.intro as Record<string, unknown>).title = 'Login sem sizing';
+    await executeStatement(
+      `UPDATE site_page_configs
+          SET published_config = ?
+        WHERE page_key = 'login'`,
+      [JSON.stringify(config)]
+    );
+    const publica = await chamar(paginaPublica.GET, {
+      params: { pageKey: 'login' },
+    });
+    expect(publica.json).toMatchObject({
+      config: {
+        intro: { title: 'Login sem sizing' },
+        sizing: { introCard: 1, authCard: 1 },
+      },
+    });
+  });
+
+  it('Puck grava o documento sem os textos resolvidos com dados de quem edita', async () => {
+    const comSessao = {
+      root: {
+        props: {
+          title: 'Landing',
+          resolvedContextSummary: 'admin@exemplo.com • perfil admin',
+        },
+      },
+      content: [
+        {
+          type: 'LyraHeroBlock',
+          props: {
+            id: 'hero-sessao',
+            dynamicSource: 'session-profile',
+            title: 'Bom dia, Admin.',
+            ctaLabel: 'Entrar',
+          },
+        },
+      ],
+    };
+    const publicado = await chamar(puckAdmin.POST, {
+      method: 'POST',
+      params: { documentKey: 'landing-home' },
+      body: { action: 'publish', draftData: comSessao },
+      usuario: admin,
+    });
+    expect(publicado.status).toBe(200);
+    const linha = await queryRows<{ published_data: unknown }>(
+      "SELECT published_data FROM puck_documents WHERE document_key = 'landing-home'"
+    );
+    const gravado = JSON.stringify(linha[0]?.published_data);
+    expect(gravado).toContain('hero-sessao');
+    expect(gravado).not.toContain('admin@exemplo.com');
+    expect(gravado).not.toContain('Bom dia, Admin.');
   });
 
   it('catálogo público só traz planos ativos e públicos', async () => {

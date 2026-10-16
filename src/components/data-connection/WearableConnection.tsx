@@ -65,6 +65,11 @@ export function WearableConnection({
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sidebar-accent text-primary">
               <Watch className="h-8 w-8" aria-hidden="true" />
             </div>
+            {/* Título do estado inicial editável no construtor de UI
+                (app.connect.idleTitle). */}
+            <p className="font-display text-lg font-semibold text-foreground">
+              {config.idleTitle}
+            </p>
             <p className="leading-relaxed text-foreground/80">
               {config.idleDescription}
             </p>

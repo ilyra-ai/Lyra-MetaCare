@@ -115,6 +115,17 @@ const loginSizingSchema = z.object({
   buttonScale: elementScaleSchema,
 });
 
+// Destino de um botão da landing (tarefa 53): rota interna ("/login"),
+// âncora da própria página ("#planos") ou endereço https. Antes qualquer texto
+// passava e ia direto para o `router.push`.
+const destinoDeBotaoSchema = z
+  .string()
+  .trim()
+  .regex(
+    /^(\/[A-Za-z0-9\-._~/?=&%#]*|#[A-Za-z0-9\-_]+|https:\/\/[^\s]+)$/,
+    'Use uma rota interna (/login), uma âncora (#planos) ou um endereço https://.'
+  );
+
 const appNavigationItemSchema = z.object({
   // Rota interna do app ("/", "/plan", "/admin/users"...). O construtor só
   // oferece rotas existentes; aqui o formato também é exigido no servidor.
@@ -326,9 +337,9 @@ export const landingPageConfigSchema = z.object({
     accentTitle: z.string().min(1),
     description: z.string().min(1),
     primaryCtaLabel: z.string().min(1),
-    primaryCtaHref: z.string().min(1),
+    primaryCtaHref: destinoDeBotaoSchema,
     secondaryCtaLabel: z.string().min(1),
-    secondaryCtaHref: z.string().min(1),
+    secondaryCtaHref: destinoDeBotaoSchema,
     quickAuthBadge: z.string().min(1),
     quickAuthTitle: z.string().min(1),
     quickAuthDescription: z.string().min(1),
@@ -380,9 +391,9 @@ export const landingPageConfigSchema = z.object({
     title: z.string().min(1),
     description: z.string().min(1),
     primaryLabel: z.string().min(1),
-    primaryHref: z.string().min(1),
+    primaryHref: destinoDeBotaoSchema,
     secondaryLabel: z.string().min(1),
-    secondaryHref: z.string().min(1),
+    secondaryHref: destinoDeBotaoSchema,
   }),
   footer: z.object({
     brandLine: z.string().min(1),
@@ -476,11 +487,36 @@ export function validatePageConfig<TKey extends SitePageKey>(
   return schema.safeParse(input);
 }
 
+function ehObjetoSimples(valor: unknown): valor is Record<string, unknown> {
+  return typeof valor === 'object' && valor !== null && !Array.isArray(valor);
+}
+
+/**
+ * Completa uma configuração guardada com os valores padrão (tarefa 53): cada
+ * campo que falta (por exemplo, um campo novo do schema) vem do padrão, e o
+ * que existe é mantido. Listas valem inteiras como estão. Antes, um único
+ * campo novo invalidava a configuração inteira e a página voltava ao padrão
+ * em silêncio, perdendo tudo o que o administrador tinha publicado.
+ */
+export function mesclarComPadrao(padrao: unknown, valor: unknown): unknown {
+  if (valor === undefined || valor === null) return padrao;
+  if (!ehObjetoSimples(padrao) || !ehObjetoSimples(valor)) return valor;
+  const resultado: Record<string, unknown> = { ...padrao };
+  for (const [chave, item] of Object.entries(valor)) {
+    resultado[chave] =
+      chave in padrao ? mesclarComPadrao(padrao[chave], item) : item;
+  }
+  return resultado;
+}
+
 export function parsePageConfig<TKey extends SitePageKey>(
   pageKey: TKey,
   input: unknown
 ): SitePageConfigMap[TKey] {
-  const result = validatePageConfig(pageKey, input);
+  const result = validatePageConfig(
+    pageKey,
+    mesclarComPadrao(getDefaultPageConfig(pageKey), input)
+  );
   if (!result.success) {
     return getDefaultPageConfig(pageKey);
   }

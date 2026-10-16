@@ -12,5 +12,3 @@ export function obterConfigPuckLyra(
     root: obterRootConfigLyra(documentKey),
   };
 }
-
-export const lyraPuckConfig = obterConfigPuckLyra('landing-home');

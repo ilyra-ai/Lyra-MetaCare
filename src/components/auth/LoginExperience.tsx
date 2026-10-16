@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 import type { LoginPageConfig, ToneKey } from '@/lib/site-page-config/schema';
 import { getBuilderIcon } from '@/lib/site-page-config/ui';
 import { ThemeToggleButton } from '@/components/theme/ThemeControls';
+import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 import {
   ROTA_POLITICA_DE_PRIVACIDADE,
   ROTA_TERMOS_DE_USO,
@@ -218,6 +219,11 @@ export function LoginExperience({
           className="w-full"
           style={{ maxWidth: `${Math.round(400 * sizing.authCard)}px` }}
         >
+          {/* Selo e descrição do bloco de acesso, editáveis no construtor de
+              UI (login.auth.badgeText e login.auth.description). */}
+          <p className="mb-2 text-sm font-medium text-primary">
+            {auth.badgeText}
+          </p>
           <h2
             className="font-display font-semibold tracking-tight text-foreground"
             style={escalaFluida(1.75, typography.authTitle)}
@@ -229,6 +235,12 @@ export function LoginExperience({
             style={escalaFluida(0.9375, typography.authBody)}
           >
             {auth.title}
+          </p>
+          <p
+            className="mt-1 leading-relaxed text-muted-foreground"
+            style={escalaFluida(0.8125, typography.authBody)}
+          >
+            {auth.description}
           </p>
 
           <Tabs
@@ -599,6 +611,17 @@ export function LoginExperience({
                 })}
               </ul>
             ) : null}
+
+            {/* Nota da introdução (login.intro.noteEyebrow e noteText). */}
+            <p
+              className="mt-8 border-l-2 border-primary pl-4 leading-6 text-muted-foreground"
+              style={escalaFluida(0.875, typography.introBody)}
+            >
+              <span className="block font-medium text-foreground">
+                {intro.noteEyebrow}
+              </span>
+              {intro.noteText}
+            </p>
           </div>
         </div>
       ) : null}
@@ -634,6 +657,14 @@ export function LoginExperience({
           </Link>
         </nav>
       </div>
+
+      {/* Blocos publicados no editor Puck (documento "login-experience"),
+          em largura total abaixo da tela de acesso. Sem blocos publicados,
+          nada é exibido. */}
+      <PuckClientRenderer
+        documentKey="login-experience"
+        className="w-full border-t border-border lg:col-span-2 lg:row-start-5"
+      />
     </main>
   );
 }

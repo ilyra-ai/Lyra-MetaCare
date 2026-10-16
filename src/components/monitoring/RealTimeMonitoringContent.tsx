@@ -33,6 +33,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { scaleRem } from '@/lib/site-page-config/runtime';
+import { cn } from '@/lib/utils';
 
 interface AlertaDaSessao {
   horario: string;
@@ -290,13 +291,24 @@ export function RealTimeMonitoringContent({
         </CardContent>
       </Card>
 
-      <div className="grid min-h-0 gap-6 xl:grid-cols-[minmax(0,1.2fr)_0.8fr]">
+      {/* O fluxo de eventos pode ser ocultado no construtor de UI
+          (app.monitoring.showEventFeed); sem ele, o gráfico ocupa a largura
+          toda. */}
+      <div
+        className={cn(
+          'grid min-h-0 gap-6',
+          monitoringConfig.showEventFeed &&
+            'xl:grid-cols-[minmax(0,1.2fr)_0.8fr]'
+        )}
+      >
         <div className="min-h-96">
           <LiveHeartRateChart />
         </div>
-        <div className="min-h-96">
-          <FluxoDeEventos />
-        </div>
+        {monitoringConfig.showEventFeed ? (
+          <div className="min-h-96">
+            <FluxoDeEventos />
+          </div>
+        ) : null}
       </div>
 
       <Card className="min-w-0">

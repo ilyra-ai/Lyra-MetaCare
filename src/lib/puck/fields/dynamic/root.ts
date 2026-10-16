@@ -24,10 +24,16 @@ export function criarCamposBaseRootLyra(): Fields<LyraPuckRootProps> {
     surfaceKey: {
       type: 'radio',
       label: 'Chave da superfície',
+      // Todas as superfícies do tipo LyraPuckSurfaceKey (antes só três
+      // apareciam, e documentos de admin, portal e cobrança ficavam sem a
+      // própria opção marcada).
       options: [
         { label: 'Landing', value: 'landing' },
         { label: 'Login', value: 'login' },
         { label: 'App Shell', value: 'app-shell' },
+        { label: 'Painel administrativo', value: 'admin-panel' },
+        { label: 'Área da pessoa usuária', value: 'patient-portal' },
+        { label: 'Cobrança', value: 'billing' },
       ],
     },
     surfaceTitle: {
@@ -45,7 +51,7 @@ export function criarCamposBaseRootLyra(): Fields<LyraPuckRootProps> {
     },
     visibilityRules: {
       type: 'textarea',
-      label: 'Regras de visibilidade',
+      label: 'Notas de visibilidade (só no editor)',
     },
     resolvedContextSummary: {
       type: 'textarea',
@@ -103,12 +109,11 @@ export async function resolverCamposRootLyra(
       label: `Descrição estrutural da ${rotuloSuperficie}`,
     },
     themeVariant: campoTemaResolvido,
+    // Texto livre de referência para quem edita: quem vê a página é decidido
+    // pela própria rota (login, papel de administrador), não por este campo.
     visibilityRules: {
       ...fields.visibilityRules,
-      label:
-        surfaceKey === 'app-shell'
-          ? 'Regras de visibilidade do shell'
-          : 'Regras de visibilidade pública',
+      label: 'Notas de visibilidade (só no editor; o acesso é da própria rota)',
     },
     resolvedContextSummary: campoResumoResolvido,
   };

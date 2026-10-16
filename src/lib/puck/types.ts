@@ -255,7 +255,7 @@ export const lyraPuckDocuments: Array<{
     key: 'landing-home',
     label: 'Landing Home',
     description:
-      'Superfície pública principal da Lyra para narrativa, marketing e aquisição.',
+      'Blocos exibidos na página inicial pública, logo depois do topo.',
     route: '/admin/puck?documentKey=landing-home',
     publicRoute: '/',
     publicLabel: 'Landing pública',
@@ -265,7 +265,7 @@ export const lyraPuckDocuments: Array<{
     key: 'login-experience',
     label: 'Experiência de Login',
     description:
-      'Superfície de autenticação com contexto editorial, confiança e conversão.',
+      'Blocos exibidos em largura total no fim da tela de entrar e criar conta.',
     route: '/admin/puck?documentKey=login-experience',
     publicRoute: '/login',
     publicLabel: 'Tela de login',
@@ -273,12 +273,12 @@ export const lyraPuckDocuments: Array<{
   },
   {
     key: 'app-shell',
-    label: 'App Shell',
+    label: 'Plano de IA',
     description:
-      'Superfície estrutural do app autenticado, com contexto de navegação e leitura operacional.',
+      'Blocos exibidos no topo da página do plano de IA (chave histórica "app-shell").',
     route: '/admin/puck?documentKey=app-shell',
     publicRoute: '/plan',
-    publicLabel: 'Aplicativo autenticado',
+    publicLabel: 'Página do plano de IA',
     surfaceKey: 'app-shell',
   },
   {
@@ -403,7 +403,7 @@ export const lyraPuckDocuments: Array<{
       'Construtor de catálogos e gestão de pagamentos por assinatura.',
     route: '/admin/puck?documentKey=admin-plans',
     publicRoute: '/admin/plans',
-    publicLabel: 'Commerce Engine',
+    publicLabel: 'Gestão de planos',
     surfaceKey: 'admin-panel',
   },
   {
@@ -439,19 +439,20 @@ export const lyraPuckDocuments: Array<{
     key: 'admin-ai-config',
     label: 'Admin: Motores de IA',
     description:
-      'Afinamento sensível nas equações neurais e parâmetros base da IA local.',
+      'Blocos exibidos no topo da configuração dos modelos de IA e do motor da Lyra.',
     route: '/admin/puck?documentKey=admin-ai-config',
     publicRoute: '/admin/ai-config',
-    publicLabel: 'Motor de Engenheiros',
+    publicLabel: 'Configuração de IA',
     surfaceKey: 'admin-panel',
   },
   {
     key: 'admin-page-builder',
-    label: 'Admin: Builder Genérico',
-    description: 'Construtor nativo atrelado a componentes de hardcode react.',
+    label: 'Admin: Construtor de UI',
+    description:
+      'Blocos exibidos no topo do construtor de UI (landing, login e app).',
     route: '/admin/puck?documentKey=admin-page-builder',
     publicRoute: '/admin/page-builder',
-    publicLabel: 'Construtores',
+    publicLabel: 'Construtor de UI',
     surfaceKey: 'admin-panel',
   },
 ];

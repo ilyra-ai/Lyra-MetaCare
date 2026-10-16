@@ -17,6 +17,7 @@ import {
   obterClasseTomHeading,
 } from '@/lib/puck/config/components/helpers';
 import { fetchListPlanos } from '@/lib/puck/data-sources/plans';
+import { obterCacheDinamicoLyra } from '@/lib/puck/dynamic/cache';
 import type {
   LyraExternalPlanData,
   LyraFeatureCardBlockProps,
@@ -96,6 +97,10 @@ function LyraFeatureCardBlock({
   );
 }
 
+// Última falha ao listar os planos no seletor do editor, exibida no rodapé
+// do seletor (o campo externo do Puck não tem estado de erro próprio).
+let erroAoListarPlanos: string | null = null;
+
 export const lyraFeatureCardBlockConfig = {
   label: 'Card de feature',
   fields: {
@@ -103,9 +108,29 @@ export const lyraFeatureCardBlockConfig = {
       type: 'external',
       label: 'Plano vinculado (fonte externa)',
       placeholder: 'Selecione um plano do catálogo público...',
-      fetchList: async () => fetchListPlanos(),
+      fetchList: async () => {
+        try {
+          const planos = await fetchListPlanos();
+          erroAoListarPlanos = null;
+          return planos;
+        } catch (error) {
+          erroAoListarPlanos =
+            error instanceof Error ? error.message : 'Falha desconhecida.';
+          return [];
+        }
+      },
+      renderFooter: ({ items }: { items: LyraExternalPlanData[] }) => (
+        <p
+          role={erroAoListarPlanos ? 'alert' : undefined}
+          className="px-4 py-3 text-sm text-muted-foreground"
+        >
+          {erroAoListarPlanos
+            ? `Não foi possível carregar os planos: ${erroAoListarPlanos}`
+            : `${items.length} plano(s) no catálogo público.`}
+        </p>
+      ),
       getItemSummary: (item: LyraExternalPlanData) =>
-        `${item.name} — ${item.tagline}`,
+        `${item.name}: ${item.tagline}`,
       mapProp: (item: LyraExternalPlanData) => item,
     },
     eyebrow: {
@@ -154,14 +179,36 @@ export const lyraFeatureCardBlockConfig = {
   },
   defaultProps: {
     externalPlan: undefined,
-    eyebrow: 'Camada inteligente',
-    title: 'IA aplicada com leitura serena e contexto humano.',
+    eyebrow: 'Recurso',
+    title: 'Um benefício claro em poucas palavras',
     description:
-      'Use este bloco para destacar capacidades da Lyra com linguagem mais editorial, clara e controlável pelo time.',
-    icon: 'cpu',
+      'Conte em uma frase como este recurso ajuda a pessoa no dia a dia.',
+    icon: 'sparkles',
     tone: 'cosmic',
-    ctaLabel: 'Explorar detalhe',
+    ctaLabel: 'Saiba mais',
     ctaHref: '/',
+  },
+  // O plano vinculado era uma cópia tirada no momento da escolha: preço e
+  // descrição mudados depois no catálogo não chegavam ao card. Agora cada
+  // exibição relê o plano pela chave; plano retirado do catálogo desfaz o
+  // vínculo, e uma falha de rede mantém a última cópia conhecida.
+  resolveData: async (data) => {
+    const vinculado = data.props.externalPlan as
+      LyraExternalPlanData | undefined;
+    if (!vinculado?.key) {
+      return { props: {} };
+    }
+    try {
+      // Cache curto compartilhado: vários cards na página fazem uma só busca.
+      const planos = await obterCacheDinamicoLyra(
+        'lyra-puck:catalogo-de-planos',
+        fetchListPlanos
+      );
+      const atual = planos.find((plano) => plano.key === vinculado.key);
+      return { props: { externalPlan: atual } };
+    } catch {
+      return { props: {} };
+    }
   },
   render: (props: Record<string, unknown>) => (
     <LyraFeatureCardBlock

@@ -36,6 +36,7 @@ import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { getBuilderIcon } from '@/lib/site-page-config/ui';
 import { cn } from '@/lib/utils';
 import { ThemeToggleButton } from '@/components/theme/ThemeControls';
+import { PuckClientRenderer } from '@/components/puck/PuckClientRenderer';
 import Link from 'next/link';
 import {
   ROTA_POLITICA_DE_PRIVACIDADE,
@@ -248,6 +249,13 @@ export function LandingPage({
       return;
     }
 
+    // Destino externo (o schema só aceita https://): navegação completa do
+    // navegador, sem passar pelo roteador interno do Next.
+    if (href.startsWith('https://')) {
+      window.location.assign(href);
+      return;
+    }
+
     router.push(href);
   }
 
@@ -309,9 +317,14 @@ export function LandingPage({
                   const FeatureIcon = getBuilderIcon(feature.icon);
 
                   return (
-                    <Card key={feature.id} className="min-w-0">
+                    <Card
+                      key={feature.id}
+                      className="min-w-0"
+                      data-escala="recurso"
+                    >
                       <CardHeader>
                         <div
+                          data-escala="icone"
                           className={cn(
                             'mb-2 flex h-11 w-11 items-center justify-center rounded-md',
                             corDoIconeTonal(feature.tone)
@@ -424,13 +437,20 @@ export function LandingPage({
                   const StepIcon = getBuilderIcon(step.icon);
 
                   return (
-                    <Card key={step.id} className="min-w-0">
+                    <Card
+                      key={step.id}
+                      className="min-w-0"
+                      data-escala="recurso"
+                    >
                       <CardHeader>
                         <div className="mb-2 flex items-center justify-between">
                           <span className="font-display text-sm font-semibold text-primary">
                             {step.step}
                           </span>
-                          <span className="flex h-11 w-11 items-center justify-center rounded-md bg-muted text-foreground">
+                          <span
+                            data-escala="icone"
+                            className="flex h-11 w-11 items-center justify-center rounded-md bg-muted text-foreground"
+                          >
                             <StepIcon className="h-5 w-5" aria-hidden />
                           </span>
                         </div>
@@ -498,6 +518,7 @@ export function LandingPage({
                   : plans.map((plan) => (
                       <Card
                         key={plan.key}
+                        data-escala="plano"
                         className={cn(
                           'flex min-w-0 flex-col overflow-hidden bg-background',
                           plan.key === 'meta' &&
@@ -710,8 +731,22 @@ export function LandingPage({
     ])
   );
 
+  // Escalas do construtor de UI (landing.sizing): cards do topo, cards de
+  // recursos e do fluxo, cards de planos, ícones e botões (regras em
+  // globals.css, pelos atributos `data-escala` e `data-slot`).
+  const escalasDaLanding = {
+    '--landing-escala-hero': String(config.sizing.heroCard),
+    '--landing-escala-recurso': String(config.sizing.featureCard),
+    '--landing-escala-plano': String(config.sizing.planCard),
+    '--landing-escala-icone': String(config.sizing.iconScale),
+    '--landing-escala-botao': String(config.sizing.buttonScale),
+  } as CSSProperties;
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div
+      className="lyra-landing min-h-screen bg-background text-foreground"
+      style={escalasDaLanding}
+    >
       <header className="sticky top-0 z-50 border-b border-border bg-card">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
           <button
@@ -837,7 +872,7 @@ export function LandingPage({
             </div>
 
             <div className="grid min-w-0 gap-4">
-              <Card>
+              <Card data-escala="hero">
                 <CardHeader>
                   <Badge variant="cosmic" className="w-fit">
                     {config.hero.quickAuthBadge}
@@ -925,7 +960,7 @@ export function LandingPage({
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card data-escala="hero">
                 <CardHeader>
                   <Badge variant="outline" className="w-fit">
                     {config.hero.previewBadge}
@@ -947,6 +982,7 @@ export function LandingPage({
                         className="min-w-0 rounded-md border border-border bg-background p-4"
                       >
                         <div
+                          data-escala="icone"
                           className={cn(
                             'flex h-10 w-10 items-center justify-center rounded-md',
                             corDoIconeTonal(item.tone)
@@ -975,6 +1011,10 @@ export function LandingPage({
           </div>
         </section>
 
+        {/* Blocos publicados no editor Puck (documento "landing-home"),
+            logo após o topo. Sem blocos publicados, nada é exibido. */}
+        <PuckClientRenderer documentKey="landing-home" className="w-full" />
+
         {orderedSections.map((sectionKey) => (
           <div key={sectionKey}>{renderSection(sectionKey)}</div>
         ))}
@@ -989,7 +1029,7 @@ export function LandingPage({
                 {config.footer.brandLine}
               </p>
               <p className="text-xs font-medium text-muted-foreground">
-                landing editável
+                astrologia + IA
               </p>
             </div>
           </div>

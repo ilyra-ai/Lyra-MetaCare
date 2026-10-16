@@ -64,7 +64,7 @@ export default function MonitoringPage() {
         <PlanUpgradeNotice
           currentPlanKey={subscription?.plan.key ?? 'free'}
           title="Monitoramento premium bloqueado"
-          description="Seu plano atual não inclui o painel contínuo de monitoramento em tempo real. A liberação desta experiência depende do entitlement correspondente."
+          description="O monitoramento em tempo real não faz parte do seu plano atual. Conheça os planos que incluem este recurso."
           showAction
           preferredPlanKey="meta"
         />

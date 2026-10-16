@@ -85,5 +85,17 @@ export function obterRotuloSuperficie(surfaceKey: LyraPuckSurfaceKey) {
     return 'experiência de login';
   }
 
+  if (surfaceKey === 'admin-panel') {
+    return 'página administrativa';
+  }
+
+  if (surfaceKey === 'patient-portal') {
+    return 'página da pessoa usuária';
+  }
+
+  if (surfaceKey === 'billing') {
+    return 'página de cobrança';
+  }
+
   return 'landing pública';
 }

@@ -29,6 +29,9 @@ async function lerPageKey(
 const salvarSchema = z.object({ config: z.unknown() });
 const acaoSchema = z.object({
   action: z.enum(['publish', 'restorePublished', 'restoreDefaults']),
+  // "Publicar agora" envia o que está na tela (tarefa 53): antes publicava o
+  // rascunho salvo e descartava as edições não salvas sem aviso.
+  config: z.unknown().optional(),
 });
 
 export async function GET(
@@ -70,11 +73,13 @@ export async function POST(
   try {
     const session = await requireAdminSession();
     const pageKey = await lerPageKey(params);
-    const { action } = await lerJson(request, acaoSchema);
+    const { action, config } = await lerJson(request, acaoSchema);
     const opcoes = { pageKey, actorUserId: session.user.id };
 
     if (action === 'publish') {
-      return NextResponse.json(await publishSitePageDraft(opcoes));
+      return NextResponse.json(
+        await publishSitePageDraft({ ...opcoes, config })
+      );
     }
     if (action === 'restorePublished') {
       return NextResponse.json(await restoreSitePageDraftFromPublished(opcoes));

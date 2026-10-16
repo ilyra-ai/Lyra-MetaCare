@@ -420,7 +420,7 @@ export function Dashboard() {
       <PlanUpgradeNotice
         currentPlanKey={subscription?.plan.key ?? 'free'}
         title="Dashboard premium indisponível"
-        description="O entitlement `dashboard_access` ainda não está liberado para a sua assinatura. O bloqueio desta visão continua aplicado de forma real."
+        description="O painel completo não faz parte do seu plano atual. Conheça os planos que incluem esta visão."
       />
     );
   }
@@ -482,15 +482,21 @@ export function Dashboard() {
                   ) : (
                     <Bluetooth className="mr-2" />
                   )}
-                  {isBluetoothConnected ? 'BLE Ativo' : 'Parear Cinta'}
+                  {isBluetoothConnected ? 'Cinta conectada' : 'Conectar cinta'}
                 </Button>
+                {/* Rótulo editável no construtor de UI
+                    (app.dashboard.syncButtonLabel); antes o botão só tinha
+                    ícone e um texto fixo para leitores de tela. */}
                 <Button
                   variant="secondary"
                   onClick={() => void handleSyncNow()}
                   disabled={isSyncing}
+                  aria-busy={isSyncing}
                 >
-                  <TimerReset />
-                  <span className="sr-only">Atualizar Saúde</span>
+                  <TimerReset aria-hidden="true" />
+                  {isSyncing
+                    ? 'Atualizando...'
+                    : appConfig.dashboard.syncButtonLabel}
                 </Button>
               </div>
             </div>

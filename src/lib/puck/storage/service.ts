@@ -4,6 +4,7 @@ import { executeStatement, queryRows } from '@/lib/mysql/pool';
 import { getInitialPuckData } from '@/lib/puck/config/initial-data';
 import { clonarDadosPuck, normalizarDadosPuck } from '@/lib/puck/data-utils';
 import { migrarDocumentoPuckLyra } from '@/lib/puck/migrations';
+import { limparDadosResolvidosPuck } from '@/lib/puck/sanitization/dados-resolvidos';
 import {
   LyraPuckData,
   LyraPuckDocumentKey,
@@ -21,8 +22,31 @@ type PuckDocumentRow = {
   updated_at: string | null;
 };
 
+/**
+ * Todo documento gravado sai sem os campos resolvidos com os dados de quem
+ * estava no editor (nome, plano, resumo da sessão): ver
+ * `limparDadosResolvidosPuck`.
+ */
 function serializePuckData(data: LyraPuckData) {
-  return JSON.stringify(data);
+  return JSON.stringify(limparDadosResolvidosPuck(data));
+}
+
+/**
+ * Leitura de um documento gravado: normaliza, retira os blocos de
+ * demonstração intocados, aplica os transforms de versão e esvazia campos
+ * resolvidos que versões anteriores gravaram (a rota pública devolve o
+ * documento publicado a qualquer visitante).
+ */
+function lerDocumentoGravado(
+  valor: unknown,
+  documentKey: LyraPuckDocumentKey
+): LyraPuckData {
+  return limparDadosResolvidosPuck(
+    migrarDocumentoPuckLyra(
+      normalizarDadosPuck(valor, getInitialPuckData(documentKey)),
+      documentKey
+    )
+  );
 }
 
 async function getPuckDocumentRow(documentKey: LyraPuckDocumentKey) {
@@ -78,16 +102,10 @@ export async function getAdminPuckDocument(
     return buildEmptyPuckDocument(documentKey);
   }
 
-  const fallback = getInitialPuckData(documentKey);
-
   return {
     documentKey,
-    draftData: migrarDocumentoPuckLyra(
-      normalizarDadosPuck(row.draft_data, fallback)
-    ),
-    publishedData: migrarDocumentoPuckLyra(
-      normalizarDadosPuck(row.published_data, fallback)
-    ),
+    draftData: lerDocumentoGravado(row.draft_data, documentKey),
+    publishedData: lerDocumentoGravado(row.published_data, documentKey),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     updatedByUserId: row.updated_by_user_id,
@@ -104,10 +122,7 @@ export async function getPublicPuckDocument(
     return buildEmptyPuckDocument(documentKey);
   }
 
-  const fallback = getInitialPuckData(documentKey);
-  const publishedData = migrarDocumentoPuckLyra(
-    normalizarDadosPuck(row.published_data, fallback)
-  );
+  const publishedData = lerDocumentoGravado(row.published_data, documentKey);
 
   return {
     documentKey,

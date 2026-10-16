@@ -73,6 +73,21 @@ function LyraSurfaceRoot({
 }) {
   const regras = obterRegrasVisibilidade(visibilityRules);
 
+  // Fora do editor (páginas reais) só os blocos aparecem: título interno,
+  // chave, fonte, notas de visibilidade e o resumo da sessão são informação
+  // de edição e não podem ir para a página pública (tarefa 53).
+  if (!isEditing) {
+    return (
+      <div
+        className="min-w-0 space-y-4 has-[>div:only-child:empty]:hidden"
+        data-surface-key={surfaceKey}
+        data-theme-variant={themeVariant}
+      >
+        {children}
+      </div>
+    );
+  }
+
   return (
     <section
       className={cn(
@@ -134,17 +149,8 @@ function LyraSurfaceRoot({
         </div>
       </div>
 
-      {/*
-        Fora do editor, o painel do slot some quando não há blocos publicados
-        (o Puck renderiza apenas um `<div>` vazio); no editor ele permanece
-        visível como área de soltar.
-      */}
-      <div
-        className={cn(
-          'space-y-4 rounded-xl border border-border bg-background p-4 md:p-6',
-          !isEditing && 'has-[>div:only-child:empty]:hidden'
-        )}
-      >
+      {/* No editor o painel permanece visível como área de soltar. */}
+      <div className="space-y-4 rounded-xl border border-border bg-background p-4 md:p-6">
         {children}
       </div>
     </section>
@@ -238,18 +244,30 @@ export function criarLyraRootConfig(
         };
       }
 
-      const [perfil, assinatura] = await Promise.all([
-        obterPerfilDinamicoLyra(),
-        obterResumoAssinaturaLyra(),
-      ]);
+      // Resumo só para o editor (a renderização pública não o exibe) e sem
+      // e-mail: o editor salva o documento sem ele (limparDadosResolvidosPuck).
+      try {
+        const [perfil, assinatura] = await Promise.all([
+          obterPerfilDinamicoLyra(),
+          obterResumoAssinaturaLyra(),
+        ]);
 
-      return {
-        props: {
-          dynamicSource,
-          resolvedContextSummary: `Sessão ${perfil.email ?? 'sem e-mail visível'} • perfil ${perfil.role ?? 'não informado'} • plano ${assinatura.planoNome} • ${assinatura.tendenciaRotulo}.`,
-        },
-        readOnly: camposSomenteLeituraRoot,
-      };
+        return {
+          props: {
+            dynamicSource,
+            resolvedContextSummary: `${perfil.primeiroNome ?? perfil.nomeExibicao} • perfil ${perfil.isAdmin ? 'administrador' : 'pessoa usuária'} • plano ${assinatura.planoNome} • ${assinatura.tendenciaRotulo}.`,
+          },
+          readOnly: camposSomenteLeituraRoot,
+        };
+      } catch {
+        return {
+          props: {
+            dynamicSource,
+            resolvedContextSummary: 'Sem sessão ativa para montar o contexto.',
+          },
+          readOnly: camposSomenteLeituraRoot,
+        };
+      }
     },
     render: (props) => (
       <LyraSurfaceRoot

@@ -234,6 +234,52 @@
     background-color: hsl(var(--background));
     border-color: hsl(var(--border));
   }
+
+  /*
+    Escalas do construtor de UI no app autenticado (tarefa 53): o AppShell
+    define as variáveis a partir de app.sizing. `zoom` (Baseline 2024) escala
+    o elemento e o espaço que ele ocupa no layout. Cards dentro de cards não
+    acumulam a escala.
+  */
+  .lyra-app [data-slot='card'] {
+    zoom: var(--lyra-escala-card, 1);
+  }
+
+  .lyra-app [data-slot='card'] [data-slot='card'] {
+    zoom: 1;
+  }
+
+  .lyra-app table {
+    zoom: var(--lyra-escala-tabela, 1);
+  }
+
+  .lyra-app [data-slot='button'] {
+    zoom: var(--lyra-escala-botao, 1);
+  }
+
+  /*
+    Escalas da landing (landing.sizing do construtor de UI). `zoom` ocupa o
+    espaço real no layout, ao contrário de `transform: scale`.
+  */
+  .lyra-landing [data-escala='hero'] {
+    zoom: var(--landing-escala-hero, 1);
+  }
+
+  .lyra-landing [data-escala='recurso'] {
+    zoom: var(--landing-escala-recurso, 1);
+  }
+
+  .lyra-landing [data-escala='plano'] {
+    zoom: var(--landing-escala-plano, 1);
+  }
+
+  .lyra-landing [data-escala='icone'] {
+    zoom: var(--landing-escala-icone, 1);
+  }
+
+  .lyra-landing [data-slot='button'] {
+    zoom: var(--landing-escala-botao, 1);
+  }
 }
 
 @layer base {

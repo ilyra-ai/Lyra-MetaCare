@@ -1,17 +1,22 @@
 import type { LyraExternalPlanData } from '@/lib/puck/types';
 
+/**
+ * Catálogo público de planos para os blocos do Puck. Uma falha é lançada
+ * com a causa (antes virava uma lista vazia em silêncio, e o editor dizia
+ * apenas que não havia planos): quem chama decide como exibir o erro.
+ */
 export async function fetchListPlanos(): Promise<LyraExternalPlanData[]> {
-  try {
-    const res = await fetch('/api/public/plans', { cache: 'no-store' });
+  const res = await fetch('/api/public/plans', { cache: 'no-store' });
 
-    if (!res.ok) return [];
-
-    const json = (await res.json()) as { plans?: unknown[] };
-
-    return (json.plans ?? []).map(mapPlanoExterno);
-  } catch {
-    return [];
+  if (!res.ok) {
+    throw new Error(
+      `O catálogo de planos respondeu com o status ${res.status}.`
+    );
   }
+
+  const json = (await res.json()) as { plans?: unknown[] };
+
+  return (json.plans ?? []).map(mapPlanoExterno);
 }
 
 function mapPlanoExterno(raw: unknown): LyraExternalPlanData {

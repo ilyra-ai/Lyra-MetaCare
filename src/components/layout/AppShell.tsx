@@ -1,6 +1,7 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
+import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { cn } from '@/lib/utils';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
@@ -33,8 +34,21 @@ export function AppShell({
   contentClassName,
   puckDocumentKey,
 }: AppShellProps) {
+  const { config: appConfig } = usePublicSitePageConfig('app');
+  const { cardScale, tableScale, buttonScale } = appConfig.sizing;
   return (
-    <div className="flex min-h-screen bg-background">
+    <div
+      // Escalas do construtor de UI (tarefa 53): cards, tabelas e botões de
+      // todas as páginas autenticadas (regras em globals.css).
+      className="lyra-app flex min-h-screen bg-background"
+      style={
+        {
+          '--lyra-escala-card': String(cardScale),
+          '--lyra-escala-tabela': String(tableScale),
+          '--lyra-escala-botao': String(buttonScale),
+        } as CSSProperties
+      }
+    >
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header />

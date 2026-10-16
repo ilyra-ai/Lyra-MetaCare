@@ -133,15 +133,24 @@ export async function saveSitePageDraft<TKey extends SitePageKey>(options: {
   return getAdminSitePageConfig(options.pageKey);
 }
 
+/**
+ * Publica a página. Com `config` (o que está na tela do construtor), ela é
+ * validada e vira rascunho e publicação de uma vez; sem `config`, publica o
+ * rascunho salvo.
+ */
 export async function publishSitePageDraft<TKey extends SitePageKey>(options: {
   pageKey: TKey;
   actorUserId: string;
+  config?: unknown;
 }): Promise<StoredPageConfig<TKey>> {
   const row = await getSitePageConfigRow(options.pageKey);
   const fallbackDraft = getDefaultPageConfig(options.pageKey);
-  const draftConfig = row
-    ? parsePageConfig(options.pageKey, parseStoredJson(row.draft_config))
-    : fallbackDraft;
+  const draftConfig =
+    options.config !== undefined
+      ? validatePageConfigOrThrow(options.pageKey, options.config)
+      : row
+        ? parsePageConfig(options.pageKey, parseStoredJson(row.draft_config))
+        : fallbackDraft;
 
   if (row) {
     await executeStatement(

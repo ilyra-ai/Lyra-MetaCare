@@ -31,12 +31,12 @@ export function HarmoniaAtualCard({ appConfig }: { appConfig: AppPageConfig }) {
       : 'Disponível com o acesso ao dashboard do seu plano.';
 
   return (
+    // A escala dos cards (app.sizing.cardScale) vale para todos os cards do
+    // app pelo `data-slot` (ver AppShell e globals.css); antes só este card a
+    // usava, com `transform`, que não ocupava espaço no layout.
     <div
+      data-slot="card"
       className="flex w-full max-w-sm shrink-0 items-center gap-4 rounded-xl border border-border bg-card px-5 py-4"
-      style={{
-        transform: `scale(${appConfig.sizing.cardScale})`,
-        transformOrigin: 'top right',
-      }}
     >
       <div
         aria-hidden="true"

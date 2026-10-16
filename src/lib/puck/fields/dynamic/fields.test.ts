@@ -111,8 +111,10 @@ describe('campos dinâmicos do Puck da Lyra', () => {
       'shell',
       'serene',
     ]);
+    // As notas de visibilidade não controlam acesso (tarefa 53): o rótulo
+    // deixa isso claro em todas as superfícies.
     expect(fields.visibilityRules?.label).toBe(
-      'Regras de visibilidade do shell'
+      'Notas de visibilidade (só no editor; o acesso é da própria rota)'
     );
     expect(fields.resolvedContextSummary?.visible).toBe(true);
     expect(fields.resolvedContextSummary?.label).toBe(

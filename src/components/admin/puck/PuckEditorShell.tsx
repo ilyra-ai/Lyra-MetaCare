@@ -285,9 +285,9 @@ export function PuckEditorShell({
   return (
     <AppShell contentClassName="max-w-[1800px]">
       <PageIntro
-        eyebrow="Lyra Customaze UI UX"
+        eyebrow="Blocos das páginas"
         title="Editor visual"
-        description="Editor visual da Lyra com fontes de dados externas, viewports responsivos, permissões por papel, migração de dados, componentes de servidor e portais de overlay. Persistência real em MySQL."
+        description="Monte blocos para as páginas da Lyra, salve como rascunho e publique. Os blocos publicados aparecem na página indicada em cada documento; textos com dados de quem edita não são gravados."
         actions={
           <>
             <Select value={documentKey} onValueChange={handleTrocaDocumento}>
@@ -370,11 +370,11 @@ export function PuckEditorShell({
         <>
           <Card className="overflow-hidden">
             <CardHeader className="border-b border-border">
-              <CardTitle>Canvas do editor Puck</CardTitle>
+              <CardTitle>Canvas do editor</CardTitle>
               <CardDescription>
-                O bloco abaixo é o editor oficial do Puck rodando dentro da
-                Lyra. O botão publicar do próprio editor e os botões do topo
-                persistem o documento de forma real.
+                Arraste os blocos da lista para a página e edite os campos ao
+                lado. &quot;Publish&quot;, dentro do editor, e &quot;Publicar
+                agora&quot;, no topo, gravam e publicam o documento.
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
@@ -382,7 +382,7 @@ export function PuckEditorShell({
                 <Puck
                   config={configAtual}
                   data={draftData}
-                  headerTitle="Lyra Customaze UI UX"
+                  headerTitle={documentDefinition?.label ?? 'Editor visual'}
                   headerPath={documentKey}
                   viewports={[...lyraPuckViewports]}
                   permissions={permissoesDocumento}

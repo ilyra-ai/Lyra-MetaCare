@@ -5,6 +5,8 @@ import { obterConfigPuckLyra } from '@/lib/puck/config/base';
 import { getInitialPuckData } from '@/lib/puck/config/initial-data';
 import { normalizarDadosPuck } from '@/lib/puck/data-utils';
 import { migrarDadosPuckLyra } from '@/lib/puck/dynamic/resolve-data';
+import { obterDocumentoDeDemonstracao } from '@/lib/puck/migrations/documentos-de-demonstracao';
+import { CAMPOS_SLOT_POR_TIPO } from '@/lib/puck/migrations/migrate';
 import {
   lyraPuckDocuments,
   type LyraPuckConfig,
@@ -13,6 +15,24 @@ import {
 } from '@/lib/puck/types';
 
 const chavesDosDocumentos = lyraPuckDocuments.map((doc) => doc.key);
+
+// Os documentos iniciais nascem vazios (tarefa 53); os de demonstração, com
+// 15 blocos aninhados na landing, servem de amostra de migração.
+function demonstracao(documentKey: LyraPuckDocumentKey): LyraPuckData {
+  const documento = obterDocumentoDeDemonstracao(documentKey);
+  if (!documento) {
+    throw new Error(`Sem documento de demonstração para ${documentKey}.`);
+  }
+  return documento;
+}
+
+// Documento de amostra de cada chave: o de demonstração, quando existe, ou o
+// inicial.
+function amostra(documentKey: LyraPuckDocumentKey): LyraPuckData {
+  return (
+    obterDocumentoDeDemonstracao(documentKey) ?? getInitialPuckData(documentKey)
+  );
+}
 
 // Conta todos os blocos do documento, inclusive os aninhados em slots.
 function contarBlocosEmSlots(data: LyraPuckData, documentKey: string) {
@@ -77,10 +97,26 @@ describe('documentos iniciais do Puck', () => {
     }
   );
 
-  it('preserva os 15 blocos da landing dentro dos slots', () => {
+  it('todos os documentos nascem sem blocos', () => {
+    for (const documentKey of chavesDosDocumentos) {
+      expect(getInitialPuckData(documentKey).content).toEqual([]);
+    }
+  });
+
+  it('a demonstração da landing mantém os 15 blocos dentro dos slots', () => {
     // 2 na raiz + 6 na seção editorial + 2 + 2 nas colunas + 3 na grade.
-    const inicial = getInitialPuckData('landing-home');
-    expect(contarBlocosEmSlots(inicial, 'landing-home')).toBe(15);
+    const landing = demonstracao('landing-home');
+    expect(contarBlocosEmSlots(landing, 'landing-home')).toBe(15);
+  });
+
+  it('a lista de slots da migração de servidor bate com a configuração', () => {
+    const config = obterConfigPuckLyra('landing-home');
+    const doConfig = Object.fromEntries(
+      Object.keys(config.components)
+        .map((tipo) => [tipo, camposSlot(config, tipo)] as const)
+        .filter(([, campos]) => campos.length > 0)
+    );
+    expect(doConfig).toEqual(CAMPOS_SLOT_POR_TIPO);
   });
 });
 
@@ -89,7 +125,7 @@ describe('migração de DropZones legadas para slots do Puck', () => {
     'documento legado %s volta exatamente ao formato em slots',
     (documentKey) => {
       const config = obterConfigPuckLyra(documentKey);
-      const nativo = getInitialPuckData(documentKey);
+      const nativo = amostra(documentKey);
       const legado = paraFormatoLegado(nativo, config);
 
       const migrado = migrarDadosPuckLyra(legado, config);
@@ -104,10 +140,7 @@ describe('migração de DropZones legadas para slots do Puck', () => {
 
   it('move os filhos da zona legada para o slot content do container', () => {
     const config = obterConfigPuckLyra('landing-home');
-    const legado = paraFormatoLegado(
-      getInitialPuckData('landing-home'),
-      config
-    );
+    const legado = paraFormatoLegado(demonstracao('landing-home'), config);
     const filhosLegados =
       legado.zones?.['lyra-section-container-editorial:content'] ?? [];
     const migrado = migrarDadosPuckLyra(legado, config);
@@ -124,7 +157,7 @@ describe('migração de DropZones legadas para slots do Puck', () => {
   it('é idempotente para documentos já em slots', () => {
     const config = obterConfigPuckLyra('landing-home');
     const umaVez = migrarDadosPuckLyra(
-      paraFormatoLegado(getInitialPuckData('landing-home'), config),
+      paraFormatoLegado(demonstracao('landing-home'), config),
       config
     );
     const duasVezes = migrarDadosPuckLyra(umaVez, config);
@@ -136,7 +169,7 @@ describe('migração de DropZones legadas para slots do Puck', () => {
 describe('normalizarDadosPuck', () => {
   it('não herda zonas do fallback quando o documento não tem zones', () => {
     const fallback = paraFormatoLegado(
-      getInitialPuckData('landing-home'),
+      demonstracao('landing-home'),
       obterConfigPuckLyra('landing-home')
     );
     const semZonas = { content: [], root: { props: {} } };

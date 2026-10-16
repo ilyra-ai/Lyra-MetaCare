@@ -46,7 +46,7 @@ export const navigationItems: NavigationDefinition[] = [
   {
     href: '/',
     label: 'Dashboard',
-    description: 'Visão central da energia, sono, astro e insights de IA.',
+    description: 'Seu dia em um olhar: energia, sono e o céu de hoje.',
     icon: LayoutDashboard,
     section: 'Principal',
     sectionKey: 'principal',
@@ -56,7 +56,7 @@ export const navigationItems: NavigationDefinition[] = [
     href: '/dia',
     label: 'Meu dia',
     description:
-      'Coach diário: como será o seu dia por período, com o mapa védico e os seus sinais.',
+      'Como será o seu dia, período a período, pelo seu mapa e pelos seus sinais.',
     icon: Sunrise,
     section: 'Principal',
     sectionKey: 'principal',
@@ -83,8 +83,7 @@ export const navigationItems: NavigationDefinition[] = [
   {
     href: '/plan',
     label: 'Plano de IA',
-    description:
-      'Protocolos personalizados de foco, ritmo, nutrição e recuperação.',
+    description: 'Ações de foco, ritmo, alimentação e recuperação para hoje.',
     icon: Sparkles,
     section: 'Principal',
     sectionKey: 'principal',
@@ -93,7 +92,7 @@ export const navigationItems: NavigationDefinition[] = [
   {
     href: '/goals',
     label: 'Metas',
-    description: 'Evolução diária com progresso, streaks e prioridades suaves.',
+    description: 'Seu progresso, sequências de dias e prioridades.',
     icon: Target,
     section: 'Principal',
     sectionKey: 'principal',
@@ -102,8 +101,7 @@ export const navigationItems: NavigationDefinition[] = [
   {
     href: '/appointments',
     label: 'Agendamentos',
-    description:
-      'Agenda de encontros, profissionais e organização do seu fluxo.',
+    description: 'Consultas, profissionais de referência e próximos horários.',
     icon: CalendarDays,
     section: 'Fluxo guiado',
     sectionKey: 'guidedFlow',
@@ -112,7 +110,7 @@ export const navigationItems: NavigationDefinition[] = [
   {
     href: '/monitoring',
     label: 'Monitoramento',
-    description: 'Leituras em tempo real, tendências e estados do momento.',
+    description: 'Seus sinais em tempo real, com alertas e leitura por voz.',
     icon: Radio,
     section: 'Fluxo guiado',
     sectionKey: 'guidedFlow',
@@ -122,7 +120,7 @@ export const navigationItems: NavigationDefinition[] = [
     href: '/chat',
     label: 'Chat IA',
     description:
-      'Conversa inteligente com contexto biométrico, emocional e astral.',
+      'Converse com a Lyra sobre o seu dia, o seu sono e o seu mapa.',
     icon: BrainCircuit,
     section: 'Fluxo guiado',
     sectionKey: 'guidedFlow',
@@ -131,7 +129,7 @@ export const navigationItems: NavigationDefinition[] = [
   {
     href: '/connect',
     label: 'Dispositivos',
-    description: 'Conexão e sincronização com wearables e integrações.',
+    description: 'Relógios, cintas cardíacas e outras fontes de dados.',
     icon: Smartphone,
     section: 'Pessoal',
     sectionKey: 'personal',
@@ -220,7 +218,7 @@ export const navigationItems: NavigationDefinition[] = [
   {
     href: '/admin/page-builder',
     label: 'Construtor UI',
-    description: 'Gestão de design visual e blocos da landing page e login.',
+    description: 'Textos, tamanhos e seções da landing, do login e do app.',
     icon: LayoutDashboard,
     section: 'Administração',
     sectionKey: 'admin',
@@ -230,7 +228,7 @@ export const navigationItems: NavigationDefinition[] = [
     href: '/admin/puck',
     label: 'Editor Puck',
     description:
-      'Primeira base do editor visual drag-and-drop da Lyra com persistência real.',
+      'Blocos visuais das páginas, com rascunho, publicação e histórico.',
     icon: Layers3,
     section: 'Administração',
     sectionKey: 'admin',

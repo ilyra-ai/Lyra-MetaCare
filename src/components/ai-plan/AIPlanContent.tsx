@@ -364,7 +364,7 @@ function PillarPanel({
               {pillar.items.length}
             </p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Recomendações reais produzidas pelo motor local para este eixo.
+              Recomendações para esta área, feitas a partir dos seus dados.
             </p>
           </div>
         </CardContent>

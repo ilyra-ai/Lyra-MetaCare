@@ -12,6 +12,10 @@ import type {
  * na compilação). Assim os componentes do cliente obtêm os valores iniciais
  * sem baixar o Zod; a validação continua no servidor (`./schema` e
  * `src/lib/site-page-config/service.ts`).
+ *
+ * Os textos são para a pessoa que usa o app (tarefa 53): sem nomes de
+ * tabelas, funções ou detalhes de implementação. As descrições do menu
+ * espelham as de `src/components/layout/navigation.ts`.
  */
 
 const defaultLandingPageConfig: LandingPageConfig = {
@@ -33,47 +37,46 @@ const defaultLandingPageConfig: LandingPageConfig = {
   },
   header: {
     loginLabel: 'Entrar',
-    fullLoginLabel: 'Tela completa',
+    fullLoginLabel: 'Começar',
   },
   hero: {
-    badgeText: 'uma experiência clara, gentil e muito mais editável',
-    title: 'Seu bem-estar ganha uma casa',
-    accentTitle: 'mais linda, harmoniosa e inteligente.',
+    badgeText: 'Bem-estar, longevidade e autoconhecimento',
+    title: 'Seu corpo, sua rotina e o seu céu',
+    accentTitle: 'em um só lugar, com orientação clara para cada dia.',
     description:
-      'A Lyra MetaCare une astrologia védica, IA e sinais da sua rotina numa interface clara, doce e premium, feita para acolher sem cansar.',
-    primaryCtaLabel: 'Entrar na experiência completa',
+      'A Lyra MetaCare reúne sono, energia e ritmo com a astrologia védica do seu mapa para sugerir o que fazer hoje, em linguagem simples. Não substitui avaliação profissional de saúde.',
+    primaryCtaLabel: 'Começar agora',
     primaryCtaHref: '/login',
-    secondaryCtaLabel: 'Ver catálogo publicado',
+    secondaryCtaLabel: 'Ver planos',
     secondaryCtaHref: '#planos',
-    quickAuthBadge: 'entrada rápida',
-    quickAuthTitle: 'Entrar direto pela landing',
-    quickAuthDescription:
-      'Uma entrada suave e organizada para quem já quer cair direto na própria órbita.',
-    quickAuthSubmitLabel: 'Entrar agora',
-    quickAuthSecondaryLabel: 'Abrir tela completa',
-    previewBadge: 'preview vivo',
-    previewTitle: 'Blocos leves, lindos e editáveis',
+    quickAuthBadge: 'Já tem conta?',
+    quickAuthTitle: 'Entre por aqui',
+    quickAuthDescription: 'Use o seu email e a sua senha para abrir o seu dia.',
+    quickAuthSubmitLabel: 'Entrar',
+    quickAuthSecondaryLabel: 'Criar conta',
+    previewBadge: 'O que você recebe',
+    previewTitle: 'Um guia diário feito para você',
     previewDescription:
-      'O novo painel administrativo vai permitir mexer em textos, cards, etapas, FAQ e hierarquia visual sem tocar no código.',
+      'Toda manhã a Lyra cruza os seus dados com o céu do seu mapa e mostra o essencial.',
     previewItems: [
       {
         id: 'landing-preview-1',
-        title: 'Astrologia moderna',
-        description: 'Simbolismo claro, luminoso e atualizado.',
+        title: 'Seu dia em poucas linhas',
+        description: 'Os melhores horários e o clima do dia.',
         icon: 'moonStar',
         tone: 'cosmic',
       },
       {
         id: 'landing-preview-2',
-        title: 'IA acolhedora',
-        description: 'Tecnologia com presença e sem peso visual.',
+        title: 'A Lyra para conversar',
+        description: 'Tire dúvidas sobre sono, energia e rotina.',
         icon: 'brain',
         tone: 'primary',
       },
       {
         id: 'landing-preview-3',
-        title: 'Fluxo editável',
-        description: 'Cards, chamadas e seções sob seu controle.',
+        title: 'Um plano que acompanha você',
+        description: 'Metas e hábitos ajustados ao seu ritmo.',
         icon: 'sparkles',
         tone: 'accent',
       },
@@ -81,159 +84,156 @@ const defaultLandingPageConfig: LandingPageConfig = {
   },
   features: {
     visible: true,
-    badgeText: 'Recursos em destaque',
-    title: 'Menos peso visual, mais clareza, mais ternura e mais intenção.',
+    badgeText: 'Recursos',
+    title: 'O que ajuda você a cuidar de si, sem complicação.',
     description:
-      'A landing passa a respirar melhor, com seções mais simples e um ritmo visual mais bonito de acompanhar.',
+      'Dados do corpo, rotina e autoconhecimento conversando entre si para sugerir os próximos passos.',
     items: [
       {
         id: 'landing-feature-1',
-        title: 'IA com presença gentil',
+        title: 'Leitura do dia',
         description:
-          'A tecnologia organiza sua jornada com leveza, sem roubar o protagonismo da experiência.',
-        icon: 'brain',
-        tone: 'primary',
-      },
-      {
-        id: 'landing-feature-2',
-        title: 'Astrologia moderna e luminosa',
-        description:
-          'Ciclos e simbolismos aparecem com visual claro, sofisticado e atual.',
+          'O céu do seu mapa traduzido em conselhos práticos para hoje.',
         icon: 'moonStar',
         tone: 'cosmic',
       },
       {
-        id: 'landing-feature-3',
+        id: 'landing-feature-2',
         title: 'Sinais do corpo com contexto',
         description:
-          'Sono, energia e ritmo passam a conversar dentro de uma hierarquia mais acolhedora.',
+          'Sono, energia e batimentos lidos juntos, e não cada um isolado.',
         icon: 'heartPulse',
         tone: 'accent',
+      },
+      {
+        id: 'landing-feature-3',
+        title: 'A Lyra como guia',
+        description:
+          'Uma conversa que conhece o seu dia e responde com cuidado.',
+        icon: 'brain',
+        tone: 'primary',
       },
     ],
   },
   metrics: {
     visible: true,
-    badgeText: 'Métricas públicas',
-    title: 'Os números da vitrine continuam reais e sincronizados.',
-    description:
-      'Esta faixa usa os dados publicados dos planos para mostrar a saúde comercial da experiência sem inventar prova social.',
+    badgeText: 'A Lyra em números',
+    title: 'O que os nossos planos oferecem hoje',
+    description: 'Números lidos do catálogo de planos publicado.',
     items: [
       {
         id: 'landing-metric-1',
         label: 'planos publicados',
         source: 'planCount',
         customValue: '',
-        note: 'Lidos do catálogo público.',
+        note: 'Disponíveis para assinatura.',
         tone: 'primary',
       },
       {
         id: 'landing-metric-2',
-        label: 'capacidades ativas',
+        label: 'recursos incluídos',
         source: 'featureCount',
         customValue: '',
-        note: 'Somatório real das features habilitadas.',
+        note: 'Somando todos os planos.',
         tone: 'accent',
       },
       {
         id: 'landing-metric-3',
-        label: 'categorias funcionais',
+        label: 'áreas de cuidado',
         source: 'categoryCount',
         customValue: '',
-        note: 'Categorias extraídas dos planos reais.',
+        note: 'Grupos de recursos dos planos.',
         tone: 'cosmic',
       },
       {
         id: 'landing-metric-4',
-        label: 'checkout conectado',
+        label: 'planos com assinatura online',
         source: 'checkoutCount',
         customValue: '',
-        note: 'Planos com integração comercial pronta.',
+        note: 'Prontos para assinar pelo site.',
         tone: 'golden',
       },
     ],
   },
   flow: {
     visible: true,
-    badgeText: 'Como a jornada se abre',
-    title: 'Tudo foi pensado para parecer natural, bonito e fácil de editar.',
-    description:
-      'O fluxo abaixo também fica totalmente configurável, com cards, ordens e textos sob gestão administrativa.',
+    badgeText: 'Como funciona',
+    title: 'Três passos para começar',
+    description: 'Leva poucos minutos, e você pode mudar tudo depois.',
     items: [
       {
         id: 'landing-step-1',
         step: '01',
-        title: 'Abra sua órbita',
+        title: 'Crie sua conta',
         description:
-          'Seu cadastro cria um espaço pessoal para sinais, preferências e contexto simbólico.',
+          'Informe data, hora e cidade de nascimento para montar o seu mapa.',
         icon: 'sparkles',
       },
       {
         id: 'landing-step-2',
         step: '02',
-        title: 'Conecte seu contexto',
+        title: 'Conte como você está',
         description:
-          'Rotina, sinais e preferências alimentam uma leitura mais delicada e coerente.',
+          'Registre como dormiu e se sentiu, ou conecte um dispositivo compatível.',
         icon: 'heartPulse',
       },
       {
         id: 'landing-step-3',
         step: '03',
-        title: 'Receba orientação com IA',
+        title: 'Receba o seu dia',
         description:
-          'Chat, planos e próximos passos ganham clareza sem excesso visual.',
+          'Todo dia a Lyra mostra o que favorece você, com plano, metas e conversa.',
         icon: 'bot',
       },
     ],
   },
   plans: {
     visible: true,
-    badgeText: 'Catálogo público sincronizado',
-    title: 'Planos reais do produto com uma vitrine mais linda e organizada.',
-    description:
-      'O bloco de planos continua conectado ao MySQL e pode ser reposicionado sem perder a fonte real.',
-    ctaLabel: 'Entrar e continuar',
+    badgeText: 'Planos',
+    title: 'Escolha o plano que combina com você',
+    description: 'Valores e recursos atualizados direto do nosso catálogo.',
+    ctaLabel: 'Começar com este plano',
   },
   faq: {
     visible: true,
-    badgeText: 'FAQ',
-    title: 'Perguntas importantes antes de entrar.',
-    description:
-      'A ideia aqui é manter a landing bonita, sincera e útil desde o primeiro contato.',
+    badgeText: 'Dúvidas frequentes',
+    title: 'Perguntas antes de começar',
+    description: 'Respostas curtas para o que mais nos perguntam.',
     items: [
       {
         id: 'landing-faq-1',
-        question: 'A landing usa dados reais do produto?',
+        question: 'A Lyra substitui um profissional de saúde?',
         answer:
-          'Sim. O catálogo abaixo é carregado por rota pública ligada ao MySQL desta instância.',
+          'Não. A Lyra é uma plataforma de bem-estar e autoconhecimento. As orientações não substituem avaliação profissional de saúde.',
       },
       {
         id: 'landing-faq-2',
-        question: 'Existe login direto pela landing?',
-        answer: 'Sim. O card inicial permite entrada real sem sair da landing.',
+        question: 'Preciso de um relógio ou de uma cinta?',
+        answer:
+          'Não. Você pode registrar como se sentiu no dia. Um dispositivo compatível deixa as leituras mais completas.',
       },
       {
         id: 'landing-faq-3',
-        question: 'O admin vai poder editar tudo depois?',
+        question: 'O que acontece com os meus dados?',
         answer:
-          'Sim. O novo editor administrativo salva rascunho, publica e permite ajuste fino via formulários e JSON validado.',
+          'Eles são usados para gerar as suas leituras. Você pode baixar uma cópia ou excluir a sua conta quando quiser, pelo seu perfil.',
       },
     ],
   },
   finalCta: {
     visible: true,
-    badgeText: 'Órbita final',
-    title: 'Uma landing mais amiga, linda, organizada e pronta para receber.',
+    badgeText: 'Comece hoje',
+    title: 'O seu próximo dia pode começar mais claro.',
     description:
-      'O foco agora é beleza com sentido: mais harmonia, mais contexto e uma primeira impressão que abraça em vez de confundir.',
-    primaryLabel: 'Abrir Lyra agora',
+      'Crie sua conta e receba a primeira leitura do seu dia em poucos minutos.',
+    primaryLabel: 'Criar minha conta',
     primaryHref: '/login',
-    secondaryLabel: 'Explorar a experiência',
+    secondaryLabel: 'Ver recursos',
     secondaryHref: '#recursos',
   },
   footer: {
     brandLine: 'lyra metacare',
-    note: 'Feito com leveza, intenção e tecnologia pela iLyra AI.',
+    note: 'Bem-estar, longevidade e autoconhecimento. Não substitui avaliação profissional de saúde.',
   },
   sectionOrder: ['features', 'metrics', 'flow', 'plans', 'faq', 'finalCta'],
 };
@@ -258,47 +258,43 @@ const defaultLoginPageConfig: LoginPageConfig = {
   },
   intro: {
     visible: true,
-    badgeText: 'uma entrada mais doce, clara e acolhedora',
+    badgeText: 'Lyra MetaCare',
     title: 'Que bom te ver por aqui.',
-    accentTitle: 'Sua órbita Lyra está pronta para receber você.',
+    accentTitle: 'A leitura do seu dia está esperando por você.',
     description:
-      'Esta tela foi redesenhada para parecer mais harmoniosa, organizada e carinhosa: menos dureza visual, mais respiro e mais vontade de entrar.',
-    noteEyebrow: 'Lyra MetaCare',
+      'Entre para ver os melhores horários de hoje, o seu plano e o que o céu do seu mapa sugere.',
+    noteEyebrow: 'Sua privacidade',
     noteText:
-      'Um espaço para unir simbolismo, tecnologia e bem-estar em uma experiência mais bonita e fácil de habitar.',
+      'Seus dados de saúde são seus. Você pode baixar uma cópia ou excluir a sua conta quando quiser.',
     highlights: [
       {
         id: 'login-highlight-1',
-        title: 'Atmosfera clara',
-        description:
-          'O tema se mantém luminoso, sereno e gostoso de olhar por muito tempo.',
+        title: 'Seu dia em poucas linhas',
+        description: 'O céu e os seus dados explicados em linguagem simples.',
         icon: 'sun',
         tone: 'primary',
       },
       {
         id: 'login-highlight-2',
-        title: 'IA com delicadeza',
-        description:
-          'Tecnologia presente para orientar sem transformar a tela em algo frio.',
+        title: 'A Lyra sempre por perto',
+        description: 'Converse sobre sono, energia e rotina a qualquer hora.',
         icon: 'bot',
         tone: 'cosmic',
       },
       {
         id: 'login-highlight-3',
-        title: 'Fluxo organizado',
-        description:
-          'Entrar, criar conta e seguir com menos atrito e mais clareza.',
+        title: 'Um plano que se ajusta',
+        description: 'Metas e hábitos que acompanham o seu ritmo.',
         icon: 'zap',
         tone: 'accent',
       },
     ],
   },
   auth: {
-    badgeText: 'auth vivo',
+    badgeText: 'Acesso seguro',
     brandText: 'lyra',
-    title: 'Entre ou crie sua conta com calma.',
-    description:
-      'Tudo aqui foi reorganizado para ficar mais fluido, mais fofo e mais convidativo, sem perder o rigor do fluxo real de autenticação.',
+    title: 'Entre ou crie a sua conta.',
+    description: 'Leva menos de um minuto.',
     loginTabLabel: 'Entrar',
     registerTabLabel: 'Criar conta',
     emailLabel: 'Email',
@@ -307,10 +303,10 @@ const defaultLoginPageConfig: LoginPageConfig = {
     lastNameLabel: 'Sobrenome',
     loginButtonLabel: 'Entrar na Lyra',
     registerButtonLabel: 'Criar minha conta',
-    footerEyebrow: 'entrada organizada',
+    footerEyebrow: 'Lembrete',
     footerText:
-      'Sem atalhos vazios, sem botão sem função e sem ruído visual desnecessário. Apenas o fluxo real, com mais beleza e acolhimento.',
-    backToLandingLabel: 'Voltar para a landing',
+      'A Lyra oferece orientação de bem-estar e autoconhecimento e não substitui avaliação profissional de saúde.',
+    backToLandingLabel: 'Voltar para a página inicial',
   },
 };
 
@@ -332,13 +328,12 @@ const defaultAppPageConfig: AppPageConfig = {
   },
   sidebar: {
     brandTitle: 'lyra',
-    brandEyebrow: 'metacare 2026',
+    brandEyebrow: 'metacare',
     statusEyebrow: 'Estado do dia',
     // Texto neutro: o padrão não pode afirmar um estado de saúde sem dados.
     statusTitle: 'Acompanhe seus sinais e os próximos passos do dia.',
     preferencesTitle: 'Preferências e acesso',
-    preferencesDescription:
-      'Ajuste perfil, hábitos e configurações do ambiente.',
+    preferencesDescription: 'Ajuste perfil, hábitos e configurações.',
     sectionLabels: {
       principal: 'Principal',
       guidedFlow: 'Fluxo guiado',
@@ -349,14 +344,14 @@ const defaultAppPageConfig: AppPageConfig = {
       {
         href: '/',
         label: 'Dashboard',
-        description: 'Visão central da energia, sono, astro e insights de IA.',
+        description: 'Seu dia em um olhar: energia, sono e o céu de hoje.',
         visible: true,
       },
       {
         href: '/dia',
         label: 'Meu dia',
         description:
-          'Coach diário: como será o seu dia por período, com o mapa védico e os seus sinais.',
+          'Como será o seu dia, período a período, pelo seu mapa e pelos seus sinais.',
         visible: true,
       },
       {
@@ -377,40 +372,40 @@ const defaultAppPageConfig: AppPageConfig = {
         href: '/plan',
         label: 'Plano de IA',
         description:
-          'Protocolos personalizados de foco, ritmo, nutrição e recuperação.',
+          'Ações de foco, ritmo, alimentação e recuperação para hoje.',
         visible: true,
       },
       {
         href: '/goals',
         label: 'Metas',
-        description:
-          'Evolução diária com progresso, streaks e prioridades suaves.',
+        description: 'Seu progresso, sequências de dias e prioridades.',
         visible: true,
       },
       {
         href: '/appointments',
         label: 'Agendamentos',
         description:
-          'Agenda de encontros, profissionais e organização do seu fluxo.',
+          'Consultas, profissionais de referência e próximos horários.',
         visible: true,
       },
       {
         href: '/monitoring',
         label: 'Monitoramento',
-        description: 'Leituras em tempo real, tendências e estados do momento.',
+        description:
+          'Seus sinais em tempo real, com alertas e leitura por voz.',
         visible: true,
       },
       {
         href: '/chat',
         label: 'Chat IA',
         description:
-          'Conversa inteligente com contexto biométrico, emocional e astral.',
+          'Converse com a Lyra sobre o seu dia, o seu sono e o seu mapa.',
         visible: true,
       },
       {
         href: '/connect',
         label: 'Dispositivos',
-        description: 'Conexão e sincronização com wearables e integrações.',
+        description: 'Relógios, cintas cardíacas e outras fontes de dados.',
         visible: true,
       },
       {
@@ -465,145 +460,142 @@ const defaultAppPageConfig: AppPageConfig = {
       {
         href: '/admin/page-builder',
         label: 'Construtor UI',
-        description: 'Gestão do design visual do app, da landing e do login.',
+        description: 'Textos, tamanhos e seções da landing, do login e do app.',
         visible: true,
       },
       {
         href: '/admin/puck',
         label: 'Editor Puck',
         description:
-          'Primeira base do editor visual drag-and-drop da Lyra com persistência real.',
+          'Blocos visuais das páginas, com rascunho, publicação e histórico.',
         visible: true,
       },
     ],
   },
   header: {
-    commandPlaceholder: 'Buscar páginas, fluxos e ações',
+    commandPlaceholder: 'Buscar páginas e ações',
     commandShortcutLabel: 'Ctrl K',
     assistantLabel: 'Chat IA',
     profileMenuLabel: 'Meu perfil',
   },
   dashboard: {
-    heroEyebrow: 'Santuário digital de bem-estar',
+    heroEyebrow: 'Seu bem-estar hoje',
     heroDescription:
-      'Sua leitura do dia reúne biometria, sono, energia, astrologia védica e protocolos orientados por IA em uma visão premium, clara e acionável.',
+      'Sono, energia, ritmo e o céu do seu mapa reunidos em uma leitura clara do seu dia.',
     harmonyEyebrow: 'Harmonia atual',
-    harmonyNote: 'Sinais do dia em relação ao ciclo do momento.',
+    harmonyNote: 'Seus sinais de hoje em relação ao céu do momento.',
     pulseBadge: 'Pulso do dia',
-    pulseTitle: 'Sua cadência corporal está em foco.',
+    pulseTitle: 'Como o seu corpo está hoje',
     pulseDescription:
-      'Uma leitura clara do que merece sua energia agora, unindo biometria, IA e atmosfera cósmica sem ruído visual.',
+      'O que merece a sua energia agora, a partir dos seus sinais e do céu do dia.',
     syncButtonLabel: 'Reavaliar agora',
-    syncStatusLoading: 'Sincronizando',
+    syncStatusLoading: 'Atualizando',
     syncStatusPartial: 'Parcial',
     syncStatusReady: 'Em sintonia',
     astroBadge: 'Céu do momento',
     astroCardFallbackTitle: 'Céu do momento',
     astroCardFallbackDescription:
-      'O contexto astrológico do momento será mostrado assim que a orquestração local terminar.',
-    astroInsightLabel: 'Leitura gentil',
+      'O céu de hoje aparece aqui assim que o cálculo terminar.',
+    astroInsightLabel: 'Para você hoje',
     astroInsightFallback:
-      'Assim que o cálculo astrológico terminar, esta área mostra um resumo prático do céu para seu corpo e sua rotina.',
+      'Assim que o cálculo terminar, aqui aparece um resumo prático do céu para o seu corpo e a sua rotina.',
     sleepBadge: 'Sono restaurador',
-    sleepDescription:
-      'Uma visão delicada do quanto seu descanso sustentou a energia de hoje.',
+    sleepDescription: 'O quanto o seu descanso sustentou a energia de hoje.',
     sleepEmptyDescription:
-      'Conecte uma fonte real de sono para destravar esta leitura.',
+      'Registre como dormiu ou conecte um dispositivo para ver esta leitura.',
     sleepGoalLabel: 'Meta sugerida',
     deepSleepLabel: 'Sono profundo',
     remSleepLabel: 'Sono REM',
     sleepInsightFallback:
-      'O painel de sono cruza duração, profundidade e o momento astrológico atual para sugerir um ritmo mais doce.',
+      'Aqui você vê a duração e a profundidade do seu sono, com uma sugestão de ritmo para hoje.',
     weeklyBadge: 'Trajetória semanal',
     weeklyTitle: 'Como sua prontidão desenhou a semana',
     weeklyDescription:
-      'Uma curva simples para enxergar ritmo, recuperação e constância sem poluição visual.',
+      'Uma curva simples para ver ritmo, recuperação e constância.',
     aiUnlockedLabel: 'IA liberada',
     aiUnlockedYes: 'sim',
     aiUnlockedNo: 'não',
     currentReadinessLabel: 'Prontidão atual',
     longevityLabel: 'Score de longevidade',
-    liveContextLabel: 'Contexto vivo',
+    liveContextLabel: 'Céu de agora',
     liveContextFallback:
-      'O céu do momento será sincronizado aqui assim que a orquestração local terminar.',
+      'O céu de agora aparece aqui assim que o cálculo terminar.',
     pillarsTitle: 'Pilares profundos da sua saúde',
     pillarsDescription:
-      'Esta camada organiza métricas mais técnicas em blocos legíveis, mantendo profundidade sem transformar a tela em ruído.',
+      'As métricas mais detalhadas do seu dia, organizadas em blocos fáceis de ler.',
     emptyMetricsTitle: 'As métricas do dia ainda não chegaram',
     emptyMetricsDescription:
-      'Assim que uma fonte real alimentar `daily_metrics`, este bloco passa a exibir leituras detalhadas sem nenhum preenchimento artificial.',
+      'Registre como foi o seu dia ou conecte um dispositivo para ver as leituras detalhadas aqui.',
   },
   appointments: {
-    heroBadge: 'agenda viva',
+    heroBadge: 'Agenda',
     heroTitle: 'Organize encontros, profissionais e próximos horários',
     heroDescription:
-      'Concentre consultas, pessoas de referência e calendário em um fluxo claro e fácil de ajustar.',
+      'Concentre consultas, pessoas de referência e calendário em um só lugar.',
     listTitle: 'Próximas consultas',
     listDescription:
-      'Acompanhe horários confirmados, contexto do encontro e observações registradas.',
+      'Acompanhe horários confirmados, o motivo do encontro e as suas observações.',
     professionalsTitle: 'Profissionais salvos',
     professionalsDescription:
       'Cadastre, edite e mantenha sua rede de acompanhamento organizada.',
     calendarTitle: 'Calendário da agenda',
     calendarDescription:
-      'Visualize seus compromissos por dia e distribua a rotina com mais leveza.',
+      'Veja seus compromissos por dia e distribua a rotina com mais leveza.',
     showUpcomingList: true,
     showProfessionalsList: true,
     showCalendar: true,
   },
   aiPlan: {
-    pageEyebrow: 'orquestração guiada',
+    pageEyebrow: 'Plano do dia',
     pageTitle: 'Seu plano de IA',
     pageDescription:
-      'Protocolos personalizados de foco, ritmo, nutrição e recuperação, com cruzamento real entre astrologia, biometria e persistência local.',
-    heroBadge: 'Orquestração local com astrologia + IA',
-    heroEmptyTitle:
-      'Vamos desenhar seu próximo passo com elegância e contexto real.',
+      'Ações de foco, ritmo, alimentação e recuperação ajustadas aos seus sinais e ao céu de hoje.',
+    heroBadge: 'Feito para o seu dia',
+    heroEmptyTitle: 'Vamos montar o seu próximo passo.',
     heroReadyTitle: 'Seu plano do dia está pronto.',
     heroEmptyDescription:
-      'Esta experiência cruza os sinais realmente disponíveis no dispositivo e no banco com o céu atual, gerando um protocolo utilizável e persistido na sua base principal.',
-    generateButtonLabel: 'Gerar plano real',
-    regenerateButtonLabel: 'Regenerar plano',
-    generatingButtonLabel: 'Orquestrando agora',
-    syncingButtonLabel: 'Sincronizando sinais',
+      'O plano usa os sinais que você registrou e o céu de hoje para sugerir ações práticas, e fica salvo na sua conta.',
+    generateButtonLabel: 'Gerar meu plano',
+    regenerateButtonLabel: 'Atualizar plano',
+    generatingButtonLabel: 'Montando o plano',
+    syncingButtonLabel: 'Lendo seus sinais',
     pillarsCountLabel: 'Pilares ativos',
-    recommendationsLabel: 'Recomendações reais',
+    recommendationsLabel: 'Recomendações',
     signalsLabel: 'Sinais disponíveis',
-    liveContextBadge: 'Contexto vivo',
+    liveContextBadge: 'Céu de hoje',
     liveContextTitleFallback: 'Céu do momento',
-    liveContextDescriptionFallback:
-      'O contexto astrológico será consolidado localmente ao sincronizar.',
-    persistenceTitle: 'Persistência',
+    liveContextDescriptionFallback: 'O céu de hoje aparece aqui ao atualizar.',
+    persistenceTitle: 'Salvo na sua conta',
     persistenceDescription:
-      'O plano é salvo de forma real em `ai_plans` no MySQL desta instância.',
-    emptyLocalAiTitle: 'IA local e determinística',
+      'O plano fica guardado e você pode voltar a ele quando quiser.',
+    emptyLocalAiTitle: 'Feito com os seus dados',
     emptyLocalAiDescription:
-      'A geração usa a função local `generate-ai-plan`, sem mock visual e sem plano fictício.',
-    emptyAstroTitle: 'Astrologia viva',
+      'A Lyra usa apenas o que você registrou, sem números inventados.',
+    emptyAstroTitle: 'O céu do seu mapa',
     emptyAstroDescription:
-      'O céu do momento vem do motor astrológico local e influencia a síntese do protocolo.',
-    emptyPersistenceTitle: 'Persistência real',
+      'O céu de hoje em relação ao seu mapa ajuda a escolher o melhor momento para cada ação.',
+    emptyPersistenceTitle: 'Sempre à mão',
     emptyPersistenceDescription:
-      'Assim que você gerar, o resultado fica salvo e pode ser lido novamente sem simulação.',
+      'Depois de gerado, o plano fica salvo e pode ser aberto de novo a qualquer momento.',
   },
   monitoring: {
-    pageEyebrow: 'telemetria contínua',
-    pageTitle: 'Painel vivo com presença, ritmo e leitura local',
+    pageEyebrow: 'Tempo real',
+    pageTitle: 'Seus sinais agora',
     pageDescription:
-      'Acompanhe sinais em tempo real com alertas, voz e histórico recente em uma superfície mais clara e útil.',
-    heroBadge: 'fluxo biométrico',
-    heroTitle: 'Seus sinais chegam ao painel com contexto imediato',
+      'Acompanhe batimentos e variações em tempo real, com alertas e leitura por voz.',
+    heroBadge: 'Sinais ao vivo',
+    heroTitle: 'Seus sinais estão chegando agora.',
     heroDescription:
-      'A cada pacote recebido, a interface reage, atualiza gráficos e mantém o momento sob leitura local.',
-    infoTitle: 'Leitura operacional da Lyra',
+      'Conecte um dispositivo para ver os seus sinais em tempo real.',
+    infoTitle: 'Como funciona',
     infoDescription:
-      'O módulo acompanha o canal local de wearable e organiza alertas e síntese de voz em tempo real.',
+      'A Lyra lê o dispositivo conectado e avisa quando algum sinal sai da faixa definida.',
     controlsTitle: 'Controles em tempo real',
     controlsDescription:
-      'Acione leitura por voz, acompanhe alertas locais e ajuste o comportamento da sessão.',
-    alertsTitle: 'Alertas locais',
+      'Ligue a leitura por voz e os alertas durante esta sessão.',
+    alertsTitle: 'Alertas',
     alertsDescription:
-      'Notificações e sinais de atenção disparam apenas quando os biomarcadores cruzam os limites definidos.',
+      'Os avisos só aparecem quando um sinal passa dos limites definidos.',
     showEventFeed: true,
     showVoiceButton: true,
     showAlertsButton: true,
@@ -637,30 +629,28 @@ const defaultAppPageConfig: AppPageConfig = {
     showQuickReplies: true,
   },
   connect: {
-    pageEyebrow: 'conexão de sinais reais',
-    pageTitle:
-      'Conecte wearables e leituras locais com uma experiência mais clara',
+    pageEyebrow: 'Dispositivos',
+    pageTitle: 'Conecte o seu relógio ou a sua cinta',
     pageDescription:
-      'Este módulo organiza a entrada de sinais bluetooth de forma elegante, explicando estado, compatibilidade e próximos passos sem ruído visual.',
-    cardTitle: 'Conexão real por Bluetooth',
+      'Conecte um dispositivo por Bluetooth para acompanhar batimentos e variabilidade em tempo real.',
+    cardTitle: 'Conexão por Bluetooth',
     cardDescription:
-      'Integre sua cinta cardíaca BLE, relógio compatível ou outro wearable apoiado pelo navegador atual.',
-    idleTitle: 'Pronto para conectar seu dispositivo',
+      'Funciona com cintas cardíacas e relógios compatíveis com o navegador.',
+    idleTitle: 'Pronto para conectar o seu dispositivo',
     idleDescription:
-      'Conecte sua cinta cardíaca ou relógio via Bluetooth para destravar métricas reais no monitoramento.',
+      'Conecte sua cinta cardíaca ou relógio por Bluetooth para ver os seus sinais em tempo real.',
     unsupportedTitle: 'Bluetooth indisponível neste navegador',
     unsupportedDescription:
-      'Use um navegador compatível baseado em Chromium em localhost ou HTTPS para liberar a conexão Web Bluetooth.',
+      'Abra a Lyra no Chrome ou no Edge, em uma conexão segura (HTTPS), para usar o Bluetooth.',
     connectButtonLabel: 'Conectar dispositivo Bluetooth',
     connectingTitle: 'Aguardando a escolha do dispositivo',
-    connectingDescription:
-      'Selecione seu wearable no prompt do navegador para iniciar a leitura local.',
+    connectingDescription: 'Escolha o seu dispositivo na janela do navegador.',
     connectingButtonLabel: 'Conectando...',
     connectedTitle: 'Conexão estabelecida com sucesso',
     connectedDescription: 'Dispositivo conectado',
     connectedAlertTitle: 'Recebendo dados em tempo real',
     connectedAlertDescription:
-      'Assim que os eventos chegarem, o painel de monitoramento passa a refletir as leituras disponíveis.',
+      'Assim que os dados chegarem, a página de monitoramento mostra as leituras.',
     disconnectButtonLabel: 'Desconectar dispositivo',
     errorTitle: 'Erro ao conectar o dispositivo',
     errorDescription:
@@ -668,10 +658,10 @@ const defaultAppPageConfig: AppPageConfig = {
     retryButtonLabel: 'Tentar novamente',
   },
   profile: {
-    pageEyebrow: 'identidade pessoal',
+    pageEyebrow: 'Perfil',
     pageTitle: 'Seu perfil, hábitos e contexto em um só lugar',
     pageDescription:
-      'Atualize dados pessoais, nascimento, hábitos e histórico com uma experiência mais organizada e acolhedora.',
+      'Atualize dados pessoais, nascimento, hábitos e histórico.',
   },
 };
 

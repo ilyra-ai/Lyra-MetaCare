@@ -31,7 +31,7 @@ export default function ChatPage() {
         <PlanUpgradeNotice
           currentPlanKey={subscription?.plan.key ?? 'free'}
           title="Assistente IA indisponível"
-          description="Seu plano atual não possui mensagens com o assistente de IA liberadas. O consumo e o bloqueio são controlados pela matriz de entitlements."
+          description="As conversas com a Lyra não fazem parte do seu plano atual. Conheça os planos que incluem este recurso."
         />
       )}
     </AppShell>

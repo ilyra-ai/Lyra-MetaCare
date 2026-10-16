@@ -9,6 +9,7 @@ import { useIsAdmin } from '@/hooks/use-is-admin';
 import { useAccountSubscription } from '@/hooks/use-account-subscription';
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { scalePx, scaleRem } from '@/lib/site-page-config/runtime';
+import type { AppPageConfig } from '@/lib/site-page-config/schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
 import { SidebarLink } from './SidebarLink';
@@ -23,12 +24,23 @@ type ProfileState = {
   Sidebar "Lyra Clean": branca, borda direita de 1px, marca compacta,
   seções com rótulo discreto e o usuário com o plano no rodapé. A largura
   continua configurável pelo construtor de UI (`sizing.sidebarWidth`).
+
+  `configuracaoPrevia`: usada pela pré-visualização do construtor de UI, que
+  mostra esta mesma sidebar com o rascunho (em vez de uma cópia simulada),
+  sempre visível e vista como administrador.
 */
-export function Sidebar() {
+export function Sidebar({
+  configuracaoPrevia,
+}: {
+  configuracaoPrevia?: AppPageConfig;
+} = {}) {
   const { session, db } = useAuth();
-  const isAdmin = useIsAdmin();
+  const isAdminReal = useIsAdmin();
   const { data: subscription } = useAccountSubscription();
-  const { config: appConfig } = usePublicSitePageConfig('app');
+  const { config: configPublicada } = usePublicSitePageConfig('app');
+  const previa = configuracaoPrevia !== undefined;
+  const appConfig = configuracaoPrevia ?? configPublicada;
+  const isAdmin = previa || isAdminReal;
   const [profile, setProfile] = React.useState<ProfileState | null>(null);
 
   React.useEffect(() => {
@@ -68,10 +80,14 @@ export function Sidebar() {
 
   return (
     <aside
-      className="sticky top-0 hidden h-screen shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex"
+      className={
+        previa
+          ? 'flex h-[640px] shrink-0 flex-col overflow-hidden rounded-xl border border-sidebar-border bg-sidebar'
+          : 'sticky top-0 hidden h-screen shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex'
+      }
       style={{
         width: `${appConfig.sizing.sidebarWidth}px`,
-        maxWidth: '34vw',
+        maxWidth: previa ? '100%' : '34vw',
       }}
     >
       <div className="flex h-full flex-col gap-5 px-3.5 py-5">

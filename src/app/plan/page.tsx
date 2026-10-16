@@ -30,7 +30,7 @@ export default function AIPlanPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell puckDocumentKey="app-shell">
       <PageIntro
         eyebrow={appConfig.aiPlan.pageEyebrow}
         title={appConfig.aiPlan.pageTitle}
@@ -44,7 +44,7 @@ export default function AIPlanPage() {
         <PlanUpgradeNotice
           currentPlanKey={subscription?.plan.key ?? 'free'}
           title="Plano de IA indisponível"
-          description="A geração e a reorquestração do plano de IA não estão liberadas para a sua assinatura atual. Essa restrição é aplicada no backend e refletida nesta tela."
+          description="O plano de IA não faz parte do seu plano atual. Conheça os planos que incluem este recurso."
         />
       )}
     </AppShell>
