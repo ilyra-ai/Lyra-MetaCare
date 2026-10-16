@@ -10,6 +10,7 @@ import { listaDeTextos } from '@/lib/json-values';
 import { diasAntes } from '@/lib/metas/catalogo';
 import { hojeDaPessoa } from '@/lib/metas/servico';
 import { executeStatement, queryRows } from '@/lib/mysql/pool';
+import { recursoHabilitado } from '@/lib/plans/service';
 
 import { generateLocalWellnessPlan } from './plan-engine';
 
@@ -176,28 +177,60 @@ function planoValido(valor: unknown): valor is PlanoGerado {
   );
 }
 
+export interface PlanoAtualizado {
+  plano: PlanoGerado;
+  /** O plano foi gerado ou refeito nesta leitura. */
+  atualizado: boolean;
+  /** Primeiro plano da pessoa, preparado sozinho (tarefa 51). */
+  primeiro: boolean;
+}
+
 /**
- * Plano salvo da pessoa, refeito sozinho (sem consumir a cota de gerações
- * manuais) quando é de outro dia ou quando as entradas mudaram. Sem plano
- * salvo, devolve null: o primeiro plano é sempre um pedido da pessoa.
+ * Plano da pessoa, sempre pronto: gerado sozinho na primeira leitura (desde a
+ * tarefa 51; antes, o primeiro plano dependia de a pessoa clicar em "Gerar")
+ * e refeito quando é de outro dia ou quando as entradas mudaram. As gerações
+ * automáticas não consomem a cota das gerações manuais.
  */
-export async function obterPlanoAtualizado(userId: string, agora = new Date()) {
+export async function obterPlanoAtualizado(
+  userId: string,
+  agora = new Date()
+): Promise<PlanoAtualizado> {
   const [linha] = await queryRows<{ plan_data: unknown }>(
     'SELECT plan_data FROM ai_plans WHERE user_id = ? LIMIT 1',
     [userId]
   );
-  if (!linha) return { plano: null, atualizado: false };
-  const salvo =
-    typeof linha.plan_data === 'string'
-      ? (JSON.parse(linha.plan_data) as unknown)
-      : linha.plan_data;
+  if (linha) {
+    const salvo =
+      typeof linha.plan_data === 'string'
+        ? (JSON.parse(linha.plan_data) as unknown)
+        : linha.plan_data;
 
-  const hoje = await hojeDaPessoa(userId, agora);
-  if (planoValido(salvo) && salvo.meta?.data === hoje) {
-    const { hash } = await entradas(userId, hoje);
-    if (salvo.meta.hash === hash) return { plano: salvo, atualizado: false };
+    const hoje = await hojeDaPessoa(userId, agora);
+    if (planoValido(salvo) && salvo.meta?.data === hoje) {
+      const { hash } = await entradas(userId, hoje);
+      if (salvo.meta.hash === hash) {
+        return { plano: salvo, atualizado: false, primeiro: false };
+      }
+    }
   }
   const novo = await gerarPlanoDaPessoa(userId, 'automatico', agora);
   await gravarPlano(userId, novo);
-  return { plano: novo, atualizado: true };
+  return { plano: novo, atualizado: true, primeiro: !linha };
+}
+
+/**
+ * Prepara o plano do dia quando a pessoa entra no app (tarefa 51), se o
+ * plano dela inclui o Plano de IA. Roda depois da resposta do login, sem
+ * atrasar a entrada.
+ */
+export async function prepararPlanoAoEntrar(
+  userId: string,
+  role: string,
+  agora = new Date()
+): Promise<'pronto' | 'sem_recurso'> {
+  if (!(await recursoHabilitado(userId, role, 'ai_plan_generations'))) {
+    return 'sem_recurso';
+  }
+  await obterPlanoAtualizado(userId, agora);
+  return 'pronto';
 }

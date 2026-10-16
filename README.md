@@ -11,7 +11,7 @@
 [![MySQL](https://img.shields.io/badge/MySQL-9.7_LTS-4479A1?style=flat-square&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-24_LTS-5FA04E?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Stripe](https://img.shields.io/badge/Stripe-Billing-635BFF?style=flat-square&logo=stripe&logoColor=white)](https://stripe.com/)
-[![Vitest](https://img.shields.io/badge/Vitest-567_testes-6E9F18?style=flat-square&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-568_testes-6E9F18?style=flat-square&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![IA local](https://img.shields.io/badge/IA-local_ou_nuvem-7C3AED?style=flat-square)](./docs/ia-automatica.md)
 [![pnpm](https://img.shields.io/badge/pnpm-workspace-F69220?style=flat-square&logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![Licença](https://img.shields.io/badge/Licença-MIT-22C55E?style=flat-square)](#-licença)
@@ -303,7 +303,7 @@ run_windows.py         # Atalho para PowerShell/CMD que executa o run.sh
 
 ## 🧪 Testes & Qualidade
 
-- **412 testes unitários** (motores de domínio, mapa védico, coach e leitura, linguagem simples das leituras, leitura da semana, cliente de IA, cifra, autenticação, segurança, sanitização, Puck, configuração, contraste WCAG dos temas, iCalendar, respiração guiada, reflexão, retrospectiva da semana e detecção da saída da página) e **155 testes de integração** contra um MySQL real isolado (API de dados, rotas administrativas, coach, modelos de IA, metas, métricas, reflexão, respiração, agenda no calendário, semana, LGPD, planos, billing e webhook da Stripe), além de **17 testes dos launchers** (`pnpm test:launchers`). As integrações de IA usam um servidor HTTP real compatível com a OpenAI (`tests/support`), não respostas simuladas.
+- **412 testes unitários** (motores de domínio, mapa védico, coach e leitura, linguagem simples das leituras, leitura da semana, cliente de IA, cifra, autenticação, segurança, sanitização, Puck, configuração, contraste WCAG dos temas, iCalendar, respiração guiada, reflexão, retrospectiva da semana e detecção da saída da página) e **156 testes de integração** contra um MySQL real isolado (API de dados, rotas administrativas, coach, modelos de IA, metas, métricas, reflexão, respiração, agenda no calendário, semana, LGPD, planos, billing e webhook da Stripe), além de **17 testes dos launchers** (`pnpm test:launchers`). As integrações de IA usam um servidor HTTP real compatível com a OpenAI (`tests/support`), não respostas simuladas.
 - Portões de qualidade obrigatórios antes de cada entrega:
 
 ```bash

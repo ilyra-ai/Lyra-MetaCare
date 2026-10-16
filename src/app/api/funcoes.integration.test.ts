@@ -9,6 +9,8 @@ import { criarUsuario } from '../../../tests/integration/fixtures';
 import { chamar } from '../../../tests/integration/http';
 
 import * as efemerides from './astrology/ephemeris/route';
+import * as login from './auth/login/route';
+import * as registro from './auth/register/route';
 import * as streaks from './data/streaks/route';
 import * as avaliacoes from './data/user-assessments/route';
 import * as assistente from './functions/ask-ai-assistant/route';
@@ -123,23 +125,29 @@ describe('plano e score', () => {
     expect(salvo).toHaveLength(1);
   });
 
-  it('o plano salvo se refaz sozinho quando o registro do dia muda, sem cota', async () => {
+  it('o primeiro plano é preparado sozinho, sem cota, e se refaz quando o registro muda', async () => {
     const pessoa = await comObjetivosEMetricas('PlanoAuto');
-    expect((await chamar(planoSalvo.GET, { usuario: pessoa })).json).toEqual({
-      plano: null,
-      atualizado: false,
-    });
-    await chamar(plano.POST, { method: 'POST', usuario: pessoa });
     const usosAntes = await queryRows<{ used_value: number }>(
       `SELECT used_value FROM feature_usage_counters
         WHERE user_id = ? AND feature_key = 'ai_plan_generations'`,
       [pessoa.id]
     );
+    // Tarefa 51: sem plano salvo, a primeira leitura já o prepara.
+    const primeiro = (await chamar(planoSalvo.GET, { usuario: pessoa }))
+      .json as {
+      atualizado: boolean;
+      primeiro: boolean;
+      plano: { meta: { origem: string; base: string[] } };
+    };
+    expect(primeiro).toMatchObject({ atualizado: true, primeiro: true });
+    expect(primeiro.plano.meta.origem).toBe('automatico');
+    expect(primeiro.plano.meta.base).toContain('Sono médio 6h20 (1 dia)');
 
     const mesmo = (await chamar(planoSalvo.GET, { usuario: pessoa })).json as {
       atualizado: boolean;
+      primeiro: boolean;
     };
-    expect(mesmo.atualizado).toBe(false);
+    expect(mesmo).toMatchObject({ atualizado: false, primeiro: false });
 
     await gravarRegistroDoDia(pessoa.id, {
       data: new Date().toISOString().slice(0, 10),
@@ -159,6 +167,61 @@ describe('plano e score', () => {
       [pessoa.id]
     );
     expect(usosDepois).toEqual(usosAntes);
+  });
+
+  it('ao entrar no app, o plano do dia já fica pronto (só depois do onboarding)', async () => {
+    const ip = `10.51.${Math.floor(Math.random() * 250) + 1}.7`;
+    const cadastrar = async (email: string) =>
+      chamar(registro.POST, {
+        method: 'POST',
+        body: { email, password: 'Senha-Plano-2026', acceptTerms: true },
+        headers: { 'x-forwarded-for': ip },
+        usuario: null,
+      });
+    const entrar = async (email: string) =>
+      chamar(login.POST, {
+        method: 'POST',
+        body: { email, password: 'Senha-Plano-2026' },
+        headers: { 'x-forwarded-for': ip },
+        usuario: null,
+      });
+    const planoDe = async (email: string) =>
+      queryRows<{ plan_data: unknown }>(
+        `SELECT a.plan_data FROM ai_plans a JOIN users u ON u.id = a.user_id
+          WHERE u.email = ?`,
+        [email]
+      );
+
+    // Antes do onboarding não há perfil para o plano: o login não o prepara.
+    const novo = `plano-novo-${Date.now()}@teste.lyra.local`;
+    expect((await cadastrar(novo)).status).toBe(200);
+    expect((await entrar(novo)).status).toBe(200);
+    expect(await planoDe(novo)).toHaveLength(0);
+
+    // Com o onboarding concluído, o login deixa o plano do dia pronto, sem
+    // consumir a cota das gerações manuais.
+    await executeStatement(
+      `UPDATE profiles p JOIN users u ON u.id = p.id
+          SET p.onboarding_completed = TRUE WHERE u.email = ?`,
+      [novo]
+    );
+    const resposta = await entrar(novo);
+    expect(resposta.status).toBe(200);
+    const [linha] = await planoDe(novo);
+    expect(linha).toBeDefined();
+    const salvo = (
+      typeof linha.plan_data === 'string'
+        ? JSON.parse(linha.plan_data)
+        : linha.plan_data
+    ) as { meta: { origem: string; data: string } };
+    expect(salvo.meta.origem).toBe('automatico');
+    const usos = await queryRows<{ used_value: number }>(
+      `SELECT c.used_value FROM feature_usage_counters c
+         JOIN users u ON u.id = c.user_id
+        WHERE u.email = ? AND c.feature_key = 'ai_plan_generations'`,
+      [novo]
+    );
+    expect(usos.every((u) => Number(u.used_value) === 0)).toBe(true);
   });
 
   it('calcula os escores do dia pedido, sem inventar valores', async () => {

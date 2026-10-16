@@ -8,9 +8,9 @@ import { requireFeatureEnabled } from '@/lib/plans/service';
 export const runtime = 'nodejs';
 
 /**
- * Plano de IA salvo, refeito sozinho quando é de outro dia ou quando o
- * registro do dia mudou (sem consumir a cota de gerações manuais). Sem plano
- * salvo, `plano` é null.
+ * Plano de IA do dia, sempre pronto: criado sozinho na primeira leitura
+ * (`primeiro: true`) e refeito quando é de outro dia ou quando o registro do
+ * dia mudou, sem consumir a cota de gerações manuais.
  */
 export async function GET() {
   try {

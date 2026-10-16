@@ -324,7 +324,8 @@ export async function executarRotinaDoCoach(
       // Virada do dia: prazos de metas vencidos e sequências que não
       // continuaram ontem são atualizados mesmo sem novo check-in.
       await atualizarMetasESequencias(pessoa.id, agora);
-      // Plano de IA de quem já tem um: refeito para o novo dia.
+      // Plano de IA preparado para o novo dia (criado na primeira vez desde a
+      // tarefa 51).
       if (
         await recursoHabilitado(
           pessoa.id,

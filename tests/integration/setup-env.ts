@@ -7,7 +7,7 @@ import { afterAll, inject, vi } from 'vitest';
 
 import { closeMysqlPool } from '@/lib/mysql/pool';
 
-import { cookieJar } from './http';
+import { cookieJar, tarefasDepoisDaResposta } from './http';
 import './provided-context';
 
 // Aponta o pool da aplicação para o banco de teste criado no setup global,
@@ -48,6 +48,20 @@ vi.mock('next/headers', () => ({
       }
     },
   }),
+}));
+
+// `after()` exige o contexto de requisição do servidor do Next.js; aqui a
+// tarefa entra na fila que `chamar` espera logo depois da resposta. O resto
+// do `next/server` (NextRequest, NextResponse) é o original.
+vi.mock('next/server', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('next/server')>()),
+  after: (tarefa: Promise<unknown> | (() => unknown)) => {
+    tarefasDepoisDaResposta.push(
+      Promise.resolve().then(() =>
+        typeof tarefa === 'function' ? tarefa() : tarefa
+      )
+    );
+  },
 }));
 
 afterAll(async () => {

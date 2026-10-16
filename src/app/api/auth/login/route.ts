@@ -1,8 +1,9 @@
 import { randomBytes } from 'node:crypto';
 
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
 import { z } from 'zod';
 
+import { prepararPlanoAoEntrar } from '@/lib/ai/plano-do-dia';
 import { hashPassword, verifyPassword } from '@/lib/auth/password';
 import {
   buildAppSession,
@@ -11,6 +12,7 @@ import {
 } from '@/lib/auth/session';
 import { lerJson, respostaDeErro } from '@/lib/http/api';
 import { queryRows } from '@/lib/mysql/pool';
+import { registrarErroInterno } from '@/lib/observability/log-seguro';
 import {
   LIMITE_LOGIN_POR_CONTA,
   LIMITE_LOGIN_POR_IP,
@@ -113,6 +115,18 @@ export async function POST(request: Request) {
       sessionOptions
     );
     await setSessionCookie(token, sessionOptions);
+
+    // Plano do dia pronto ao entrar (tarefa 51), sem atrasar o login: roda
+    // depois da resposta. Antes do onboarding ainda não há perfil para ele.
+    if (user.onboarding_completed) {
+      after(async () => {
+        try {
+          await prepararPlanoAoEntrar(user.id, user.role);
+        } catch (error) {
+          registrarErroInterno('plano:ao-entrar', error);
+        }
+      });
+    }
 
     return NextResponse.json({
       session: buildAppSession(

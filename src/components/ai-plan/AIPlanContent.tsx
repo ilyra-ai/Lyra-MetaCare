@@ -413,17 +413,23 @@ export function AIPlanContent() {
         const corpo = (await resposta.json().catch(() => null)) as {
           plano?: unknown;
           atualizado?: boolean;
+          primeiro?: boolean;
           error?: string;
         } | null;
         if (!active) return;
         if (!resposta.ok) {
-          toast.error('Erro ao carregar o plano salvo.', {
+          toast.error('Erro ao carregar o plano.', {
             description: corpo?.error,
           });
           setPlan(null);
         } else if (corpo?.plano && isPlanData(corpo.plano)) {
           setPlan(corpo.plano);
-          if (corpo.atualizado) {
+          if (corpo.primeiro) {
+            toast.success('Seu plano de hoje foi preparado automaticamente.', {
+              description:
+                'Ele se atualiza sozinho a cada dia e quando você registra o seu dia.',
+            });
+          } else if (corpo.atualizado) {
             toast.success('Plano atualizado para hoje com o seu registro.');
           }
         } else {

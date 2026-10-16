@@ -11,6 +11,19 @@ import type { UsuarioDeTeste } from './fixtures';
  */
 export const cookieJar = new Map<string, string>();
 
+/**
+ * Tarefas agendadas com `after()` do `next/server` (ver setup-env.ts): no
+ * servidor rodam depois que a resposta sai; aqui, `chamar` as espera logo
+ * depois da resposta, com a mesma ordem.
+ */
+export const tarefasDepoisDaResposta: Array<Promise<unknown>> = [];
+
+export async function esperarTarefasDepoisDaResposta() {
+  while (tarefasDepoisDaResposta.length > 0) {
+    await tarefasDepoisDaResposta.shift();
+  }
+}
+
 type Handler<P> = (
   request: NextRequest,
   context: { params: Promise<P> }
@@ -62,6 +75,8 @@ export async function chamar<P = Record<string, never>>(
     params: Promise.resolve((chamada.params ?? {}) as P),
   });
   const texto = await resposta.text();
+  // A resposta saiu: roda o que a rota agendou com `after()`.
+  await esperarTarefasDepoisDaResposta();
   let json: unknown = null;
   try {
     json = texto ? JSON.parse(texto) : null;
