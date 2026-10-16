@@ -23,6 +23,18 @@ export interface ServidorOpenAiCompativel {
   responder(conteudo: string | ((corpo: unknown) => string)): void;
   /** Próximas respostas do chat com este status HTTP e corpo de erro. */
   falharCom(status: number | null): void;
+  /**
+   * Comportamento de um modelo específico (tarefa 54): falha com o status
+   * HTTP (ex.: 429, cota esgotada) ou responde o texto cortado no limite de
+   * tokens (`finish_reason: length`). `null` volta ao normal.
+   */
+  modelo(
+    nome: string,
+    comportamento:
+      | { falha: number }
+      | { cortado: string | ((corpo: unknown) => string) }
+      | null
+  ): void;
   modelos: string[];
   fechar(): Promise<void>;
 }
@@ -42,6 +54,10 @@ export async function iniciarServidorOpenAiCompativel(
   let conteudo: string | ((corpo: unknown) => string) = 'OK';
   let statusDeFalha: number | null = null;
   const estado = { modelos: ['qwen2.5:7b-instruct', 'llama3.2:3b'] };
+  const porModelo = new Map<
+    string,
+    { falha: number } | { cortado: string | ((corpo: unknown) => string) }
+  >();
 
   const servidor = createServer((req, res) => {
     const partes: Buffer[] = [];
@@ -81,6 +97,35 @@ export async function iniciarServidorOpenAiCompativel(
       if (req.method === 'POST' && req.url === '/v1/chat/completions') {
         if (statusDeFalha !== null) {
           json(statusDeFalha, { error: { message: 'modelo indisponível' } });
+          return;
+        }
+        const doModelo = porModelo.get(
+          String((corpo as { model?: unknown })?.model)
+        );
+        if (doModelo && 'falha' in doModelo) {
+          json(doModelo.falha, {
+            error: { message: 'cota de tokens esgotada para este modelo' },
+          });
+          return;
+        }
+        if (doModelo && 'cortado' in doModelo) {
+          json(200, {
+            id: 'chatcmpl-teste',
+            object: 'chat.completion',
+            choices: [
+              {
+                index: 0,
+                message: {
+                  role: 'assistant',
+                  content:
+                    typeof doModelo.cortado === 'function'
+                      ? doModelo.cortado(corpo)
+                      : doModelo.cortado,
+                },
+                finish_reason: 'length',
+              },
+            ],
+          });
           return;
         }
         const formato = (corpo as { response_format?: { type?: string } })
@@ -125,6 +170,10 @@ export async function iniciarServidorOpenAiCompativel(
     },
     falharCom(status) {
       statusDeFalha = status;
+    },
+    modelo(nome, comportamento) {
+      if (comportamento) porModelo.set(nome, comportamento);
+      else porModelo.delete(nome);
     },
     get modelos() {
       return estado.modelos;

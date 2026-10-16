@@ -57,13 +57,12 @@ afterEach(() => {
   delete process.env.COACH_ROTINA_SEGREDO;
 });
 
-/** Volta o provedor da plataforma ao padrão (só o motor da Lyra). */
+/** Volta a IA da plataforma ao padrão (só o motor da Lyra). */
 async function voltarAoMotorDaLyra() {
+  await executeStatement('DELETE FROM ai_model_chain');
+  await executeStatement('DELETE FROM ai_provider_connections');
   await executeStatement(
-    `UPDATE ai_provider_settings
-        SET provider_type = 'lyra_local', preset = 'lyra', base_url = NULL,
-            model = NULL, api_key_ciphertext = NULL, api_key_last4 = NULL
-      WHERE id = 1`
+    'INSERT INTO ai_model_chain (position, connection_id, model) VALUES (1, NULL, NULL)'
   );
 }
 
@@ -355,8 +354,8 @@ describe('provedor de IA da plataforma (rotas administrativas)', () => {
     await voltarAoMotorDaLyra();
   });
 
+  // Um provedor no formato das rotas de listar modelos e testar.
   const ollama = () => ({
-    tipo: 'openai_compativel',
     preset: 'ollama',
     baseUrl: servidor.baseUrl,
     modelo: 'qwen2.5:7b-instruct',
@@ -364,16 +363,31 @@ describe('provedor de IA da plataforma (rotas administrativas)', () => {
     temperatura: 0.7,
   });
 
+  // Um provedor no formato do PUT /api/admin/ia (vários modelos).
+  const provedor = (
+    preset: string,
+    modelos: string[],
+    extra: Record<string, unknown> = {}
+  ) => ({
+    preset,
+    baseUrl: servidor.baseUrl,
+    modelos,
+    tempoMaximoSegundos: 10,
+    temperatura: 0.7,
+    ...extra,
+  });
+
   it('só administradores leem e alteram; a chave nunca volta e fica cifrada no banco', async () => {
     const admin = await criarUsuario('admin', 'AdminIa');
     const pessoa = await criarUsuario('patient', 'PacienteIa');
+    const soLyra = { provedores: [], ordem: [{ tipo: 'lyra' }] };
     expect((await chamar(adminIa.GET, { usuario: null })).status).toBe(401);
     expect((await chamar(adminIa.GET, { usuario: pessoa })).status).toBe(403);
     expect(
       (
         await chamar(adminIa.PUT, {
           method: 'PUT',
-          body: ollama(),
+          body: soLyra,
           usuario: pessoa,
         })
       ).status
@@ -382,7 +396,9 @@ describe('provedor de IA da plataforma (rotas administrativas)', () => {
     const leitura = await chamar(adminIa.GET, { usuario: admin });
     expect(leitura.status).toBe(200);
     expect(leitura.json).toMatchObject({
-      provedor: { tipo: 'lyra_local', temChave: false, local: true },
+      provedores: [],
+      ordem: [{ tipo: 'lyra' }],
+      posicoes: 5,
     });
     const presets = (leitura.json as { presets: Array<{ id: string }> })
       .presets;
@@ -390,31 +406,40 @@ describe('provedor de IA da plataforma (rotas administrativas)', () => {
       expect.arrayContaining(['ollama', 'lm_studio', 'jan', 'llama_cpp'])
     );
 
-    const openai = {
-      ...ollama(),
-      preset: 'openai',
-      baseUrl: servidor.baseUrl,
-      modelo: 'gpt-modelo',
-    };
+    const comOpenAi = (extra: Record<string, unknown> = {}) => ({
+      provedores: [provedor('openai', ['gpt-modelo'], extra)],
+      ordem: [
+        { tipo: 'modelo', preset: 'openai', modelo: 'gpt-modelo' },
+        { tipo: 'lyra' },
+      ],
+    });
     const semChave = await chamar(adminIa.PUT, {
       method: 'PUT',
-      body: openai,
+      body: comOpenAi(),
       usuario: admin,
     });
     expect(semChave.status).toBe(400);
 
     const comChave = await chamar(adminIa.PUT, {
       method: 'PUT',
-      body: { ...openai, chave: 'sk-teste-segredo-123456' },
+      body: comOpenAi({ chave: 'sk-teste-segredo-123456' }),
       usuario: admin,
     });
     expect(comChave.status).toBe(200);
     expect(comChave.json).toMatchObject({
-      provedor: { temChave: true, finalDaChave: '3456', local: true },
+      provedores: [
+        {
+          preset: 'openai',
+          temChave: true,
+          finalDaChave: '3456',
+          local: true,
+          modelos: ['gpt-modelo'],
+        },
+      ],
     });
     expect(JSON.stringify(comChave.json)).not.toContain('sk-teste-segredo');
     const [linha] = await queryRows<{ api_key_ciphertext: string }>(
-      'SELECT api_key_ciphertext FROM ai_provider_settings WHERE id = 1'
+      "SELECT api_key_ciphertext FROM ai_provider_connections WHERE preset = 'openai'"
     );
     expect(linha.api_key_ciphertext).toMatch(/^v1\./);
     expect(linha.api_key_ciphertext).not.toContain('sk-teste-segredo');
@@ -423,24 +448,97 @@ describe('provedor de IA da plataforma (rotas administrativas)', () => {
     // a OpenAI exige chave).
     const mantida = await chamar(adminIa.PUT, {
       method: 'PUT',
-      body: { ...openai, modelo: 'gpt-outro' },
+      body: comOpenAi(),
       usuario: admin,
     });
-    expect(mantida.json).toMatchObject({ provedor: { temChave: true } });
+    expect(mantida.json).toMatchObject({ provedores: [{ temChave: true }] });
     const apagada = await chamar(adminIa.PUT, {
       method: 'PUT',
-      body: { ...openai, chave: null },
+      body: comOpenAi({ chave: null }),
       usuario: admin,
     });
     expect(apagada.status).toBe(400);
 
-    // A tabela não existe para a API genérica de dados.
-    const generica = await chamar(dados.GET, {
-      path: '/api/data/ai_provider_settings',
-      params: { table: 'ai_provider_settings' },
-      usuario: admin,
+    // As tabelas não existem para a API genérica de dados.
+    for (const tabela of ['ai_provider_connections', 'ai_model_chain']) {
+      const generica = await chamar(dados.GET, {
+        path: `/api/data/${tabela}`,
+        params: { table: tabela },
+        usuario: admin,
+      });
+      expect(generica.status).not.toBe(200);
+    }
+  });
+
+  it('vários provedores e modelos ao mesmo tempo, com a ordem de uso validada', async () => {
+    const admin = await criarUsuario('admin', 'AdminCadeia');
+    const salvar = (body: unknown) =>
+      chamar(adminIa.PUT, { method: 'PUT', body, usuario: admin });
+    const provedores = [
+      provedor('ollama', ['qwen2.5:7b-instruct', 'llama3.2:3b']),
+      provedor('lm_studio', ['gemma-3']),
+      provedor('openai', ['gpt-modelo'], { chave: 'sk-cadeia-000001' }),
+    ];
+    const ordem = [
+      { tipo: 'modelo', preset: 'ollama', modelo: 'llama3.2:3b' },
+      { tipo: 'modelo', preset: 'openai', modelo: 'gpt-modelo' },
+      { tipo: 'modelo', preset: 'lm_studio', modelo: 'gemma-3' },
+      { tipo: 'lyra' },
+      { tipo: 'modelo', preset: 'ollama', modelo: 'qwen2.5:7b-instruct' },
+    ];
+    const salvo = await salvar({ provedores, ordem });
+    expect(salvo.status).toBe(200);
+    expect(salvo.json).toMatchObject({ ordem });
+    expect(
+      (salvo.json as { provedores: Array<{ preset: string }> }).provedores.map(
+        (p) => p.preset
+      )
+    ).toEqual(['lm_studio', 'ollama', 'openai']);
+    const linhas = await queryRows<{ position: number; model: string | null }>(
+      'SELECT position, model FROM ai_model_chain ORDER BY position'
+    );
+    expect(linhas.map((l) => l.model)).toEqual([
+      'llama3.2:3b',
+      'gpt-modelo',
+      'gemma-3',
+      null,
+      'qwen2.5:7b-instruct',
+    ]);
+
+    // Modelo fora dos escolhidos, repetido, mais de 5 posições ou ordem
+    // vazia: recusados, sem alterar o que estava salvo.
+    for (const invalida of [
+      [{ tipo: 'modelo', preset: 'ollama', modelo: 'nao-escolhido' }],
+      [{ tipo: 'lyra' }, { tipo: 'lyra' }],
+      [...ordem, { tipo: 'lyra' }],
+      [],
+    ]) {
+      expect((await salvar({ provedores, ordem: invalida })).status).toBe(400);
+    }
+    expect(
+      (
+        await salvar({
+          provedores: [...provedores, provedor('ollama', ['x'])],
+          ordem: [{ tipo: 'lyra' }],
+        })
+      ).status
+    ).toBe(400);
+    expect(await contar('SELECT COUNT(*) AS total FROM ai_model_chain')).toBe(
+      5
+    );
+
+    // Desmarcar um provedor apaga a conexão (e a chave) e a ordem nova não
+    // pode citar os modelos dele.
+    const semOpenAi = await salvar({
+      provedores: provedores.slice(0, 2),
+      ordem: [{ tipo: 'modelo', preset: 'lm_studio', modelo: 'gemma-3' }],
     });
-    expect(generica.status).not.toBe(200);
+    expect(semOpenAi.status).toBe(200);
+    expect(
+      await contar(
+        "SELECT COUNT(*) AS total FROM ai_provider_connections WHERE preset = 'openai'"
+      )
+    ).toBe(0);
   });
 
   it('lista os modelos e testa a conexão do servidor local, com o erro real quando falha', async () => {
@@ -480,7 +578,7 @@ describe('provedor de IA da plataforma (rotas administrativas)', () => {
 
     const semModelo = await chamar(adminTestar.POST, {
       method: 'POST',
-      body: { ...ollama(), tipo: 'lyra_local', preset: 'lyra' },
+      body: { ...ollama(), preset: 'lyra' },
       usuario: admin,
     });
     expect(semModelo.status).toBe(400);
@@ -552,12 +650,19 @@ describe('leitura védica do "Seu dia" pelo modelo configurado', () => {
       chamar(adminIa.PUT, {
         method: 'PUT',
         body: {
-          tipo: 'openai_compativel',
-          preset: 'ollama',
-          baseUrl: servidor.baseUrl,
-          modelo,
-          tempoMaximoSegundos: 10,
-          temperatura: 0.7,
+          provedores: [
+            {
+              preset: 'ollama',
+              baseUrl: servidor.baseUrl,
+              modelos: [modelo],
+              tempoMaximoSegundos: 10,
+              temperatura: 0.7,
+            },
+          ],
+          ordem: [
+            { tipo: 'modelo', preset: 'ollama', modelo },
+            { tipo: 'lyra' },
+          ],
         },
         usuario: admin,
       });
@@ -614,5 +719,84 @@ describe('leitura védica do "Seu dia" pelo modelo configurado', () => {
     expect(
       comFalha.estado === 'pronto' && comFalha.briefing.leitura.autor
     ).toEqual({ tipo: 'lyra' });
+  });
+
+  it('ordem de uso: cota esgotada passa a vez e o próximo continua a leitura cortada', async () => {
+    const admin = await criarUsuario('admin', 'AdminTroca');
+    const pessoa = await pessoaComCidade('LeituraTroca');
+    const provedorDe = (preset: string, modelos: string[]) => ({
+      preset,
+      baseUrl: servidor.baseUrl,
+      modelos,
+      tempoMaximoSegundos: 10,
+      temperatura: 0.7,
+    });
+    const salvo = await chamar(adminIa.PUT, {
+      method: 'PUT',
+      body: {
+        provedores: [
+          provedorDe('ollama', ['qwen2.5:7b-instruct', 'llama3.2:3b']),
+          provedorDe('lm_studio', ['gemma-3']),
+        ],
+        ordem: [
+          { tipo: 'modelo', preset: 'ollama', modelo: 'qwen2.5:7b-instruct' },
+          { tipo: 'modelo', preset: 'ollama', modelo: 'llama3.2:3b' },
+          { tipo: 'modelo', preset: 'lm_studio', modelo: 'gemma-3' },
+          { tipo: 'lyra' },
+        ],
+      },
+      usuario: admin,
+    });
+    expect(salvo.status).toBe(200);
+
+    // 1º: cota esgotada (429). 2º: escreve metade da leitura e para no
+    // limite de tokens. 3º: recebe o trecho e escreve só o restante.
+    let metade = '';
+    servidor.modelo('qwen2.5:7b-instruct', { falha: 429 });
+    servidor.modelo('llama3.2:3b', {
+      cortado: (corpo) => {
+        const completa = leituraValida(corpo);
+        metade = completa.slice(0, Math.floor(completa.length / 2));
+        return metade;
+      },
+    });
+    servidor.responder((corpo) => {
+      const usuario = (corpo as { messages: Array<{ content: string }> })
+        .messages[1].content;
+      expect(usuario).toContain('Continue exatamente do ponto');
+      expect(usuario).toContain(metade);
+      return leituraValida(corpo).slice(metade.length);
+    });
+
+    const antes = servidor.requisicoes.length;
+    try {
+      const estado = (await chamar(hoje.GET, { usuario: pessoa }))
+        .json as Estado;
+      expect(estado.estado).toBe('pronto');
+      if (estado.estado !== 'pronto') return;
+      // A pessoa recebe uma leitura inteira, do modelo, sem sinal da troca.
+      expect(estado.briefing.origem).toBe('ia');
+      expect(estado.briefing.leitura.resumoGeral).toMatch(
+        /^Leitura do modelo local/
+      );
+      expect(estado.briefing.leitura.periodos).toHaveLength(4);
+      expect(estado.briefing.leitura.autor).toEqual({
+        tipo: 'ia',
+        provedor: 'LM Studio',
+        modelo: 'gemma-3',
+        local: true,
+      });
+      const modelosChamados = servidor.requisicoes
+        .slice(antes)
+        .map((r) => (r.corpo as { model: string }).model);
+      expect(modelosChamados).toEqual([
+        'qwen2.5:7b-instruct',
+        'llama3.2:3b',
+        'gemma-3',
+      ]);
+    } finally {
+      servidor.modelo('qwen2.5:7b-instruct', null);
+      servidor.modelo('llama3.2:3b', null);
+    }
   });
 });

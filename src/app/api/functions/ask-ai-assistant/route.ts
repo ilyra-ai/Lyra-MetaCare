@@ -6,12 +6,12 @@ import {
   generateLocalAssistantReply,
   type AiSkillDocument,
 } from '@/lib/ai/chat-engine';
-import { ErroDoProvedor, gerarTexto } from '@/lib/ai/cliente-de-ia';
 import {
-  conexaoDoProvedor,
-  lerProvedorDaPlataforma,
-  provedorPublico,
-} from '@/lib/ai/provedor-da-plataforma';
+  gerarNaCadeia,
+  montarCadeia,
+  somenteLocais,
+} from '@/lib/ai/cadeia-de-modelos';
+import { lerConfiguracaoDeIa } from '@/lib/ai/provedores-da-plataforma';
 import { getAstrologicalContext } from '@/lib/astrology/engine';
 import { obterBriefingDoDia } from '@/lib/coach/servico';
 import type { BriefingDoDia } from '@/lib/coach/tipos';
@@ -138,25 +138,21 @@ ${fallbackResponse}
 ---
 Use esta análise como base e siga estritamente as habilidades, skills e treinamentos configurados acima para responder à pergunta do usuário de forma humana, empática e embasada. Responda APENAS com a sua resposta direta.`;
 
-    // Sem chave própria: o modelo da plataforma responde quando roda na
-    // infraestrutura da Lyra (Ollama, LM Studio, Jan, llama.cpp etc.), porque
-    // a análise leva métricas de saúde e elas não saem do servidor. Modelos
-    // em nuvem da plataforma não recebem a conversa.
-    const provedor = userApiKey ? null : await lerProvedorDaPlataforma();
-    const conexao = provedor ? conexaoDoProvedor(provedor) : null;
-    if (provedor && conexao && provedorPublico(provedor).local) {
-      try {
-        finalResponse = await gerarTexto(conexao, {
-          sistema: systemPrompt,
-          usuario: query,
-          maximoDeTokens: 1024,
-        });
-      } catch (erro) {
-        console.error(
-          `[ask-ai-assistant] Modelo local da plataforma indisponível (${
-            erro instanceof ErroDoProvedor ? erro.message : 'falha inesperada'
-          }); usando o motor local.`
-        );
+    // Sem chave própria: responde a ordem de uso dos modelos da plataforma
+    // (tarefa 54), só com os que rodam na infraestrutura da Lyra (Ollama, LM
+    // Studio, Jan, llama.cpp etc.), porque a análise leva métricas de saúde
+    // e elas não saem do servidor; modelos em nuvem não recebem a conversa.
+    // Se um modelo falha ou fica sem tokens, o seguinte assume (e continua
+    // uma resposta cortada); sem nenhum, responde o motor da Lyra.
+    if (!userApiKey) {
+      const cadeia = somenteLocais(montarCadeia(await lerConfiguracaoDeIa()));
+      const resultado = await gerarNaCadeia(
+        cadeia,
+        { sistema: systemPrompt, usuario: query, maximoDeTokens: 1024 },
+        { rotulo: 'chat' }
+      );
+      if (resultado.origem === 'modelo') {
+        finalResponse = resultado.texto;
       }
     }
 

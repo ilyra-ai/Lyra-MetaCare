@@ -55,13 +55,22 @@ O administrador escolhe o modelo em **Admin → Modelos de IA** (`src/components
 | APIs nativas                      | Google Gemini e Anthropic Claude                                                                                                                                                                    |
 | Sem modelo (padrão)               | Motor védico da Lyra                                                                                                                                                                                |
 
-- **Buscar modelos** lista os modelos do servidor (`GET /v1/models`, ou a listagem do Gemini e da Anthropic) e **Testar conexão** mede o tempo de uma resposta real, antes de salvar.
+- **Buscar modelos** lista os modelos do servidor (`GET /v1/models`, ou a listagem do Gemini e da Anthropic) e **Testar**, ao lado de cada modelo escolhido, mede o tempo de uma resposta real, antes de salvar.
+
+### Vários provedores e modelos, com ordem de uso (tarefa 54)
+
+- **Seleção múltipla:** o administrador marca quantos provedores quiser, locais e em nuvem ao mesmo tempo, e quantos modelos quiser em cada um. O motor da Lyra aparece nos dois grupos.
+- **Ordem de uso:** abaixo do aviso de privacidade, 5 seletores definem a ordem (1º ao 5º). Cada posição é um modelo marcado ou o motor da Lyra; o mesmo modelo não se repete.
+- **Troca automática** (`src/lib/ai/cadeia-de-modelos.ts`): o modelo da vez responde; se falhar (erro HTTP, cota ou tokens esgotados, rede fora, tempo máximo), o seguinte recebe o mesmo pedido. Se a resposta parar no limite de tokens (`finish_reason: length`, `MAX_TOKENS` ou `max_tokens`), o seguinte recebe o trecho já escrito e continua de onde ele parou, sem repetir a emenda. Na leitura do dia, uma resposta reprovada na conferência (formato, horários, repetição, termo técnico) também passa a vez. A pessoa recebe uma resposta só.
+- **Motor da Lyra:** encerra a cadeia. Ao chegar nele (ou se todos falharem), a leitura é a do motor; ele sempre fecha a cadeia, mesmo fora da ordem.
+- **Gravação:** tabelas `ai_provider_connections` (um provedor por linha, com os modelos escolhidos) e `ai_model_chain` (até 5 posições), gravadas na mesma transação pela rota `PUT /api/admin/ia` (migração `027_cadeia_de_modelos_de_ia.sql`, que copiou a configuração única anterior e removeu `ai_provider_settings`).
+- **Refazer o dia:** a assinatura da ordem (tipo, URL e modelo de cada posição e data da configuração, sem chaves) entra no hash das entradas: mudar modelo ou ordem refaz o "Seu dia".
 - Com a Lyra em contêiner, use `http://host.docker.internal:PORTA/v1` no lugar de `localhost`.
 - Modelos de raciocínio que devolvem `<think>…</think>` e respostas cercadas por ` ```json ` são aceitos: o texto é limpo antes da validação.
 
 ### Dados e privacidade
 
 - **Só dados astrológicos:** o modelo recebe os fatos do céu do dia, o mapa natal derivado (signo do Lagna, signo e nakshatra da Lua, dasha, Tara e casas de trânsito), os horários dos períodos e a leitura de ontem. Não recebe nome, e-mail, data, hora ou cidade de nascimento, fuso, métricas de saúde, ciclo nem sinais do corpo. Por isso a leitura não depende de consentimento por pessoa; a finalidade está na política de privacidade (versão 2026-10-15). A migração `023_provedor_de_ia.sql` removeu a preferência `profiles.coach_external_ai_since` criada na `022`.
-- **Chave de API:** cifrada com AES-256-GCM e chave derivada do `AUTH_SECRET` (HKDF), na tabela `ai_provider_settings`, fora da API genérica de dados. A tela só recebe os 4 últimos caracteres. Trocar o `AUTH_SECRET` torna a chave ilegível, e a tela pede para informá-la de novo.
-- **Chat:** sem a chave própria da pessoa (BYOK), o chat usa o modelo da plataforma **apenas quando ele roda localmente** (endereço da máquina ou de rede privada), porque a conversa leva métricas de saúde. Modelos em nuvem da plataforma não recebem a conversa.
+- **Chave de API:** cifrada com AES-256-GCM e chave derivada do `AUTH_SECRET` (HKDF), na tabela `ai_provider_connections` (uma por provedor), fora da API genérica de dados. A tela só recebe os 4 últimos caracteres. Trocar o `AUTH_SECRET` torna a chave ilegível, e a tela pede para informá-la de novo.
+- **Chat:** sem a chave própria da pessoa (BYOK), o chat segue a ordem de uso **só com os modelos que rodam localmente** (endereço da máquina ou de rede privada), porque a conversa leva métricas de saúde, com a mesma troca automática. Modelos em nuvem da plataforma não recebem a conversa.
 - **Horários:** sempre calculados pela Lyra. Uma resposta que cite horário inexistente no dia é descartada.

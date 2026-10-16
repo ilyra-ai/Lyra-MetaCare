@@ -11,16 +11,15 @@ import { registrarErroInterno } from '@/lib/observability/log-seguro';
 import { recursoHabilitado } from '@/lib/plans/service';
 
 import {
-  assinaturaDoProvedor,
-  conexaoDoProvedor,
-  lerProvedorDaPlataforma,
-  provedorPublico,
-} from '@/lib/ai/provedor-da-plataforma';
-import { presetPorId } from '@/lib/ai/provedores-catalogo';
+  assinaturaDaCadeia,
+  cadeiaTemModelo,
+  montarCadeia,
+} from '@/lib/ai/cadeia-de-modelos';
+import { lerConfiguracaoDeIa } from '@/lib/ai/provedores-da-plataforma';
 
 import { hashDasEntradas, lerContextoDoCoach } from './contexto';
 import { gerarDiaLocal } from './gerador-local';
-import { escreverLeituraComIa } from './leitura-ia';
+import { escreverLeituraNaCadeia } from './leitura-ia';
 import type { EntradaDaLeitura } from './leitura-vedica';
 import type { BriefingDoDia, EstadoDoCoach, LeituraVedica } from './tipos';
 
@@ -150,9 +149,14 @@ async function prepararBriefingDoDia(
     return { estado: 'sem_local', faltando: resultado.perfil.faltando };
   }
   const { contexto } = resultado;
-  const provedor = await lerProvedorDaPlataforma();
-  const conexao = conexaoDoProvedor(provedor);
-  const hash = hashDasEntradas(contexto, assinaturaDoProvedor(provedor));
+  // Ordem de uso dos modelos (tarefa 54); o motor da Lyra fecha a cadeia.
+  const configuracaoDeIa = await lerConfiguracaoDeIa();
+  const cadeia = montarCadeia(configuracaoDeIa);
+  const temModelo = cadeiaTemModelo(cadeia);
+  const hash = hashDasEntradas(
+    contexto,
+    assinaturaDaCadeia(cadeia, configuracaoDeIa.atualizadoEm)
+  );
 
   const [existente] = await queryRows<LinhaDoBriefing>(
     `SELECT content, inputs_hash, feedback FROM daily_briefings
@@ -165,7 +169,7 @@ async function prepararBriefingDoDia(
     // (ex.: o servidor local estava desligado) é tentada de novo depois de
     // um intervalo.
     const tentarDeNovo =
-      conexao !== null &&
+      temModelo &&
       guardado.origem === 'local' &&
       agora.getTime() - new Date(guardado.geradoEm).getTime() >=
         NOVA_TENTATIVA_DA_IA_MS;
@@ -190,15 +194,9 @@ async function prepararBriefingDoDia(
     throw error;
   }
 
-  if (conexao && provedor.modelo) {
-    const publico = provedorPublico(provedor);
-    const resultadoDaIa = await escreverLeituraComIa({
-      conexao,
-      autor: {
-        provedor: presetPorId(provedor.preset)?.nome ?? provedor.tipo,
-        modelo: provedor.modelo,
-        local: publico.local,
-      },
+  if (temModelo) {
+    const resultadoDaIa = await escreverLeituraNaCadeia({
+      cadeia,
       entrada: entradaDaLeitura,
       base: briefing.leitura,
       ontem: await leituraDeOntem(userId, contexto.data),
@@ -207,7 +205,7 @@ async function prepararBriefingDoDia(
       briefing = { ...briefing, origem: 'ia', leitura: resultadoDaIa.leitura };
     } else {
       console.error(
-        `[coach:ia] Leitura do modelo descartada (${resultadoDaIa.motivo}); mantida a leitura da Lyra.`
+        `[coach:ia] Nenhum modelo da ordem de uso entregou a leitura (${resultadoDaIa.motivo}); mantida a leitura da Lyra.`
       );
     }
   }

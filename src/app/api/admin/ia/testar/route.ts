@@ -1,24 +1,27 @@
 import { NextResponse } from 'next/server';
 
 import { ErroDoProvedor, gerarTexto } from '@/lib/ai/cliente-de-ia';
-import { conexaoInformada, provedorSchema } from '@/lib/ai/esquema-do-provedor';
-import { lerProvedorDaPlataforma } from '@/lib/ai/provedor-da-plataforma';
+import {
+  conexaoInformada,
+  provedorParaTesteSchema,
+} from '@/lib/ai/esquema-do-provedor';
+import { lerConfiguracaoDeIa } from '@/lib/ai/provedores-da-plataforma';
 import { lerJson, respostaDeErro } from '@/lib/http/api';
 import { requireAdminSession } from '@/lib/mysql/server-auth';
 
 export const runtime = 'nodejs';
 
 /**
- * Pede uma resposta curta ao modelo com os valores do formulário e mede o
+ * Pede uma resposta curta a um modelo com os valores do formulário e mede o
  * tempo. Não grava nada: o administrador testa antes de salvar.
  */
 export async function POST(request: Request) {
   try {
     await requireAdminSession();
-    const informado = await lerJson(request, provedorSchema);
+    const informado = await lerJson(request, provedorParaTesteSchema);
     const conexao = conexaoInformada(
       informado,
-      await lerProvedorDaPlataforma(),
+      await lerConfiguracaoDeIa(),
       true
     );
     const inicio = performance.now();

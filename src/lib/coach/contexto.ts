@@ -163,12 +163,13 @@ export async function lerContextoDoCoach(
 
 /**
  * SHA-256 das entradas: igual enquanto nada que o coach usa mudar. A
- * assinatura do provedor de IA (tipo, URL, modelo e data da configuração,
- * nunca a chave) faz a troca de modelo refazer o dia.
+ * assinatura da ordem de uso dos modelos de IA (tipo, URL e modelo de cada
+ * posição e data da configuração, nunca a chave) faz a troca de modelo ou
+ * de ordem refazer o dia.
  */
 export function hashDasEntradas(
   contexto: ContextoDoCoach,
-  assinaturaDoProvedor: string
+  assinaturaDaIa: string
 ) {
   return createHash('sha256')
     .update(
@@ -178,7 +179,7 @@ export function hashDasEntradas(
         nascimento: contexto.perfil.nascimento,
         lugar: contexto.perfil.localDoDia,
         pessoa: contexto.pessoa,
-        provedor: assinaturaDoProvedor,
+        provedor: assinaturaDaIa,
         hoje: contexto.hoje,
         historico: contexto.historico,
       })

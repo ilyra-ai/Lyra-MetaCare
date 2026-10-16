@@ -3,10 +3,8 @@ import { NextResponse } from 'next/server';
 import { generateLocalAssistantReply } from '@/lib/ai/chat-engine';
 import { ErroDoProvedor, gerarTexto } from '@/lib/ai/cliente-de-ia';
 import { generateLocalWellnessPlan } from '@/lib/ai/plan-engine';
-import {
-  conexaoDoProvedor,
-  lerProvedorDaPlataforma,
-} from '@/lib/ai/provedor-da-plataforma';
+import { montarCadeia } from '@/lib/ai/cadeia-de-modelos';
+import { lerConfiguracaoDeIa } from '@/lib/ai/provedores-da-plataforma';
 import { calculateLongevityScores } from '@/lib/ai/score-engine';
 import { getAstrologicalContext } from '@/lib/astrology/engine';
 import { mensagemDeErro, statusDeErro } from '@/lib/http/api';
@@ -14,49 +12,54 @@ import { requireAdminSession } from '@/lib/mysql/server-auth';
 
 export const runtime = 'nodejs';
 
-/** Testa o provedor de IA salvo (o mesmo usado pelo "Seu dia"). */
-async function testarProvedorSalvo() {
-  const provedor = await lerProvedorDaPlataforma();
-  const conexao = conexaoDoProvedor(provedor);
-  if (!conexao) {
-    return {
-      configurado: false,
-      ok: provedor.tipo === 'lyra_local',
-      tipo: provedor.tipo,
-      mensagem:
-        provedor.tipo === 'lyra_local'
-          ? 'Só o motor da Lyra: nenhum modelo generativo configurado.'
-          : 'Provedor incompleto (modelo, URL ou chave): o motor da Lyra responde no lugar.',
-    };
+/**
+ * Testa, um a um, os modelos da ordem de uso salva (a mesma do "Seu dia"),
+ * até o motor da Lyra (tarefa 54). `ok` diz se a cadeia responde: algum
+ * modelo respondeu, ou não há modelo e o motor da Lyra é quem escreve.
+ */
+async function testarCadeiaSalva() {
+  const cadeia = montarCadeia(await lerConfiguracaoDeIa());
+  const modelos = [];
+  for (const elo of cadeia) {
+    if (elo.tipo === 'lyra') break;
+    const inicio = performance.now();
+    try {
+      const resposta = await gerarTexto(elo.conexao, {
+        sistema: 'Responda apenas com a palavra OK.',
+        usuario: 'Teste de conexão administrativa.',
+        maximoDeTokens: 16,
+      });
+      modelos.push({
+        provedor: elo.autor.provedor,
+        modelo: elo.autor.modelo,
+        ok: true,
+        milissegundos: Math.round(performance.now() - inicio),
+        resposta: resposta.slice(0, 120),
+      });
+    } catch (erro) {
+      modelos.push({
+        provedor: elo.autor.provedor,
+        modelo: elo.autor.modelo,
+        ok: false,
+        milissegundos: Math.round(performance.now() - inicio),
+        erro:
+          erro instanceof ErroDoProvedor
+            ? erro.message
+            : 'Falha inesperada ao consultar o provedor.',
+      });
+    }
   }
-  const inicio = performance.now();
-  try {
-    const resposta = await gerarTexto(conexao, {
-      sistema: 'Responda apenas com a palavra OK.',
-      usuario: 'Teste de conexão administrativa.',
-      maximoDeTokens: 16,
-    });
-    return {
-      configurado: true,
-      ok: true,
-      tipo: provedor.tipo,
-      modelo: provedor.modelo,
-      milissegundos: Math.round(performance.now() - inicio),
-      resposta: resposta.slice(0, 120),
-    };
-  } catch (erro) {
-    return {
-      configurado: true,
-      ok: false,
-      tipo: provedor.tipo,
-      modelo: provedor.modelo,
-      milissegundos: Math.round(performance.now() - inicio),
-      erro:
-        erro instanceof ErroDoProvedor
-          ? erro.message
-          : 'Falha inesperada ao consultar o provedor.',
-    };
-  }
+  return {
+    configurado: modelos.length > 0,
+    ok: modelos.length === 0 || modelos.some((m) => m.ok),
+    modelos,
+    mensagem:
+      modelos.length === 0
+        ? 'Só o motor da Lyra: nenhum modelo generativo antes dele na ordem de uso.'
+        : modelos.some((m) => m.ok)
+          ? 'A ordem de uso responde; os modelos com falha são pulados.'
+          : 'Nenhum modelo da ordem respondeu: o motor da Lyra responde no lugar.',
+  };
 }
 
 /**
@@ -128,10 +131,10 @@ export async function POST() {
           ok: assistantCheck.length > 0,
           preview: assistantCheck,
         },
-        provedor: await testarProvedorSalvo(),
+        provedor: await testarCadeiaSalva(),
       },
       message:
-        'Motores locais testados em runtime e provedor de IA salvo consultado em tempo real.',
+        'Motores locais testados em runtime e modelos da ordem de uso consultados em tempo real.',
     });
   } catch (error) {
     // 401/403 preservados (antes toda falha virava 500).

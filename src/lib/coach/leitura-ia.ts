@@ -1,10 +1,14 @@
 import { z } from 'zod';
 
 import {
+  type EloDaCadeia,
+  gerarNaCadeia,
+  type TentativaNaCadeia,
+} from '@/lib/ai/cadeia-de-modelos';
+import {
   type ConexaoDeIa,
   ErroDoProvedor,
   extrairJson,
-  gerarTexto,
 } from '@/lib/ai/cliente-de-ia';
 
 import type { EntradaDaLeitura } from './leitura-vedica';
@@ -245,6 +249,119 @@ export function leituraAPartirDaIa(
 export type ResultadoDaLeituraDaIa =
   { ok: true; leitura: LeituraVedica } | { ok: false; motivo: string };
 
+/**
+ * Confere a resposta do modelo: formato (Zod), todos os períodos, horários
+ * que existem no dia, sem texto repetido, sem termo técnico e diferente da
+ * leitura de ontem.
+ */
+export function conferirLeituraDaIa(
+  bruto: string,
+  entrada: EntradaDaLeitura,
+  ontem: LeituraVedica | null
+): { ok: true; dados: LeituraDaIa } | { ok: false; motivo: string } {
+  let json: unknown;
+  try {
+    json = extrairJson(bruto);
+  } catch (erro) {
+    return {
+      ok: false,
+      motivo:
+        erro instanceof ErroDoProvedor ? erro.message : 'resposta sem JSON',
+    };
+  }
+  const validada = leituraDaIaSchema.safeParse(json);
+  if (!validada.success) {
+    return { ok: false, motivo: 'resposta fora do formato da leitura' };
+  }
+  const faltando = entrada.periodos.filter(
+    (p) => !validada.data.periodos[p.chave]
+  );
+  if (faltando.length > 0) {
+    return {
+      ok: false,
+      motivo: `faltou o período ${faltando.map((p) => p.chave).join(', ')}`,
+    };
+  }
+  if (!horariosConferem(entrada, validada.data)) {
+    return { ok: false, motivo: 'horário que não existe no dia' };
+  }
+  if (temRepeticao(validada.data)) {
+    return { ok: false, motivo: 'texto repetido entre períodos' };
+  }
+  const termo = termoTecnicoNaLeitura(validada.data);
+  if (termo) {
+    return { ok: false, motivo: `termo técnico na leitura ("${termo}")` };
+  }
+  if (
+    ontem &&
+    normalizado(ontem.resumoGeral) === normalizado(validada.data.resumoGeral)
+  ) {
+    return { ok: false, motivo: 'resumo igual ao de ontem' };
+  }
+  return { ok: true, dados: validada.data };
+}
+
+/**
+ * Leitura escrita pela ordem de uso dos modelos (tarefa 54): o primeiro
+ * modelo que entrega uma leitura aprovada na conferência é o autor; um
+ * modelo que falha, fica sem tokens ou erra o formato passa a vez ao
+ * seguinte (que continua o texto, se ele foi cortado). Chegando ao motor da
+ * Lyra, fica a leitura do motor.
+ */
+export async function escreverLeituraNaCadeia(opcoes: {
+  cadeia: EloDaCadeia[];
+  entrada: EntradaDaLeitura;
+  base: LeituraVedica;
+  ontem: LeituraVedica | null;
+  buscar?: typeof fetch;
+}): Promise<ResultadoDaLeituraDaIa & { tentativas: TentativaNaCadeia[] }> {
+  const resultado = await gerarNaCadeia(
+    opcoes.cadeia,
+    {
+      sistema: INSTRUCOES_DO_SISTEMA,
+      usuario: pedidoDoUsuario(opcoes.entrada, opcoes.ontem),
+      json: true,
+      esquemaJson: esquemaJsonDaLeitura(opcoes.entrada),
+      nomeDoEsquema: 'leitura_vedica_do_dia',
+      maximoDeTokens: 4096,
+    },
+    {
+      buscar: opcoes.buscar,
+      rotulo: 'leitura-do-dia',
+      validar: (bruto) => {
+        const conferida = conferirLeituraDaIa(
+          bruto,
+          opcoes.entrada,
+          opcoes.ontem
+        );
+        return conferida.ok ? null : conferida.motivo;
+      },
+    }
+  );
+  if (resultado.origem === 'lyra') {
+    const ultima = resultado.tentativas.at(-1);
+    return {
+      ok: false,
+      motivo: ultima?.motivo ?? 'nenhum modelo antes do motor da Lyra',
+      tentativas: resultado.tentativas,
+    };
+  }
+  const conferida = conferirLeituraDaIa(
+    resultado.texto,
+    opcoes.entrada,
+    opcoes.ontem
+  );
+  if (!conferida.ok) {
+    return { ...conferida, tentativas: resultado.tentativas };
+  }
+  return {
+    ok: true,
+    leitura: leituraAPartirDaIa(conferida.dados, opcoes.base, resultado.autor),
+    tentativas: resultado.tentativas,
+  };
+}
+
+/** Leitura escrita por um único modelo (sem troca). */
 export async function escreverLeituraComIa(opcoes: {
   conexao: ConexaoDeIa;
   autor: AutorDaIa;
@@ -253,62 +370,17 @@ export async function escreverLeituraComIa(opcoes: {
   ontem: LeituraVedica | null;
   buscar?: typeof fetch;
 }): Promise<ResultadoDaLeituraDaIa> {
-  try {
-    const bruto = await gerarTexto(
-      opcoes.conexao,
-      {
-        sistema: INSTRUCOES_DO_SISTEMA,
-        usuario: pedidoDoUsuario(opcoes.entrada, opcoes.ontem),
-        json: true,
-        esquemaJson: esquemaJsonDaLeitura(opcoes.entrada),
-        nomeDoEsquema: 'leitura_vedica_do_dia',
-        maximoDeTokens: 4096,
-      },
-      opcoes.buscar
-    );
-    const validada = leituraDaIaSchema.safeParse(extrairJson(bruto));
-    if (!validada.success) {
-      return { ok: false, motivo: 'resposta fora do formato da leitura' };
-    }
-    const faltando = opcoes.entrada.periodos.filter(
-      (p) => !validada.data.periodos[p.chave]
-    );
-    if (faltando.length > 0) {
-      return {
-        ok: false,
-        motivo: `faltou o período ${faltando.map((p) => p.chave).join(', ')}`,
-      };
-    }
-    if (!horariosConferem(opcoes.entrada, validada.data)) {
-      return { ok: false, motivo: 'horário que não existe no dia' };
-    }
-    if (temRepeticao(validada.data)) {
-      return { ok: false, motivo: 'texto repetido entre períodos' };
-    }
-    const termo = termoTecnicoNaLeitura(validada.data);
-    if (termo) {
-      return { ok: false, motivo: `termo técnico na leitura ("${termo}")` };
-    }
-    if (
-      opcoes.ontem &&
-      normalizado(opcoes.ontem.resumoGeral) ===
-        normalizado(validada.data.resumoGeral)
-    ) {
-      return { ok: false, motivo: 'resumo igual ao de ontem' };
-    }
-    return {
-      ok: true,
-      leitura: leituraAPartirDaIa(validada.data, opcoes.base, opcoes.autor),
-    };
-  } catch (erro) {
-    return {
-      ok: false,
-      motivo:
-        erro instanceof ErroDoProvedor
-          ? erro.message
-          : erro instanceof Error
-            ? erro.name
-            : 'falha desconhecida',
-    };
-  }
+  const resultado = await escreverLeituraNaCadeia({
+    cadeia: [
+      { tipo: 'modelo', conexao: opcoes.conexao, autor: opcoes.autor },
+      { tipo: 'lyra' },
+    ],
+    entrada: opcoes.entrada,
+    base: opcoes.base,
+    ontem: opcoes.ontem,
+    buscar: opcoes.buscar,
+  });
+  return resultado.ok
+    ? { ok: true, leitura: resultado.leitura }
+    : { ok: false, motivo: resultado.motivo };
 }

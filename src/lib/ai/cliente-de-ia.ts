@@ -262,19 +262,49 @@ export function semRaciocinio(texto: string) {
   return texto.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 }
 
+/** Texto gerado e se ele foi cortado no limite de tokens da resposta. */
+export interface TextoGerado {
+  texto: string;
+  /**
+   * A resposta parou no limite de tokens (OpenAI `finish_reason: length`,
+   * Gemini `MAX_TOKENS`, Anthropic `max_tokens`): o texto está incompleto e
+   * pode ser continuado por outro modelo (ver cadeia-de-modelos.ts).
+   */
+  cortado: boolean;
+}
+
 /** Texto gerado pelo modelo configurado. */
 export async function gerarTexto(
   conexao: ConexaoDeIa,
   pedido: PedidoDeTexto,
   buscar: typeof fetch = fetch
 ): Promise<string> {
+  return (await gerarTextoDetalhado(conexao, pedido, buscar)).texto;
+}
+
+/**
+ * Como `gerarTexto`, informando também se a resposta foi cortada no limite
+ * de tokens (tarefa 54). Um raciocínio (`<think>`) cortado antes de fechar
+ * não é texto da resposta e é descartado.
+ */
+export async function gerarTextoDetalhado(
+  conexao: ConexaoDeIa,
+  pedido: PedidoDeTexto,
+  buscar: typeof fetch = fetch
+): Promise<TextoGerado> {
   if (!conexao.modelo.trim()) {
     throw new ErroDoProvedor('Escolha o modelo.');
   }
   let texto = '';
+  let cortado = false;
   if (conexao.tipo === 'openai_compativel') {
     const formatos = formatosDeSaida(pedido);
-    let corpo: { choices?: Array<{ message?: { content?: unknown } }> } = {};
+    let corpo: {
+      choices?: Array<{
+        message?: { content?: unknown };
+        finish_reason?: unknown;
+      }>;
+    } = {};
     for (const [indice, formato] of formatos.entries()) {
       try {
         corpo = (await requisitar(
@@ -291,6 +321,9 @@ export async function gerarTexto(
                 { role: 'system', content: pedido.sistema },
                 { role: 'user', content: pedido.usuario },
               ],
+              ...(pedido.maximoDeTokens
+                ? { max_tokens: pedido.maximoDeTokens }
+                : {}),
               ...(formato ? { response_format: formato } : {}),
             }),
           },
@@ -305,10 +338,14 @@ export async function gerarTexto(
     }
     const conteudo = corpo.choices?.[0]?.message?.content;
     texto = typeof conteudo === 'string' ? conteudo : '';
+    cortado = corpo.choices?.[0]?.finish_reason === 'length';
   } else if (conexao.tipo === 'gemini') {
     const comEsquema = pedido.esquemaJson ? [true, false] : [false];
     let corpo: {
-      candidates?: Array<{ content?: { parts?: Array<{ text?: unknown }> } }>;
+      candidates?: Array<{
+        content?: { parts?: Array<{ text?: unknown }> };
+        finishReason?: unknown;
+      }>;
     } = {};
     for (const [indice, usarEsquema] of comEsquema.entries()) {
       try {
@@ -327,6 +364,9 @@ export async function gerarTexto(
               contents: [{ role: 'user', parts: [{ text: pedido.usuario }] }],
               generationConfig: {
                 temperature: conexao.temperatura,
+                ...(pedido.maximoDeTokens
+                  ? { maxOutputTokens: pedido.maximoDeTokens }
+                  : {}),
                 ...(pedido.json || pedido.esquemaJson
                   ? { responseMimeType: 'application/json' }
                   : {}),
@@ -348,6 +388,7 @@ export async function gerarTexto(
     texto = (corpo.candidates?.[0]?.content?.parts ?? [])
       .map((parte) => (typeof parte.text === 'string' ? parte.text : ''))
       .join('');
+    cortado = corpo.candidates?.[0]?.finishReason === 'MAX_TOKENS';
   } else {
     const corpo = (await requisitar(
       conexao,
@@ -369,7 +410,10 @@ export async function gerarTexto(
         }),
       },
       buscar
-    )) as { content?: Array<{ type?: unknown; text?: unknown }> };
+    )) as {
+      content?: Array<{ type?: unknown; text?: unknown }>;
+      stop_reason?: unknown;
+    };
     texto = (corpo.content ?? [])
       .map((bloco) =>
         bloco.type === 'text' && typeof bloco.text === 'string'
@@ -377,12 +421,20 @@ export async function gerarTexto(
           : ''
       )
       .join('');
+    cortado = corpo.stop_reason === 'max_tokens';
   }
-  const limpo = semRaciocinio(texto);
+  // Raciocínio aberto e não fechado (cortado no meio) sai inteiro.
+  const limpo = semRaciocinio(texto)
+    .replace(/<think>[\s\S]*$/i, '')
+    .trim();
   if (!limpo) {
-    throw new ErroDoProvedor('O modelo respondeu sem texto.');
+    throw new ErroDoProvedor(
+      cortado
+        ? 'O modelo atingiu o limite de tokens antes de escrever a resposta.'
+        : 'O modelo respondeu sem texto.'
+    );
   }
-  return limpo;
+  return { texto: limpo, cortado };
 }
 
 /**

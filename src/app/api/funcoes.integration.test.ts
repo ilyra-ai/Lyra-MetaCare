@@ -7,7 +7,9 @@ import { executeStatement, queryRows } from '@/lib/mysql/pool';
 
 import { criarUsuario } from '../../../tests/integration/fixtures';
 import { chamar } from '../../../tests/integration/http';
+import { iniciarServidorOpenAiCompativel } from '../../../tests/support/servidor-openai-compativel';
 
+import * as adminIa from './admin/ia/route';
 import * as efemerides from './astrology/ephemeris/route';
 import * as login from './auth/login/route';
 import * as registro from './auth/register/route';
@@ -93,6 +95,76 @@ describe('assistente de IA', () => {
       usuario: pessoa,
     });
     expect(excedeu.status).toBe(403);
+  });
+
+  it('chat segue a ordem de uso só com modelos locais e troca quando um falha (tarefa 54)', async () => {
+    const servidor = await iniciarServidorOpenAiCompativel();
+    const admin = await criarUsuario('admin', 'AdminChat');
+    const pessoa = await comObjetivosEMetricas('ChatCadeia');
+    try {
+      const salvo = await chamar(adminIa.PUT, {
+        method: 'PUT',
+        body: {
+          provedores: [
+            {
+              // Em nuvem: não recebe a conversa (métricas de saúde).
+              preset: 'openai',
+              baseUrl: 'https://api.openai.com/v1',
+              chave: 'sk-nunca-chamado-1234',
+              modelos: ['gpt-nuvem'],
+              tempoMaximoSegundos: 10,
+              temperatura: 0.7,
+            },
+            {
+              preset: 'ollama',
+              baseUrl: servidor.baseUrl,
+              modelos: ['qwen2.5:7b-instruct', 'llama3.2:3b'],
+              tempoMaximoSegundos: 10,
+              temperatura: 0.7,
+            },
+          ],
+          ordem: [
+            { tipo: 'modelo', preset: 'openai', modelo: 'gpt-nuvem' },
+            { tipo: 'modelo', preset: 'ollama', modelo: 'qwen2.5:7b-instruct' },
+            { tipo: 'modelo', preset: 'ollama', modelo: 'llama3.2:3b' },
+            { tipo: 'lyra' },
+          ],
+        },
+        usuario: admin,
+      });
+      expect(salvo.status).toBe(200);
+      servidor.modelo('qwen2.5:7b-instruct', { falha: 503 });
+      servidor.responder('Durma cedo hoje: o seu sono recente foi curto.');
+
+      const resposta = await chamar(assistente.POST, {
+        method: 'POST',
+        body: { query: 'como está meu sono?' },
+        usuario: pessoa,
+      });
+      expect(resposta.status).toBe(200);
+      expect((resposta.json as { response: string }).response).toBe(
+        'Durma cedo hoje: o seu sono recente foi curto.'
+      );
+      expect(
+        servidor.requisicoes.map((r) => (r.corpo as { model: string }).model)
+      ).toEqual(['qwen2.5:7b-instruct', 'llama3.2:3b']);
+
+      // Todos os locais falhando: o motor da Lyra responde.
+      servidor.falharCom(500);
+      const doMotor = await chamar(assistente.POST, {
+        method: 'POST',
+        body: { query: 'como está meu sono?' },
+        usuario: pessoa,
+      });
+      expect((doMotor.json as { response: string }).response).toMatch(/6h 20m/);
+    } finally {
+      await servidor.fechar();
+      await executeStatement('DELETE FROM ai_model_chain');
+      await executeStatement('DELETE FROM ai_provider_connections');
+      await executeStatement(
+        'INSERT INTO ai_model_chain (position, connection_id, model) VALUES (1, NULL, NULL)'
+      );
+    }
   });
 });
 
