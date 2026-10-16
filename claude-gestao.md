@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                            |
 | ------------------ | -------------------------------- |
-| Progresso          | `██████████████████░░` **87,5%** |
+| Progresso          | `██████████████████░░` **89,3%** |
 | Tarefas totais     | 56                               |
-| 🟢 Finalizadas     | 49                               |
+| 🟢 Finalizadas     | 50                               |
 | 🔵 Em andamento    | 1                                |
 | 🔴 Bloqueadas      | 0                                |
-| ⚪ A iniciar       | 6                                |
+| ⚪ A iniciar       | 5                                |
 | Branch de trabalho | `main` (única permitida)         |
 | Última atualização | 2026-10-16                       |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (49 ÷ 56 = 87,5%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (50 ÷ 56 = 89,3%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,7 @@
 
 ### ANDAMENTO
 
-- **50 · Sua semana com as informações e a leitura do mapa** 🔵 · pedido de 2026-10-16: em `/semana`, os cards "Sua semana", "Prontidão por dia", "Reflexões da noite" e "Dia a dia" aparecem sem informação e não há leitura do mapa védico da pessoa.
+- **51 · Plano gerado automaticamente ao entrar no app** 🔵 · `/plan` deve ser gerado sozinho quando a pessoa faz login.
 
 ### BLOQUEADAS
 
@@ -53,7 +53,6 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-- **51 · Plano gerado automaticamente ao entrar no app** ⚪ · `/plan` deve ser gerado sozinho quando a pessoa faz login.
 - **52 · Chat redesenhado** ⚪ · `/chat` mais simples e na tendência de 2026.
 - **53 · Auditoria real do page-builder e do Puck** ⚪ · confirmar, no código e no navegador, que `/admin/page-builder` e `/admin/puck` funcionam de verdade, sem simulações, placeholders, hardcode ou cortes.
 - **54 · Vários modelos de IA com ordem de uso e troca automática** ⚪ · em `/admin/ai-config`, vários provedores e modelos (locais e em nuvem, inclusive o motor da Lyra) ao mesmo tempo, 5 seletores de ordem e troca transparente para o próximo quando um falhar.
@@ -1051,3 +1050,17 @@ Nenhuma tarefa bloqueada.
   - Teste de varredura: 60 dias × 3 perfis (com mapa, outro mapa e sem cidade de nascimento), com e sem check-in, sem nenhum termo técnico em manchete, resumo, períodos, janelas, dicas, céu e leitura.
   - Navegador (build de produção, `/dia`): 71 termos técnicos no texto antes, 0 depois (fora do quadro tradicional), em 1440 px claro e 390 px escuro; axe sem violações, sem estouro horizontal e zero erros de console.
   - `test` 408/408, `test:integration` 154/154, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+
+### 50 · Sua semana com as informações e a leitura do mapa
+
+- **Status:** 🟢 finalizada · **Commits:** `2985ae7` (parte 1: fase da vida reutilizável, enviada a pedido do usuário) e `01ff0fc` · **Push:** `96f5882..2985ae7` e `2985ae7..01ff0fc main -> main` (confirmados por `git ls-remote`)
+- **Pedido do usuário (2026-10-16):** em `/semana` não aparecem textos nem leitura do mapa védico; os cartões "Sua semana", "Prontidão por dia", "Reflexões da noite" e "Dia a dia" ficam sem informação.
+- **Causa raiz:** a página só mostrava registros (check-in, reflexões, respiração) e o Tara de cada dia. Numa conta sem registros e sem cidade (como as de admin no banco de desenvolvimento, conferido no MySQL), todos os cartões ficavam com "—" e não havia leitura do mapa nem explicação do que faltava.
+- **Implementado:**
+  - `src/lib/semana/leitura.ts`: leitura da semana pelo motor da Lyra, sem IA e sem depender de registros. A semana que passou (dias a favor, neutros e de cuidado; melhores dias; áreas do mapa por onde a Lua passou), a semana que vem (dias mais a seu favor e para quê, dias de cuidado, ponto sensível do mapa, Lua cheia e nova), fase da vida e trânsitos de Júpiter e Saturno. Só com cidade: o céu da semana. Sem cidade: o que falta.
+  - Página: seção "Leitura da semana" no topo com os próximos 7 dias; cartões vazios dizem o que falta e levam à ação (check-in, reflexão da noite, perfil); "Dia a dia" com o tom do dia para você e a Lua; sem a palavra Tara (percepções e legendas).
+  - Cartão "Sua semana" do Meu dia mostra a semana que vem quando ainda não há percepção.
+- **Evidências:**
+  - Testes: `leitura.test.ts` (contagem que fecha em 7 dias, "no sábado"/"na segunda-feira", Lua cheia e nova, varredura de 26 semanas × 3 perfis sem termo técnico) e integração com mapa, só com cidade e sem cidade.
+  - Navegador (build de produção): `/semana` com dados (1440 px claro e 390 px escuro) e conta sem cidade nem registros (390 px escuro), e `/dia`: axe sem violações, sem estouro horizontal, zero erros de console e 0 termos técnicos no texto.
+  - `test` 412/412, `test:integration` 155/155, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
