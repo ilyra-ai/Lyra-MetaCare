@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                            |
 | ------------------ | -------------------------------- |
-| Progresso          | `███████████████████░` **94,6%** |
+| Progresso          | `███████████████████░` **96,4%** |
 | Tarefas totais     | 56                               |
-| 🟢 Finalizadas     | 53                               |
+| 🟢 Finalizadas     | 54                               |
 | 🔵 Em andamento    | 1                                |
 | 🔴 Bloqueadas      | 0                                |
-| ⚪ A iniciar       | 2                                |
+| ⚪ A iniciar       | 1                                |
 | Branch de trabalho | `main` (única permitida)         |
 | Última atualização | 2026-10-16                       |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (53 ÷ 56 = 94,6%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (54 ÷ 56 = 96,4%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,7 @@
 
 ### ANDAMENTO
 
-- **54 · Vários modelos de IA com ordem de uso e troca automática** 🔵 · em `/admin/ai-config`, vários provedores e modelos (locais e em nuvem, inclusive o motor da Lyra) ao mesmo tempo, 5 seletores de ordem e troca transparente para o próximo quando um falhar.
+- **55 · Motor da Lyra mestre em astrologia védica e saberes védicos, sem IA** 🔵 · base de conhecimento curada com Vedanta, Upanishads, Upavedas e Vedangas, os três arquivos do usuário (Mapa Lyra DM Samadhi, Livro do Mapa Lyra DM Samadhi e Mapa Quantum Lyra e Arkático), a personalidade e a consciência da Lyra descritas neles e a divisão explícita entre os tipos de mapa.
 
 ### BLOQUEADAS
 
@@ -53,7 +53,6 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-- **55 · Motor da Lyra mestre em astrologia védica e saberes védicos, sem IA** ⚪ · base de conhecimento curada com Vedanta, Upanishads, Upavedas e Vedangas, os três arquivos do usuário (Mapa Lyra DM Samadhi, Livro do Mapa Lyra DM Samadhi e Mapa Quantum Lyra e Arkático), a personalidade e a consciência da Lyra descritas neles e a divisão explícita entre os tipos de mapa.
 - **56 · Todo modelo de IA conectado age como a Lyra** ⚪ · os modelos trabalham junto com o motor, com a identidade, a personalidade e o conhecimento da Lyra, na leitura diária e no chat.
 
 ---
@@ -1077,6 +1076,23 @@ Nenhuma tarefa bloqueada.
   - Integração: primeiro plano automático sem cota; login antes do onboarding não gera; login depois do onboarding deixa o plano salvo.
   - Navegador (build de produção, login real pela tela): o plano já estava salvo no MySQL antes de abrir `/plan`, origem automática, cota intacta, tela com o plano pronto ("Regenerar plano"), axe sem violações e zero erros de console, em 1440 px claro e 390 px escuro.
   - `test` 412/412, `test:integration` 156/156, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+
+### 54 · Vários modelos de IA com ordem de uso e troca automática
+
+- **Status:** 🟢 finalizada · **Commit:** `571e8b7` · **Push:** `b3e34c9..571e8b7 main -> main` (confirmado por `git ls-remote`)
+- **Pedido do usuário (2026-10-16):** em `/admin/ai-config`, no card "Modelo de IA da plataforma": vários modelos locais e vários em nuvem ao mesmo tempo (inclusive o motor da Lyra), vários provedores ao mesmo tempo e, abaixo do aviso de privacidade, 5 seletores com a ordem de uso; se o modelo em uso falhar ou ficar sem tokens, o próximo retoma de onde ele parou, sem a pessoa perceber.
+- **Pesquisa:** padrões de 2026 de cadeias de fallback em gateways de LLM (lista ordenada de alvos, troca em 429/5xx/tempo esgotado, estado por alvo).
+- **Antes:** uma única linha (`ai_provider_settings`) com um provedor e um modelo, escolhidos por botão de rádio; qualquer falha caía direto no motor da Lyra.
+- **Implementado:**
+  - Migração `027`: `ai_provider_connections` (um provedor por linha, com os modelos escolhidos e a chave cifrada) e `ai_model_chain` (até 5 posições), com cópia da configuração anterior e remoção da tabela antiga; gravação na mesma transação.
+  - Cadeia de modelos: falha, cota, rede, tempo máximo ou resposta reprovada passam a vez; resposta cortada no limite de tokens é continuada pelo próximo, sem repetir a emenda; o motor da Lyra fecha a cadeia. O cliente de IA detecta corte nas três APIs e envia o limite de tokens.
+  - Leitura do dia, chat (só modelos locais, por privacidade) e autoteste usam a ordem; mudar modelo ou ordem refaz o "Seu dia".
+  - Tela redesenhada: caixas de seleção nos provedores (motor da Lyra nos dois grupos), painel por provedor com URL, chave, busca, inclusão pelo nome e teste por modelo, e os 5 seletores com opções já usadas indisponíveis.
+- **Evidências:**
+  - Migração aplicada no banco de desenvolvimento; cópia validada em banco temporário (provedor antigo virou a 1ª posição e o motor a 2ª; tabela antiga removida).
+  - Navegador (build de produção, servidor de IA HTTP real): dois provedores locais marcados, modelos buscados e escolhidos, teste por modelo, ordem de 3 posições salva e recarregada, opção usada indisponível em outra posição, axe sem violações em 1440 px e 390 px, sem estouro e zero erros de console. Configuração devolvida ao motor da Lyra ao final.
+  - Integração: ordem validada (modelo fora dos escolhidos, repetido, mais de 5 posições, vazia), cota esgotada (429) passa a vez e o 3º modelo continua a leitura cortada pelo 2º, chat só com modelos locais e motor quando todos falham.
+  - `test` 436/436, `test:integration` 162/162, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
 
 ### 53 · Construtor de UI e editor Puck funcionando de ponta a ponta
 
