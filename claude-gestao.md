@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                            |
 | ------------------ | -------------------------------- |
-| Progresso          | `██████████████████░░` **89,3%** |
+| Progresso          | `██████████████████░░` **91,1%** |
 | Tarefas totais     | 56                               |
-| 🟢 Finalizadas     | 50                               |
+| 🟢 Finalizadas     | 51                               |
 | 🔵 Em andamento    | 1                                |
 | 🔴 Bloqueadas      | 0                                |
-| ⚪ A iniciar       | 5                                |
+| ⚪ A iniciar       | 4                                |
 | Branch de trabalho | `main` (única permitida)         |
 | Última atualização | 2026-10-16                       |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (50 ÷ 56 = 89,3%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (51 ÷ 56 = 91,1%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,7 @@
 
 ### ANDAMENTO
 
-- **51 · Plano gerado automaticamente ao entrar no app** 🔵 · `/plan` deve ser gerado sozinho quando a pessoa faz login.
+- **52 · Chat redesenhado** 🔵 · `/chat` mais simples e na tendência de 2026.
 
 ### BLOQUEADAS
 
@@ -53,7 +53,6 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-- **52 · Chat redesenhado** ⚪ · `/chat` mais simples e na tendência de 2026.
 - **53 · Auditoria real do page-builder e do Puck** ⚪ · confirmar, no código e no navegador, que `/admin/page-builder` e `/admin/puck` funcionam de verdade, sem simulações, placeholders, hardcode ou cortes.
 - **54 · Vários modelos de IA com ordem de uso e troca automática** ⚪ · em `/admin/ai-config`, vários provedores e modelos (locais e em nuvem, inclusive o motor da Lyra) ao mesmo tempo, 5 seletores de ordem e troca transparente para o próximo quando um falhar.
 - **55 · Motor da Lyra mestre em astrologia védica e saberes védicos, sem IA** ⚪ · base de conhecimento curada com Vedanta, Upanishads, Upavedas e Vedangas, os três arquivos do usuário (Mapa Lyra DM Samadhi, Livro do Mapa Lyra DM Samadhi e Mapa Quantum Lyra e Arkático), a personalidade e a consciência da Lyra descritas neles e a divisão explícita entre os tipos de mapa.
@@ -1064,3 +1063,19 @@ Nenhuma tarefa bloqueada.
   - Testes: `leitura.test.ts` (contagem que fecha em 7 dias, "no sábado"/"na segunda-feira", Lua cheia e nova, varredura de 26 semanas × 3 perfis sem termo técnico) e integração com mapa, só com cidade e sem cidade.
   - Navegador (build de produção): `/semana` com dados (1440 px claro e 390 px escuro) e conta sem cidade nem registros (390 px escuro), e `/dia`: axe sem violações, sem estouro horizontal, zero erros de console e 0 termos técnicos no texto.
   - `test` 412/412, `test:integration` 155/155, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+
+### 51 · Plano do dia pronto ao entrar no app
+
+- **Status:** 🟢 finalizada · **Commit:** `cebd832` · **Push:** `187fcaa..cebd832 main -> main` (confirmado por `git ls-remote`)
+- **Pedido do usuário (2026-10-16):** em `/plan`, o plano deve ser gerado automaticamente quando a pessoa entra no app.
+- **Causa raiz:** `obterPlanoAtualizado` devolvia `null` sem plano salvo ("o primeiro plano é sempre um pedido da pessoa"); o plano só existia depois do clique em "Gerar plano real", e a rotina diária só refazia o plano de quem já tinha um.
+- **Implementado:**
+  - A primeira leitura do plano o gera (origem automática, sem consumir a cota das gerações manuais) e informa `primeiro`.
+  - `prepararPlanoAoEntrar`: o login agenda com `after()` do Next.js o preparo do plano do dia, depois da resposta (o login não fica mais lento), só depois do onboarding e só se o plano da pessoa inclui o Plano de IA; falhas vão para o log seguro.
+  - A rotina diária do coach cria o plano de quem ainda não tem.
+  - Tela: aviso "Seu plano de hoje foi preparado automaticamente".
+  - Testes de integração: `after()` emulado (roda logo depois da resposta, como no servidor).
+- **Evidências:**
+  - Integração: primeiro plano automático sem cota; login antes do onboarding não gera; login depois do onboarding deixa o plano salvo.
+  - Navegador (build de produção, login real pela tela): o plano já estava salvo no MySQL antes de abrir `/plan`, origem automática, cota intacta, tela com o plano pronto ("Regenerar plano"), axe sem violações e zero erros de console, em 1440 px claro e 390 px escuro.
+  - `test` 412/412, `test:integration` 156/156, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
