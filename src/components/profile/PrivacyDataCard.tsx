@@ -32,6 +32,7 @@ import {
   ROTULO_DO_CONSENTIMENTO,
   type TipoDeConsentimento,
 } from '@/lib/lgpd/documentos';
+import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
 
 interface Consentimento {
   consent_type: TipoDeConsentimento;
@@ -113,6 +114,8 @@ export function PrivacyDataCard() {
         if (ativo) setConsentimentos(corpo.consentimentos);
       })
       .catch((falha: unknown) => {
+        // Página saindo: o navegador cancelou a busca (não é falha).
+        if (paginaSaindo()) return;
         console.error('Falha ao carregar os consentimentos:', falha);
         if (ativo) setErroAoCarregar(true);
       });

@@ -4,6 +4,7 @@ import * as React from 'react';
 import dynamic from 'next/dynamic';
 
 import { getInitialPuckData } from '@/lib/puck/config/initial-data';
+import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
 import { documentoPuckTemBlocos } from '@/lib/puck/conteudo';
 import { normalizarDadosPuck } from '@/lib/puck/data-utils';
 import type { LyraPuckData, LyraPuckDocumentKey } from '@/lib/puck/types';
@@ -47,7 +48,8 @@ export function PuckClientRenderer({
           setData(normalized);
         }
       } catch (err) {
-        if (!active) return;
+        // Página saindo: o navegador cancelou a busca (não é falha).
+        if (!active || paginaSaindo()) return;
         // Bloco opcional: a falha fica registrada e a página segue sem ele.
         console.error(
           `PuckClientRenderer [${documentKey}]:`,

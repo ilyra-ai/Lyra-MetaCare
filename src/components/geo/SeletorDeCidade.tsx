@@ -17,6 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
 import { cn } from '@/lib/utils';
 
 export interface CidadeEscolhida {
@@ -88,7 +89,12 @@ export function SeletorDeCidade({
           });
         })
         .catch((falha: unknown) => {
-          if (falha instanceof DOMException && falha.name === 'AbortError') {
+          // Busca trocada por outra (AbortError) ou página saindo: o
+          // navegador cancelou a requisição, não é falha.
+          if (
+            (falha instanceof DOMException && falha.name === 'AbortError') ||
+            paginaSaindo()
+          ) {
             return;
           }
           console.error('Falha na busca de cidades:', falha);

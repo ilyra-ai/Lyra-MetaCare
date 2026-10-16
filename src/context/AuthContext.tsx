@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { db } from '@/integrations/mysql/client';
 import { destinoObrigatorio } from '@/lib/auth/destino-de-acesso';
+import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
 import { AppSession } from '@/types/app-session';
 
 type AuthContextType = {
@@ -43,6 +44,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       })
       .catch((error: unknown) => {
+        // Página saindo: o navegador cancelou a busca (não é falha).
+        if (paginaSaindo()) return;
         // Sem resposta válida de /api/auth/session não há como confirmar a
         // sessão: o app segue como visitante em vez de ficar em branco.
         console.error('Falha ao consultar a sessão:', error);

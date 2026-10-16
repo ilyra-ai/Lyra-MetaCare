@@ -3,6 +3,7 @@
 import * as React from 'react';
 
 import { requisicaoCompartilhada } from '@/lib/http/requisicao-compartilhada';
+import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
 import { getDefaultPageConfig } from '@/lib/site-page-config/defaults';
 import type {
   SitePageConfigMap,
@@ -66,7 +67,8 @@ export function usePublicSitePageConfig<TKey extends SitePageKey>(
           setConfig(recebida);
         }
       } catch (caughtError) {
-        if (!active) {
+        // Página saindo: o navegador cancelou a busca (não é falha).
+        if (!active || paginaSaindo()) {
           return;
         }
 

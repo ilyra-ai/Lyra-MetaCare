@@ -43,6 +43,7 @@ import {
   groupNavigation,
 } from './navigation';
 import { useIsAdmin } from '@/hooks/use-is-admin';
+import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
 
 type ProfileState = {
   avatar_url: string | null;
@@ -73,7 +74,10 @@ export function Header() {
         .maybeSingle();
 
       if (error) {
-        console.error('Erro ao carregar perfil no header:', error);
+        // Página saindo: o navegador cancelou a busca (não é falha).
+        if (!paginaSaindo()) {
+          console.error('Erro ao carregar perfil no header:', error);
+        }
         return;
       }
 

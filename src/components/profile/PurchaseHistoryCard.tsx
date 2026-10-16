@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
 
 interface Compra {
   id: string;
@@ -54,6 +55,8 @@ export function PurchaseHistoryCard() {
         if (ativo) setCompras(corpo.compras);
       })
       .catch((falha: unknown) => {
+        // Página saindo: o navegador cancelou a busca (não é falha).
+        if (paginaSaindo()) return;
         console.error('Falha ao carregar o histórico de compras:', falha);
         if (ativo) setErro(true);
       });

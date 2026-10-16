@@ -10,6 +10,7 @@ import { useAccountSubscription } from '@/hooks/use-account-subscription';
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { scalePx, scaleRem } from '@/lib/site-page-config/runtime';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
 import { SidebarLink } from './SidebarLink';
 import { getVisibleNavigation, groupNavigation } from './navigation';
 
@@ -41,7 +42,10 @@ export function Sidebar() {
         .maybeSingle();
 
       if (error) {
-        console.error('Erro ao carregar perfil da sidebar:', error);
+        // Página saindo: o navegador cancelou a busca (não é falha).
+        if (!paginaSaindo()) {
+          console.error('Erro ao carregar perfil da sidebar:', error);
+        }
         return;
       }
 

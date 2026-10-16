@@ -9,6 +9,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { useAuth } from '@/context/AuthContext';
 import { HealthOrchestratorProvider } from '@/context/HealthOrchestratorContext';
 import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
+import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
 import { scaleRem } from '@/lib/site-page-config/runtime';
 
 // A rota "/" serve a landing (visitante) e o dashboard (sessão ativa). Cada
@@ -77,7 +78,8 @@ export default function Home() {
         .eq('id', userId)
         .maybeSingle();
 
-      if (error) {
+      // Página saindo: o navegador cancelou a busca (não é falha).
+      if (error && !paginaSaindo()) {
         console.error('Erro ao carregar perfil na home:', error);
       }
 

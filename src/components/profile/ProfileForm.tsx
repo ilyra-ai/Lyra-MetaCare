@@ -66,6 +66,7 @@ import {
   METAS_DO_PERFIL,
   NIVEL_DE_ATIVIDADE,
 } from '@/components/onboarding/opcoes-de-perfil';
+import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
 
 // --- Data Definitions ---
 // --- Zod Schema ---
@@ -182,7 +183,8 @@ function ProgressChart({
         .not('weight_kg', 'is', null)
         .order('date', { ascending: true });
 
-      if (!active) return;
+      // Página saindo: o navegador cancelou a busca (não é falha).
+      if (!active || paginaSaindo()) return;
 
       if (error) {
         console.error('Erro ao carregar o histórico de peso:', error);

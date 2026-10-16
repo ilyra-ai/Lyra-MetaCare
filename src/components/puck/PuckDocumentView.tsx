@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Render } from '@puckeditor/core';
 
 import { obterConfigPuckLyra } from '@/lib/puck/config/base';
+import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
 import { aplicarResolveAllDataLyra } from '@/lib/puck/dynamic/resolve-data';
 import type { LyraPuckData, LyraPuckDocumentKey } from '@/lib/puck/types';
 
@@ -40,7 +41,8 @@ export default function PuckDocumentView({
         }
       })
       .catch((error: unknown) => {
-        if (!ativo) {
+        // Página saindo: o navegador cancelou a busca (não é falha).
+        if (!ativo || paginaSaindo()) {
           return;
         }
         console.error(

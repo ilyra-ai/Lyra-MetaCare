@@ -20,6 +20,7 @@ import {
 import { AstrologicalData } from '../lib/astrology/engine';
 import { ouvirMetricasAtualizadas } from '../lib/metricas/evento-de-atualizacao';
 import { db } from '../integrations/mysql/client';
+import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
 import { useAuth } from './AuthContext';
 import { useBluetoothVitals } from '../hooks/use-bluetooth-vitals';
 
@@ -78,8 +79,11 @@ async function runHealthSync(
     const astroData = (await resAstro.json()) as { data: AstrologicalData };
     astrology = astroData.data;
   } catch (error) {
-    console.error('Falha ao ler as efemérides:', error);
-    falhas.push('o céu do momento');
+    // Página saindo: o navegador cancelou a busca (não é falha).
+    if (!paginaSaindo()) {
+      console.error('Falha ao ler as efemérides:', error);
+      falhas.push('o céu do momento');
+    }
   }
 
   if (userId) {
@@ -91,8 +95,10 @@ async function runHealthSync(
       .eq('date', hoje)
       .maybeSingle();
     if (error) {
-      console.error('Falha ao ler os sinais do dia:', error);
-      falhas.push('os sinais do dia');
+      if (!paginaSaindo()) {
+        console.error('Falha ao ler os sinais do dia:', error);
+        falhas.push('os sinais do dia');
+      }
     } else {
       vitals = sinaisDoRegistro(data);
     }

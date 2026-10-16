@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
+import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
+
 export interface KeyedResource<T> {
   data: T;
   loading: boolean;
@@ -20,7 +22,9 @@ export interface KeyedResource<T> {
  * - Respostas de cargas obsoletas (chave antiga ou componente desmontado) são
  *   descartadas.
  * - `request` deve ser estável (useCallback) e lançar erro em caso de falha;
- *   `onError` recebe o erro e o recurso passa a valer `fallback`.
+ *   `onError` recebe o erro e o recurso passa a valer `fallback`. A recusa
+ *   que o navegador faz das buscas em andamento quando a página sai
+ *   (navegação, recarga) não é falha e não chega a `onError`.
  * - `initialRequest` (opcional, também estável) substitui `request` só na
  *   carga automática, por exemplo para compartilhar a chamada entre vários
  *   componentes que montam juntos; `refresh` sempre usa `request`.
@@ -46,7 +50,8 @@ export function useKeyedResource<T>(
         if (active) setLoaded({ key, data });
       })
       .catch((error: unknown) => {
-        if (!active) return;
+        // Página saindo: o navegador cancelou a busca (não é falha).
+        if (!active || paginaSaindo()) return;
         onError(error);
         setLoaded({ key, data: fallback });
       });
@@ -65,6 +70,7 @@ export function useKeyedResource<T>(
     await request()
       .then((data) => setLoaded({ key, data }))
       .catch((error: unknown) => {
+        if (paginaSaindo()) return;
         onError(error);
         setLoaded({ key, data: fallback });
       })
