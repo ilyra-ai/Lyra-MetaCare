@@ -66,7 +66,7 @@ export const navigationItems: NavigationDefinition[] = [
     href: '/semana',
     label: 'Sua semana',
     description:
-      'Retrospectiva dos últimos 7 dias: prontidão, sono, prática, reflexões, metas e o céu de cada dia.',
+      'A semana que passou e a que vem pelo seu mapa, com prontidão, sono, prática, reflexões e metas.',
     icon: CalendarRange,
     section: 'Principal',
     sectionKey: 'principal',

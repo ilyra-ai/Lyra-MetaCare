@@ -44,9 +44,11 @@ export function CartaoDaSemana() {
           <p className="text-sm leading-relaxed text-muted-foreground">
             {percepcao
               ? percepcao.texto
-              : semana.resumo.diasComRegistro === 0
-                ? 'Sem registros nesta semana ainda: o check-in e a reflexão da noite alimentam a retrospectiva.'
-                : `${semana.resumo.diasComRegistro} de 7 dias com registro. A retrospectiva mostra só o que os seus registros sustentam.`}
+              : semana.leitura.proxima.resumo
+                ? semana.leitura.proxima.resumo
+                : semana.resumo.diasComRegistro === 0
+                  ? 'Sem registros nesta semana ainda: o check-in e a reflexão da noite alimentam a retrospectiva.'
+                  : `${semana.resumo.diasComRegistro} de 7 dias com registro. A retrospectiva mostra só o que os seus registros sustentam.`}
           </p>
         </>
       ) : (

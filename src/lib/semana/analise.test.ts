@@ -157,10 +157,10 @@ describe('percepções só quando os registros sustentam', () => {
     ];
     const [percepcao] = perceber(semana);
     expect(percepcao.texto).toBe(
-      'Nos dias de Tara favorável (★), a sua prontidão média foi 78, contra 62 nos demais.'
+      'Nos dias favoráveis do seu mapa (★), a sua prontidão média foi 78, contra 62 nos demais.'
     );
     expect(percepcao.base).toBe(
-      '2 dias de Tara favorável e 2 dias sem, todos com prontidão registrada.'
+      '2 dias favoráveis no seu mapa e 2 dias sem, todos com prontidão registrada.'
     );
   });
 

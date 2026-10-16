@@ -222,9 +222,9 @@ export function perceber(semana: DiaDaSemana[]): Percepcao[] {
     const melhor = tara.sim > tara.nao;
     percepcoes.push({
       texto: melhor
-        ? `Nos dias de Tara favorável (★), a sua prontidão média foi ${Math.round(tara.sim)}, contra ${Math.round(tara.nao)} nos demais.`
-        : `Nesta semana, a prontidão foi menor nos dias de Tara favorável (★): ${Math.round(tara.sim)}, contra ${Math.round(tara.nao)} nos demais. O céu favorável não compensou o descanso.`,
-      base: `${dias(tara.nSim)} de Tara favorável e ${dias(tara.nNao)} sem, todos com prontidão registrada.`,
+        ? `Nos dias favoráveis do seu mapa (★), a sua prontidão média foi ${Math.round(tara.sim)}, contra ${Math.round(tara.nao)} nos demais.`
+        : `Nesta semana, a prontidão foi menor nos dias favoráveis do seu mapa (★): ${Math.round(tara.sim)}, contra ${Math.round(tara.nao)} nos demais. O céu favorável não compensou o descanso.`,
+      base: `${dias(tara.nSim)} favoráveis no seu mapa e ${dias(tara.nNao)} sem, todos com prontidão registrada.`,
     });
   }
 

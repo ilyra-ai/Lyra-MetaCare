@@ -73,6 +73,22 @@ export const TEMA_DA_AREA: readonly string[] = [
   'descansar e se recolher',
 ];
 
+/** Nome curto de cada uma das 12 áreas do mapa (para listas). */
+export const AREA_DO_MAPA: readonly string[] = [
+  'você',
+  'dinheiro',
+  'iniciativa',
+  'família',
+  'criatividade',
+  'saúde',
+  'parcerias',
+  'prudência',
+  'estudo',
+  'trabalho',
+  'amizades',
+  'descanso',
+];
+
 const PARES_QUE_COMBINAM: ReadonlyArray<[Elemento, Elemento]> = [
   ['fogo', 'ar'],
   ['terra', 'agua'],

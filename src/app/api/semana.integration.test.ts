@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 
 import { dataLocal } from '@/lib/astrology/tempo';
+import { termoTecnicoEm } from '@/lib/coach/linguagem-simples';
 import { buscarCidades } from '@/lib/geo/cidades';
 import { diasAntes } from '@/lib/metas/catalogo';
 import { executeStatement } from '@/lib/mysql/pool';
@@ -60,6 +61,10 @@ describe('sua semana (GET /api/semana)', () => {
       respiracaoMinutos: 0,
     });
     expect(corpo.percepcoes).toEqual([]);
+    // Sem cidade, a leitura da semana diz o que falta (sem inventar céu).
+    expect(corpo.leitura.faltando).toContain('cidade onde você mora');
+    expect(corpo.leitura.passados).toEqual([]);
+    expect(corpo.leitura.proxima.dias).toEqual([]);
   });
 
   it('junta métricas, reflexões, respiração, metas e o Tara de cada dia', async () => {
@@ -148,6 +153,48 @@ describe('sua semana (GET /api/semana)', () => {
     expect(corpo.percepcoes.map((p) => p.texto)).toContain(
       'Depois de noites com 7 h ou mais de sono, a sua prontidão média foi 79; depois de noites mais curtas, 61.'
     );
+
+    // Leitura da semana pelo motor da Lyra: a que passou e a que vem, pelo
+    // mapa da pessoa, em linguagem simples.
+    const { leitura } = corpo;
+    expect(leitura.faltando).toBeNull();
+    expect(leitura.temMapa).toBe(true);
+    expect(leitura.passados.map((d) => d.data)).toEqual(
+      corpo.dias.map((d) => d.data)
+    );
+    expect(leitura.proxima.dias.map((d) => d.data)).toEqual(
+      Array.from({ length: 7 }, (_, i) => diasAntes(hoje, -(i + 1)))
+    );
+    expect(leitura.passados.every((d) => d.paraVoce !== null)).toBe(true);
+    expect(leitura.resumo).toMatch(/^Pelo seu mapa, a semana que passou teve/);
+    expect(leitura.proxima.resumo.length).toBeGreaterThan(40);
+    expect(leitura.fase).toMatch(/^Nesta fase da sua vida/);
+    expect(leitura.transitos).toHaveLength(2);
+    const textos = [
+      leitura.resumo,
+      leitura.proxima.resumo,
+      leitura.fase ?? '',
+      ...leitura.transitos,
+    ];
+    for (const texto of textos) expect(termoTecnicoEm(texto)).toBeNull();
+  });
+
+  it('com cidade e sem nascimento, lê o céu da semana e pede o mapa', async () => {
+    const pessoa = await criarUsuario('patient', 'SoCidade');
+    const r = await chamar(localizacao.PATCH, {
+      method: 'PATCH',
+      body: { tipo: 'moradia', cidadeId: saoPaulo.id },
+      usuario: pessoa,
+    });
+    expect(r.status).toBe(200);
+    const corpo = (await chamar(semana.GET, { usuario: pessoa }))
+      .json as SemanaDaPessoa;
+    expect(corpo.leitura.temMapa).toBe(false);
+    expect(corpo.leitura.faltando).toContain('data, a hora e a cidade');
+    expect(corpo.leitura.passados).toHaveLength(7);
+    expect(corpo.leitura.passados.every((d) => d.paraVoce === null)).toBe(true);
+    expect(corpo.leitura.resumo).toMatch(/^Nos últimos 7 dias, a Lua passou/);
+    expect(corpo.leitura.fase).toBeNull();
   });
 
   it('cada pessoa vê só a própria semana', async () => {

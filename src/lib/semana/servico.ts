@@ -23,12 +23,15 @@ import {
   type ResultadoDaMeta,
   type Resumo,
 } from './analise';
+import { type LeituraDaSemana, lerLeituraDaSemana } from './leitura';
 
 /**
  * Retrospectiva "Sua semana" (tarefa 44): os últimos 7 dias locais da pessoa
  * (hoje e os 6 anteriores) com prontidão, sono, meditação, respiração,
  * reflexão da noite, metas automáticas e o Tara Bala de cada dia, mais a
  * semana anterior só para a variação. Tudo vem do banco e do mapa natal.
+ * Desde a tarefa 50 traz também a leitura da semana pelo motor da Lyra
+ * (a que passou e a que vem), que existe mesmo sem nenhum registro.
  */
 
 export interface SemanaDaPessoa {
@@ -38,6 +41,11 @@ export interface SemanaDaPessoa {
   lugar: string | null;
   /** O Tara depende do mapa natal (data e cidade de nascimento). */
   temMapa: boolean;
+  /**
+   * Leitura da semana pelo motor da Lyra (tarefa 50): a semana que passou e
+   * a que vem pelo mapa da pessoa, sem depender de registros.
+   */
+  leitura: LeituraDaSemana;
   dias: DiaDaSemana[];
   resumo: Resumo;
   metas: ResultadoDaMeta[];
@@ -190,11 +198,20 @@ export async function lerSemana(
   const dias = datas.map((data) => montarDia(data, true));
   const anteriores = datasAnteriores.map((data) => montarDia(data, false));
 
+  const leitura = lerLeituraDaSemana({
+    perfil,
+    mapa,
+    passados: datas,
+    proximos: Array.from({ length: 7 }, (_, i) => diasAntes(hoje, -(i + 1))),
+    agora,
+  });
+
   return {
     inicio,
     fim: hoje,
     lugar: lugar?.rotulo ?? null,
     temMapa: Boolean(lugar && mapa),
+    leitura,
     dias,
     resumo: resumir(dias, anteriores),
     metas: avaliarMetas(dias, metas),
