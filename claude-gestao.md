@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                           |
 | ------------------ | ------------------------------- |
-| Progresso          | `████████████████████` **100%** |
-| Tarefas totais     | 48                              |
-| 🟢 Finalizadas     | 48                              |
-| 🔵 Em andamento    | 0                               |
-| 🔴 Bloqueadas      | 0                               |
-| ⚪ A iniciar       | 0                               |
-| Branch de trabalho | `main` (única permitida)        |
-| Última atualização | 2026-10-16                      |
+| Progresso          | `██████████████████░░` **87,5%** |
+| Tarefas totais     | 56                               |
+| 🟢 Finalizadas     | 49                               |
+| 🔵 Em andamento    | 1                                |
+| 🔴 Bloqueadas      | 0                                |
+| ⚪ A iniciar       | 6                                |
+| Branch de trabalho | `main` (única permitida)         |
+| Última atualização | 2026-10-16                       |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (48 ÷ 48 = 100%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (49 ÷ 56 = 87,5%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,7 @@
 
 ### ANDAMENTO
 
-Nenhuma tarefa em andamento.
+- **50 · Sua semana com as informações e a leitura do mapa** 🔵 · pedido de 2026-10-16: em `/semana`, os cards "Sua semana", "Prontidão por dia", "Reflexões da noite" e "Dia a dia" aparecem sem informação e não há leitura do mapa védico da pessoa.
 
 ### BLOQUEADAS
 
@@ -53,7 +53,12 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-Nenhuma tarefa a iniciar.
+- **51 · Plano gerado automaticamente ao entrar no app** ⚪ · `/plan` deve ser gerado sozinho quando a pessoa faz login.
+- **52 · Chat redesenhado** ⚪ · `/chat` mais simples e na tendência de 2026.
+- **53 · Auditoria real do page-builder e do Puck** ⚪ · confirmar, no código e no navegador, que `/admin/page-builder` e `/admin/puck` funcionam de verdade, sem simulações, placeholders, hardcode ou cortes.
+- **54 · Vários modelos de IA com ordem de uso e troca automática** ⚪ · em `/admin/ai-config`, vários provedores e modelos (locais e em nuvem, inclusive o motor da Lyra) ao mesmo tempo, 5 seletores de ordem e troca transparente para o próximo quando um falhar.
+- **55 · Motor da Lyra mestre em astrologia védica e saberes védicos, sem IA** ⚪ · base de conhecimento curada com Vedanta, Upanishads, Upavedas e Vedangas, os três arquivos do usuário (Mapa Lyra DM Samadhi, Livro do Mapa Lyra DM Samadhi e Mapa Quantum Lyra e Arkático), a personalidade e a consciência da Lyra descritas neles e a divisão explícita entre os tipos de mapa.
+- **56 · Todo modelo de IA conectado age como a Lyra** ⚪ · os modelos trabalham junto com o motor, com a identidade, a personalidade e o conhecimento da Lyra, na leitura diária e no chat.
 
 ---
 
@@ -1029,3 +1034,20 @@ Nenhuma tarefa a iniciar.
   - Roteiro no build de produção com 4 rotas atrasadas 4 s e navegações e recargas no meio: 37 buscas canceladas; código anterior com 5 erros ("Falha ao consultar a sessão: TypeError: Failed to fetch"), código novo com 0.
   - Controle: `/api/notificacoes` derrubada com a página aberta continua gerando "Falha ao carregar as notificações".
   - `test` 404/404 (3 novos do detector), `test:integration` 154/154, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+
+### 49 · Leituras do Meu dia em linguagem simples e pessoal
+
+- **Status:** 🟢 finalizada · **Commit:** `d892fde` · **Push:** `b95cb80..d892fde main -> main` (confirmado por `git ls-remote`)
+- **Pedido do usuário (2026-10-16):** em `/dia`, as leituras do mapa (ex.: "Dia de equilíbrio: escolha bem os horários") precisam ser menos genéricas, falar do que o mapa da pessoa realmente diz, de forma natural e sem palavras técnicas, em todas as partes da página.
+- **Causa raiz:** os textos contavam o cálculo pelo nome técnico (Tara Pratyari, Rahu Kalam, Choghadiya, nakshatra, tithi, Mahadasha, "7ª casa", Vata/Pitta/Kapha, mantras de prática em sânscrito) em vez do significado; a manchete não usava o mapa da pessoa.
+- **Implementado:**
+  - `src/lib/coach/linguagem-simples.ts`: nomes simples das janelas (hora do silêncio, horário mais forte do dia, pausa para começos), clima da Lua, temas das 12 áreas do mapa, sintonia entre a Lua de hoje e a de nascimento, dia da Lua, mês e ano das fases da vida e o detector de termos técnicos (fronteira de palavra com acentos, nomes dos 27 nakshatras, tithis e yogas).
+  - Tara com `tema` e `conselho`; casas da Lua e trânsitos de Júpiter e Saturno contados pelo efeito ("a Lua passa pela área do seu mapa ligada às parcerias").
+  - Resumo da leitura: tom do dia para a pessoa, área do mapa, Lua de nascimento e sintonia com a de hoje, fase da vida com datas (regida pelo planeta, sem citar Rahu e Ketu) e os horários que mais pesam; manchete com o tema do dia para a pessoa.
+  - "O céu de hoje" em linguagem simples (`ceuSimples`), com os nomes tradicionais num quadro recolhido para quem estuda; corpo do dia pelas tendências do Ayurveda em palavras.
+  - Janelas de hoje, `.ics`, respiração (técnica "Alternada"), semana, perfil e política de privacidade sem jargão.
+  - IA: instruções de linguagem simples e leitura do modelo com termo técnico é descartada (a pessoa recebe a da Lyra); briefing versão 3 (os guardados antes são refeitos).
+- **Evidências:**
+  - Teste de varredura: 60 dias × 3 perfis (com mapa, outro mapa e sem cidade de nascimento), com e sem check-in, sem nenhum termo técnico em manchete, resumo, períodos, janelas, dicas, céu e leitura.
+  - Navegador (build de produção, `/dia`): 71 termos técnicos no texto antes, 0 depois (fora do quadro tradicional), em 1440 px claro e 390 px escuro; axe sem violações, sem estouro horizontal e zero erros de console.
+  - `test` 408/408, `test:integration` 154/154, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
