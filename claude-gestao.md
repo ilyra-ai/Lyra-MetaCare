@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                            |
 | ------------------ | -------------------------------- |
-| Progresso          | `███████████████████░` **92,9%** |
+| Progresso          | `███████████████████░` **94,6%** |
 | Tarefas totais     | 56                               |
-| 🟢 Finalizadas     | 52                               |
+| 🟢 Finalizadas     | 53                               |
 | 🔵 Em andamento    | 1                                |
 | 🔴 Bloqueadas      | 0                                |
-| ⚪ A iniciar       | 3                                |
+| ⚪ A iniciar       | 2                                |
 | Branch de trabalho | `main` (única permitida)         |
 | Última atualização | 2026-10-16                       |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (52 ÷ 56 = 92,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (53 ÷ 56 = 94,6%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,7 @@
 
 ### ANDAMENTO
 
-- **53 · Auditoria real do page-builder e do Puck** 🔵 · confirmar, no código e no navegador, que `/admin/page-builder` e `/admin/puck` funcionam de verdade, sem simulações, placeholders, hardcode ou cortes.
+- **54 · Vários modelos de IA com ordem de uso e troca automática** 🔵 · em `/admin/ai-config`, vários provedores e modelos (locais e em nuvem, inclusive o motor da Lyra) ao mesmo tempo, 5 seletores de ordem e troca transparente para o próximo quando um falhar.
 
 ### BLOQUEADAS
 
@@ -53,7 +53,6 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-- **54 · Vários modelos de IA com ordem de uso e troca automática** ⚪ · em `/admin/ai-config`, vários provedores e modelos (locais e em nuvem, inclusive o motor da Lyra) ao mesmo tempo, 5 seletores de ordem e troca transparente para o próximo quando um falhar.
 - **55 · Motor da Lyra mestre em astrologia védica e saberes védicos, sem IA** ⚪ · base de conhecimento curada com Vedanta, Upanishads, Upavedas e Vedangas, os três arquivos do usuário (Mapa Lyra DM Samadhi, Livro do Mapa Lyra DM Samadhi e Mapa Quantum Lyra e Arkático), a personalidade e a consciência da Lyra descritas neles e a divisão explícita entre os tipos de mapa.
 - **56 · Todo modelo de IA conectado age como a Lyra** ⚪ · os modelos trabalham junto com o motor, com a identidade, a personalidade e o conhecimento da Lyra, na leitura diária e no chat.
 
@@ -1078,6 +1077,25 @@ Nenhuma tarefa bloqueada.
   - Integração: primeiro plano automático sem cota; login antes do onboarding não gera; login depois do onboarding deixa o plano salvo.
   - Navegador (build de produção, login real pela tela): o plano já estava salvo no MySQL antes de abrir `/plan`, origem automática, cota intacta, tela com o plano pronto ("Regenerar plano"), axe sem violações e zero erros de console, em 1440 px claro e 390 px escuro.
   - `test` 412/412, `test:integration` 156/156, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+
+### 53 · Construtor de UI e editor Puck funcionando de ponta a ponta
+
+- **Status:** 🟢 finalizada · **Commit:** `e1bee03` · **Push:** `58e4f6c..e1bee03 main -> main` (confirmado por `git ls-remote`)
+- **Pedido do usuário (2026-10-16):** confirmar que `/admin/page-builder` e `/admin/puck` funcionam de verdade, sem simulações, placeholders, hardcode ou cortes.
+- **Achados (auditoria do código) e causas raiz:**
+  - "Publicar agora" publicava o rascunho salvo e descartava em silêncio as edições da tela; trocar de superfície também as descartava.
+  - Um único campo novo no schema invalidava a configuração guardada inteira e a página voltava ao padrão.
+  - Destino dos botões da landing aceitava qualquer texto e ia direto ao roteador.
+  - Campos sem efeito: escalas de cards, tabelas e botões do app (só um card usava, com `transform`), todas as escalas da landing, rótulo do botão de reavaliar, fluxo de eventos do monitoramento, título do estado inicial de dispositivos, selo e descrição do acesso e nota do login.
+  - Prévia do app com uma sidebar simulada, diferente da real.
+  - Seis documentos do Puck (landing, login, app shell, cobrança e construtor) não eram exibidos em página nenhuma; documentos nasciam com blocos de demonstração para desenvolvedores; a raiz pública mostrava chips técnicos; o editor gravava no documento publicado o e-mail e o nome de quem editava; a migração não descia nos slots; o card de plano guardava uma cópia que não se atualizava; erro do catálogo de planos virava lista vazia; código morto (`fetchListDocumentos`, `lyraPuckConfig`).
+  - Textos padrão e avisos de plano com jargão de implementação (MySQL, entitlement, "auth vivo", "landing editável").
+- **Implementado:** publicar com a configuração enviada (validada no servidor), confirmação de descarte, `mesclarComPadrao`, validação de destino (rota, âncora ou https), todos os campos ligados (`data-slot` + `zoom`, `data-escala` na landing), sidebar real na prévia (`inert`), documentos exibidos nas páginas, documentos iniciais vazios com retirada exata dos blocos de demonstração na leitura, raiz pública só com os blocos, limpeza dos textos resolvidos ao gravar e ao ler, estados neutros para visitante, migração recursiva, plano relido pela chave, erro do catálogo no seletor, opções de superfície completas, textos reescritos. Código morto removido (`grep` sem ocorrências).
+- **Evidências:**
+  - Navegador (build de produção): editar o título da landing mostra o aviso de edição não salva e a troca de superfície pede confirmação; "Publicar agora" publica e a landing do visitante exibe o título; prévia do app com a sidebar real (248 px); bloco arrastado da lista para o canvas do Puck e rascunho salvo; bloco publicado aparece na landing sem chips técnicos; login com selo e nota, sem estouro em 390 px. axe sem violações (construtor, landing, login 390) e zero erros de console. Dados de teste desfeitos ao final.
+  - Banco de desenvolvimento: o documento `landing-home` com os 2 blocos de demonstração em zonas legadas passa a ser lido vazio.
+  - `test` 426/426, `test:integration` 159/159, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+- **Observação:** quem já salvou textos no construtor continua vendo os textos salvos; os padrões novos valem para o que nunca foi salvo ou após "Restaurar padrão".
 
 ### 52 · Chat redesenhado, simples e em uma coluna
 
