@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                            |
 | ------------------ | -------------------------------- |
-| Progresso          | `███████████████████░` **93,7%** |
+| Progresso          | `███████████████████░` **95,2%** |
 | Tarefas totais     | 63                               |
-| 🟢 Finalizadas     | 59                               |
+| 🟢 Finalizadas     | 60                               |
 | 🔵 Em andamento    | 1                                |
 | 🔴 Bloqueadas      | 0                                |
-| ⚪ A iniciar       | 3                                |
+| ⚪ A iniciar       | 2                                |
 | Branch de trabalho | `main` (única permitida)         |
 | Última atualização | 2026-10-17                       |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (59 ÷ 63 = 93,7%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (60 ÷ 63 = 95,2%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,7 @@
 
 ### ANDAMENTO
 
-- **60 · Componentes de Design System premium** 🔵 · `src/components/ui` (botão, card, badge, alert, dialog, sheet, tabs, table, chart, skeleton, toast e demais): tokens, variantes, tamanhos, estados, acessibilidade e consistência de uso em todas as páginas.
+- **61 · Widgets e Controles premium** 🔵 · campos, seletores, caixas de seleção, rádios, switches, sliders, datas e horas, menus, dropdown do perfil, busca, paginação e filtros: comportamento por teclado, toque, validação, feedback e alvos de toque.
 
 ### BLOQUEADAS
 
@@ -53,7 +53,6 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-- **61 · Widgets e Controles premium** ⚪ · campos, seletores, caixas de seleção, rádios, switches, sliders, datas e horas, menus, dropdown do perfil, busca, paginação e filtros: comportamento por teclado, toque, validação, feedback e alvos de toque.
 - **62 · Tags e Elementos HTML premium** ⚪ · HTML semântico (landmarks, títulos em ordem, listas, tabelas com legenda e escopo, formulários com rótulo, botões e links corretos, imagens com texto alternativo, `lang`, metadados) e conformidade WCAG 2.2 AA.
 - **63 · Landing page redesenhada por completo** ⚪ · redesenho integral da página inicial pública: mais simples, harmônica, organizada e na tendência de 2026, com conteúdo real (catálogo de planos e textos do construtor), celular primeiro, temas claro e escuro e acessibilidade.
 
@@ -1078,6 +1077,22 @@ Nenhuma tarefa bloqueada.
   - Integração: primeiro plano automático sem cota; login antes do onboarding não gera; login depois do onboarding deixa o plano salvo.
   - Navegador (build de produção, login real pela tela): o plano já estava salvo no MySQL antes de abrir `/plan`, origem automática, cota intacta, tela com o plano pronto ("Regenerar plano"), axe sem violações e zero erros de console, em 1440 px claro e 390 px escuro.
   - `test` 412/412, `test:integration` 156/156, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+
+### 60 · Componentes de Design System premium
+
+- **Status:** 🟢 finalizada · **Commit:** `d7ecbbd` · **Push:** `322bb74..d7ecbbd main -> main` (confirmado por `git ls-remote`)
+- **Pedido do usuário (2026-10-17):** todos os componentes do design system no melhor padrão premium.
+- **Base:** auditoria dos 36 componentes de `src/components/ui` (variantes, estados, tokens, contraste calculado e uso no app).
+- **Implementado:**
+  - **Button:** ícones sem tamanho próprio ficam em 16 px (cerca de 50 saíam em 24 px); estado ativo; anel de foco com recuo na cor do fundo (antes um halo branco no escuro); `variant="link"` sem a altura de 40 px que o tamanho padrão impunha; `type="button"` por padrão.
+  - **Card:** `CardTitle` vira título de verdade (`h3`, com `as` para ajustar o nível); cerca de 90 títulos de card passam a existir para leitores de tela. **Badge** em `span` (era `div` dentro de parágrafos) e ícones em 14 px.
+  - **Tabs:** aba ativa com indicador de 2 px na cor primária (antes só um fundo com 1,1:1) e anel de foco no painel. **Table:** anel de foco na área rolável e `scope="col"` por padrão no cabeçalho.
+  - **Menu, select e command:** item destacado pelo teclado com barra lateral na cor primária (antes só um cinza com 1,1:1).
+  - **AlertDialog** no desenho do Dialog: a combinação de `slide-in-from-left-1/2` com o `translate` do Tailwind 4 fazia o modal entrar na diagonal, e fundo, raio, margem no celular e título divergiam.
+  - **Movimento:** entrada e saída animadas em dialog, sheet (pelo próprio lado), popover, menu e select, nas durações nomeadas do tema e a partir da origem do gatilho; botões de fechar com 44 px.
+  - **Alert:** `role="alert"` só para erro e alerta (os demais `status`). **Sonner:** a configuração do layout substituía a do componente e os tons não valiam; agora há um só lugar. **Calendário:** o dia escolhido mantém o destaque no hover.
+- **Evidências:** `test` 493/493, `check:format`, `check:lint`, `check:types` e `build` com exit 0. Navegador (build de produção, 1440 px claro e 390 px escuro): varredura de 20 páginas com axe sem violações (um aviso de contraste no painel apareceu uma vez durante a animação de entrada e não se repetiu na conferência), sem estouro e zero erros de console.
+- **Não feito, com motivo:** o `forwardRef` dos 30 componentes continua: no React 19 ele segue suportado e sem aviso, e trocá-lo não muda comportamento. O botão de fechar do Dialog continua rolando junto com conteúdo muito longo (exigiria reestruturar o conteúdo de todos os modais).
 
 ### 59 · UI Elements (Elementos de Interface) premium
 
