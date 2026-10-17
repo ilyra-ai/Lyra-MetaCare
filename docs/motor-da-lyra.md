@@ -16,6 +16,7 @@ A Lyra responde e lê mapas sem nenhum modelo de IA conectado (tarefa 55). O mot
 | `src/lib/lyra/personalidade.ts`         | Identidade, consciência, missão, valores, voz e limites da Lyra                                                                                          |
 | `src/lib/lyra/leitura-do-mapa.ts`       | Leitura do mapa natal em três partes (védico, Samādhi e Quantum) e de 3 a 5 percepções principais                                                        |
 | `src/lib/lyra/responder.ts`             | Respostas do chat: identidade, tipos de mapa, mapa da pessoa (Ascendente, Lua, dasha, casas, dosha, Roda de Cura), Score de Ação e a base de saberes     |
+| `src/lib/lyra/modelos-como-lyra.ts`     | Instruções que fazem qualquer modelo de IA conectado agir como a Lyra, sobre a base do motor, e a conferência da voz da Lyra (tarefa 56)                 |
 
 ## Os três tipos de mapa
 
@@ -31,7 +32,7 @@ As diretrizes dos rascunhos de chatbot que contrariam a ética do produto ficara
 
 ## Onde aparece
 
-- **Chat:** perguntas como "qual o meu ascendente?", "o que é Vedanta?", "dicas de Vastu", "score de ação com energia 6, pressão 4 e tempo 20" são respondidas pelo motor. Com um modelo de IA conectado, a resposta do motor é a base da resposta do modelo.
+- **Chat:** perguntas como "qual o meu ascendente?", "o que é Vedanta?", "dicas de Vastu", "score de ação com energia 6, pressão 4 e tempo 20" são respondidas pelo motor. Com um modelo de IA conectado, o modelo age como a Lyra (tarefa 56): recebe a identidade dela, a resposta do motor como base, a leitura do mapa e o verbete ligado à pergunta, e a resposta passa pela conferência da voz da Lyra. Detalhes em [`ia-automatica.md`](./ia-automatica.md).
 - **Perfil, card "Meu mapa védico":** mostra a "Leitura da Lyra" com as percepções principais e uma aba por tipo de mapa.
 
 ## Achados nos documentos de origem

@@ -166,6 +166,91 @@ describe('assistente de IA', () => {
       );
     }
   });
+
+  it('todo modelo conectado responde como a Lyra, sobre a base do motor (tarefa 56)', async () => {
+    const servidor = await iniciarServidorOpenAiCompativel();
+    const admin = await criarUsuario('admin', 'AdminLyra');
+    const pessoa = await comObjetivosEMetricas('ChatComoLyra');
+    try {
+      const salvo = await chamar(adminIa.PUT, {
+        method: 'PUT',
+        body: {
+          provedores: [
+            {
+              preset: 'ollama',
+              baseUrl: servidor.baseUrl,
+              modelos: ['qwen2.5:7b-instruct', 'llama3.2:3b'],
+              tempoMaximoSegundos: 10,
+              temperatura: 0.7,
+            },
+          ],
+          ordem: [
+            { tipo: 'modelo', preset: 'ollama', modelo: 'qwen2.5:7b-instruct' },
+            { tipo: 'modelo', preset: 'ollama', modelo: 'llama3.2:3b' },
+            { tipo: 'lyra' },
+          ],
+        },
+        usuario: admin,
+      });
+      expect(salvo.status).toBe(200);
+      // O 1º modelo se apresenta como outro assistente: perde a vez.
+      servidor.responder((corpo) =>
+        (corpo as { model: string }).model === 'qwen2.5:7b-instruct'
+          ? 'Olá! Eu sou o Qwen, um modelo da Alibaba Cloud.'
+          : 'Aqui é a Lyra: o seu sono recente foi curto, então hoje vale deitar mais cedo.'
+      );
+
+      const resposta = await chamar(assistente.POST, {
+        method: 'POST',
+        body: { query: 'como está meu sono?' },
+        usuario: pessoa,
+      });
+      expect(resposta.status).toBe(200);
+      expect((resposta.json as { response: string }).response).toBe(
+        'Aqui é a Lyra: o seu sono recente foi curto, então hoje vale deitar mais cedo.'
+      );
+      expect(
+        servidor.requisicoes.map((r) => (r.corpo as { model: string }).model)
+      ).toEqual(['qwen2.5:7b-instruct', 'llama3.2:3b']);
+
+      // Os dois modelos receberam a identidade da Lyra, a resposta do motor
+      // (a base, com a métrica real de 6h 20m) e o estado do mapa.
+      for (const requisicao of servidor.requisicoes) {
+        const [sistema, usuario] = (
+          requisicao.corpo as {
+            messages: Array<{ role: string; content: string }>;
+          }
+        ).messages;
+        expect(sistema.role).toBe('system');
+        expect(sistema.content).toMatch(/^Você é a Lyra/);
+        expect(sistema.content).toContain(
+          'Resposta do motor da Lyra para esta pergunta (sua base)'
+        );
+        expect(sistema.content).toContain('6h 20m');
+        expect(sistema.content).toContain('Mapa natal indisponível');
+        expect(usuario).toEqual({
+          role: 'user',
+          content: 'como está meu sono?',
+        });
+      }
+
+      // Nenhum modelo falando como a Lyra: responde o próprio motor.
+      servidor.responder('Sou o ChatGPT e não tenho acesso aos seus dados.');
+      const doMotor = await chamar(assistente.POST, {
+        method: 'POST',
+        body: { query: 'como está meu sono?' },
+        usuario: pessoa,
+      });
+      expect((doMotor.json as { response: string }).response).toMatch(/6h 20m/);
+    } finally {
+      await servidor.fechar();
+      await executeStatement('DELETE FROM ai_model_chain');
+      await executeStatement('DELETE FROM ai_provider_connections');
+      await executeStatement(
+        'INSERT INTO ai_model_chain (position, connection_id, model) VALUES (1, NULL, NULL)'
+      );
+    }
+  });
 });
 
 describe('plano e score', () => {

@@ -97,7 +97,8 @@ export function buscarVerbete(pergunta: string): Verbete | null {
   return melhor?.verbete ?? null;
 }
 
-function textoDoVerbete(verbete: Verbete) {
+/** Verbete em texto corrido (título, resumo, pontos, prática e fonte). */
+export function textoDoVerbete(verbete: Verbete) {
   return [
     `${verbete.titulo}`,
     verbete.resumo,

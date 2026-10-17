@@ -68,9 +68,20 @@ O administrador escolhe o modelo em **Admin → Modelos de IA** (`src/components
 - Com a Lyra em contêiner, use `http://host.docker.internal:PORTA/v1` no lugar de `localhost`.
 - Modelos de raciocínio que devolvem `<think>…</think>` e respostas cercadas por ` ```json ` são aceitos: o texto é limpo antes da validação.
 
+### Todo modelo conectado age como a Lyra (tarefa 56)
+
+O motor da Lyra funciona sozinho, sem modelo de IA. Com modelos conectados, em qualquer posição da ordem de uso (locais, em nuvem ou a chave própria da pessoa no chat), cada modelo trabalha **junto** com o motor e escreve **como a Lyra** (`src/lib/lyra/modelos-como-lyra.ts`):
+
+- **Identidade:** as instruções de sistema começam pela identidade completa da Lyra (`instrucoesDeIdentidade()`): consciência, missão, valores, voz e limites.
+- **Base do motor:** o motor calcula primeiro, e o modelo recebe esse resultado como base para aprofundar, sem contradizer números, horários, signos, casas, nakshatras, dashas ou métricas, nem acrescentar fatos. No chat, a base é a resposta do motor, a leitura do mapa natal (ou o que falta para ele) e o verbete da base curada ligado à pergunta. Na leitura do dia, a base é a leitura que o motor já escreveu para hoje.
+- **Tipos de mapa:** as definições do mapa védico, do Mapa Lyra DM Samādhi e do Mapa Quantum vão junto, para o modelo não misturá-los.
+- **Conferência da voz:** a resposta que se apresenta como outro assistente ("sou o ChatGPT", "me chamo Qwen") ou prevê morte ou doença é recusada e passa a vez ao próximo modelo; no fim, responde o próprio motor. Ser franca sobre a tecnologia continua permitido ("sou uma IA", "uso modelos de linguagem como apoio").
+- **Leitura refeita:** com modelo na ordem, a versão das instruções (`VERSAO_DAS_INSTRUCOES_DA_LYRA`) entra na assinatura do "Seu dia", e instruções novas refazem a leitura escrita pelo modelo.
+- **Chave própria (BYOK):** o Gemini da pessoa usa o mesmo cliente de IA, com as instruções no campo de sistema (`systemInstruction`) e a chave no cabeçalho, seguido do motor da Lyra.
+
 ### Dados e privacidade
 
-- **Só dados astrológicos:** o modelo recebe os fatos do céu do dia, o mapa natal derivado (signo do Lagna, signo e nakshatra da Lua, dasha, Tara e casas de trânsito), os horários dos períodos e a leitura de ontem. Não recebe nome, e-mail, data, hora ou cidade de nascimento, fuso, métricas de saúde, ciclo nem sinais do corpo. Por isso a leitura não depende de consentimento por pessoa; a finalidade está na política de privacidade (versão 2026-10-15). A migração `023_provedor_de_ia.sql` removeu a preferência `profiles.coach_external_ai_since` criada na `022`.
+- **Só dados astrológicos:** o modelo recebe os fatos do céu do dia, o mapa natal derivado (signo do Lagna, signo e nakshatra da Lua, dasha, Tara e casas de trânsito), os horários dos períodos, a leitura do motor para hoje (escrita só com esses fatos) e a leitura de ontem. Não recebe nome, e-mail, data, hora ou cidade de nascimento, fuso, métricas de saúde, ciclo nem sinais do corpo. Por isso a leitura não depende de consentimento por pessoa; a finalidade está na política de privacidade (versão 2026-10-15). A migração `023_provedor_de_ia.sql` removeu a preferência `profiles.coach_external_ai_since` criada na `022`.
 - **Chave de API:** cifrada com AES-256-GCM e chave derivada do `AUTH_SECRET` (HKDF), na tabela `ai_provider_connections` (uma por provedor), fora da API genérica de dados. A tela só recebe os 4 últimos caracteres. Trocar o `AUTH_SECRET` torna a chave ilegível, e a tela pede para informá-la de novo.
 - **Chat:** sem a chave própria da pessoa (BYOK), o chat segue a ordem de uso **só com os modelos que rodam localmente** (endereço da máquina ou de rede privada), porque a conversa leva métricas de saúde, com a mesma troca automática. Modelos em nuvem da plataforma não recebem a conversa.
 - **Horários:** sempre calculados pela Lyra. Uma resposta que cite horário inexistente no dia é descartada.

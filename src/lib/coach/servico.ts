@@ -16,6 +16,7 @@ import {
   montarCadeia,
 } from '@/lib/ai/cadeia-de-modelos';
 import { lerConfiguracaoDeIa } from '@/lib/ai/provedores-da-plataforma';
+import { VERSAO_DAS_INSTRUCOES_DA_LYRA } from '@/lib/lyra/modelos-como-lyra';
 
 import { hashDasEntradas, lerContextoDoCoach } from './contexto';
 import { gerarDiaLocal } from './gerador-local';
@@ -153,9 +154,13 @@ async function prepararBriefingDoDia(
   const configuracaoDeIa = await lerConfiguracaoDeIa();
   const cadeia = montarCadeia(configuracaoDeIa);
   const temModelo = cadeiaTemModelo(cadeia);
+  // Com modelo, a versão das instruções da Lyra (tarefa 56) entra na
+  // assinatura: instruções novas refazem a leitura escrita pelo modelo.
   const hash = hashDasEntradas(
     contexto,
-    assinaturaDaCadeia(cadeia, configuracaoDeIa.atualizadoEm)
+    temModelo
+      ? `${assinaturaDaCadeia(cadeia, configuracaoDeIa.atualizadoEm)}|instrucoes-da-lyra:${VERSAO_DAS_INSTRUCOES_DA_LYRA}`
+      : assinaturaDaCadeia(cadeia, configuracaoDeIa.atualizadoEm)
   );
 
   const [existente] = await queryRows<LinhaDoBriefing>(

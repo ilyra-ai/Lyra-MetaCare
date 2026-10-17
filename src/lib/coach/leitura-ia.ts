@@ -10,6 +10,10 @@ import {
   ErroDoProvedor,
   extrairJson,
 } from '@/lib/ai/cliente-de-ia';
+import {
+  conferirVozDaLyra,
+  instrucoesDaLeituraComoLyra,
+} from '@/lib/lyra/modelos-como-lyra';
 
 import type { EntradaDaLeitura } from './leitura-vedica';
 import { termoTecnicoEm } from './linguagem-simples';
@@ -18,10 +22,11 @@ import type { LeituraVedica, Periodo } from './tipos';
 /**
  * Leitura védica do dia escrita pelo modelo de IA configurado pelo
  * administrador (local, como Ollama, LM Studio, Jan ou llama.cpp, ou em
- * nuvem). O modelo recebe só os fatos astrológicos do dia (`EntradaDaLeitura`)
- * e a leitura da véspera, para não se repetir. A resposta é validada: formato
- * (Zod), horários que existem no dia e texto diferente do de ontem. Qualquer
- * falha mantém a leitura do motor da Lyra.
+ * nuvem). O modelo escreve como a Lyra (tarefa 56) e recebe só os fatos
+ * astrológicos do dia (`EntradaDaLeitura`), a leitura que o motor da Lyra já
+ * calculou (a base) e a leitura da véspera, para não se repetir. A resposta é
+ * validada: formato (Zod), horários que existem no dia, voz da Lyra e texto
+ * diferente do de ontem. Qualquer falha mantém a leitura do motor da Lyra.
  */
 
 const texto = (minimo: number, maximo: number) =>
@@ -181,17 +186,34 @@ export function termoTecnicoNaLeitura(leitura: LeituraDaIa): string | null {
   return null;
 }
 
-export const INSTRUCOES_DO_SISTEMA = `Você é a astróloga védica e coach de bem-estar da Lyra MetaCare.
+/**
+ * Regras próprias da leitura do dia. Elas completam a identidade da Lyra
+ * (tarefa 56) e valem acima das regras gerais dela: por exemplo, a Lyra
+ * pode citar um termo em sânscrito explicando-o no chat, mas nesta leitura,
+ * escrita para leigos (tarefa 49), nenhum termo técnico aparece.
+ */
+export const REGRAS_DA_LEITURA_DO_DIA = `Nesta tarefa, você escreve a leitura védica do dia desta pessoa, como astróloga védica e coach de bem-estar.
 Escreva em português do Brasil, em segunda pessoa, com tom acolhedor, claro e específico, sem emojis.
 Escreva para quem não entende de astrologia: nada de termos técnicos nem nomes em sânscrito (por exemplo nakshatra, tithi, paksha, Tara, dasha, Rahu Kalam, Choghadiya, muhurta, Chandrashtama, karana, nem "8ª casa"). Traduza cada fato no que ele significa para a vida da pessoa: em vez de "Tara Pratyari", diga "um dia de resistências"; em vez de "Lua na 7ª casa", diga "a Lua passa pela área do seu mapa ligada às parcerias". Planetas e signos podem ser citados pelo nome em português.
 Fale do mapa desta pessoa: use a Lua de nascimento, o tom do dia para ela, a área do mapa por onde a Lua passa, a fase da vida e os trânsitos, sempre pelo que significam.
 Use somente os fatos fornecidos (mapa natal derivado, céu do dia, períodos, horas planetárias, trânsitos e fase da vida). Não invente posições, horários nem fatos.
 Cite horários apenas como aparecem nos fatos (HH:MM). Não dê diagnósticos, não cite medicamentos nem prometa resultados de saúde: são orientações de bem-estar e autoconhecimento.
-Cada dia é único: a leitura de hoje precisa ser diferente da de ontem, destacando o que mudou no céu.`;
+Cada dia é único: a leitura de hoje precisa ser diferente da de ontem, destacando o que mudou no céu.
+A leitura que o motor da Lyra já calculou para hoje é a sua base: escreva com as suas palavras, mais completa e pessoal, sem contradizer os fatos dela.`;
+
+/**
+ * Instruções de sistema enviadas a qualquer modelo da ordem de uso: o modelo
+ * escreve como a Lyra (identidade, valores, voz e limites), sobre a base do
+ * motor da Lyra.
+ */
+export const INSTRUCOES_DO_SISTEMA = instrucoesDaLeituraComoLyra(
+  REGRAS_DA_LEITURA_DO_DIA
+);
 
 function pedidoDoUsuario(
   entrada: EntradaDaLeitura,
-  ontem: LeituraVedica | null
+  ontem: LeituraVedica | null,
+  base: LeituraVedica
 ) {
   const periodos = entrada.periodos.map((p) => p.chave);
   return `Escreva a leitura védica de ${entrada.data} para esta pessoa, com:
@@ -212,6 +234,9 @@ Responda com UM ÚNICO objeto JSON, com as cinco chaves juntas, neste formato, s
 
 Fatos do dia:
 ${JSON.stringify(entrada)}
+
+Leitura do motor da Lyra para hoje (sua base; não copie, aprofunde):
+${JSON.stringify({ resumoGeral: base.resumoGeral, periodos: base.periodos, pontosPositivos: base.pontosPositivos, pontosNegativos: base.pontosNegativos, dicas: base.dicas })}
 ${
   ontem
     ? `
@@ -292,6 +317,12 @@ export function conferirLeituraDaIa(
   if (termo) {
     return { ok: false, motivo: `termo técnico na leitura ("${termo}")` };
   }
+  // A leitura é da Lyra (tarefa 56): sem outra identidade e sem os limites
+  // que ela não ultrapassa.
+  const voz = conferirVozDaLyra(JSON.stringify(validada.data));
+  if (voz) {
+    return { ok: false, motivo: voz };
+  }
   if (
     ontem &&
     normalizado(ontem.resumoGeral) === normalizado(validada.data.resumoGeral)
@@ -319,7 +350,7 @@ export async function escreverLeituraNaCadeia(opcoes: {
     opcoes.cadeia,
     {
       sistema: INSTRUCOES_DO_SISTEMA,
-      usuario: pedidoDoUsuario(opcoes.entrada, opcoes.ontem),
+      usuario: pedidoDoUsuario(opcoes.entrada, opcoes.ontem, opcoes.base),
       json: true,
       esquemaJson: esquemaJsonDaLeitura(opcoes.entrada),
       nomeDoEsquema: 'leitura_vedica_do_dia',

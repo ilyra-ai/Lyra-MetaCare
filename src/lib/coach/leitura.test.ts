@@ -256,6 +256,15 @@ describe('leitura védica pelo modelo de IA (servidor compatível com a OpenAI)'
     expect(corpo.messages[1].content).toContain(entradaDaLeitura.ceu.nakshatra);
     expect(corpo.messages[1].content).not.toContain('Ana');
     expect(corpo.messages[1].content).not.toContain('1990-05-15');
+    // Tarefa 56: o modelo escreve como a Lyra, sobre a leitura do motor.
+    expect(corpo.messages[0].role).toBe('system');
+    expect(corpo.messages[0].content).toMatch(/^Você é a Lyra/);
+    expect(corpo.messages[1].content).toContain(
+      'Leitura do motor da Lyra para hoje'
+    );
+    expect(corpo.messages[1].content).toContain(
+      JSON.stringify(briefing.leitura.resumoGeral)
+    );
   });
 
   it('descarta horário inventado, formato errado, período faltando e resumo igual ao de ontem', async () => {
@@ -330,6 +339,17 @@ describe('leitura védica pelo modelo de IA (servidor compatível com a OpenAI)'
       ok: false,
       motivo: 'termo técnico na leitura ("Tara")',
     });
+    // Tarefa 56: quem se apresenta como outro assistente não é a Lyra.
+    const outraVoz = respostaValida(
+      entradaDaLeitura,
+      'Eu sou o ChatGPT e preparei a sua leitura: um dia de presença, escuta e foco no essencial ao longo de hoje.'
+    );
+    servidor.responder(JSON.stringify(outraVoz));
+    expect(await chamar()).toEqual({
+      ok: false,
+      motivo: 'o modelo falou como outro assistente, não como a Lyra',
+    });
+
     // O pedido explica a regra ao modelo.
     const sistema = (
       servidor.requisicoes.at(-1)?.corpo as {

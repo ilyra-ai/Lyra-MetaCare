@@ -7,6 +7,7 @@ import {
   type AiSkillDocument,
 } from '@/lib/ai/chat-engine';
 import {
+  type EloDaCadeia,
   gerarNaCadeia,
   montarCadeia,
   somenteLocais,
@@ -21,6 +22,10 @@ import { obterBriefingDoDia } from '@/lib/coach/servico';
 import type { BriefingDoDia } from '@/lib/coach/tipos';
 import { lerJson, respostaDeErro } from '@/lib/http/api';
 import { listaDeTextos } from '@/lib/json-values';
+import {
+  conferirVozDaLyra,
+  instrucoesDoChatComoLyra,
+} from '@/lib/lyra/modelos-como-lyra';
 import { queryRows } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 import { registrarErroInterno } from '@/lib/observability/log-seguro';
@@ -38,7 +43,7 @@ const perguntaSchema = z.object({
   userApiKey: z.string().trim().max(200).optional(),
 });
 
-const TEMPO_MAXIMO_LLM_MS = 20_000;
+const TEMPO_MAXIMO_DO_BYOK_S = 20;
 
 export async function POST(request: Request) {
   try {
@@ -136,89 +141,63 @@ export async function POST(request: Request) {
       seuDia,
     });
 
-    let finalResponse = fallbackResponse;
+    // Qualquer modelo conectado responde como a Lyra (tarefa 56): recebe a
+    // identidade dela, a resposta já calculada pelo motor (a base), a leitura
+    // do mapa e o conhecimento curado ligado à pergunta. A resposta passa pela
+    // conferência da voz da Lyra; recusada, o próximo modelo assume e, no fim,
+    // responde o próprio motor.
+    const systemPrompt = instrucoesDoChatComoLyra({
+      pergunta: query,
+      respostaDoMotor: fallbackResponse,
+      mapa: mapaNatal,
+      faltando: perfilAstrologico.faltando,
+      habilidades: buildSkillsContext(skills),
+    });
+    const pedido = {
+      sistema: systemPrompt,
+      usuario: query,
+      maximoDeTokens: 1024,
+    };
 
-    const skillsContext = buildSkillsContext(skills);
-    const systemPrompt = `Você é o Lyra MetaCare, um assistente de bem-estar integrativo. Não substitui avaliação profissional de saúde.
-${
-  skillsContext
-    ? `${skillsContext}
----
-`
-    : ''
-}Abaixo está a análise determinística Védica-Quântica sobre os biomarcadores reais do usuário:
----
-${fallbackResponse}
----
-Use esta análise como base e siga estritamente as habilidades, skills e treinamentos configurados acima para responder à pergunta do usuário de forma humana, empática e embasada. Responda APENAS com a sua resposta direta.`;
-
-    // Sem chave própria: responde a ordem de uso dos modelos da plataforma
-    // (tarefa 54), só com os que rodam na infraestrutura da Lyra (Ollama, LM
-    // Studio, Jan, llama.cpp etc.), porque a análise leva métricas de saúde
-    // e elas não saem do servidor; modelos em nuvem não recebem a conversa.
-    // Se um modelo falha ou fica sem tokens, o seguinte assume (e continua
-    // uma resposta cortada); sem nenhum, responde o motor da Lyra.
-    if (!userApiKey) {
-      const cadeia = somenteLocais(montarCadeia(await lerConfiguracaoDeIa()));
-      const resultado = await gerarNaCadeia(
-        cadeia,
-        { sistema: systemPrompt, usuario: query, maximoDeTokens: 1024 },
-        { rotulo: 'chat' }
-      );
-      if (resultado.origem === 'modelo') {
-        finalResponse = resultado.texto;
-      }
-    }
-
-    // BYOK: a chave vai no cabeçalho x-goog-api-key (nunca na URL, que aparece
-    // em logs de proxy); o motor local é a resposta se o LLM falhar.
-    if (userApiKey) {
-      try {
-        const aiModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-
-        const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(aiModel)}:generateContent`,
+    // Sem chave própria: a ordem de uso dos modelos da plataforma (tarefa
+    // 54), só com os que rodam na infraestrutura da Lyra (Ollama, LM Studio,
+    // Jan, llama.cpp etc.), porque a conversa leva métricas de saúde e elas
+    // não saem do servidor; modelos em nuvem não recebem a conversa. Se um
+    // modelo falha ou fica sem tokens, o seguinte assume (e continua uma
+    // resposta cortada).
+    // Com chave própria (BYOK): o Gemini da pessoa, pelo mesmo cliente de IA
+    // (instruções de sistema no campo próprio e chave no cabeçalho, nunca na
+    // URL), com o motor da Lyra depois dele.
+    const cadeia: EloDaCadeia[] = userApiKey
+      ? [
           {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-goog-api-key': userApiKey,
+            tipo: 'modelo',
+            conexao: {
+              tipo: 'gemini',
+              baseUrl: null,
+              modelo: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+              chave: userApiKey,
+              tempoMaximoSegundos: TEMPO_MAXIMO_DO_BYOK_S,
+              temperatura: 0.3,
             },
-            body: JSON.stringify({
-              contents: [
-                { role: 'user', parts: [{ text: systemPrompt }] },
-                { role: 'user', parts: [{ text: query }] },
-              ],
-              generationConfig: { temperature: 0.3 },
-            }),
-            signal: AbortSignal.timeout(TEMPO_MAXIMO_LLM_MS),
-          }
-        );
+            autor: {
+              provedor: 'Gemini (chave própria)',
+              modelo: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+              local: false,
+            },
+          },
+          { tipo: 'lyra' },
+        ]
+      : somenteLocais(montarCadeia(await lerConfiguracaoDeIa()));
+    const resultado = await gerarNaCadeia(cadeia, pedido, {
+      rotulo: userApiKey ? 'chat-byok' : 'chat',
+      validar: conferirVozDaLyra,
+    });
 
-        if (geminiRes.ok) {
-          const geminiData = (await geminiRes.json()) as {
-            candidates?: Array<{
-              content?: { parts?: Array<{ text?: string }> };
-            }>;
-          };
-          const llmText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (llmText) {
-            finalResponse = llmText;
-          }
-        } else {
-          console.error(
-            `[ask-ai-assistant] Gemini respondeu HTTP ${geminiRes.status}; usando o motor local.`
-          );
-        }
-      } catch (err) {
-        console.error(
-          '[ask-ai-assistant] Falha na chamada ao Gemini; usando o motor local:',
-          err instanceof Error ? err.message : err
-        );
-      }
-    }
-
-    return NextResponse.json({ response: finalResponse });
+    return NextResponse.json({
+      response:
+        resultado.origem === 'modelo' ? resultado.texto : fallbackResponse,
+    });
   } catch (error) {
     return respostaDeErro(error, 'Falha no assistente local.');
   }
