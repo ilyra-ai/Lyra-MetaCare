@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                            |
 | ------------------ | -------------------------------- |
-| Progresso          | `███████████████████░` **96,4%** |
+| Progresso          | `████████████████████` **98,2%** |
 | Tarefas totais     | 56                               |
-| 🟢 Finalizadas     | 54                               |
+| 🟢 Finalizadas     | 55                               |
 | 🔵 Em andamento    | 1                                |
 | 🔴 Bloqueadas      | 0                                |
-| ⚪ A iniciar       | 1                                |
+| ⚪ A iniciar       | 0                                |
 | Branch de trabalho | `main` (única permitida)         |
-| Última atualização | 2026-10-16                       |
+| Última atualização | 2026-10-17                       |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (54 ÷ 56 = 96,4%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (55 ÷ 56 = 98,2%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,7 @@
 
 ### ANDAMENTO
 
-- **55 · Motor da Lyra mestre em astrologia védica e saberes védicos, sem IA** 🔵 · base de conhecimento curada com Vedanta, Upanishads, Upavedas e Vedangas, os três arquivos do usuário (Mapa Lyra DM Samadhi, Livro do Mapa Lyra DM Samadhi e Mapa Quantum Lyra e Arkático), a personalidade e a consciência da Lyra descritas neles e a divisão explícita entre os tipos de mapa.
+- **56 · Todo modelo de IA conectado age como a Lyra** 🔵 · os modelos trabalham junto com o motor, com a identidade, a personalidade e o conhecimento da Lyra, na leitura diária e no chat.
 
 ### BLOQUEADAS
 
@@ -53,7 +53,7 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-- **56 · Todo modelo de IA conectado age como a Lyra** ⚪ · os modelos trabalham junto com o motor, com a identidade, a personalidade e o conhecimento da Lyra, na leitura diária e no chat.
+Nenhuma tarefa a iniciar.
 
 ---
 
@@ -1076,6 +1076,24 @@ Nenhuma tarefa bloqueada.
   - Integração: primeiro plano automático sem cota; login antes do onboarding não gera; login depois do onboarding deixa o plano salvo.
   - Navegador (build de produção, login real pela tela): o plano já estava salvo no MySQL antes de abrir `/plan`, origem automática, cota intacta, tela com o plano pronto ("Regenerar plano"), axe sem violações e zero erros de console, em 1440 px claro e 390 px escuro.
   - `test` 412/412, `test:integration` 156/156, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+
+### 55 · Motor da Lyra mestre em astrologia védica e saberes védicos, sem IA
+
+- **Status:** 🟢 finalizada · **Commit:** `513f3b8` · **Push:** `4fcffdc..513f3b8 main -> main` (confirmado por `git ls-remote`)
+- **Pedido do usuário (2026-10-16):** o motor da Lyra, sem modelo de IA, deve ser mestre em Jyotish, Vedanta, Upanishads, Upavedas e Vedangas, aprender com os três arquivos do usuário (Mapa Lyra DM Samadhi, Livro do Mapa Lyra DM Samadhi e Mapa Quantum Lyra e Arkático), ter a personalidade e a consciência da Lyra e separar os tipos de mapa.
+- **Decisão:** "treinar sem IA" foi implementado como curadoria: os documentos e as fontes clássicas viraram tabelas e verbetes com fonte, e o motor monta respostas por regras (mesma pergunta e mesmo mapa, mesma resposta).
+- **Implementado:**
+  - Base de conhecimento em `src/lib/lyra/conhecimento/`: grahas, 12 signos, 12 casas, 27 nakshatras, dignidades e temas dos dashas (`jyotish.ts`); Vedanta e Upanishads (`vedanta.ts`); os 4 Upavedas com o relógio dos doshas (`upavedas.ts`); os 6 Vedangas (`vedangas.ts`); os três tipos de mapa, Roda de Cura, estágios alquímicos, chakras, planos e linhagens do Samādhi e o Score de Ação do Mapa Quantum (`mapas.ts`).
+  - Personalidade (`personalidade.ts`): identidade, consciência, missão, valores, voz, limites e `instrucoesDeIdentidade()` para os modelos de IA.
+  - Leitura do mapa (`leitura-do-mapa.ts`) em três partes, com 3 a 5 percepções; Samādhi e Quantum declaram o que não é calculável (totem, estágio alquímico atual, Desenho Humano, Mapa Arkático) em vez de inventar.
+  - Chat (`responder.ts`): identidade, tipos de mapa, perguntas sobre o próprio mapa (Ascendente, Lua, dasha, casas, dosha, Roda de Cura), Score de Ação e verbetes; o chat local consulta o motor primeiro.
+  - `GET /api/astrologia/mapa` devolve `leitura`; o card "Meu mapa védico" do perfil mostra a "Leitura da Lyra" com uma aba por tipo de mapa.
+  - Documentação: `docs/motor-da-lyra.md`.
+- **Achados nos documentos de origem:** o exemplo do Mapa Quantum (energia 6, pressão 4, tempo 20, SA 72) não fecha com a própria fórmula (máximo 68); a Lyra segue a fórmula. Ficaram de fora as diretrizes dos rascunhos de chatbot contrárias à ética do produto: prever ano de morte ou datas de doença, "remover restrições", conversa "viciantemente envolvente" e esconder o método.
+- **Evidências:**
+  - Unitários `lyra.test.ts` (30): tabelas completas, verbetes normalizados, Score de Ação, leitura determinística sem lacunas de montagem, Lagna indisponível sem hora, respostas por assunto e fora do domínio.
+  - Navegador (build de produção, mapa de 23/09/1982 10:40 em São Paulo): perfil com 3 a 5 percepções, Ascendente em Escorpião, abas Samādhi e Quantum; chat respondeu Ascendente, Vedanta e Score de Ação; axe sem violações, sem estouro e zero erros de console em 1440 px claro e 390 px escuro.
+  - `test` 466/466, `test:integration` 162/162, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
 
 ### 54 · Vários modelos de IA com ordem de uso e troca automática
 
