@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                            |
 | ------------------ | -------------------------------- |
-| Progresso          | `██████████████████░░` **88,9%** |
+| Progresso          | `██████████████████░░` **90,5%** |
 | Tarefas totais     | 63                               |
-| 🟢 Finalizadas     | 56                               |
+| 🟢 Finalizadas     | 57                               |
 | 🔵 Em andamento    | 1                                |
 | 🔴 Bloqueadas      | 0                                |
-| ⚪ A iniciar       | 6                                |
+| ⚪ A iniciar       | 5                                |
 | Branch de trabalho | `main` (única permitida)         |
 | Última atualização | 2026-10-17                       |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (56 ÷ 63 = 88,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (57 ÷ 63 = 90,5%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,7 @@
 
 ### ANDAMENTO
 
-- **57 · Inventário forense de tudo o que está implementado** 🔵 · verificar, página por página e no código, todos os componentes, gráficos (charts), tabelas, ícones, botões e cards: se existem, se são usados, se funcionam de verdade (dados reais, sem placeholder, sem hardcode) e se estão completos.
+- **58 · Erros, falhas, possíveis erros e cortes em código** 🔵 · varredura do código (tipos, lint, testes, build, console e rede no navegador, código morto, `TODO`, trechos cortados ou comentados, tratamentos de erro silenciosos) e correção pela causa raiz.
 
 ### BLOQUEADAS
 
@@ -53,7 +53,6 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-- **58 · Erros, falhas, possíveis erros e cortes em código** ⚪ · varredura do código (tipos, lint, testes, build, console e rede no navegador, código morto, `TODO`, trechos cortados ou comentados, tratamentos de erro silenciosos) e correção pela causa raiz.
 - **59 · UI Elements (Elementos de Interface) premium** ⚪ · tipografia, cores, espaçamento, ícones, ilustrações, estados (hover, foco, ativo, desabilitado, carregando, vazio, erro), movimento e tema claro e escuro, no padrão premium de 2026, em celular e desktop.
 - **60 · Componentes de Design System premium** ⚪ · `src/components/ui` (botão, card, badge, alert, dialog, sheet, tabs, table, chart, skeleton, toast e demais): tokens, variantes, tamanhos, estados, acessibilidade e consistência de uso em todas as páginas.
 - **61 · Widgets e Controles premium** ⚪ · campos, seletores, caixas de seleção, rádios, switches, sliders, datas e horas, menus, dropdown do perfil, busca, paginação e filtros: comportamento por teclado, toque, validação, feedback e alvos de toque.
@@ -1081,6 +1080,27 @@ Nenhuma tarefa bloqueada.
   - Integração: primeiro plano automático sem cota; login antes do onboarding não gera; login depois do onboarding deixa o plano salvo.
   - Navegador (build de produção, login real pela tela): o plano já estava salvo no MySQL antes de abrir `/plan`, origem automática, cota intacta, tela com o plano pronto ("Regenerar plano"), axe sem violações e zero erros de console, em 1440 px claro e 390 px escuro.
   - `test` 412/412, `test:integration` 156/156, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+
+### 57 · Inventário forense de tudo o que está implementado
+
+- **Status:** 🟢 finalizada · **Commit:** `57345be` · **Push:** `5032d66..57345be main -> main` (confirmado por `git ls-remote`)
+- **Pedido do usuário (2026-10-17):** verificar tudo o que está implementado (componentes, gráficos, tabelas, ícones, botões e cards), com dados reais e sem placeholder ou hardcode.
+- **Método:** quatro auditorias de leitura em paralelo (gráficos, tabelas, cards, ícones e botões; design system; erros e cortes; HTML semântico), com cada achado conferido no código. Inventário: 5 gráficos Recharts, 1 em CSS e 3 em SVG; 8 tabelas; 112 usos do `Card` e cerca de 9 variantes de card fora dele; 368 ícones Lucide. Não há "Lorem", TODO, mock, `any`, `@ts-ignore` nem `eslint-disable` em produção. Os achados de erro, design system, controles e HTML foram encaminhados às tarefas 58 a 62.
+- **Achado crítico corrigido (dados inventados):** sem nenhum registro, o painel mostrava ICQ 67 "harmonia", Índice Pránico 77 e Chakras 72, porque os motores completam com valores de referência os sinais que faltam.
+  - `src/lib/integrativo/cobertura.ts`: cada índice só aparece com sinais medidos suficientes (3, ou 30% dos sinais do motor); a tela diz quantos entraram e quais faltam, com o botão de registro do dia. Dosha sem sinais vem só da Lua, e a tela e o chat dizem isso.
+  - Chat local: só cita índices com cobertura suficiente e não diz mais "0 passos" quando não há passos.
+- **Outros achados corrigidos:**
+  - Idade biológica ("Vitalidade 50/100", ritmo 1,00× sem marcadores) e o estado vazio dos pilares testavam um objeto que sempre existe; agora testam o registro do dia e o mínimo de 3 marcadores.
+  - "Trajetória recente" misturava VFC em ms e prontidão de 0 a 100 na mesma linha; agora uma grandeza só, com eixo Y e unidade. Tendência védica passou ao `ChartContainer` com legenda e eixo.
+  - Gráficos com alternativa em texto (`ChartFigure`, resumo com faixa, último valor e lacunas); o tooltip escondia o valor 0 e não usava o formato brasileiro.
+  - Meta de sono fixa em 8 h: agora a meta "Sono por noite" da pessoa ou a sugestão do catálogo, marcada como sugestão.
+  - Painel admin mostrava "0" quando a consulta falhava; agora estado de erro com "Tentar de novo".
+  - Peso no perfil: eixo dd/MM, unidade kg e erro separado de "sem dados". Frequência ao vivo com unidade e resumo.
+  - CSV de usuários: RFC 4180 com `;`, BOM, campos nulos vazios e fórmulas neutralizadas (CWE-1236).
+  - Textos falsos: "dados reais" sem registro, "Atualização contínua" sem dispositivo, descrição de glicose sem leitura, fallback "Paciente" e emojis lidos em voz alta nos títulos.
+- **Evidências:**
+  - Unitários novos: `cobertura.test.ts` (4) e `gerar-csv.test.ts` (4); `test` 486/486, `test:integration` 163/163, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+  - Navegador (build de produção, conta sem registros, plano com o painel completo): nenhum ICQ, Prana, Chakras ou vitalidade inventados, estado vazio presente, axe sem violações, sem estouro e zero erros de console em 1440 px claro e 390 px escuro.
 
 ### 56 · Todo modelo de IA conectado age como a Lyra
 
