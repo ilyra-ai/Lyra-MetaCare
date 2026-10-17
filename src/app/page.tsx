@@ -118,7 +118,9 @@ export default function Home() {
     return <SplashScreen />;
   }
 
-  const firstName = profile?.first_name?.trim() || 'Paciente';
+  // Sem nome no perfil, a saudação fica só "Bom dia" (a Lyra não é clínica:
+  // "Paciente" não descreve quem usa o app).
+  const firstName = profile?.first_name?.trim() || null;
   const dashboardConfig = appConfig.dashboard;
 
   return (
@@ -146,7 +148,7 @@ export default function Home() {
                   lineHeight: 1.15,
                 }}
               >
-                {greeting}, {firstName}
+                {firstName ? `${greeting}, ${firstName}` : greeting}
               </h2>
               <p
                 className="mt-2 max-w-2xl text-muted-foreground"

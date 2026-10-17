@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
+import { BotaoRegistroDoDia } from '@/components/metricas/RegistroDoDia';
 import type { DailyMetric } from '@/hooks/use-daily-metrics';
 import type { ProfileSummary } from '@/hooks/use-profile';
 import { usePrivacyMode } from '@/hooks/use-privacy-mode';
@@ -52,6 +53,12 @@ import {
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
+
+/**
+ * Mínimo de marcadores medidos para a idade biológica: com menos, a
+ * estimativa fica igual à idade cronológica (sem informação nova).
+ */
+const MINIMO_DE_MARCADORES_DA_IDADE = 3;
 
 interface LyraIntelligence2026Props {
   metrics: DailyMetric[];
@@ -207,7 +214,14 @@ function ProactiveActionsCard({ actions }: { actions: AgentAction[] }) {
 }
 
 /* ============================ Cartão: Idade biológica (M3) =================== */
-function BiologicalAgeCard({ result }: { result: BiologicalAgeResult | null }) {
+function BiologicalAgeCard({
+  result,
+  semIdade,
+}: {
+  result: BiologicalAgeResult | null;
+  /** Sem data de nascimento no perfil (a idade cronológica não existe). */
+  semIdade: boolean;
+}) {
   if (!result) {
     return (
       <Card className="flex h-full min-w-0 flex-col">
@@ -215,16 +229,23 @@ function BiologicalAgeCard({ result }: { result: BiologicalAgeResult | null }) {
           <Badge variant="default" className="w-fit">
             Idade biológica
           </Badge>
-          <CardTitle>Aguardando idade</CardTitle>
+          <CardTitle>
+            {semIdade ? 'Aguardando a data de nascimento' : 'Aguardando sinais'}
+          </CardTitle>
           <CardDescription>
-            Informe sua idade ou data de nascimento no perfil para estimar sua
-            idade biológica.
+            {semIdade
+              ? 'Informe a sua data de nascimento no perfil para estimar a sua idade biológica.'
+              : `A estimativa usa pelo menos ${MINIMO_DE_MARCADORES_DA_IDADE} marcadores medidos hoje (VFC, frequência em repouso, VO₂ máx., sono, eficiência do sono, glicose, SpO₂ ou minutos ativos).`}
           </CardDescription>
         </CardHeader>
         <CardContent className="mt-auto">
-          <Button asChild variant="outline" size="sm">
-            <Link href="/profile">Completar perfil →</Link>
-          </Button>
+          {semIdade ? (
+            <Button asChild variant="outline" size="sm">
+              <Link href="/profile">Completar perfil</Link>
+            </Button>
+          ) : (
+            <BotaoRegistroDoDia variant="outline" />
+          )}
         </CardContent>
       </Card>
     );
@@ -414,9 +435,7 @@ function CycleCard({ result }: { result: MenstrualCycleResult }) {
           <Moon aria-hidden="true" className="h-5 w-5 text-cosmic" />
         </div>
         <CardTitle>
-          {result.trackable
-            ? `${result.phaseEmoji} ${result.phaseLabel}`
-            : 'Ciclo & vitalidade'}
+          {result.trackable ? result.phaseLabel : 'Ciclo & vitalidade'}
         </CardTitle>
         <CardDescription>
           {result.trackable
@@ -554,8 +573,12 @@ export function LyraIntelligence2026({
   const { privacyMode, setPrivacyMode } = usePrivacyMode();
 
   const biologicalAge = React.useMemo<BiologicalAgeResult | null>(() => {
-    if (chronologicalAge === null || !todayMetrics) return null;
-    return calculateBiologicalAge({
+    // `todayMetrics` sempre existe (é a linha do dia, com `registrado: false`
+    // quando não há registro): sem testar o registro e o mínimo de 3
+    // marcadores medidos, a tela mostrava "Vitalidade 50/100" e ritmo 1,00×
+    // sem nenhum dado (tarefa 57).
+    if (chronologicalAge === null || !todayMetrics?.registrado) return null;
+    const resultado = calculateBiologicalAge({
       chronologicalAge,
       hrv_ms: metricNumber(todayMetrics.hrv_ms),
       resting_heart_rate: metricNumber(todayMetrics.resting_heart_rate),
@@ -566,6 +589,9 @@ export function LyraIntelligence2026({
       spo2_average: metricNumber(todayMetrics.spo2_average),
       active_minutes: metricNumber(todayMetrics.active_minutes),
     });
+    return resultado.availableMarkers >= MINIMO_DE_MARCADORES_DA_IDADE
+      ? resultado
+      : null;
   }, [chronologicalAge, todayMetrics]);
 
   const earlyWarning = React.useMemo<EarlyWarningResult>(() => {
@@ -644,7 +670,10 @@ export function LyraIntelligence2026({
 
       <div className="grid items-stretch gap-6 lg:grid-cols-2 xl:grid-cols-3">
         <ProactiveActionsCard actions={actions} />
-        <BiologicalAgeCard result={biologicalAge} />
+        <BiologicalAgeCard
+          result={biologicalAge}
+          semIdade={chronologicalAge === null}
+        />
         <EarlyWarningCard result={earlyWarning} />
         {isFemale && cycle ? <CycleCard result={cycle} /> : null}
         <PrivacyCard privacyMode={privacyMode} onToggle={setPrivacyMode} />

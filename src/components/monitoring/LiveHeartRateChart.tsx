@@ -8,10 +8,12 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ChartContainer,
+  ChartFigure,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { db } from '@/integrations/mysql/client';
+import { resumoDoGrafico } from '@/lib/graficos/resumo';
 
 interface WearableRealtimePayload {
   heartRate: number | null;
@@ -62,7 +64,12 @@ export function LiveHeartRateChart() {
     <Card className="flex h-full min-w-0 flex-col">
       <CardHeader className="gap-3 p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <CardTitle>Frequência cardíaca ao vivo</CardTitle>
+          <div className="flex min-w-0 flex-col gap-1">
+            <CardTitle>Frequência cardíaca ao vivo</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Batimentos por minuto (bpm) no último minuto.
+            </p>
+          </div>
           <Badge variant={data.length ? 'success' : 'secondary'}>
             {data.length
               ? `${data.length} ${data.length === 1 ? 'leitura' : 'leituras'}`
@@ -82,44 +89,59 @@ export function LiveHeartRateChart() {
             </p>
           </div>
         ) : (
-          <ChartContainer
-            config={chartConfig}
-            className="aspect-auto h-full min-h-60 w-full border-0 p-0"
+          <ChartFigure
+            className="h-full"
+            resumo={resumoDoGrafico(
+              'Frequência cardíaca no último minuto, em batimentos por minuto',
+              [{ nome: 'Frequência', valores: valores, unidade: 'bpm' }]
+            )}
           >
-            <LineChart
-              data={data}
-              margin={{ top: 5, right: 20, left: -10, bottom: 0 }}
-              accessibilityLayer
+            <ChartContainer
+              config={chartConfig}
+              className="aspect-auto h-full min-h-60 w-full border-0 p-0"
             >
-              <CartesianGrid
-                vertical={false}
-                strokeDasharray="3 3"
-                stroke="hsl(var(--border))"
-              />
-              <XAxis dataKey="time" tick={false} axisLine={false} />
-              <YAxis
-                domain={[
-                  Math.max(30, Math.floor((minimo - 10) / 10) * 10),
-                  Math.ceil((maximo + 10) / 10) * 10,
-                ]}
-                axisLine={false}
-                tickLine={false}
-                width={36}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent indicator="line" hideLabel />}
-              />
-              <Line
-                dataKey="heartRate"
-                type="monotone"
-                stroke="var(--color-heartRate)"
-                strokeWidth={2}
-                dot={false}
-                isAnimationActive={false}
-              />
-            </LineChart>
-          </ChartContainer>
+              <LineChart
+                data={data}
+                margin={{ top: 5, right: 20, left: -10, bottom: 0 }}
+                accessibilityLayer
+              >
+                <CartesianGrid
+                  vertical={false}
+                  strokeDasharray="3 3"
+                  stroke="hsl(var(--border))"
+                />
+                {/* Eixo do tempo sem marcas: a janela é o último minuto,
+                  informado no título do card. */}
+                <XAxis
+                  dataKey="time"
+                  tick={false}
+                  axisLine={false}
+                  height={8}
+                />
+                <YAxis
+                  domain={[
+                    Math.max(30, Math.floor((minimo - 10) / 10) * 10),
+                    Math.ceil((maximo + 10) / 10) * 10,
+                  ]}
+                  axisLine={false}
+                  tickLine={false}
+                  width={36}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="line" hideLabel />}
+                />
+                <Line
+                  dataKey="heartRate"
+                  type="monotone"
+                  stroke="var(--color-heartRate)"
+                  strokeWidth={2}
+                  dot={false}
+                  isAnimationActive={false}
+                />
+              </LineChart>
+            </ChartContainer>
+          </ChartFigure>
         )}
       </CardContent>
     </Card>

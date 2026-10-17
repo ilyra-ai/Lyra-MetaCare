@@ -4,6 +4,7 @@ import { Waves } from 'lucide-react';
 
 import { useAccountSubscription } from '@/hooks/use-account-subscription';
 import { useVedicInsights } from '@/hooks/use-vedic-insights';
+import { resumoDaCobertura } from '@/lib/integrativo/cobertura';
 import { isPlanFeatureEnabled } from '@/lib/plans/access';
 import type { AppPageConfig } from '@/lib/site-page-config/schema';
 import { scaleRem } from '@/lib/site-page-config/runtime';
@@ -13,7 +14,8 @@ import { scaleRem } from '@/lib/site-page-config/runtime';
  * Quântica (ICQ, 0–100) calculado pelo motor `coherence-engine` a partir das
  * métricas do dia e do céu do momento — o mesmo valor do painel
  * "Coerência Quântica". Antes o cartão mostrava o número fixo 94.2 para
- * qualquer pessoa. Deve ficar dentro do HealthOrchestratorProvider.
+ * qualquer pessoa; sem sinais suficientes no dia, mostra "—" e o que falta.
+ * Deve ficar dentro do HealthOrchestratorProvider.
  */
 export function HarmoniaAtualCard({ appConfig }: { appConfig: AppPageConfig }) {
   const { data: subscription, loading: subscriptionLoading } =
@@ -23,12 +25,17 @@ export function HarmoniaAtualCard({ appConfig }: { appConfig: AppPageConfig }) {
   const dashboardConfig = appConfig.dashboard;
 
   const carregando = subscriptionLoading || (habilitado && loading);
-  const valor = habilitado && !carregando ? String(coherence.index) : '—';
+  // Só com sinais suficientes medidos hoje (tarefa 57); antes, sem nenhum
+  // registro, o cartão mostrava um ICQ montado com valores de referência.
+  const resultado = habilitado && !carregando ? coherence.resultado : null;
+  const valor = resultado ? String(resultado.index) : '—';
   const detalhe = carregando
-    ? 'Calculando a partir das métricas do dia.'
-    : habilitado
-      ? `Coerência: ${coherence.level}. ${dashboardConfig.harmonyNote}`
-      : 'Disponível com o acesso ao dashboard do seu plano.';
+    ? 'Calculando a partir dos sinais do dia.'
+    : !habilitado
+      ? 'Disponível com o acesso ao painel do seu plano.'
+      : resultado
+        ? `Coerência: ${resultado.level}. ${dashboardConfig.harmonyNote}`
+        : `Sem sinais suficientes hoje (${resumoDaCobertura(coherence.cobertura)}). Registre o seu dia para calcular.`;
 
   return (
     // A escala dos cards (app.sizing.cardScale) vale para todos os cards do

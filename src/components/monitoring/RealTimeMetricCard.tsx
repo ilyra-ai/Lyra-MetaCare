@@ -63,14 +63,18 @@ export function RealTimeMetricCard({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Activity className="size-4" aria-hidden="true" />
-            <span>Atualização contínua</span>
+            {/* Só promete atualização contínua com o dispositivo conectado
+                (tarefa 57); antes o texto aparecia sempre. */}
+            <span>
+              {isActive ? 'Atualização contínua' : 'Sem dispositivo conectado'}
+            </span>
           </div>
           <Badge variant={isActive && value !== null ? 'success' : 'secondary'}>
             {isActive && value === null ? (
               'não medido'
             ) : isActive ? (
               <>
-                <ArrowUpRight aria-hidden="true" />
+                <ArrowUpRight aria-hidden="true" className="size-3" />
                 ao vivo
               </>
             ) : (

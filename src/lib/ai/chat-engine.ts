@@ -5,8 +5,23 @@ import { calculateQuantumCoherence } from '@/lib/quantum/coherence-engine';
 import { calculateChakraAlignment } from '@/lib/chakra/alignment-engine';
 import { calculatePranicIndex } from '@/lib/prana/prana-engine';
 import { calculateKoshas } from '@/lib/vedanta/kosha-engine';
+import {
+  avaliarCobertura,
+  SINAIS_DA_COERENCIA,
+  SINAIS_DO_DOSHA,
+  SINAIS_DO_PRANA,
+  SINAIS_DOS_CHAKRAS,
+  SINAIS_DOS_KOSHAS,
+} from '@/lib/integrativo/cobertura';
 import { IDENTIDADE_DA_LYRA } from '@/lib/lyra/personalidade';
 import { type ContextoDaLyra, responderComoLyra } from '@/lib/lyra/responder';
+
+/** O mesmo snapshot só com ausências (dosha pela Lua, sem sinais). */
+function semSinais<T extends Record<string, number | null>>(snapshot: T): T {
+  return Object.fromEntries(
+    Object.keys(snapshot).map((chave) => [chave, null])
+  ) as T;
+}
 
 export interface AiSkillDocument {
   title: string;
@@ -167,11 +182,43 @@ export function generateLocalAssistantReply(
     vo2_max: null,
   };
 
-  const dosha = calculateDynamicDosha(snap, astro);
-  const icq = calculateQuantumCoherence(snap, astro);
-  const chakras = calculateChakraAlignment(snap);
-  const prana = calculatePranicIndex(snap, astro);
-  const koshas = calculateKoshas(snap, astro);
+  // Só índices com sinais suficientes medidos (tarefa 57): com poucos sinais,
+  // os motores completariam o resto com valores de referência e a resposta
+  // apresentaria números que não vieram da pessoa.
+  const doshaPelosSinais = avaliarCobertura(snap, SINAIS_DO_DOSHA).suficiente;
+  const dosha = calculateDynamicDosha(
+    doshaPelosSinais ? snap : semSinais(snap),
+    astro
+  );
+  const icq = avaliarCobertura(snap, SINAIS_DA_COERENCIA).suficiente
+    ? calculateQuantumCoherence(snap, astro)
+    : null;
+  const chakras = avaliarCobertura(snap, SINAIS_DOS_CHAKRAS).suficiente
+    ? calculateChakraAlignment(snap)
+    : null;
+  const prana = avaliarCobertura(snap, SINAIS_DO_PRANA).suficiente
+    ? calculatePranicIndex(snap, astro)
+    : null;
+  const koshas = avaliarCobertura(snap, SINAIS_DOS_KOSHAS).suficiente
+    ? calculateKoshas(snap, astro)
+    : null;
+  const doshaTexto = doshaPelosSinais
+    ? `${dosha.dominant} (${dosha.prakritiLabel})`
+    : `${dosha.dominant} (tendência pela Lua do dia, sem sinais suficientes do corpo)`;
+  const indicesIntegrativos = [
+    icq ? `- ICQ: ${icq.index}/100 (${icq.level})` : null,
+    chakras
+      ? `- Alinhamento de Chakras: ${chakras.overallScore}/100 (${chakras.overallLabel})`
+      : null,
+    prana
+      ? `- Energia Vital (Prana): ${prana.index}/100 (${prana.level})`
+      : null,
+    koshas
+      ? `- Pancha Koshas (Vedanta): ${koshas.overallScore}/100 (${koshas.overallStatus} - ${koshas.dharmaAlignment})`
+      : null,
+  ].filter((linha): linha is string => linha !== null);
+  const semIndices =
+    'Os índices de coerência, prana, chakras e koshas aparecem quando há sinais suficientes registrados hoje (sono, VFC, humor, estresse, respiração e outros).';
 
   const skills = context.skills ?? [];
 
@@ -303,10 +350,17 @@ export function generateLocalAssistantReply(
   if (isSummaryQuery) {
     responses.push(`Aqui está sua leitura atual, ${name}:`);
 
-    if (metrics) {
-      responses.push(
-        `- Fisiologia: Você registrou ${metrics.steps ?? 0} passos, ${formatSleep(metrics.sleep_duration_minutes)} de sono, e um HRV de ${metrics.hrv_ms ?? 'N/A'} ms.`
-      );
+    const fisiologia = metrics
+      ? [
+          metrics.steps !== null ? `${metrics.steps} passos` : null,
+          metrics.sleep_duration_minutes !== null
+            ? `${formatSleep(metrics.sleep_duration_minutes)} de sono`
+            : null,
+          metrics.hrv_ms !== null ? `VFC de ${metrics.hrv_ms} ms` : null,
+        ].filter((parte): parte is string => parte !== null)
+      : [];
+    if (fisiologia.length > 0) {
+      responses.push(`- Fisiologia: você registrou ${fisiologia.join(', ')}.`);
     } else {
       responses.push(
         `- Fisiologia: Não encontrei métricas recentes vinculadas à sua conta. Conecte um wearable ou registre manualmente.`
@@ -317,8 +371,16 @@ export function generateLocalAssistantReply(
       `- Ciclo Astrológico: A Lua está em ${astro.moonSign} sob o Nakshatra ${astro.nakshatra} (${astro.tithi}). Isso significa que sua energia geral está ${astro.impactOnHealth.energy.toLowerCase()}.`
     );
 
+    responses.push(`- Dosha dominante: ${doshaTexto}.`);
     responses.push(
-      `- Insights Védico-Quânticos: Dosha dominante (${dosha.dominant}), Coerência Quântica (${icq.index}/100 - ${icq.level}), e Índice Prânico (${prana.index}/100).`
+      icq || prana
+        ? `- Insights Védico-Quânticos: ${[
+            icq ? `Coerência Quântica ${icq.index}/100 (${icq.level})` : null,
+            prana ? `Índice Pránico ${prana.index}/100 (${prana.level})` : null,
+          ]
+            .filter(Boolean)
+            .join(' e ')}.`
+        : `- ${semIndices}`
     );
   }
 
@@ -391,12 +453,13 @@ export function generateLocalAssistantReply(
     responses.push(`- Sono: ${astro.impactOnHealth.sleep}`);
 
     responses.push(
-      `Com base nestes astros, seu corpo reflete os seguintes perfis Védico-Quânticos:
-- Dosha: ${dosha.dominant} (${dosha.prakritiLabel})
-- ICQ: ${icq.index}/100 (${icq.level})
-- Alinhamento de Chakras: ${chakras.overallScore}/100 (${chakras.overallLabel})
-- Energia Vital (Prana): ${prana.index}/100 (${prana.level})
-- Pancha Koshas (Vedanta): ${koshas.overallScore}/100 (${koshas.overallStatus} - ${koshas.dharmaAlignment})`
+      [
+        'Com base nestes astros e nos seus sinais de hoje:',
+        `- Dosha: ${doshaTexto}`,
+        ...(indicesIntegrativos.length > 0
+          ? indicesIntegrativos
+          : [`- ${semIndices}`]),
+      ].join('\n')
     );
   }
 

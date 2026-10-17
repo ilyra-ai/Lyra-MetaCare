@@ -102,6 +102,33 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
 
+/** Números do tooltip no formato brasileiro (vírgula decimal). */
+const NUMERO_PT_BR = new Intl.NumberFormat('pt-BR', {
+  maximumFractionDigits: 1,
+});
+
+/**
+ * Gráfico com alternativa em texto (WCAG 1.1.1): `<figure>` com título
+ * visível opcional e um resumo para leitores de tela com os números que o
+ * gráfico mostra (mínimo, máximo, último valor etc.).
+ */
+function ChartFigure({
+  resumo,
+  className,
+  children,
+  ...props
+}: React.ComponentProps<'figure'> & {
+  /** Texto que descreve o que o gráfico mostra, com os valores. */
+  resumo: string;
+}) {
+  return (
+    <figure className={cn('m-0 min-w-0', className)} {...props}>
+      {children}
+      <figcaption className="sr-only">{resumo}</figcaption>
+    </figure>
+  );
+}
+
 // No Recharts 3, `active`, `payload` e `label` deixaram de fazer parte das
 // props públicas do <Tooltip> e passaram a ser injetados no conteúdo
 // customizado (TooltipContentProps). Como o componente é usado como elemento
@@ -255,9 +282,12 @@ const ChartTooltipContent = React.forwardRef<
                             {itemConfig?.label || item.name}
                           </span>
                         </div>
-                        {item.value && (
+                        {/* Zero é um valor real: só some sem valor. */}
+                        {item.value !== undefined && item.value !== null && (
                           <span className="font-display font-medium tabular-nums text-foreground">
-                            {item.value.toLocaleString()}
+                            {typeof item.value === 'number'
+                              ? NUMERO_PT_BR.format(item.value)
+                              : String(item.value)}
                           </span>
                         )}
                       </div>
@@ -379,6 +409,7 @@ function getPayloadConfigFromPayload(
 
 export {
   ChartContainer,
+  ChartFigure,
   ChartTooltip,
   ChartTooltipContent,
   ChartLegend,

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import {
   Activity,
   ArrowDownRight,
@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 
 import { useDailyMetrics } from '@/hooks/use-daily-metrics';
+import { useMetaDeSono } from '@/hooks/use-meta-de-sono';
+import { resumoDoGrafico } from '@/lib/graficos/resumo';
 import { useAIScores } from '@/hooks/use-ai-scores';
 import { useProfile } from '@/hooks/use-profile';
 import { useAccountSubscription } from '@/hooks/use-account-subscription';
@@ -45,6 +47,7 @@ import {
 } from '@/components/ui/card';
 import {
   ChartContainer,
+  ChartFigure,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
@@ -53,13 +56,6 @@ import { SeuDiaCard } from '@/components/coach/SeuDiaCard';
 import { BotaoRegistroDoDia } from '@/components/metricas/RegistroDoDia';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const pulseChartConfig = {
-  pulso: {
-    label: 'Pulso harmônico',
-    color: 'hsl(var(--primary))',
-  },
-} satisfies ChartConfig;
 
 const weeklyChartConfig = {
   prontidao: {
@@ -82,12 +78,27 @@ function formatWeekday(date: string) {
     .replace('.', '');
 }
 
+/** "7h30" ou "8h" (meta de sono). */
+function formatarHoras(minutos: number) {
+  const horas = Math.floor(minutos / 60);
+  const resto = minutos % 60;
+  return resto === 0
+    ? `${horas}h`
+    : `${horas}h${String(resto).padStart(2, '0')}`;
+}
+
+const PERCENTUAL = new Intl.NumberFormat('pt-BR', {
+  maximumFractionDigits: 1,
+  minimumFractionDigits: 1,
+  signDisplay: 'exceptZero',
+});
+
 function formatDelta(delta: number) {
   if (delta === 0 || Number.isNaN(delta)) {
     return 'Estável';
   }
 
-  return `${delta > 0 ? '+' : ''}${delta.toFixed(1)}%`;
+  return `${PERCENTUAL.format(delta)}%`;
 }
 
 /** Variação contra o dia anterior; null quando falta um dos dois registros. */
@@ -261,6 +272,8 @@ export function Dashboard() {
     isFemale,
   } = useProfile(dashboardEnabled);
 
+  const { meta: metaDeSono } = useMetaDeSono();
+
   const loading = subscriptionLoading || metricsLoading || scoresLoading;
 
   const previousMetrics =
@@ -273,7 +286,10 @@ export function Dashboard() {
   const rotuloDaLongevidade = !aiScoresEnabled
     ? 'Bloqueado'
     : longevityScore !== null
-      ? longevityScore.toFixed(1)
+      ? longevityScore.toLocaleString('pt-BR', {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        })
       : '—';
   const detalheDaLongevidade = !aiScoresEnabled
     ? 'Disponível em planos com scores de IA.'
@@ -285,7 +301,12 @@ export function Dashboard() {
   const sleepMinutes = todayMetrics?.sleep_duration_minutes ?? null;
   const deepSleepMinutes = todayMetrics?.deep_sleep_minutes ?? null;
   const remSleepMinutes = todayMetrics?.rem_sleep_minutes ?? null;
-  const sleepGoalMinutes = 8 * 60;
+  // Meta de sono da própria pessoa (ou a sugestão do catálogo de metas);
+  // antes, 8 horas fixas para todos.
+  const sleepGoalMinutes = metaDeSono.minutos;
+  const rotuloDaMetaDeSono = `${formatarHoras(sleepGoalMinutes)} por noite${
+    metaDeSono.origem === 'sugestao' ? ' (sugestão)' : ''
+  }`;
   const sleepProgress =
     sleepMinutes === null
       ? 0
@@ -313,12 +334,21 @@ export function Dashboard() {
   const pulseLabel =
     hrvHoje !== null ? 'Variabilidade cardíaca' : 'Prontidão geral';
 
-  // Dias sem registro ficam null (lacuna no gráfico), nunca 0.
+  // Uma única grandeza no gráfico (tarefa 57): VFC em ms quando há VFC na
+  // semana; senão, a prontidão de 0 a 100. Antes a mesma linha misturava ms
+  // e pontuação, dia a dia. Dias sem registro ficam null (lacuna), nunca 0.
+  const trajetoriaPelaVfc = metrics.some((metric) => metric.hrv_ms !== null);
+  const serieDaTrajetoria = trajetoriaPelaVfc
+    ? { rotulo: 'Variabilidade cardíaca (VFC)', unidade: 'ms' }
+    : { rotulo: 'Prontidão geral', unidade: '/100' };
   const pulseTrendData = metrics.map((metric) => ({
     dia: formatWeekday(metric.date),
-    pulso: metric.hrv_ms ?? metric.readiness_score ?? null,
+    pulso: trajetoriaPelaVfc ? metric.hrv_ms : metric.readiness_score,
   }));
   const temTrajetoria = pulseTrendData.some((ponto) => ponto.pulso !== null);
+  const configDaTrajetoria = {
+    pulso: { label: serieDaTrajetoria.rotulo, color: 'hsl(var(--primary))' },
+  } satisfies ChartConfig;
 
   const weeklyFlowData = metrics.map((metric) => {
     const valor = metric.readiness_score ?? metric.recovery_score;
@@ -332,6 +362,7 @@ export function Dashboard() {
   const passosHoje = todayMetrics?.steps ?? null;
   const aguaHoje = todayMetrics?.water_liters ?? null;
   const meditacaoHoje = todayMetrics?.meditation_minutes ?? null;
+  const glicoseHoje = todayMetrics?.blood_glucose_mgdl ?? null;
 
   const miniMetrics: MiniMetricCardProps[] = [
     {
@@ -372,10 +403,14 @@ export function Dashboard() {
     },
     {
       title: 'Glicose atual',
-      value: todayMetrics?.blood_glucose_mgdl
-        ? `${todayMetrics.blood_glucose_mgdl} mg/dL`
-        : 'Sem leitura',
-      description: 'Leitura disponível do metabolismo do dia.',
+      value:
+        glicoseHoje === null
+          ? '—'
+          : `${glicoseHoje.toLocaleString('pt-BR')} mg/dL`,
+      description:
+        glicoseHoje === null
+          ? 'Sem leitura hoje: registre no check-in ou conecte o sensor.'
+          : 'Leitura disponível do metabolismo do dia.',
       tone: 'golden',
       icon: Sparkles,
       delta: glucoseDelta,
@@ -398,7 +433,9 @@ export function Dashboard() {
     ? 'Reavaliando sinais disponíveis e o céu do momento.'
     : syncError
       ? syncError
-      : 'Última leitura consolidada com dados reais disponíveis no dispositivo e no banco.';
+      : todayMetrics?.registrado
+        ? 'Leitura consolidada com os registros de hoje, do dispositivo e da sua conta.'
+        : 'Ainda não há registro hoje: faça o check-in ou conecte um dispositivo.';
 
   const astroTitle = astrology
     ? `Lua em ${astrology.moonSign}`
@@ -419,7 +456,7 @@ export function Dashboard() {
     return (
       <PlanUpgradeNotice
         currentPlanKey={subscription?.plan.key ?? 'free'}
-        title="Dashboard premium indisponível"
+        title="Painel completo indisponível"
         description="O painel completo não faz parte do seu plano atual. Conheça os planos que incluem esta visão."
       />
     );
@@ -478,9 +515,9 @@ export function Dashboard() {
                   }
                 >
                   {isBluetoothConnected ? (
-                    <BluetoothConnected className="mr-2" />
+                    <BluetoothConnected aria-hidden="true" />
                   ) : (
-                    <Bluetooth className="mr-2" />
+                    <Bluetooth aria-hidden="true" />
                   )}
                   {isBluetoothConnected ? 'Cinta conectada' : 'Conectar cinta'}
                 </Button>
@@ -570,36 +607,64 @@ export function Dashboard() {
         <Card className="flex min-w-0 flex-col md:col-span-2">
           <CardHeader className="gap-1">
             <CardTitle>Trajetória recente</CardTitle>
-            <CardDescription>{pulseChartConfig.pulso.label}</CardDescription>
+            <CardDescription>
+              {serieDaTrajetoria.rotulo} nos últimos 7 dias (
+              {serieDaTrajetoria.unidade === 'ms' ? 'em ms' : 'de 0 a 100'}).
+            </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col">
             {temTrajetoria ? (
-              <ChartContainer
-                config={pulseChartConfig}
-                className="aspect-auto h-64 w-full border-none bg-transparent p-0"
+              <ChartFigure
+                resumo={resumoDoGrafico('Trajetória dos últimos 7 dias', [
+                  {
+                    nome: serieDaTrajetoria.rotulo,
+                    valores: pulseTrendData.map((ponto) => ponto.pulso),
+                    unidade: serieDaTrajetoria.unidade,
+                  },
+                ])}
               >
-                <AreaChart accessibilityLayer data={pulseTrendData}>
-                  <CartesianGrid vertical={false} stroke="hsl(var(--border))" />
-                  <XAxis
-                    dataKey="dia"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={12}
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent />}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="pulso"
-                    stroke="var(--color-pulso)"
-                    fill="var(--color-pulso)"
-                    fillOpacity={0.1}
-                    strokeWidth={2}
-                  />
-                </AreaChart>
-              </ChartContainer>
+                <ChartContainer
+                  config={configDaTrajetoria}
+                  className="aspect-auto h-64 w-full border-none bg-transparent p-0"
+                >
+                  <AreaChart
+                    data={pulseTrendData}
+                    margin={{ top: 8, right: 8, left: -8, bottom: 0 }}
+                  >
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                      dataKey="dia"
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={12}
+                    />
+                    <YAxis
+                      tickLine={false}
+                      axisLine={false}
+                      width={40}
+                      allowDecimals={false}
+                      domain={
+                        serieDaTrajetoria.unidade === '/100'
+                          ? [0, 100]
+                          : ['auto', 'auto']
+                      }
+                      unit={serieDaTrajetoria.unidade === 'ms' ? ' ms' : ''}
+                    />
+                    <ChartTooltip
+                      cursor={false}
+                      content={<ChartTooltipContent />}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="pulso"
+                      stroke="var(--color-pulso)"
+                      fill="var(--color-pulso)"
+                      fillOpacity={0.1}
+                      strokeWidth={2}
+                    />
+                  </AreaChart>
+                </ChartContainer>
+              </ChartFigure>
             ) : (
               <div className="flex min-h-48 flex-1 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-background p-6 text-center">
                 <Activity
@@ -693,13 +758,18 @@ export function Dashboard() {
                   {appConfig.dashboard.sleepGoalLabel}
                 </span>
                 <span className="font-medium text-foreground">
-                  8h por noite
+                  {rotuloDaMetaDeSono}
                 </span>
               </div>
               <Progress
-                aria-label="Sono em relação à meta de 8 horas"
+                aria-label={`Sono em relação à meta de ${formatarHoras(sleepGoalMinutes)}`}
                 value={sleepProgress}
               />
+              {metaDeSono.origem === 'sugestao' ? (
+                <p className="text-[13px] leading-5 text-muted-foreground">
+                  Crie a meta “Sono por noite” em Metas para usar o seu alvo.
+                </p>
+              ) : null}
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -775,32 +845,52 @@ export function Dashboard() {
 
         <CardContent className="flex flex-col gap-6">
           {temSemana ? (
-            <ChartContainer
-              config={weeklyChartConfig}
-              className="aspect-auto h-72 w-full border-none bg-transparent p-0 md:h-80"
+            <ChartFigure
+              resumo={resumoDoGrafico('Prontidão nos últimos 7 dias', [
+                {
+                  nome: 'Prontidão',
+                  valores: weeklyFlowData.map((ponto) => ponto.prontidao),
+                  unidade: '/100',
+                },
+              ])}
             >
-              <AreaChart accessibilityLayer data={weeklyFlowData}>
-                <CartesianGrid vertical={false} stroke="hsl(var(--border))" />
-                <XAxis
-                  dataKey="dia"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={12}
-                />
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent />}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="prontidao"
-                  stroke="var(--color-prontidao)"
-                  fill="var(--color-prontidao)"
-                  fillOpacity={0.1}
-                  strokeWidth={2}
-                />
-              </AreaChart>
-            </ChartContainer>
+              <ChartContainer
+                config={weeklyChartConfig}
+                className="aspect-auto h-72 w-full border-none bg-transparent p-0 md:h-80"
+              >
+                <AreaChart
+                  data={weeklyFlowData}
+                  margin={{ top: 8, right: 8, left: -8, bottom: 0 }}
+                >
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="dia"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={12}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    width={36}
+                    domain={[0, 100]}
+                    ticks={[0, 50, 100]}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent />}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="prontidao"
+                    stroke="var(--color-prontidao)"
+                    fill="var(--color-prontidao)"
+                    fillOpacity={0.1}
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ChartContainer>
+            </ChartFigure>
           ) : (
             <div className="flex min-h-48 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-background p-6 text-center">
               <Activity
@@ -873,7 +963,9 @@ export function Dashboard() {
         readinessScore={readinessScore}
       />
 
-      {todayMetrics ? (
+      {/* `todayMetrics` sempre existe (linha do dia com `registrado: false`):
+          sem testar o registro, o estado vazio nunca aparecia. */}
+      {todayMetrics?.registrado ? (
         <section className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <h2 className="font-display text-2xl font-semibold tracking-[-0.02em] text-foreground">

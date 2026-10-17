@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { FileDown, Users, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { gerarCsv } from '@/lib/csv/gerar-csv';
 import * as React from 'react';
 
 export function AdminReportsContent() {
@@ -41,23 +42,9 @@ export function AdminReportsContent() {
     }
 
     try {
-      // Constrói o cabeçalho do CSV
-      const headers = Object.keys(data[0]).join(',');
-      // Constrói as linhas de dados
-      const rows = data.map((user) => {
-        return Object.values(user)
-          .map((value) => {
-            // Trata valores que podem quebrar o CSV (aspas, vírgulas)
-            const stringValue = String(value).replace(/"/g, '""');
-            if (stringValue.includes(',')) {
-              return `"${stringValue}"`;
-            }
-            return stringValue;
-          })
-          .join(',');
-      });
-
-      const csvContent = [headers, ...rows].join('\n');
+      // RFC 4180 com `;`, campos nulos vazios e fórmulas neutralizadas
+      // (ver `lib/csv/gerar-csv`).
+      const csvContent = gerarCsv(data);
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);

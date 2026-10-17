@@ -37,9 +37,11 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   ChartContainer,
+  ChartFigure,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
+import { resumoDoGrafico } from '@/lib/graficos/resumo';
 import { Line, LineChart, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { DatePicker } from '@/components/ui/date-picker';
 import { differenceInYears, parseISO, format } from 'date-fns';
@@ -160,10 +162,12 @@ function ProgressChart({
   userId: string;
   db: typeof databaseClient;
 }) {
-  const [data, setData] = React.useState<{ date: string; weight: number }[]>(
-    []
-  );
+  const [data, setData] = React.useState<
+    { date: string; dia: string; weight: number }[]
+  >([]);
   const [loading, setLoading] = React.useState(true);
+  // Falha de leitura é diferente de "sem dados" (tarefa 57).
+  const [falhou, setFalhou] = React.useState(false);
 
   // Carrega o peso dos últimos 6 meses (o estado inicial já é "carregando").
   React.useEffect(() => {
@@ -189,14 +193,18 @@ function ProgressChart({
       if (error) {
         console.error('Erro ao carregar o histórico de peso:', error);
         setData([]);
+        setFalhou(true);
       } else {
+        // Dia e mês no eixo (antes só o mês, repetido em vários pontos).
         const chartData = (metrics as Pick<DailyMetric, 'date' | 'weight_kg'>[])
           .filter((m) => m.weight_kg !== null)
           .map((m) => ({
-            date: format(parseISO(m.date), 'MMM', { locale: ptBR }),
+            date: m.date,
+            dia: format(parseISO(m.date), 'dd/MM', { locale: ptBR }),
             weight: m.weight_kg as number,
           }));
         setData(chartData);
+        setFalhou(false);
       }
       setLoading(false);
     };
@@ -223,14 +231,24 @@ function ProgressChart({
           />
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border border-dashed border-border bg-background p-6 text-center">
-            <p className="text-muted-foreground">
-              Nenhum dado de peso encontrado nos últimos 6 meses.
+          {falhou ? (
+            <p
+              role="alert"
+              className="rounded-md border border-destructive/20 bg-destructive-light p-4 text-sm text-destructive"
+            >
+              Não foi possível carregar o histórico de peso agora. Recarregue a
+              página para tentar de novo.
             </p>
-            <p className="mt-2 text-xs text-muted-foreground">
-              Registre seu peso para visualizar o progresso.
-            </p>
-          </div>
+          ) : (
+            <div className="rounded-md border border-dashed border-border bg-background p-6 text-center">
+              <p className="text-muted-foreground">
+                Nenhum dado de peso encontrado nos últimos 6 meses.
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Registre seu peso para visualizar o progresso.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     );
@@ -246,37 +264,50 @@ function ProgressChart({
         />
       </CardHeader>
       <CardContent>
-        <ChartContainer
-          config={chartConfig}
-          className="min-h-[200px] w-full border-0 p-0"
+        <ChartFigure
+          resumo={resumoDoGrafico('Peso nos últimos 6 meses', [
+            {
+              nome: 'Peso',
+              valores: data.map((ponto) => ponto.weight),
+              unidade: 'kg',
+            },
+          ])}
         >
-          <LineChart
-            data={data}
-            margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
+          <ChartContainer
+            config={chartConfig}
+            className="min-h-[200px] w-full border-0 p-0"
           >
-            <CartesianGrid vertical={false} stroke="hsl(var(--border))" />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-            />
-            <YAxis
-              domain={['dataMin - 5', 'dataMax + 5']}
-              axisLine={false}
-              tickLine={false}
-              width={40}
-            />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Line
-              dataKey="weight"
-              type="monotone"
-              stroke="var(--color-weight)"
-              strokeWidth={2}
-              dot={{ r: 3, fill: 'hsl(var(--primary))', strokeWidth: 0 }}
-            />
-          </LineChart>
-        </ChartContainer>
+            <LineChart
+              data={data}
+              margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="dia"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={24}
+              />
+              <YAxis
+                domain={['dataMin - 5', 'dataMax + 5']}
+                axisLine={false}
+                tickLine={false}
+                width={56}
+                unit=" kg"
+                allowDecimals={false}
+              />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Line
+                dataKey="weight"
+                type="monotone"
+                stroke="var(--color-weight)"
+                strokeWidth={2}
+                dot={{ r: 3, fill: 'hsl(var(--primary))', strokeWidth: 0 }}
+              />
+            </LineChart>
+          </ChartContainer>
+        </ChartFigure>
         <p className="text-sm text-muted-foreground mt-4 text-center">
           Exibindo dados de peso dos últimos 6 meses.
         </p>

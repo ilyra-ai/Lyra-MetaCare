@@ -124,7 +124,8 @@ export function generateProactiveActions(
       category: 'ciclo',
       severity: 'info',
       priority: 64,
-      title: `${context.cycle.phaseEmoji} ${context.cycle.phaseLabel} (dia ${context.cycle.cycleDay})`,
+      // Sem emoji no título: o leitor de tela lia o nome do emoji em voz alta.
+      title: `${context.cycle.phaseLabel} (dia ${context.cycle.cycleDay})`,
       detail: `${context.cycle.recommendation.training} ${context.cycle.recommendation.nutrition}`,
       cta: { label: 'Ver plano', href: '/plan' },
     });
