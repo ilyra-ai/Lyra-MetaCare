@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                            |
 | ------------------ | -------------------------------- |
-| Progresso          | `██████████████████░░` **90,3%** |
-| Tarefas totais     | 62                               |
+| Progresso          | `██████████████████░░` **88,9%** |
+| Tarefas totais     | 63                               |
 | 🟢 Finalizadas     | 56                               |
 | 🔵 Em andamento    | 1                                |
 | 🔴 Bloqueadas      | 0                                |
-| ⚪ A iniciar       | 5                                |
+| ⚪ A iniciar       | 6                                |
 | Branch de trabalho | `main` (única permitida)         |
 | Última atualização | 2026-10-17                       |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (56 ÷ 62 = 90,3%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (56 ÷ 63 = 88,9%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -58,6 +58,7 @@ Nenhuma tarefa bloqueada.
 - **60 · Componentes de Design System premium** ⚪ · `src/components/ui` (botão, card, badge, alert, dialog, sheet, tabs, table, chart, skeleton, toast e demais): tokens, variantes, tamanhos, estados, acessibilidade e consistência de uso em todas as páginas.
 - **61 · Widgets e Controles premium** ⚪ · campos, seletores, caixas de seleção, rádios, switches, sliders, datas e horas, menus, dropdown do perfil, busca, paginação e filtros: comportamento por teclado, toque, validação, feedback e alvos de toque.
 - **62 · Tags e Elementos HTML premium** ⚪ · HTML semântico (landmarks, títulos em ordem, listas, tabelas com legenda e escopo, formulários com rótulo, botões e links corretos, imagens com texto alternativo, `lang`, metadados) e conformidade WCAG 2.2 AA.
+- **63 · Landing page redesenhada por completo** ⚪ · redesenho integral da página inicial pública: mais simples, harmônica, organizada e na tendência de 2026, com conteúdo real (catálogo de planos e textos do construtor), celular primeiro, temas claro e escuro e acessibilidade.
 
 ---
 
