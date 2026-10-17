@@ -19,18 +19,18 @@
 
 ## Tópico 1 · Andamento Geral
 
-| Indicador          | Valor                            |
-| ------------------ | -------------------------------- |
-| Progresso          | `████████████████████` **98,2%** |
-| Tarefas totais     | 56                               |
-| 🟢 Finalizadas     | 55                               |
-| 🔵 Em andamento    | 1                                |
-| 🔴 Bloqueadas      | 0                                |
-| ⚪ A iniciar       | 0                                |
-| Branch de trabalho | `main` (única permitida)         |
-| Última atualização | 2026-10-17                       |
+| Indicador          | Valor                           |
+| ------------------ | ------------------------------- |
+| Progresso          | `████████████████████` **100%** |
+| Tarefas totais     | 56                              |
+| 🟢 Finalizadas     | 56                              |
+| 🔵 Em andamento    | 0                               |
+| 🔴 Bloqueadas      | 0                               |
+| ⚪ A iniciar       | 0                               |
+| Branch de trabalho | `main` (única permitida)        |
+| Última atualização | 2026-10-17                      |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (55 ÷ 56 = 98,2%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (56 ÷ 56 = 100%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,7 @@
 
 ### ANDAMENTO
 
-- **56 · Todo modelo de IA conectado age como a Lyra** 🔵 · os modelos trabalham junto com o motor, com a identidade, a personalidade e o conhecimento da Lyra, na leitura diária e no chat.
+Nenhuma tarefa em andamento.
 
 ### BLOQUEADAS
 
@@ -1076,6 +1076,24 @@ Nenhuma tarefa a iniciar.
   - Integração: primeiro plano automático sem cota; login antes do onboarding não gera; login depois do onboarding deixa o plano salvo.
   - Navegador (build de produção, login real pela tela): o plano já estava salvo no MySQL antes de abrir `/plan`, origem automática, cota intacta, tela com o plano pronto ("Regenerar plano"), axe sem violações e zero erros de console, em 1440 px claro e 390 px escuro.
   - `test` 412/412, `test:integration` 156/156, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+
+### 56 · Todo modelo de IA conectado age como a Lyra
+
+- **Status:** 🟢 finalizada · **Commit:** `905e145` · **Push:** `4c9faf7..905e145 main -> main` (confirmado por `git ls-remote`)
+- **Pedido do usuário (2026-10-16):** o motor da Lyra funciona sem modelos de IA, mas todo modelo conectado deve funcionar junto com ele e agir como a Lyra, com mais tecnologia e inteligência, na leitura diária e no chat.
+- **Antes:** o chat dizia ao modelo "Você é o Lyra MetaCare, um assistente..." e a leitura do dia, "Você é a astróloga védica e coach de bem-estar"; nenhum dos dois levava a identidade da Lyra, e a leitura do dia não recebia a leitura do motor. O BYOK do Gemini mandava as instruções como mensagem do usuário, por uma chamada própria duplicada.
+- **Implementado:**
+  - `src/lib/lyra/modelos-como-lyra.ts`: instruções do chat (identidade completa, como trabalhar sobre a base, tipos de mapa, habilidades do admin, leitura do mapa ou o que falta, verbete ligado à pergunta e resposta do motor) e da leitura do dia (identidade e regras da leitura acima das gerais).
+  - Conferência da voz da Lyra (`conferirVozDaLyra`): resposta vazia, apresentação como outro assistente ("sou o ChatGPT", "me chamo Qwen") ou previsão de morte ou doença passam a vez ao próximo modelo; no fim responde o motor. Franqueza sobre a tecnologia continua permitida ("não sou o ChatGPT", "sou uma IA").
+  - Leitura do dia: o modelo recebe a leitura que o motor já escreveu para hoje como base, e a mesma conferência entra em `conferirLeituraDaIa`. Com modelo na ordem, `VERSAO_DAS_INSTRUCOES_DA_LYRA` entra na assinatura do "Seu dia".
+  - Chat: plataforma (só modelos locais) e BYOK passam pela mesma cadeia; o BYOK usa o cliente de IA (`systemInstruction`, chave no cabeçalho) e a chamada duplicada foi removida (prova: `grep` sem resto de `generativelanguage` e do prompt antigo na rota).
+  - Documentação: `docs/ia-automatica.md` e `docs/motor-da-lyra.md`.
+- **Evidências:**
+  - Unitários `modelos-como-lyra.test.ts` (12) e `leitura.test.ts` (sistema começa por "Você é a Lyra", pedido com a leitura do motor, leitura recusada por outra voz).
+  - Integração com servidor HTTP real: o 1º modelo se apresenta como o Qwen e perde a vez, o 2º responde como a Lyra; os dois recebem a identidade, a resposta do motor com a métrica real e o estado do mapa; sem voz da Lyra, responde o motor.
+  - Navegador (build de produção, servidor de modelos HTTP local, conta com mapa de 23/09/1982 10:40 em São Paulo): o chat mostrou a resposta do modelo que falou como a Lyra e escondeu a do que se apresentou como outro assistente; todas as chamadas (chat e leitura do dia) começaram por "Você é a Lyra" e levaram o verbete, o Ascendente em Escorpião e os tipos de mapa; axe sem violações, sem estouro e zero erros de console em 1440 px claro e 390 px escuro. Configuração devolvida ao motor da Lyra ao final.
+  - `test` 478/478, `test:integration` 163/163, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+- **Fronteira externa:** o BYOK com o Gemini real exige a chave de uma pessoa; o caminho foi validado pelo cliente de IA já testado, sem chamada externa simulada.
 
 ### 55 · Motor da Lyra mestre em astrologia védica e saberes védicos, sem IA
 
