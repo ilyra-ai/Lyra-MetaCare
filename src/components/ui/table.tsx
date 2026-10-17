@@ -14,7 +14,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
   ({ className, scrollLabel, ...props }, ref) => (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
       <div
-        className="relative w-full overflow-auto"
+        className="relative w-full overflow-auto focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
         {...(scrollLabel
           ? { tabIndex: 0, role: 'region', 'aria-label': scrollLabel }
           : {})}
@@ -95,9 +95,12 @@ TableRow.displayName = 'TableRow';
 const TableHead = React.forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
+>(({ className, scope = 'col', ...props }, ref) => (
+  // Cabeçalho de coluna por padrão (tarefa 60); `scope="row"` para o
+  // cabeçalho de linha.
   <th
     ref={ref}
+    scope={scope}
     className={cn(
       'px-4 py-3 text-left align-middle text-xs font-medium text-muted-foreground has-[[role=checkbox]]:pr-0',
       className

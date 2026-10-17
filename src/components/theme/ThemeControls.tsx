@@ -65,7 +65,7 @@ export function ThemeMenuGroup() {
           <DropdownMenuPrimitive.RadioItem
             key={valor}
             value={valor}
-            className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-3 py-2.5 text-sm outline-hidden transition-colors focus:bg-muted"
+            className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-3 py-2.5 text-sm outline-hidden transition-colors focus:bg-muted focus:shadow-[inset_3px_0_0_hsl(var(--primary))]"
             // Escolher o tema não fecha o menu: a pessoa vê a mudança na hora.
             onSelect={(evento) => evento.preventDefault()}
           >

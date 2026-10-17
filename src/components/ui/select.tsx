@@ -76,7 +76,7 @@ const SelectContent = React.forwardRef<
       ref={ref}
       position={position}
       className={cn(
-        'relative z-50 max-h-[400px] min-w-40 overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-lg data-[state=open]:animate-scale-in',
+        'relative z-50 max-h-[400px] min-w-40 overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-lg origin-(--radix-select-content-transform-origin) duration-(--duracao-rapida) data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
         position === 'popper' &&
           'data-[side=bottom]:translate-y-2 data-[side=left]:-translate-x-2 data-[side=right]:translate-x-2 data-[side=top]:-translate-y-2',
         className
@@ -122,7 +122,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex w-full cursor-default select-none items-center rounded-sm py-2.5 pl-3 pr-9 text-sm text-foreground outline-hidden transition-colors focus:bg-muted data-disabled:pointer-events-none data-disabled:opacity-50',
+      'relative flex w-full cursor-default select-none items-center rounded-sm py-2.5 pl-3 pr-9 text-sm text-foreground outline-hidden transition-colors focus:bg-muted focus:shadow-[inset_3px_0_0_hsl(var(--primary))] data-disabled:pointer-events-none data-disabled:opacity-50',
       className
     )}
     {...props}

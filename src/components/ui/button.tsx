@@ -9,7 +9,10 @@ import { cn } from '@/lib/utils';
   de IA. Sem gradientes, brilhos ou sombras coloridas.
 */
 const buttonVariants = cva(
-  'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+  // Ícones sem tamanho próprio ficam em 16 px (antes saíam em 24 px, maiores
+  // que o texto); anel de foco com o recuo na cor do fundo (antes um halo
+  // branco no escuro); leve afundamento ao clicar (estado ativo).
+  'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap font-medium transition-[color,background-color,border-color,transform] duration-(--duracao-rapida) ease-saida active:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-busy:cursor-progress [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=size-])]:size-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
   {
     variants: {
       variant: {
@@ -34,6 +37,14 @@ const buttonVariants = cva(
         icon: 'h-10 w-10 rounded',
       },
     },
+    // O tamanho padrão anulava o `h-auto px-0` do link (o cva aplica o
+    // tamanho depois da variante): o link virava um bloco de 40 px.
+    compoundVariants: [
+      {
+        variant: 'link',
+        className: 'h-auto rounded-xs px-0 py-0 active:translate-y-0',
+      },
+    ],
     defaultVariants: {
       variant: 'default',
       size: 'default',
@@ -49,7 +60,7 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, type, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
 
     return (
@@ -58,6 +69,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         // Escala dos botões do construtor de UI (app.sizing.buttonScale).
         data-slot="button"
         className={cn(buttonVariants({ variant, size, className }))}
+        // Sem `type`, um <button> dentro de formulário envia o formulário:
+        // o padrão é "button" e o envio é sempre explícito (tarefa 60).
+        type={asChild ? type : (type ?? 'button')}
         {...props}
       />
     );

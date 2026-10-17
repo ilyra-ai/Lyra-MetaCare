@@ -24,10 +24,15 @@ const alertVariants = cva(
 const Alert = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
->(({ className, variant, ...props }, ref) => (
+>(({ className, variant, role, ...props }, ref) => (
   <div
     ref={ref}
-    role="alert"
+    // Só erro e alerta interrompem o leitor de tela (tarefa 60); avisos de
+    // sucesso, informação e neutros são `status`, lidos sem interromper.
+    role={
+      role ??
+      (variant === 'destructive' || variant === 'warning' ? 'alert' : 'status')
+    }
     className={cn(alertVariants({ variant }), className)}
     {...props}
   />

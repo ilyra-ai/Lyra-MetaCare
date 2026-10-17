@@ -145,9 +145,8 @@ export function BillingReturnExperience({
                 </div>
                 <div className="space-y-2">
                   <CardTitle
+                    as="h2"
                     className="text-2xl font-semibold tracking-tight"
-                    role="heading"
-                    aria-level={2}
                   >
                     {copy.title}
                   </CardTitle>

@@ -58,7 +58,9 @@ function Calendar({
         ),
         day_button: cn(
           buttonVariants({ variant: 'ghost', size: 'icon' }),
-          'h-10 w-10 rounded-full p-0 font-normal text-inherit aria-selected:opacity-100'
+          // O dia escolhido não perde o destaque no hover (o `hover:bg-muted`
+          // do ghost pintava por cima do `bg-primary`).
+          'h-10 w-10 rounded-full p-0 font-normal text-inherit aria-selected:opacity-100 aria-selected:hover:bg-transparent aria-selected:hover:text-inherit'
         ),
         selected:
           'rounded-full bg-primary text-primary-foreground hover:bg-primary-hover',

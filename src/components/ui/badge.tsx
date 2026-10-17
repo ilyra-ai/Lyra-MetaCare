@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const badgeVariants = cva(
-  'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors',
+  'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors [&_svg]:shrink-0 [&_svg:not([class*=size-])]:size-3.5',
   {
     variants: {
       variant: {
@@ -27,12 +27,16 @@ const badgeVariants = cva(
 
 export interface BadgeProps
   extends
-    React.HTMLAttributes<HTMLDivElement>,
+    React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof badgeVariants> {}
 
+/**
+ * Selo em linha (`span`, tarefa 60): como `div`, ficava inválido dentro de
+ * parágrafos e títulos, onde aparece com frequência.
+ */
 function Badge({ className, variant, ...props }: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <span className={cn(badgeVariants({ variant }), className)} {...props} />
   );
 }
 

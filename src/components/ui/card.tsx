@@ -33,11 +33,19 @@ const CardHeader = React.forwardRef<
 
 CardHeader.displayName = 'CardHeader';
 
+/**
+ * Título do card como título de verdade (tarefa 60): antes era uma `div`, e
+ * cerca de 90 títulos de card não existiam para leitores de tela (WCAG
+ * 1.3.1). `h3` por padrão (abaixo do h1 da página e do h2 das seções); `as`
+ * ajusta o nível onde a hierarquia pede outro.
+ */
 const CardTitle = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
+  HTMLHeadingElement,
+  React.HTMLAttributes<HTMLHeadingElement> & {
+    as?: 'h2' | 'h3' | 'h4' | 'p';
+  }
+>(({ className, as: Elemento = 'h3', ...props }, ref) => (
+  <Elemento
     ref={ref}
     className={cn(
       'font-display text-lg font-semibold leading-tight tracking-tight text-card-foreground',

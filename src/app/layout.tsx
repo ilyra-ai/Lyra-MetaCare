@@ -126,22 +126,14 @@ export default function RootLayout({
           <ThemeColorSync />
           <AuthProvider>
             <div className="page-shell">{children}</div>
+            {/* As classes dos avisos ficam só em `ui/sonner.tsx` (tarefa 60):
+                este `toastOptions` substituía o de lá por inteiro e os tons
+                de sucesso, erro, alerta e informação não valiam. */}
             <Toaster
               position="top-right"
               richColors
               expand={false}
               closeButton
-              toastOptions={{
-                classNames: {
-                  toast:
-                    'group rounded-xl border border-border bg-card text-card-foreground shadow-lg',
-                  title: 'font-semibold text-foreground',
-                  description: 'text-sm text-muted-foreground',
-                  actionButton: 'rounded bg-primary text-primary-foreground',
-                  cancelButton:
-                    'rounded border border-border bg-secondary text-secondary-foreground',
-                },
-              }}
             />
           </AuthProvider>
         </ThemeProvider>
