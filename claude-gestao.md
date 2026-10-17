@@ -19,18 +19,18 @@
 
 ## Tópico 1 · Andamento Geral
 
-| Indicador          | Valor                           |
-| ------------------ | ------------------------------- |
-| Progresso          | `████████████████████` **100%** |
-| Tarefas totais     | 56                              |
-| 🟢 Finalizadas     | 56                              |
-| 🔵 Em andamento    | 0                               |
-| 🔴 Bloqueadas      | 0                               |
-| ⚪ A iniciar       | 0                               |
-| Branch de trabalho | `main` (única permitida)        |
-| Última atualização | 2026-10-17                      |
+| Indicador          | Valor                            |
+| ------------------ | -------------------------------- |
+| Progresso          | `██████████████████░░` **90,3%** |
+| Tarefas totais     | 62                               |
+| 🟢 Finalizadas     | 56                               |
+| 🔵 Em andamento    | 1                                |
+| 🔴 Bloqueadas      | 0                                |
+| ⚪ A iniciar       | 5                                |
+| Branch de trabalho | `main` (única permitida)         |
+| Última atualização | 2026-10-17                       |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (56 ÷ 56 = 100%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (56 ÷ 62 = 90,3%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,7 @@
 
 ### ANDAMENTO
 
-Nenhuma tarefa em andamento.
+- **57 · Inventário forense de tudo o que está implementado** 🔵 · verificar, página por página e no código, todos os componentes, gráficos (charts), tabelas, ícones, botões e cards: se existem, se são usados, se funcionam de verdade (dados reais, sem placeholder, sem hardcode) e se estão completos.
 
 ### BLOQUEADAS
 
@@ -53,7 +53,11 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-Nenhuma tarefa a iniciar.
+- **58 · Erros, falhas, possíveis erros e cortes em código** ⚪ · varredura do código (tipos, lint, testes, build, console e rede no navegador, código morto, `TODO`, trechos cortados ou comentados, tratamentos de erro silenciosos) e correção pela causa raiz.
+- **59 · UI Elements (Elementos de Interface) premium** ⚪ · tipografia, cores, espaçamento, ícones, ilustrações, estados (hover, foco, ativo, desabilitado, carregando, vazio, erro), movimento e tema claro e escuro, no padrão premium de 2026, em celular e desktop.
+- **60 · Componentes de Design System premium** ⚪ · `src/components/ui` (botão, card, badge, alert, dialog, sheet, tabs, table, chart, skeleton, toast e demais): tokens, variantes, tamanhos, estados, acessibilidade e consistência de uso em todas as páginas.
+- **61 · Widgets e Controles premium** ⚪ · campos, seletores, caixas de seleção, rádios, switches, sliders, datas e horas, menus, dropdown do perfil, busca, paginação e filtros: comportamento por teclado, toque, validação, feedback e alvos de toque.
+- **62 · Tags e Elementos HTML premium** ⚪ · HTML semântico (landmarks, títulos em ordem, listas, tabelas com legenda e escopo, formulários com rótulo, botões e links corretos, imagens com texto alternativo, `lang`, metadados) e conformidade WCAG 2.2 AA.
 
 ---
 
