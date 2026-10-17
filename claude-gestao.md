@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                            |
 | ------------------ | -------------------------------- |
-| Progresso          | `██████████████████░░` **92,1%** |
+| Progresso          | `███████████████████░` **93,7%** |
 | Tarefas totais     | 63                               |
-| 🟢 Finalizadas     | 58                               |
+| 🟢 Finalizadas     | 59                               |
 | 🔵 Em andamento    | 1                                |
 | 🔴 Bloqueadas      | 0                                |
-| ⚪ A iniciar       | 4                                |
+| ⚪ A iniciar       | 3                                |
 | Branch de trabalho | `main` (única permitida)         |
 | Última atualização | 2026-10-17                       |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (58 ÷ 63 = 92,1%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (59 ÷ 63 = 93,7%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,7 @@
 
 ### ANDAMENTO
 
-- **59 · UI Elements (Elementos de Interface) premium** 🔵 · tipografia, cores, espaçamento, ícones, ilustrações, estados (hover, foco, ativo, desabilitado, carregando, vazio, erro), movimento e tema claro e escuro, no padrão premium de 2026, em celular e desktop.
+- **60 · Componentes de Design System premium** 🔵 · `src/components/ui` (botão, card, badge, alert, dialog, sheet, tabs, table, chart, skeleton, toast e demais): tokens, variantes, tamanhos, estados, acessibilidade e consistência de uso em todas as páginas.
 
 ### BLOQUEADAS
 
@@ -53,7 +53,6 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-- **60 · Componentes de Design System premium** ⚪ · `src/components/ui` (botão, card, badge, alert, dialog, sheet, tabs, table, chart, skeleton, toast e demais): tokens, variantes, tamanhos, estados, acessibilidade e consistência de uso em todas as páginas.
 - **61 · Widgets e Controles premium** ⚪ · campos, seletores, caixas de seleção, rádios, switches, sliders, datas e horas, menus, dropdown do perfil, busca, paginação e filtros: comportamento por teclado, toque, validação, feedback e alvos de toque.
 - **62 · Tags e Elementos HTML premium** ⚪ · HTML semântico (landmarks, títulos em ordem, listas, tabelas com legenda e escopo, formulários com rótulo, botões e links corretos, imagens com texto alternativo, `lang`, metadados) e conformidade WCAG 2.2 AA.
 - **63 · Landing page redesenhada por completo** ⚪ · redesenho integral da página inicial pública: mais simples, harmônica, organizada e na tendência de 2026, com conteúdo real (catálogo de planos e textos do construtor), celular primeiro, temas claro e escuro e acessibilidade.
@@ -1079,6 +1078,23 @@ Nenhuma tarefa bloqueada.
   - Integração: primeiro plano automático sem cota; login antes do onboarding não gera; login depois do onboarding deixa o plano salvo.
   - Navegador (build de produção, login real pela tela): o plano já estava salvo no MySQL antes de abrir `/plan`, origem automática, cota intacta, tela com o plano pronto ("Regenerar plano"), axe sem violações e zero erros de console, em 1440 px claro e 390 px escuro.
   - `test` 412/412, `test:integration` 156/156, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+
+### 59 · UI Elements (Elementos de Interface) premium
+
+- **Status:** 🟢 finalizada · **Commits:** `edaf2ab` e `b7bebef` (restauração de testes) · **Push:** `5c3f5b5..edaf2ab` e `edaf2ab..b7bebef main -> main` (confirmados por `git ls-remote`)
+- **Pedido do usuário (2026-10-17):** todos os elementos de interface no melhor padrão premium de 2026.
+- **Pesquisa (2026):** dashboards de SaaS priorizam estados vazios com ação, gráficos legíveis sem depender do mouse, alto contraste e modo escuro cuidado ([SaaSFrame](https://www.saasframe.io/blog/the-anatomy-of-high-performance-saas-dashboard-design-2026-trends-patterns), [TFC](https://www.thefrontendcompany.com/posts/ui-trends)); o sistema "Lyra Clean" já segue essa linha, e a tarefa fechou as lacunas dele.
+- **Implementado (`src/app/globals.css` e usos):**
+  - Contorno de campo `--input` com 3:1 no claro (antes 1,37:1); `tema.test.ts` agora exige 3:1 de `--input` e `--control` sobre cinco superfícies nos dois temas.
+  - Véu de modal (`--overlay`, `bg-overlay/55`) escuro nos dois temas; antes `bg-foreground/40` clareava a tela no escuro e o ícone branco do avatar sumia.
+  - Sombras com `--sombra-cor` e `--sombra-forca` por tema: o Tailwind 4 copia a sombra para a classe, então o bloco `--shadow-*` do `.dark` era código morto.
+  - Escala completa de raio (`xs` a `4xl`, teto de 20 px) e de texto (`text-micro`, `text-caption`, `text-body`) no lugar de 80 valores soltos (`rounded-[10px]`, `text-[13px]`, `text-[15px]`, `text-[0.6875rem]`); `outline-none` e `bg-gradient-to-*` trocados pelos nomes do Tailwind 4; durações e curvas de movimento nomeadas.
+  - Foco: a regra que escondia o contorno tinha especificidade maior que `:focus-visible` e o foco sumia nas regiões roláveis e abas; agora `:where()` zera a especificidade. O link "Pular para o conteúdo principal" ficava recortado em 1 px mesmo com foco; agora aparece.
+  - `cn()` conhece as escalas do tema: `text-body` era lido como cor e apagava `text-primary-foreground` (botão grande com 3,19:1, achado pela varredura do axe).
+  - Cartões do coach sem vidro fosco, sombra e aura pulsando sem parar (o período atual se destaca pela borda e pelo anel).
+  - `docs/design-system.md` atualizado.
+- **Correção de um erro meu:** o commit `edaf2ab` sobrescreveu o `utils.test.ts` existente (6 testes); `b7bebef` restaurou os 6 junto com os novos.
+- **Evidências:** `test` 493/493, `check:format`, `check:lint`, `check:types` e `build` com exit 0. Navegador (build de produção, 1440 px claro e 390 px escuro): link de pular visível no primeiro Tab, foco de 2 px na região rolável, contorno do campo com 3,39:1 (claro) e 3,99:1 (escuro), véu do modal escuro nos dois temas, varredura de 20 páginas com axe sem violações, sem estouro e zero erros de console.
 
 ### 58 · Erros, falhas, possíveis erros e cortes em código
 
