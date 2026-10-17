@@ -21,16 +21,16 @@
 
 | Indicador          | Valor                            |
 | ------------------ | -------------------------------- |
-| Progresso          | `██████████████████░░` **90,5%** |
+| Progresso          | `██████████████████░░` **92,1%** |
 | Tarefas totais     | 63                               |
-| 🟢 Finalizadas     | 57                               |
+| 🟢 Finalizadas     | 58                               |
 | 🔵 Em andamento    | 1                                |
 | 🔴 Bloqueadas      | 0                                |
-| ⚪ A iniciar       | 5                                |
+| ⚪ A iniciar       | 4                                |
 | Branch de trabalho | `main` (única permitida)         |
 | Última atualização | 2026-10-17                       |
 
-> Cálculo: tarefas finalizadas ÷ tarefas totais (57 ÷ 63 = 90,5%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
+> Cálculo: tarefas finalizadas ÷ tarefas totais (58 ÷ 63 = 92,1%). Cada bloco da barra representa 5% (arredondamento para o bloco mais próximo).
 
 **Decisões do usuário registradas em 2026-10-10 (sem tarefa associada):**
 
@@ -43,7 +43,7 @@
 
 ### ANDAMENTO
 
-- **58 · Erros, falhas, possíveis erros e cortes em código** 🔵 · varredura do código (tipos, lint, testes, build, console e rede no navegador, código morto, `TODO`, trechos cortados ou comentados, tratamentos de erro silenciosos) e correção pela causa raiz.
+- **59 · UI Elements (Elementos de Interface) premium** 🔵 · tipografia, cores, espaçamento, ícones, ilustrações, estados (hover, foco, ativo, desabilitado, carregando, vazio, erro), movimento e tema claro e escuro, no padrão premium de 2026, em celular e desktop.
 
 ### BLOQUEADAS
 
@@ -53,7 +53,6 @@ Nenhuma tarefa bloqueada.
 
 ## Tópico 3 · Tarefas a Iniciar
 
-- **59 · UI Elements (Elementos de Interface) premium** ⚪ · tipografia, cores, espaçamento, ícones, ilustrações, estados (hover, foco, ativo, desabilitado, carregando, vazio, erro), movimento e tema claro e escuro, no padrão premium de 2026, em celular e desktop.
 - **60 · Componentes de Design System premium** ⚪ · `src/components/ui` (botão, card, badge, alert, dialog, sheet, tabs, table, chart, skeleton, toast e demais): tokens, variantes, tamanhos, estados, acessibilidade e consistência de uso em todas as páginas.
 - **61 · Widgets e Controles premium** ⚪ · campos, seletores, caixas de seleção, rádios, switches, sliders, datas e horas, menus, dropdown do perfil, busca, paginação e filtros: comportamento por teclado, toque, validação, feedback e alvos de toque.
 - **62 · Tags e Elementos HTML premium** ⚪ · HTML semântico (landmarks, títulos em ordem, listas, tabelas com legenda e escopo, formulários com rótulo, botões e links corretos, imagens com texto alternativo, `lang`, metadados) e conformidade WCAG 2.2 AA.
@@ -1080,6 +1079,27 @@ Nenhuma tarefa bloqueada.
   - Integração: primeiro plano automático sem cota; login antes do onboarding não gera; login depois do onboarding deixa o plano salvo.
   - Navegador (build de produção, login real pela tela): o plano já estava salvo no MySQL antes de abrir `/plan`, origem automática, cota intacta, tela com o plano pronto ("Regenerar plano"), axe sem violações e zero erros de console, em 1440 px claro e 390 px escuro.
   - `test` 412/412, `test:integration` 156/156, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+
+### 58 · Erros, falhas, possíveis erros e cortes em código
+
+- **Status:** 🟢 finalizada · **Commit:** `4c81c20` · **Push:** `de0fbf3..4c81c20 main -> main` (confirmado por `git ls-remote`)
+- **Pedido do usuário (2026-10-17):** verificar erros, falhas, possíveis erros e cortes em código e corrigir pela causa raiz.
+- **Varredura:** `check:types` e `check:lint` sem erros nem avisos; zero `any`, `@ts-ignore`, `eslint-disable`, TODO, código comentado ou "// ... resto"; todas as rotas com Zod e autorização. Os defeitos reais estavam no tratamento de erros, em dados derivados e em código morto.
+- **Causas raiz corrigidas:**
+  - **Contrato do cliente de dados:** `response.json()` era lido sem checar a resposta; rede fora, 502 do proxy ou página HTML rejeitavam a promise, contra o `{ error }` que 31 chamadores esperam (login travado, cargas eternas, "Unexpected token '<'" no chat). Novo `src/lib/http/transporte.ts` (`buscarJson`) nunca lança e devolve a falha em pt-BR com status e motivo; usado por consultas, autenticação, funções, upload e telas administrativas.
+  - **Sessão:** `GET /api/auth/session` respondia 500 sem corpo e a pessoa logada via a landing; agora 503 com JSON, e o app tenta de novo (1 s e 3 s) e avisa. Logout que falha é avisado em vez de fingir a saída.
+  - **Perda de dados do ciclo menstrual:** falha de leitura era engolida, o formulário mostrava vazio e "Salvar" apagava o ciclo. Agora a falha bloqueia o formulário com "Tentar de novo".
+  - **Idade:** gravada no cadastro (defasada a cada aniversário) e com 18 inventado por padrão; agora vem da data de nascimento (`idadeAtual`, SQL `TIMESTAMPDIFF`) no limite de frequência cardíaca e no painel.
+  - **Datas de criação e atualização:** vinham do relógio do navegador; a API ignora `created_at`/`updated_at` e o MySQL mantém (`ON UPDATE CURRENT_TIMESTAMP`).
+  - **Saúde dos dados (admin):** baixava todos os perfis com e-mail e todas as métricas para contar no navegador, e a API analítica lia a tabela inteira na memória. Nova `GET /api/admin/saude-dos-dados` agrega no MySQL, pagina os inativos e mostra erro real.
+  - **Efeitos sem guarda:** cabeçalho e menu lateral faziam a mesma consulta sem descartar respostas obsoletas (hook único compartilhado); busca de usuários cancela a anterior (`AbortController`); sincronização com `catch`.
+  - **Erros do Puck engolidos** passaram a ser registrados, e o hero não promete mais uma recarga que não acontece.
+  - `metadataBase` usava um domínio inexistente; agora `APP_BASE_URL`/`NEXT_PUBLIC_APP_URL`.
+- **Código morto removido (prova com `rg`, sem resultado):** `integrations/mysql/server.ts`, `lib/puck/data-sources/index.ts`, `lib/site-page-config/index.ts`, `api/rpc/get-data-health-metrics`, `extractMetricCompleteness`, consulta especial de perfis com métricas, `foreignTable` (aceito e ignorado), `gruposDaCasa`, `chavesComDemonstracao`, `export default` duplicado do `ChatInput`; leitura de JSON opcional duplicada virou `lerJsonOpcional`.
+- **pt-BR:** "Dashboard" virou "Painel"; "Eyebrow", "Placeholder", "Sidebar e branding", "Insight" e "Score cognitivo" traduzidos; carrossel lido em pt-BR; sugestão "IA médica" trocada pela Lyra de bem-estar.
+- **Evidências:**
+  - Unitários novos: `transporte.test.ts` (5) e `idade.test.ts` (2); integração nova da saúde dos dados conferindo os números com o próprio MySQL. `test` 491/491, `test:integration` 164/164, `check:format`, `check:lint`, `check:types` e `build` com exit 0.
+  - Navegador (build de produção, 1440 px claro e 390 px escuro): login pela tela, saúde dos dados e painel admin carregando, busca com digitação rápida, falha de rede provocada na leitura do ciclo bloqueando o formulário, "Tentar de novo" recarregando e o ciclo de 29 dias preservado no banco; axe sem violações e zero erros de console fora da falha provocada.
 
 ### 57 · Inventário forense de tudo o que está implementado
 
