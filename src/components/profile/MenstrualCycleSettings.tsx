@@ -51,9 +51,17 @@ export function MenstrualCycleSettings() {
   const [state, setState] = React.useState<CycleState>(EMPTY);
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
+  // Falha de leitura bloqueia o formulário (tarefa 58): antes ela era
+  // engolida, o formulário mostrava os valores vazios como se fossem os
+  // dados da pessoa e "Salvar" apagava o ciclo verdadeiro.
+  const [falhaDeLeitura, setFalhaDeLeitura] = React.useState<string | null>(
+    null
+  );
+  const [tentativa, setTentativa] = React.useState(0);
 
   React.useEffect(() => {
     if (!session?.user) return;
+    let ativo = true;
 
     const load = async () => {
       setLoading(true);
@@ -65,7 +73,16 @@ export function MenstrualCycleSettings() {
         .eq('id', session.user.id)
         .maybeSingle();
 
-      if (!error && data) {
+      if (!ativo) return;
+      if (error || !data) {
+        setFalhaDeLeitura(
+          error?.message ?? 'O perfil não foi encontrado para esta conta.'
+        );
+        setLoading(false);
+        return;
+      }
+      setFalhaDeLeitura(null);
+      {
         const row = data as {
           tracks_menstrual_cycle: boolean | null;
           last_menstrual_period: string | null;
@@ -93,14 +110,17 @@ export function MenstrualCycleSettings() {
     };
 
     void load();
-  }, [db, session]);
+    return () => {
+      ativo = false;
+    };
+  }, [db, session, tentativa]);
 
   const update = <K extends keyof CycleState>(key: K, value: CycleState[K]) => {
     setState((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSave = async () => {
-    if (!session?.user) return;
+    if (!session?.user || falhaDeLeitura || loading) return;
 
     const cycleLength = Number.parseInt(state.menstrual_cycle_length, 10);
     const periodLength = Number.parseInt(state.menstrual_period_length, 10);
@@ -118,7 +138,6 @@ export function MenstrualCycleSettings() {
           ? periodLength
           : null,
         menstrual_life_stage: state.menstrual_life_stage || null,
-        updated_at: new Date().toISOString(),
       })
       .eq('id', session.user.id);
     setSaving(false);
@@ -150,7 +169,29 @@ export function MenstrualCycleSettings() {
       </CardHeader>
       <CardContent className="space-y-5">
         {loading ? (
-          <p className="text-sm text-muted-foreground">Carregando…</p>
+          <p role="status" className="text-sm text-muted-foreground">
+            Carregando…
+          </p>
+        ) : falhaDeLeitura ? (
+          <div
+            role="alert"
+            className="flex flex-col gap-3 rounded-md border border-destructive/20 bg-destructive-light p-4 text-sm text-destructive"
+          >
+            <p>
+              Não foi possível ler as suas configurações do ciclo:{' '}
+              {falhaDeLeitura} Para não sobrescrever o que já está salvo, o
+              formulário fica bloqueado até a leitura funcionar.
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="self-start"
+              onClick={() => setTentativa((n) => n + 1)}
+            >
+              Tentar de novo
+            </Button>
+          </div>
         ) : (
           <>
             <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-background p-4">

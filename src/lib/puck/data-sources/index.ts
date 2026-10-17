@@ -1,1 +1,0 @@
-export { fetchListPlanos } from './plans';

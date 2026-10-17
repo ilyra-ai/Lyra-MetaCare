@@ -302,6 +302,4 @@ function ChatInput({
     </div>
   );
 }
-
-export default ChatInput;
 export { ChatInput };

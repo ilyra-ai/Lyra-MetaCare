@@ -141,7 +141,8 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
           onKeyDown={handleKeyDown}
           className={cn('relative', className)}
           role="region"
-          aria-roledescription="carousel"
+          // Lido pelo leitor de tela: em pt-BR (antes "carousel").
+          aria-roledescription="carrossel"
           {...props}
         >
           <div ref={carouselRef} className="overflow-hidden">
@@ -172,7 +173,7 @@ const CarouselItem = React.forwardRef<
     <div
       ref={ref}
       role="group"
-      aria-roledescription="slide"
+      aria-roledescription="item"
       className={cn(
         'min-w-0 shrink-0 grow-0 basis-full',
         orientation === 'horizontal' ? 'pr-4' : 'pb-4',
@@ -206,8 +207,8 @@ const CarouselPrevious = React.forwardRef<
       onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeft className="h-4 w-4" />
-      <span className="sr-only">Previous slide</span>
+      <ArrowLeft aria-hidden="true" className="size-4" />
+      <span className="sr-only">Item anterior</span>
     </Button>
   );
 });
@@ -235,8 +236,8 @@ const CarouselNext = React.forwardRef<
       onClick={scrollNext}
       {...props}
     >
-      <ArrowRight className="h-4 w-4" />
-      <span className="sr-only">Next slide</span>
+      <ArrowRight aria-hidden="true" className="size-4" />
+      <span className="sr-only">Próximo item</span>
     </Button>
   );
 });

@@ -11,14 +11,9 @@ import { usePublicSitePageConfig } from '@/hooks/use-public-site-page-config';
 import { scalePx, scaleRem } from '@/lib/site-page-config/runtime';
 import type { AppPageConfig } from '@/lib/site-page-config/schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
+import { usePerfilDoCabecalho } from '@/hooks/use-perfil-do-cabecalho';
 import { SidebarLink } from './SidebarLink';
 import { getVisibleNavigation, groupNavigation } from './navigation';
-
-type ProfileState = {
-  first_name: string | null;
-  avatar_url: string | null;
-};
 
 /*
   Sidebar "Lyra Clean": branca, borda direita de 1px, marca compacta,
@@ -34,45 +29,18 @@ export function Sidebar({
 }: {
   configuracaoPrevia?: AppPageConfig;
 } = {}) {
-  const { session, db } = useAuth();
+  const { session } = useAuth();
   const isAdminReal = useIsAdmin();
   const { data: subscription } = useAccountSubscription();
   const { config: configPublicada } = usePublicSitePageConfig('app');
   const previa = configuracaoPrevia !== undefined;
   const appConfig = configuracaoPrevia ?? configPublicada;
   const isAdmin = previa || isAdminReal;
-  const [profile, setProfile] = React.useState<ProfileState | null>(null);
-
-  React.useEffect(() => {
-    if (!session?.user) return;
-
-    const loadProfile = async () => {
-      const { data, error } = await db
-        .from('profiles')
-        .select('first_name, avatar_url')
-        .eq('id', session.user.id)
-        .maybeSingle();
-
-      if (error) {
-        // Página saindo: o navegador cancelou a busca (não é falha).
-        if (!paginaSaindo()) {
-          console.error('Erro ao carregar perfil da sidebar:', error);
-        }
-        return;
-      }
-
-      setProfile({
-        first_name: data?.first_name ?? null,
-        avatar_url: data?.avatar_url ?? null,
-      });
-    };
-
-    void loadProfile();
-  }, [db, session]);
+  const profile = usePerfilDoCabecalho();
 
   const userEmail = session?.user?.email ?? '';
   const firstName =
-    profile?.first_name?.trim() || userEmail.split('@')[0] || 'Paciente';
+    profile?.first_name?.trim() || userEmail.split('@')[0] || 'Você';
   const initial = firstName.charAt(0).toUpperCase();
   const sections = groupNavigation(getVisibleNavigation(isAdmin, appConfig));
   const navLabelScale = appConfig.typography.navLabel;

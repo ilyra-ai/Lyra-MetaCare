@@ -13,7 +13,6 @@ import {
   dignidadeDoGraha,
   type Elemento,
   GRAHAS_INFO,
-  GRUPO_DAS_CASAS,
   NAKSHATRAS_EXTRA,
   NOME_DO_ELEMENTO,
   NOME_DO_GANA,
@@ -361,9 +360,4 @@ export function lerMapaComoLyra(mapa: MapaNatal): LeituraDaLyra {
     },
     percepcoes: percepcoes.slice(0, 5),
   };
-}
-
-/** Grupos (kendra, trikona...) de uma casa, em texto. */
-export function gruposDaCasa(casa: number) {
-  return CASAS_INFO[casa - 1].grupos.map((g) => GRUPO_DAS_CASAS[g]);
 }

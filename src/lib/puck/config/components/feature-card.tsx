@@ -206,7 +206,8 @@ export const lyraFeatureCardBlockConfig = {
       );
       const atual = planos.find((plano) => plano.key === vinculado.key);
       return { props: { externalPlan: atual } };
-    } catch {
+    } catch (erro) {
+      console.error('Puck/card: falha ao ler o catálogo de planos:', erro);
       return { props: {} };
     }
   },

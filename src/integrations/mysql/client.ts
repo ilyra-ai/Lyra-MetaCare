@@ -3,6 +3,7 @@
 import { TableName } from '@/lib/mysql/table-config';
 import { QueryRecord, TableRowMap } from '@/lib/mysql/types';
 import { AppSession } from '@/types/app-session';
+import { buscarJson, type RespostaDoTransporte } from '@/lib/http/transporte';
 
 type QueryFilter =
   | { type: 'eq'; column: string; value: unknown }
@@ -14,7 +15,6 @@ type QueryFilter =
 type QueryOrder = {
   column: string;
   ascending: boolean;
-  foreignTable?: string;
 };
 
 type QueryEnvelope<T> = {
@@ -35,19 +35,56 @@ function emitAuthChange(event: string, session: AppSession | null) {
   }
 }
 
-async function requestJson<T>(
+/**
+ * Pedido JSON à API do app sem lançar (tarefa 58): falha de rede, resposta
+ * que não é JSON ou status de erro voltam como `falha`, com mensagem em
+ * pt-BR. Antes `response.json()` era lido sem checar nada e a promise era
+ * rejeitada, contra o contrato `{ data, error }` que quem chama espera.
+ */
+function requestJson(
   input: RequestInfo,
   init?: RequestInit
-): Promise<T> {
-  const response = await fetch(input, {
-    credentials: 'include',
+): Promise<RespostaDoTransporte> {
+  return buscarJson(input, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
       ...(init?.headers ?? {}),
     },
   });
-  return response.json() as Promise<T>;
+}
+
+/** Envelope `{ data, error, count }` de uma resposta da API de dados. */
+function envelopeDe<TData>(
+  resposta: RespostaDoTransporte
+): QueryEnvelope<TData> {
+  if (resposta.ok) {
+    const corpo = resposta.corpo as Partial<QueryEnvelope<TData>> | null;
+    if (corpo && typeof corpo === 'object' && 'data' in corpo) {
+      return {
+        data: corpo.data as TData,
+        error: corpo.error ?? null,
+        count: corpo.count ?? null,
+      };
+    }
+    return {
+      data: null as TData,
+      error: { message: 'A resposta do servidor veio sem os dados.' },
+      count: null,
+    };
+  }
+  return {
+    data: null as TData,
+    error: { message: resposta.falha.message },
+    count: null,
+  };
+}
+
+/** Sessão do corpo de /api/auth/session (ou null). */
+function sessaoDoCorpo(corpo: unknown): AppSession | null {
+  if (typeof corpo !== 'object' || corpo === null) return null;
+  const sessao = (corpo as { session?: AppSession | null }).session;
+  return sessao ?? null;
 }
 
 class QueryBuilder<TData = QueryRecord[]> implements PromiseLike<
@@ -126,20 +163,17 @@ class QueryBuilder<TData = QueryRecord[]> implements PromiseLike<
     return this;
   }
 
-  order(
-    column: string,
-    options?: { ascending?: boolean; foreignTable?: string }
-  ) {
+  order(column: string, options?: { ascending?: boolean }) {
     this.orders.push({
       column,
       ascending: options?.ascending ?? true,
-      foreignTable: options?.foreignTable,
     });
     return this;
   }
 
-  limit(limit: number, options?: { foreignTable?: string }) {
-    void options;
+  // Antes aceitava `{ foreignTable }` e ignorava em silêncio (tarefa 58):
+  // o limite sempre vale para a tabela principal.
+  limit(limit: number) {
     this.limitValue = limit;
     return this;
   }
@@ -173,6 +207,10 @@ class QueryBuilder<TData = QueryRecord[]> implements PromiseLike<
   }
 
   private async execute(): Promise<QueryEnvelope<TData>> {
+    return envelopeDe<TData>(await this.enviar());
+  }
+
+  private enviar(): Promise<RespostaDoTransporte> {
     if (this.operation === 'select') {
       const params = new URLSearchParams();
       params.set('select', this.selectColumns);
@@ -252,13 +290,17 @@ class StorageBucketClient {
     }
     formData.set('file', file);
 
-    const response = await fetch('/api/storage/upload', {
+    const resposta = await buscarJson('/api/storage/upload', {
       method: 'POST',
-      credentials: 'include',
       body: formData,
     });
-
-    return response.json();
+    if (!resposta.ok) {
+      return { data: null, error: { message: resposta.falha.message } };
+    }
+    return resposta.corpo as {
+      data: { path: string; publicUrl: string } | null;
+      error: { message: string } | null;
+    };
   }
 
   getPublicUrl(path: string) {
@@ -325,20 +367,25 @@ function from(table: string) {
 export const db = {
   from,
   auth: {
+    // Sem resposta válida, `error` vem preenchido: quem chama distingue
+    // "não deu para confirmar a sessão" de "não há sessão".
     async getSession() {
-      const result = await requestJson<{ session: AppSession | null }>(
-        '/api/auth/session'
-      );
-      return { data: result, error: null };
+      const resposta = await requestJson('/api/auth/session');
+      if (!resposta.ok) {
+        return { data: { session: null }, error: resposta.falha };
+      }
+      return { data: { session: sessaoDoCorpo(resposta.corpo) }, error: null };
     },
     // Relê a sessão no servidor e avisa os ouvintes. Usado quando um dado
     // que faz parte da sessão muda (por exemplo, o onboarding concluído).
     async refreshSession() {
-      const result = await requestJson<{ session: AppSession | null }>(
-        '/api/auth/session'
-      );
-      emitAuthChange('USER_UPDATED', result.session);
-      return { data: result, error: null };
+      const resposta = await requestJson('/api/auth/session');
+      if (!resposta.ok) {
+        return { data: { session: null }, error: resposta.falha };
+      }
+      const session = sessaoDoCorpo(resposta.corpo);
+      emitAuthChange('USER_UPDATED', session);
+      return { data: { session }, error: null };
     },
     onAuthStateChange(callback: AuthChangeListener) {
       authListeners.add(callback);
@@ -352,8 +399,16 @@ export const db = {
         },
       };
     },
-    async signOut() {
-      await requestJson('/api/auth/logout', { method: 'POST' });
+    // `jaEncerrada`: o servidor já encerrou a sessão (ex.: conta excluída);
+    // a saída local acontece mesmo se o logout falhar.
+    async signOut(opcoes?: { jaEncerrada?: boolean }) {
+      const resposta = await requestJson('/api/auth/logout', {
+        method: 'POST',
+      });
+      if (!resposta.ok && !opcoes?.jaEncerrada) {
+        // O cookie continua válido no servidor: não finge que saiu.
+        return { error: resposta.falha };
+      }
       emitAuthChange('SIGNED_OUT', null);
       return { error: null };
     },
@@ -362,20 +417,20 @@ export const db = {
       password: string;
       remember?: boolean;
     }) {
-      const result = await requestJson<{
-        session?: AppSession;
-        error?: string;
-      }>('/api/auth/login', {
+      const resposta = await requestJson('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify(credentials),
       });
-      if (result.session) {
-        emitAuthChange('SIGNED_IN', result.session);
-        return { data: { session: result.session }, error: null };
+      const session = resposta.ok ? sessaoDoCorpo(resposta.corpo) : null;
+      if (session) {
+        emitAuthChange('SIGNED_IN', session);
+        return { data: { session }, error: null };
       }
       return {
         data: { session: null },
-        error: { message: result.error ?? 'Falha no login.' },
+        error: {
+          message: resposta.ok ? 'Falha no login.' : resposta.falha.message,
+        },
       };
     },
     async signUp(payload: {
@@ -386,50 +441,46 @@ export const db = {
       // LGPD: aceite dos termos de uso e da política de privacidade.
       acceptTerms: boolean;
     }) {
-      const result = await requestJson<{
-        session?: AppSession;
-        error?: string;
-      }>('/api/auth/register', {
+      const resposta = await requestJson('/api/auth/register', {
         method: 'POST',
         body: JSON.stringify(payload),
       });
-      if (result.session) {
-        emitAuthChange('SIGNED_IN', result.session);
-        return { data: { session: result.session }, error: null };
+      const session = resposta.ok ? sessaoDoCorpo(resposta.corpo) : null;
+      if (session) {
+        emitAuthChange('SIGNED_IN', session);
+        return { data: { session }, error: null };
       }
       return {
         data: { session: null },
-        error: { message: result.error ?? 'Falha no cadastro.' },
+        error: {
+          message: resposta.ok ? 'Falha no cadastro.' : resposta.falha.message,
+        },
       };
     },
   },
   functions: {
     async invoke<T = unknown>(name: string, options?: { body?: unknown }) {
-      const response = await fetch(`/api/functions/${name}`, {
+      const resposta = await requestJson(`/api/functions/${name}`, {
         method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(options?.body ?? {}),
       });
-      const data = await response.json();
-      if (!response.ok) {
+      if (!resposta.ok) {
         return {
           data: null,
           error: {
-            message: data.error ?? 'Falha na função local.',
-            context: { status: response.status },
+            message: resposta.falha.message,
+            context: { status: resposta.status },
           },
         };
       }
-      return { data: data as T, error: null };
+      return { data: resposta.corpo as T, error: null };
     },
   },
-  rpc<T = unknown>(name: string) {
+  async rpc<T = unknown>(name: string): Promise<QueryEnvelope<T>> {
     const routeName = name.replaceAll('_', '-');
-    return fetch(`/api/rpc/${routeName}`, {
-      method: 'GET',
-      credentials: 'include',
-    }).then(async (response) => response.json() as Promise<QueryEnvelope<T>>);
+    return envelopeDe<T>(
+      await requestJson(`/api/rpc/${routeName}`, { method: 'GET' })
+    );
   },
   storage: {
     from(bucket: string) {

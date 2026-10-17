@@ -19,7 +19,7 @@ function semAsPaginas(hrefs: string[]): AppPageConfig {
 }
 
 describe('navegação com configuração salva', () => {
-  it('a configuração padrão começa por Dashboard, Meu dia, Sua semana e Respiração', () => {
+  it('a configuração padrão começa por Painel, Meu dia, Sua semana e Respiração', () => {
     const config: AppPageConfig = getDefaultPageConfig('app');
     expect(config.sidebar.items.map((i) => i.href).slice(0, 5)).toEqual(
       INICIO_DA_NAVEGACAO

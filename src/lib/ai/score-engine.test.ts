@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { NUMERIC_METRIC_COLUMNS } from '@/lib/mysql/table-config';
-
-import {
-  calculateLongevityScores,
-  extractMetricCompleteness,
-  type MetricSnapshot,
-} from './score-engine';
+import { calculateLongevityScores, type MetricSnapshot } from './score-engine';
 
 // Dia com todas as métricas dentro das faixas ótimas do motor.
 const DIA_OTIMO: MetricSnapshot = {
@@ -114,33 +108,5 @@ describe('calculateLongevityScores', () => {
       weight_nutrition: 30,
     });
     expect(proporcional).toEqual(calculateLongevityScores(DIA_OTIMO));
-  });
-});
-
-describe('extractMetricCompleteness', () => {
-  it('não conta nulos como preenchidos', () => {
-    const resultado = extractMetricCompleteness([
-      { hrv_ms: 50 },
-      { hrv_ms: null },
-      { hrv_ms: 70 },
-      {},
-    ]);
-    const hrv = resultado.find((linha) => linha.metric_name === 'hrv_ms');
-    expect(hrv).toEqual({
-      metric_name: 'hrv_ms',
-      fill_rate: 50,
-      avg_value: 60,
-      min_value: 50,
-      max_value: 70,
-    });
-  });
-
-  it('cobre todas as colunas numéricas e lida com lista vazia', () => {
-    const resultado = extractMetricCompleteness([]);
-    expect(resultado.map((linha) => linha.metric_name)).toEqual(
-      NUMERIC_METRIC_COLUMNS
-    );
-    expect(resultado.every((linha) => linha.fill_rate === 0)).toBe(true);
-    expect(resultado.every((linha) => linha.avg_value === null)).toBe(true);
   });
 });

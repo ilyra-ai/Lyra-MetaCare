@@ -23,7 +23,6 @@ export type QueryFilter =
 export interface QueryOrder {
   column: string;
   ascending: boolean;
-  foreignTable?: string;
 }
 
 interface TableConfig {

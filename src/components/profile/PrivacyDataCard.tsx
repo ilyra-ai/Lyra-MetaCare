@@ -181,7 +181,7 @@ export function PrivacyDataCard() {
       toast.success('Sua conta e os seus dados foram excluídos.');
       setDialogoAberto(false);
       // A sessão já foi encerrada no servidor; o app volta para a entrada.
-      await db.auth.signOut();
+      await db.auth.signOut({ jaEncerrada: true });
     } catch (falha: unknown) {
       console.error('Falha ao excluir a conta:', falha);
       setErroDeExclusao('Sem conexão com o servidor. Tente novamente.');

@@ -449,11 +449,6 @@ const documentosDeDemonstracao: Partial<
   'app-shell': defaultAppShellData,
 };
 
-/** Chaves que tinham documento de demonstração. */
-export const chavesComDemonstracao = Object.keys(
-  documentosDeDemonstracao
-) as LyraPuckDocumentKey[];
-
 /** Cópia do documento de demonstração de uma chave (ou `null`). */
 export function obterDocumentoDeDemonstracao(
   documentKey: LyraPuckDocumentKey

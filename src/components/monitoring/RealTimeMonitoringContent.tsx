@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { db } from '@/integrations/mysql/client';
+import { idadeAtual } from '@/lib/perfil/idade';
 import { toast } from 'sonner';
 import {
   Bell,
@@ -56,11 +57,12 @@ async function lerIdade(
 ) {
   const { data, error } = await dbCliente
     .from('profiles')
-    .select('age')
+    .select('age, birth_date')
     .eq('id', userId)
     .maybeSingle();
   if (error) throw new Error(error.message);
-  return data?.age ?? null;
+  // A data de nascimento dá a idade de hoje; `age` só sem ela.
+  return idadeAtual(data?.birth_date ?? null, data?.age ?? null);
 }
 
 function avisarFalhaDaIdade(falha: unknown) {

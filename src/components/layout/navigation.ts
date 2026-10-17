@@ -45,7 +45,7 @@ type NavigationDefinition = NavigationItem & {
 export const navigationItems: NavigationDefinition[] = [
   {
     href: '/',
-    label: 'Dashboard',
+    label: 'Painel',
     description: 'Seu dia em um olhar: energia, sono e o céu de hoje.',
     icon: LayoutDashboard,
     section: 'Principal',

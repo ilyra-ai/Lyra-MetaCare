@@ -71,7 +71,7 @@ export function AvatarUploader({
     // 3. Update profile table with the new URL
     const { error: updateError } = await db
       .from('profiles')
-      .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
+      .update({ avatar_url: publicUrl })
       .eq('id', session.user.id);
 
     setUploading(false);

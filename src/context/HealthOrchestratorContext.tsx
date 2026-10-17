@@ -163,9 +163,14 @@ export const HealthOrchestratorProvider: React.FC<{
   // troca de conta.
   useEffect(() => {
     let active = true;
-    runHealthSync(userId, null).then((snapshot) => {
-      if (active) applySnapshot(snapshot);
-    });
+    runHealthSync(userId, null)
+      .then((snapshot) => {
+        if (active) applySnapshot(snapshot);
+      })
+      .catch((erro: unknown) => {
+        // Antes sem `catch`: uma falha virava rejeição não tratada.
+        console.error('Falha na sincronização dos sinais:', erro);
+      });
     return () => {
       active = false;
     };
@@ -175,7 +180,11 @@ export const HealthOrchestratorProvider: React.FC<{
   useEffect(() => {
     if (!userId) return;
     return ouvirMetricasAtualizadas(() => {
-      void runHealthSync(userId, astrology).then(applySnapshot);
+      void runHealthSync(userId, astrology)
+        .then(applySnapshot)
+        .catch((erro: unknown) => {
+          console.error('Falha ao reler os sinais do dia:', erro);
+        });
     });
   }, [applySnapshot, astrology, userId]);
 

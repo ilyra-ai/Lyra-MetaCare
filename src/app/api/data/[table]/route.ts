@@ -43,7 +43,6 @@ const ordensSchema = z
     z.object({
       column: nomeDeColuna,
       ascending: z.boolean(),
-      foreignTable: z.string().max(64).optional(),
     })
   )
   .max(10);

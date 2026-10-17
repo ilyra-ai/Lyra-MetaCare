@@ -1,5 +1,3 @@
-import { NUMERIC_METRIC_COLUMNS } from '@/lib/mysql/table-config';
-
 type NumericLike = number | null | undefined;
 
 export interface MetricSnapshot {
@@ -180,26 +178,4 @@ export function calculateLongevityScores(
     longevityScore: Number((clamp(weightedComposite) / 10).toFixed(1)),
     readinessScore: Number(readinessScore.toFixed(0)),
   };
-}
-
-export function extractMetricCompleteness(metrics: MetricSnapshot[]) {
-  return NUMERIC_METRIC_COLUMNS.map((metricName) => {
-    // Nulos não contam como preenchidos (Number(null) seria 0).
-    const values = metrics
-      .map((entry) => metricValue(entry[metricName as keyof MetricSnapshot]))
-      .filter((value): value is number => value !== null);
-
-    const fillRate =
-      metrics.length === 0 ? 0 : (values.length / metrics.length) * 100;
-
-    return {
-      metric_name: metricName,
-      fill_rate: fillRate,
-      avg_value: values.length
-        ? values.reduce((sum, value) => sum + value, 0) / values.length
-        : null,
-      min_value: values.length ? Math.min(...values) : null,
-      max_value: values.length ? Math.max(...values) : null,
-    };
-  });
 }

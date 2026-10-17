@@ -284,6 +284,13 @@ function protectWriteColumns(
   const config = TABLE_CONFIG[table];
   const admin = isAdmin(session);
 
+  // Datas de criação e de atualização são do servidor (tarefa 58): o MySQL
+  // preenche `created_at` e mantém `updated_at` (ON UPDATE
+  // CURRENT_TIMESTAMP). Antes o cliente mandava o relógio do navegador, que
+  // pode estar errado ou ser forjado.
+  delete payload.created_at;
+  delete payload.updated_at;
+
   const rotaPropria = config.colunasSoPorRotaPropria;
   if (rotaPropria?.colunas.some((coluna) => coluna in payload)) {
     throw new HttpError(rotaPropria.mensagem, 403);
@@ -478,10 +485,8 @@ function sanitizeColumns(table: TableName, select: string) {
 
   const specialAppointments =
     table === 'appointments' && trimmed.includes('professionals(');
-  const specialProfiles =
-    table === 'profiles' && trimmed.includes('daily_metrics(');
 
-  if (specialAppointments || specialProfiles) {
+  if (specialAppointments) {
     return trimmed;
   }
 
@@ -632,24 +637,16 @@ function buildWhereClause(
   };
 }
 
-function buildOrderClause(
-  table: TableName,
-  orders: QueryOrder[],
-  hasProfileDailyMetricSelect = false
-) {
+function buildOrderClause(table: TableName, orders: QueryOrder[]) {
   if (!Array.isArray(orders)) {
     throw new HttpError(
       `Ordenação inválida para ${table}: use uma lista.`,
       400
     );
   }
-  if (hasProfileDailyMetricSelect) {
-    return 'ORDER BY latest_metric_date DESC';
-  }
-  // Ordenações de tabelas relacionadas (`foreignTable`) são resolvidas pelas
-  // consultas especiais; na tabela principal, só colunas conhecidas.
+  // Só colunas conhecidas da tabela principal.
   const safeOrders = orders.filter((order) => {
-    if (!order || typeof order !== 'object' || order.foreignTable) {
+    if (!order || typeof order !== 'object') {
       return false;
     }
     if (!TABLE_CONFIG[table].columns.includes(order.column)) {
@@ -721,40 +718,6 @@ async function selectAppointmentsWithProfessionals(
   });
 }
 
-async function selectProfilesWithDailyMetrics(
-  filters: QueryFilter[],
-  session: AppSession | null
-) {
-  const where = buildWhereClause('profiles', filters, session);
-  const rows = await queryRows<QueryRecord>(
-    `
-      SELECT
-        t.id,
-        t.first_name,
-        t.email,
-        latest.date AS latest_metric_date
-      FROM profiles t
-      LEFT JOIN (
-        SELECT dm.user_id, MAX(dm.date) AS date
-        FROM daily_metrics dm
-        GROUP BY dm.user_id
-      ) latest ON latest.user_id = t.id
-      ${where.clause}
-      ORDER BY latest_metric_date DESC
-    `,
-    where.params
-  );
-
-  return rows.map((row) => ({
-    id: row.id,
-    first_name: row.first_name,
-    email: row.email,
-    daily_metrics: row.latest_metric_date
-      ? [{ date: row.latest_metric_date }]
-      : [],
-  }));
-}
-
 // ---------------------------------------------------------------------------
 // LGPD: acesso do administrador a linhas de outras contas
 // ---------------------------------------------------------------------------
@@ -824,7 +787,7 @@ function colunasDaConsulta(filters: QueryFilter[], orders: QueryOrder[]) {
     }
   }
   for (const order of Array.isArray(orders) ? orders : []) {
-    if (order && typeof order === 'object' && !order.foreignTable) {
+    if (order && typeof order === 'object') {
       colunas.push(order.column);
     }
   }
@@ -927,8 +890,6 @@ export async function runSelectQuery(options: {
 
   const specialAppointments =
     table === 'appointments' && options.select.includes('professionals(');
-  const specialProfiles =
-    table === 'profiles' && options.select.includes('daily_metrics(');
 
   // LGPD: de outras contas, o administrador só lê, filtra e ordena pelas
   // colunas liberadas; `*` vira exatamente essa lista.
@@ -946,36 +907,23 @@ export async function runSelectQuery(options: {
       colunasDaConsulta(effectiveFilters, options.orders),
       permitidas
     );
-    if (specialProfiles) {
+    const pedido = options.select.trim();
+    if (pedido === '*' || pedido.length === 0) {
+      selectEfetivo = permitidas.join(', ');
+    } else {
       exigirColunasEntreContas(
-        'profiles',
-        ['id', 'first_name', 'email'],
+        table,
+        pedido
+          .split(',')
+          .map((coluna) => coluna.trim())
+          .filter(Boolean),
         permitidas
       );
-      exigirColunasEntreContas(
-        'daily_metrics',
-        ['user_id', 'date'],
-        TABLE_CONFIG.daily_metrics.adminReadColumns ?? []
-      );
-    } else {
-      const pedido = options.select.trim();
-      if (pedido === '*' || pedido.length === 0) {
-        selectEfetivo = permitidas.join(', ');
-      } else {
-        exigirColunasEntreContas(
-          table,
-          pedido
-            .split(',')
-            .map((coluna) => coluna.trim())
-            .filter(Boolean),
-          permitidas
-        );
-      }
     }
   }
 
   const where = buildWhereClause(table, effectiveFilters, options.session);
-  const order = buildOrderClause(table, options.orders, specialProfiles);
+  const order = buildOrderClause(table, options.orders);
   const offset = hasRangeFrom ? (options.rangeFrom as number) : null;
   const limitClause = requestedRows !== null ? `LIMIT ${requestedRows}` : '';
   const offsetClause = offset !== null ? `OFFSET ${offset}` : '';
@@ -986,11 +934,6 @@ export async function runSelectQuery(options: {
     data = await selectAppointmentsWithProfessionals(
       effectiveFilters,
       options.orders,
-      options.session
-    );
-  } else if (specialProfiles) {
-    data = await selectProfilesWithDailyMetrics(
-      effectiveFilters,
       options.session
     );
   } else {

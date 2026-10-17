@@ -1906,7 +1906,7 @@ export function SiteExperienceBuilder() {
               />
             </FieldBlock>
             <div className="grid gap-4 md:grid-cols-2">
-              <FieldBlock label="Eyebrow da nota">
+              <FieldBlock label="Sobretítulo da nota">
                 <Input
                   value={loginDraft.intro.noteEyebrow}
                   onChange={(event) =>
@@ -2209,7 +2209,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Eyebrow do rodapé">
+              <FieldBlock label="Sobretítulo do rodapé">
                 <Input
                   value={loginDraft.auth.footerEyebrow}
                   onChange={(event) =>
@@ -2376,7 +2376,7 @@ export function SiteExperienceBuilder() {
         </AccordionItem>
 
         <AccordionItem value="sidebar">
-          <AccordionTrigger>Sidebar e branding</AccordionTrigger>
+          <AccordionTrigger>Menu lateral e marca</AccordionTrigger>
           <AccordionContent className="space-y-5">
             <div className="grid gap-4 xl:grid-cols-2">
               <FieldBlock label="Marca principal">
@@ -2387,7 +2387,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Eyebrow da marca">
+              <FieldBlock label="Sobretítulo da marca">
                 <Input
                   value={appDraft.sidebar.brandEyebrow}
                   onChange={(event) =>
@@ -2395,7 +2395,7 @@ export function SiteExperienceBuilder() {
                   }
                 />
               </FieldBlock>
-              <FieldBlock label="Eyebrow do estado do dia">
+              <FieldBlock label="Sobretítulo do estado do dia">
                 <Input
                   value={appDraft.sidebar.statusEyebrow}
                   onChange={(event) =>
@@ -2608,7 +2608,7 @@ export function SiteExperienceBuilder() {
           <AccordionTrigger>Header do app</AccordionTrigger>
           <AccordionContent className="space-y-4">
             <div className="grid gap-4 xl:grid-cols-2">
-              <FieldBlock label="Placeholder da busca global">
+              <FieldBlock label="Texto de exemplo da busca global">
                 <Input
                   value={appDraft.header.commandPlaceholder}
                   onChange={(event) =>
@@ -2669,7 +2669,7 @@ export function SiteExperienceBuilder() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 xl:grid-cols-2">
-                  <FieldBlock label="Eyebrow da home">
+                  <FieldBlock label="Sobretítulo do início">
                     <Input
                       value={appDraft.dashboard.heroEyebrow}
                       onChange={(event) =>
@@ -2680,7 +2680,7 @@ export function SiteExperienceBuilder() {
                       }
                     />
                   </FieldBlock>
-                  <FieldBlock label="Eyebrow da harmonia">
+                  <FieldBlock label="Sobretítulo da harmonia">
                     <Input
                       value={appDraft.dashboard.harmonyEyebrow}
                       onChange={(event) =>
@@ -3270,7 +3270,7 @@ export function SiteExperienceBuilder() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 xl:grid-cols-2">
-                  <FieldBlock label="Eyebrow da página">
+                  <FieldBlock label="Sobretítulo da página">
                     <Input
                       value={appDraft.aiPlan.pageEyebrow}
                       onChange={(event) =>
@@ -3566,7 +3566,7 @@ export function SiteExperienceBuilder() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 xl:grid-cols-2">
-                  <FieldBlock label="Eyebrow da página">
+                  <FieldBlock label="Sobretítulo da página">
                     <Input
                       value={appDraft.monitoring.pageEyebrow}
                       onChange={(event) =>
@@ -3709,7 +3709,7 @@ export function SiteExperienceBuilder() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 xl:grid-cols-2">
-                  <FieldBlock label="Eyebrow da página">
+                  <FieldBlock label="Sobretítulo da página">
                     <Input
                       value={appDraft.chat.pageEyebrow}
                       onChange={(event) =>
@@ -3795,7 +3795,7 @@ export function SiteExperienceBuilder() {
                       }
                     />
                   </FieldBlock>
-                  <FieldBlock label="Placeholder do campo">
+                  <FieldBlock label="Texto de exemplo do campo">
                     <Input
                       value={appDraft.chat.inputPlaceholder}
                       onChange={(event) =>
@@ -3918,7 +3918,7 @@ export function SiteExperienceBuilder() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 xl:grid-cols-2">
-                  <FieldBlock label="Eyebrow da página">
+                  <FieldBlock label="Sobretítulo da página">
                     <Input
                       value={appDraft.connect.pageEyebrow}
                       onChange={(event) =>
@@ -4175,7 +4175,7 @@ export function SiteExperienceBuilder() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <FieldBlock label="Eyebrow">
+                <FieldBlock label="Sobretítulo">
                   <Input
                     value={appDraft.profile.pageEyebrow}
                     onChange={(event) =>

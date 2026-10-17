@@ -21,8 +21,11 @@ async function depoisDeGravar(userId: string, data: string) {
  * máxima estimada pela idade) vira aviso no sino, um por dia.
  */
 async function avisarFrequenciaAlta(userId: string, sessao: SessaoDoSensor) {
+  // Idade de hoje pela data de nascimento (tarefa 58): a coluna `age` só
+  // vale sem data de nascimento, porque fica defasada a cada aniversário.
   const [perfil] = await queryRows<{ age: number | null }>(
-    'SELECT age FROM profiles WHERE id = ? LIMIT 1',
+    `SELECT COALESCE(TIMESTAMPDIFF(YEAR, birth_date, CURDATE()), age) AS age
+       FROM profiles WHERE id = ? LIMIT 1`,
     [userId]
   );
   const limite = limiteDeFrequencia(perfil?.age ?? null);

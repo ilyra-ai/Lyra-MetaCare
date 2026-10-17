@@ -343,7 +343,7 @@ const defaultAppPageConfig: AppPageConfig = {
     items: [
       {
         href: '/',
-        label: 'Dashboard',
+        label: 'Painel',
         description: 'Seu dia em um olhar: energia, sono e o céu de hoje.',
         visible: true,
       },

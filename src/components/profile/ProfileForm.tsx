@@ -333,7 +333,7 @@ export function ProfileForm() {
     defaultValues: {
       first_name: '',
       last_name: '',
-      age: 18,
+      age: '',
       gender: 'prefer_not-to-say',
       birth_date: null,
       birth_time: '',
@@ -403,7 +403,13 @@ export function ProfileForm() {
         form.reset({
           first_name: data.first_name ?? '',
           last_name: data.last_name ?? '',
-          age: data.age ?? 18,
+          // Sem idade gravada, a idade vem da data de nascimento; sem as
+          // duas, o campo fica vazio (antes, 18 inventado era gravado).
+          age:
+            data.age ??
+            (validBirthDate
+              ? differenceInYears(new Date(), validBirthDate)
+              : ''),
           gender:
             (data.gender as ProfileValues['gender']) ?? 'prefer_not-to-say',
           birth_date: validBirthDate,
@@ -433,7 +439,6 @@ export function ProfileForm() {
       .from('profiles')
       .update({
         ...buildProfileUpdatePayload(data),
-        updated_at: new Date().toISOString(),
       })
       .eq('id', session.user.id);
 
@@ -449,7 +454,13 @@ export function ProfileForm() {
   };
 
   const handleSignOut = async () => {
-    await db.auth.signOut();
+    const { error } = await db.auth.signOut();
+    if (error) {
+      toast.error('Não foi possível sair agora.', {
+        description: error.message,
+      });
+      return;
+    }
     router.push('/login');
   };
 

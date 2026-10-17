@@ -86,7 +86,7 @@ export function AITipFormModal({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {tipToEdit ? 'Editar Insight' : 'Adicionar Novo Insight de IA'}
+            {tipToEdit ? 'Editar dica' : 'Adicionar dica de IA'}
           </DialogTitle>
           <DialogDescription>
             Este insight poderá ser exibido no dashboard dos usuários.

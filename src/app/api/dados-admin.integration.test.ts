@@ -20,7 +20,7 @@ import * as dados from './data/[table]/route';
 import * as paginaPublica from './public/page-config/[pageKey]/route';
 import * as planosPublicos from './public/plans/route';
 import * as puckPublico from './public/puck/documents/[documentKey]/route';
-import * as rpcSaude from './rpc/get-data-health-metrics/route';
+import * as saudeDosDados from './admin/saude-dos-dados/route';
 
 let ana: UsuarioDeTeste;
 let admin: UsuarioDeTeste;
@@ -195,7 +195,14 @@ describe('rotas administrativas', () => {
         (await chamar(usuariosAdmin.GET, { path: '/api/admin/users', usuario }))
           .status
       ).toBe(status);
-      expect((await chamar(rpcSaude.GET, { usuario })).status).toBe(status);
+      expect(
+        (
+          await chamar(saudeDosDados.GET, {
+            path: '/api/admin/saude-dos-dados',
+            usuario,
+          })
+        ).status
+      ).toBe(status);
     }
   });
 
@@ -258,7 +265,11 @@ describe('rotas administrativas', () => {
           body: { action: 'publish' },
           usuario: ana,
         }),
-      () => chamar(rpcSaude.GET, { usuario: ana }),
+      () =>
+        chamar(saudeDosDados.GET, {
+          path: '/api/admin/saude-dos-dados',
+          usuario: ana,
+        }),
     ];
     for (const chamada of chamadas) {
       expect((await chamada()).status).toBe(403);
@@ -654,5 +665,102 @@ describe('rotas administrativas', () => {
     expect(planos.every((plano) => plano.isActive && plano.isPublic)).toBe(
       true
     );
+  });
+});
+
+describe('saúde dos dados (GET /api/admin/saude-dos-dados, tarefa 58)', () => {
+  it('agrega no MySQL, sem contar nulos, e pagina os inativos', async () => {
+    const ativa = await criarUsuario('patient', 'SaudeAtiva');
+    const inativa = await criarUsuario('patient', 'SaudeInativa');
+    for (const [dias, hrv] of [
+      [0, 50],
+      [1, null],
+      [2, 70],
+    ] as const) {
+      await executeStatement(
+        `INSERT INTO daily_metrics (id, user_id, date, hrv_ms)
+         VALUES (?, ?, UTC_DATE() - INTERVAL ? DAY, ?)`,
+        [randomUUID(), ativa.id, dias, hrv]
+      );
+    }
+    await executeStatement(
+      `INSERT INTO daily_metrics (id, user_id, date, steps)
+       VALUES (?, ?, UTC_DATE() - INTERVAL 30 DAY, 1000)`,
+      [randomUUID(), inativa.id]
+    );
+
+    const resposta = await chamar(saudeDosDados.GET, {
+      path: '/api/admin/saude-dos-dados?pagina=1',
+      usuario: admin,
+    });
+    expect(resposta.status).toBe(200);
+    const corpo = resposta.json as {
+      totalDeRegistros: number;
+      ativosHojeOuOntem: number;
+      metricas: Array<{
+        metrica: string;
+        preenchimento: number;
+        media: number | null;
+      }>;
+      inativos: {
+        total: number;
+        itens: Array<{ id: string; ultimoRegistro: string | null }>;
+      };
+    };
+
+    // Os mesmos números calculados direto no banco: nulos não contam.
+    const [esperado] = await queryRows<{
+      total: number;
+      preenchidos: number;
+      soma: number | null;
+    }>(
+      `SELECT COUNT(*) AS total, COUNT(hrv_ms) AS preenchidos,
+              SUM(hrv_ms) AS soma FROM daily_metrics`
+    );
+    expect(corpo.totalDeRegistros).toBe(Number(esperado.total));
+    const hrv = corpo.metricas.find((m) => m.metrica === 'hrv_ms');
+    expect(hrv?.preenchimento).toBeCloseTo(
+      (Number(esperado.preenchidos) / Number(esperado.total)) * 100,
+      6
+    );
+    // AVG do MySQL tem 4 casas decimais.
+    expect(hrv?.media).toBeCloseTo(
+      Number(esperado.soma) / Number(esperado.preenchidos),
+      3
+    );
+    // Ordenadas da menos para a mais preenchida.
+    const taxas = corpo.metricas.map((m) => m.preenchimento);
+    expect(taxas).toEqual([...taxas].sort((a, b) => a - b));
+
+    expect(corpo.ativosHojeOuOntem).toBeGreaterThanOrEqual(1);
+    // O total de inativos é o mesmo contado direto no banco (inclui a
+    // pessoa com registro de 30 dias atrás).
+    const [inativosNoBanco] = await queryRows<{ total: number }>(
+      `SELECT COUNT(*) AS total FROM profiles p
+         LEFT JOIN (SELECT user_id, MAX(date) AS ultimo
+                      FROM daily_metrics GROUP BY user_id) m
+           ON m.user_id = p.id
+        WHERE m.ultimo IS NULL OR m.ultimo < UTC_DATE() - INTERVAL 7 DAY`
+    );
+    expect(corpo.inativos.total).toBe(Number(inativosNoBanco.total));
+    expect(corpo.inativos.total).toBeGreaterThanOrEqual(1);
+    expect(corpo.inativos.itens.length).toBeLessThanOrEqual(20);
+    expect(corpo.inativos.itens.map((i) => i.id)).not.toContain(ativa.id);
+    // Quem tem registro antigo vem antes de quem nunca registrou, do mais
+    // recente para o mais antigo.
+    const datas = corpo.inativos.itens.map((i) => i.ultimoRegistro);
+    const comData = datas.filter((d): d is string => d !== null);
+    expect(datas.slice(0, comData.length)).toEqual(comData);
+    expect(comData).toEqual([...comData].sort().reverse());
+    for (const data of comData) expect(data).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+
+    expect(
+      (
+        await chamar(saudeDosDados.GET, {
+          path: '/api/admin/saude-dos-dados?pagina=0',
+          usuario: admin,
+        })
+      ).status
+    ).toBe(400);
   });
 });

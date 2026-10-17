@@ -72,7 +72,9 @@ async function resolverPropsHeroDinamicos(props: LyraHeroBlockProps) {
   let perfil: Awaited<ReturnType<typeof obterPerfilDinamicoLyra>>;
   try {
     perfil = await obterPerfilDinamicoLyra();
-  } catch {
+  } catch (erro) {
+    // Antes engolido sem registro (tarefa 58).
+    console.error('Puck/hero: falha ao ler o perfil da sessão:', erro);
     return semSessao;
   }
 
@@ -113,7 +115,10 @@ async function resolverPropsHeroDinamicos(props: LyraHeroBlockProps) {
       },
       readOnly: camposSomenteLeituraHero,
     };
-  } catch {
+  } catch (erro) {
+    console.error('Puck/hero: falha ao ler o plano da pessoa:', erro);
+    // Sem prometer uma recarga que não acontece (antes: "aparecem aqui em
+    // instantes").
     return {
       props: {
         dynamicSource,
@@ -121,7 +126,8 @@ async function resolverPropsHeroDinamicos(props: LyraHeroBlockProps) {
         ctaDocumentKey,
         eyebrow: 'Para você',
         title: `${perfil.saudacao}, ${primeiroNome}.`,
-        description: 'Os dados do seu plano aparecem aqui em instantes.',
+        description:
+          'Não foi possível carregar os dados do seu plano agora. Recarregue a página para tentar de novo.',
         note: '',
       },
       readOnly: camposSomenteLeituraHero,

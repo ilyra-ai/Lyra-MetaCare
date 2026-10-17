@@ -168,7 +168,7 @@ export function AdminContentManagement() {
     if (error)
       toast.error('Erro ao salvar insight.', { description: error.message });
     else {
-      toast.success('Insight salvo!');
+      toast.success('Dica salva.');
       setIsTipModalOpen(false);
       fetchTips();
     }
@@ -216,8 +216,8 @@ export function AdminContentManagement() {
                 Hábitos Sugeridos
               </TabsTrigger>
               <TabsTrigger value="tips">
-                <Lightbulb className="mr-2 h-4 w-4" aria-hidden="true" />{' '}
-                Insights de IA
+                <Lightbulb className="mr-2 h-4 w-4" aria-hidden="true" /> Dicas
+                de IA
               </TabsTrigger>
             </TabsList>
             <TabsContent value="experience" className="mt-6">
@@ -310,7 +310,7 @@ export function AdminContentManagement() {
                     setIsTipModalOpen(true);
                   }}
                 >
-                  <Plus className="mr-2 h-4 w-4" /> Adicionar Insight
+                  <Plus aria-hidden="true" /> Adicionar dica
                 </Button>
               </div>
               {loading.tips ? (

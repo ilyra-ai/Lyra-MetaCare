@@ -28,14 +28,30 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ['400', '500', '600'],
 });
 
+/**
+ * Origem pública para as URLs absolutas dos metadados (Open Graph, canônica).
+ * Vem de APP_BASE_URL ou NEXT_PUBLIC_APP_URL (tarefa 58); antes era um
+ * domínio fixo inexistente. Sem as duas, o endereço local do servidor.
+ */
+function origemPublica() {
+  const configurada =
+    process.env.APP_BASE_URL?.trim() || process.env.NEXT_PUBLIC_APP_URL?.trim();
+  try {
+    if (configurada) return new URL(configurada);
+  } catch {
+    // Valor inválido: segue para o endereço local, que é sempre válido.
+  }
+  return new URL(`http://localhost:${process.env.PORT?.trim() || '3000'}`);
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://lyra-metacare.local'),
+  metadataBase: origemPublica(),
   title: {
     default: 'Lyra MetaCare',
     template: '%s | Lyra MetaCare',
   },
   description:
-    'Super-app premium de saúde preventiva personalizada com IA, monitoramento biométrico e sabedoria ancestral em uma experiência luminosa e acolhedora.',
+    'Plataforma de bem-estar, longevidade e autoconhecimento: seus sinais do dia, o seu mapa védico e uma IA que orienta a rotina. Não substitui avaliação profissional de saúde.',
   keywords: [
     'Lyra MetaCare',
     'saúde preventiva',

@@ -43,12 +43,8 @@ import {
   groupNavigation,
 } from './navigation';
 import { useIsAdmin } from '@/hooks/use-is-admin';
-import { paginaSaindo } from '@/lib/navegador/saida-da-pagina';
-
-type ProfileState = {
-  avatar_url: string | null;
-  first_name: string | null;
-};
+import { usePerfilDoCabecalho } from '@/hooks/use-perfil-do-cabecalho';
+import { toast } from 'sonner';
 
 export function Header() {
   const { session, db } = useAuth();
@@ -57,38 +53,11 @@ export function Header() {
   const { config: appConfig } = usePublicSitePageConfig('app');
   const pathname = usePathname();
   const router = useRouter();
-  const [profile, setProfile] = React.useState<ProfileState | null>(null);
+  const profile = usePerfilDoCabecalho();
   const [commandOpen, setCommandOpen] = React.useState(false);
 
   const pageMeta = getPageMeta(pathname, appConfig);
   const navigation = groupNavigation(getVisibleNavigation(isAdmin, appConfig));
-
-  React.useEffect(() => {
-    if (!session?.user) return;
-
-    const loadProfile = async () => {
-      const { data, error } = await db
-        .from('profiles')
-        .select('avatar_url, first_name')
-        .eq('id', session.user.id)
-        .maybeSingle();
-
-      if (error) {
-        // Página saindo: o navegador cancelou a busca (não é falha).
-        if (!paginaSaindo()) {
-          console.error('Erro ao carregar perfil no header:', error);
-        }
-        return;
-      }
-
-      setProfile({
-        avatar_url: data?.avatar_url ?? null,
-        first_name: data?.first_name ?? null,
-      });
-    };
-
-    void loadProfile();
-  }, [db, session]);
 
   // Atalhos "G + letra" exibidos na paleta de comandos (ex.: G D, G H).
   const atalhos = React.useMemo(
@@ -159,7 +128,14 @@ export function Header() {
   };
 
   const handleSignOut = async () => {
-    await db.auth.signOut();
+    const { error } = await db.auth.signOut();
+    if (error) {
+      // A sessão continua ativa no servidor: avisar em vez de fingir a saída.
+      toast.error('Não foi possível sair agora.', {
+        description: error.message,
+      });
+      return;
+    }
     router.push('/login');
   };
 

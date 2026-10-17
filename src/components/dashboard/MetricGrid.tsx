@@ -511,7 +511,7 @@ export function MetricGrid({ metrics }: MetricGridProps) {
           description: comoFrase(lapsesStatus),
         },
         {
-          title: 'Score cognitivo',
+          title: 'Pontuação cognitiva',
           value: formatNumber(metrics.cognitive_test_score, (input) =>
             input.toFixed(2)
           ),

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { buscarJson } from '@/lib/http/transporte';
 import { toast } from 'sonner';
 import {
   Card,
@@ -94,50 +95,63 @@ export function UserManagementContent() {
     React.useState<AdminUserListItem | null>(null);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = React.useState(false);
 
-  const fetchUsers = React.useCallback(async () => {
-    setLoading(true);
+  // `signal` cancela a busca anterior (tarefa 58): com o debounce, uma
+  // resposta antiga e lenta podia chegar depois da nova e sobrescrevê-la.
+  const fetchUsers = React.useCallback(
+    async (signal?: AbortSignal) => {
+      setLoading(true);
 
-    try {
-      const params = new URLSearchParams({
-        page: String(page),
-        pageSize: String(PAGE_SIZE),
-        sortColumn: sort.column,
-        ascending: String(sort.ascending),
-      });
+      try {
+        const params = new URLSearchParams({
+          page: String(page),
+          pageSize: String(PAGE_SIZE),
+          sortColumn: sort.column,
+          ascending: String(sort.ascending),
+        });
 
-      if (searchTerm.trim()) {
-        params.set('search', searchTerm.trim());
-      }
+        if (searchTerm.trim()) {
+          params.set('search', searchTerm.trim());
+        }
 
-      const response = await fetch(`/api/admin/users?${params.toString()}`, {
-        credentials: 'include',
-      });
-      const payload = (await response.json()) as
-        AdminUserListResponse | { error?: string };
-
-      if (!response.ok || !('users' in payload)) {
-        throw new Error(
-          extractApiError(payload) || 'Falha ao carregar os usuários.'
+        const resposta = await buscarJson(
+          `/api/admin/users?${params.toString()}`,
+          { signal }
         );
-      }
+        if (signal?.aborted) return;
+        const payload = resposta.corpo as
+          AdminUserListResponse | { error?: string } | null;
 
-      setUsers(payload.users);
-      setTotalUsers(payload.total);
-    } catch (error) {
-      toast.error('Erro ao carregar usuários.', {
-        description:
-          error instanceof Error ? error.message : 'Erro desconhecido.',
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [page, searchTerm, sort]);
+        if (!resposta.ok || !payload || !('users' in payload)) {
+          throw new Error(
+            resposta.ok
+              ? extractApiError(payload) || 'Falha ao carregar os usuários.'
+              : resposta.falha.message
+          );
+        }
+
+        setUsers(payload.users);
+        setTotalUsers(payload.total);
+      } catch (error) {
+        toast.error('Erro ao carregar usuários.', {
+          description:
+            error instanceof Error ? error.message : 'Erro desconhecido.',
+        });
+      } finally {
+        if (!signal?.aborted) setLoading(false);
+      }
+    },
+    [page, searchTerm, sort]
+  );
 
   React.useEffect(() => {
+    const controle = new AbortController();
     const debounce = setTimeout(() => {
-      fetchUsers();
+      void fetchUsers(controle.signal);
     }, 300);
-    return () => clearTimeout(debounce);
+    return () => {
+      clearTimeout(debounce);
+      controle.abort();
+    };
   }, [fetchUsers]);
 
   const handleSort = (column: SortColumn) => {
@@ -424,7 +438,7 @@ export function UserManagementContent() {
           user={selectedUser}
           open={isDetailModalOpen}
           onOpenChange={setIsDetailModalOpen}
-          onSubscriptionUpdated={fetchUsers}
+          onSubscriptionUpdated={() => fetchUsers()}
         />
       )}
 

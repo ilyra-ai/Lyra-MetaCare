@@ -26,6 +26,24 @@ export async function lerJson<T>(request: Request, schema: ZodType<T>) {
   return schema.parse(corpo);
 }
 
+/**
+ * Corpo JSON opcional: corpo vazio vale `{}`; corpo presente precisa ser JSON
+ * válido e passar no esquema. Antes a mesma leitura estava copiada em duas
+ * rotas (tarefa 58).
+ */
+export async function lerJsonOpcional<T>(request: Request, schema: ZodType<T>) {
+  const texto = await request.text();
+  let corpo: unknown = {};
+  if (texto.trim()) {
+    try {
+      corpo = JSON.parse(texto);
+    } catch {
+      throw new HttpError('Corpo da requisição não é um JSON válido.', 400);
+    }
+  }
+  return schema.parse(corpo);
+}
+
 /** Converte um parâmetro de busca JSON (ex.: `filters`) com validação. */
 export function lerParametroJson<T>(
   valor: string | null,

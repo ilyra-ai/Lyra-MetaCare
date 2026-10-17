@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { gerarPlanoDaPessoa, gravarPlano } from '@/lib/ai/plano-do-dia';
-import { HttpError } from '@/lib/http-error';
-import { respostaDeErro } from '@/lib/http/api';
+import { lerJsonOpcional, respostaDeErro } from '@/lib/http/api';
 import { withTransaction } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
 import { consumeUsageQuota } from '@/lib/plans/service';
@@ -21,16 +20,8 @@ const pedidoSchema = z.object({}).strict();
 export async function POST(request: Request) {
   try {
     const session = await requireServerSession();
-    const texto = await request.text();
-    if (texto.trim()) {
-      let corpo: unknown;
-      try {
-        corpo = JSON.parse(texto);
-      } catch {
-        throw new HttpError('Corpo da requisição não é um JSON válido.', 400);
-      }
-      pedidoSchema.parse(corpo);
-    }
+    // Só valida (o corpo não traz dados: o plano usa os do servidor).
+    await lerJsonOpcional(request, pedidoSchema);
 
     const plano = await gerarPlanoDaPessoa(session.user.id, 'manual');
     await withTransaction(async (connection) => {

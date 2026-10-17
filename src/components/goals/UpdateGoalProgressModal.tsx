@@ -79,7 +79,6 @@ export function UpdateGoalProgressModal({
       .update({
         current_value: data.current_value,
         status: newStatus,
-        updated_at: new Date().toISOString(),
       })
       .eq('id', goal.id);
 

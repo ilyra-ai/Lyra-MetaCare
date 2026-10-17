@@ -142,7 +142,9 @@ export function OnboardingForm() {
     defaultValues: {
       first_name: '',
       last_name: '',
-      age: 18,
+      // A idade vem da data de nascimento (efeito abaixo); sem valor
+      // inventado.
+      age: '',
       gender: 'prefer_not-to-say',
       activity_level: NIVEL_DE_ATIVIDADE.padrao,
       goals: [],
@@ -272,7 +274,6 @@ export function OnboardingForm() {
       birth_date: formattedBirthDate,
       birth_time: formattedBirthTime,
       onboarding_completed: true,
-      updated_at: new Date().toISOString(),
     };
 
     // Locais primeiro: o perfil só é dado como completo com a cidade de

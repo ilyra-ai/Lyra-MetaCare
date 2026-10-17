@@ -9,8 +9,7 @@ import {
   metricasMedidas,
   type MetricSnapshot,
 } from '@/lib/ai/score-engine';
-import { HttpError } from '@/lib/http-error';
-import { respostaDeErro } from '@/lib/http/api';
+import { lerJsonOpcional, respostaDeErro } from '@/lib/http/api';
 import { dataDoRegistroSchema } from '@/lib/metricas/registro-do-dia';
 import { queryRows } from '@/lib/mysql/pool';
 import { requireServerSession } from '@/lib/mysql/server-auth';
@@ -33,16 +32,7 @@ export async function POST(request: Request) {
     const session = await requireServerSession();
     await requireFeatureEnabled(session, 'ai_scores');
     // Corpo opcional: sem corpo vale o dia UTC de hoje.
-    const texto = await request.text();
-    let corpo: unknown = {};
-    if (texto.trim()) {
-      try {
-        corpo = JSON.parse(texto);
-      } catch {
-        throw new HttpError('Corpo da requisição não é um JSON válido.', 400);
-      }
-    }
-    const { data: pedida } = pedidoSchema.parse(corpo);
+    const { data: pedida } = await lerJsonOpcional(request, pedidoSchema);
     const data = pedida ?? new Date().toISOString().slice(0, 10);
 
     const [metric] = await queryRows<MetricSnapshot>(

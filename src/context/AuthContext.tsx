@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 import { db } from '@/integrations/mysql/client';
 import { destinoObrigatorio } from '@/lib/auth/destino-de-acesso';
@@ -36,28 +37,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     );
 
-    db.auth
-      .getSession()
-      .then(({ data }) => {
-        if (ativo && !recebeuEvento) {
-          setSession(data.session);
-        }
-      })
-      .catch((error: unknown) => {
-        // Página saindo: o navegador cancelou a busca (não é falha).
-        if (paginaSaindo()) return;
-        // Sem resposta válida de /api/auth/session não há como confirmar a
-        // sessão: o app segue como visitante em vez de ficar em branco.
-        console.error('Falha ao consultar a sessão:', error);
-        if (ativo && !recebeuEvento) {
-          setSession(null);
-        }
-      })
-      .finally(() => {
-        if (ativo) {
-          setLoading(false);
-        }
+    // A leitura da sessão não lança (tarefa 58): uma falha volta em `error`.
+    // Com falha, tenta de novo duas vezes (1 s e 3 s) antes de seguir como
+    // visitante, avisando a pessoa: antes, um único erro do servidor fazia
+    // quem estava logado ver a landing sem explicação.
+    const esperas = [1000, 3000];
+    const lerSessao = async (tentativa: number): Promise<void> => {
+      const { data, error } = await db.auth.getSession();
+      if (!ativo || recebeuEvento) return;
+      if (!error) {
+        setSession(data.session);
+        return;
+      }
+      // Página saindo: o navegador cancelou a busca (não é falha).
+      if (error.motivo === 'cancelada' || paginaSaindo()) return;
+      if (tentativa < esperas.length) {
+        await new Promise((fim) => setTimeout(fim, esperas[tentativa]));
+        return lerSessao(tentativa + 1);
+      }
+      console.error('Falha ao consultar a sessão:', error.message);
+      toast.warning('Não foi possível confirmar a sua sessão.', {
+        description: `${error.message} Recarregue a página para tentar de novo.`,
       });
+      setSession(null);
+    };
+    void lerSessao(0).finally(() => {
+      if (ativo) {
+        setLoading(false);
+      }
+    });
 
     return () => {
       ativo = false;

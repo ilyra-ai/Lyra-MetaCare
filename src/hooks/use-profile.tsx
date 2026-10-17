@@ -3,7 +3,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { useCallback } from 'react';
 import { useKeyedResource } from '@/hooks/use-keyed-resource';
-import { differenceInYears, parseISO } from 'date-fns';
+import { idadeAtual } from '@/lib/perfil/idade';
 
 export interface ProfileSummary {
   first_name: string | null;
@@ -68,19 +68,10 @@ export function useProfile(enabled = true): UseProfileResult {
     null
   );
 
-  const chronologicalAge = (() => {
-    if (!profile) return null;
-    if (typeof profile.age === 'number' && profile.age > 0) {
-      return profile.age;
-    }
-    if (profile.birth_date) {
-      const parsed = parseISO(profile.birth_date);
-      if (!Number.isNaN(parsed.getTime())) {
-        return differenceInYears(new Date(), parsed);
-      }
-    }
-    return null;
-  })();
+  // Data de nascimento primeiro: a idade gravada fica defasada (tarefa 58).
+  const chronologicalAge = profile
+    ? idadeAtual(profile.birth_date, profile.age)
+    : null;
 
   const isFemale = (profile?.gender ?? '').toLowerCase() === 'female';
 

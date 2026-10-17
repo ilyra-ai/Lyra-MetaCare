@@ -259,7 +259,8 @@ export function criarLyraRootConfig(
           },
           readOnly: camposSomenteLeituraRoot,
         };
-      } catch {
+      } catch (erro) {
+        console.error('Puck/raiz: falha ao montar o contexto da sessão:', erro);
         return {
           props: {
             dynamicSource,

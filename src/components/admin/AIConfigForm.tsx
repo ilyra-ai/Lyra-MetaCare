@@ -133,7 +133,6 @@ export function AIConfigForm() {
       .from('ai_config')
       .update({
         ...values,
-        updated_at: new Date().toISOString(),
       })
       .eq('id', configId);
     setIsSubmitting(false);
@@ -215,7 +214,7 @@ export function AIConfigForm() {
                           <Textarea
                             rows={4}
                             className="resize-none leading-6"
-                            placeholder="Ex: Você é a IA médica da Lyra, especializada em integrar dados vitais e astrológicos para gerar protocolos de longevidade."
+                            placeholder="Ex.: Você é a Lyra, guia de bem-estar que une os sinais do dia e a astrologia védica para orientar a rotina, sem substituir avaliação profissional de saúde."
                             {...field}
                           />
                         </FormControl>
