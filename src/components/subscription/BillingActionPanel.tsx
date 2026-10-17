@@ -84,11 +84,11 @@ export function BillingActionPanel({
 
   if (loading) {
     return compact ? (
-      <Skeleton className="h-10 w-full rounded-[10px]" />
+      <Skeleton className="h-10 w-full rounded" />
     ) : (
       <div className="space-y-3">
-        <Skeleton className="h-10 w-full rounded-[10px]" />
-        <Skeleton className="h-10 w-full rounded-[10px]" />
+        <Skeleton className="h-10 w-full rounded" />
+        <Skeleton className="h-10 w-full rounded" />
       </div>
     );
   }

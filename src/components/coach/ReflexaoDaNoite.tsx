@@ -92,7 +92,7 @@ function Escala({
             <span
               aria-hidden="true"
               className={cn(
-                'flex h-11 cursor-pointer items-center justify-center rounded-[10px] border border-border bg-card text-sm font-semibold tabular-nums text-foreground transition-colors duration-150 motion-reduce:transition-none',
+                'flex h-11 cursor-pointer items-center justify-center rounded border border-border bg-card text-sm font-semibold tabular-nums text-foreground transition-colors duration-150 motion-reduce:transition-none',
                 'hover:border-primary/60 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground',
                 'peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring peer-disabled:cursor-not-allowed peer-disabled:opacity-60'
               )}
@@ -107,7 +107,7 @@ function Escala({
       </div>
       <div
         aria-hidden="true"
-        className="mt-1 flex justify-between text-[0.6875rem] text-muted-foreground"
+        className="mt-1 flex justify-between text-micro text-muted-foreground"
       >
         <span>{SIGNIFICADO_DA_NOTA[1]}</span>
         <span>{SIGNIFICADO_DA_NOTA[5]}</span>
@@ -444,7 +444,7 @@ export function ReflexaoDaNoite({
               setDataPedida(valor === hoje ? null : valor);
             }}
             aria-label="Dia da reflexão"
-            className="rounded-[10px] border border-border p-0.5"
+            className="rounded border border-border p-0.5"
           >
             <ToggleGroupItem value={hoje} className="h-9 px-3 text-xs">
               Hoje

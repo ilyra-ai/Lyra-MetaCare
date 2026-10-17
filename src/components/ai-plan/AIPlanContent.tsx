@@ -731,7 +731,7 @@ export function AIPlanContent() {
                 <TabsTrigger
                   key={key}
                   value={key}
-                  className="rounded-[10px] border border-transparent px-3 py-2 data-[state=active]:border-transparent data-[state=active]:bg-sidebar-accent data-[state=active]:text-sidebar-accent-foreground data-[state=active]:shadow-none"
+                  className="rounded border border-transparent px-3 py-2 data-[state=active]:border-transparent data-[state=active]:bg-sidebar-accent data-[state=active]:text-sidebar-accent-foreground data-[state=active]:shadow-none"
                 >
                   <span
                     className={cn(

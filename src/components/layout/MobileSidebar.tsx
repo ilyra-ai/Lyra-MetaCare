@@ -54,7 +54,7 @@ export function MobileSidebar() {
         <SheetHeader className="space-y-0 pr-10">
           <Link
             href="/"
-            className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-1"
+            className="flex items-center gap-2.5 rounded px-2.5 py-1"
             onClick={() => setOpen(false)}
           >
             <MarcaLyra tamanho={scalePx(36, iconScale)} />

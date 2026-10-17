@@ -1583,7 +1583,7 @@ export function SiteExperienceBuilder() {
                 {landingDraft.sectionOrder.map((sectionKey, index) => (
                   <div
                     key={`${sectionKey}-${index}`}
-                    className="flex items-center justify-between gap-3 rounded-[10px] border border-border bg-background px-4 py-3"
+                    className="flex items-center justify-between gap-3 rounded border border-border bg-background px-4 py-3"
                   >
                     <span className="text-sm font-medium text-foreground">
                       {sectionKey}

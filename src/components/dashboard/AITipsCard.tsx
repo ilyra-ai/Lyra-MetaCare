@@ -141,7 +141,7 @@ export function AITipsCard({
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
-        <p className="text-[15px] leading-relaxed text-foreground/85">
+        <p className="text-body leading-relaxed text-foreground/85">
           {data.dica.detail}
         </p>
         <div className="rounded-md border border-border bg-background p-4">

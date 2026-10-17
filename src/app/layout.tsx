@@ -137,10 +137,9 @@ export default function RootLayout({
                     'group rounded-xl border border-border bg-card text-card-foreground shadow-lg',
                   title: 'font-semibold text-foreground',
                   description: 'text-sm text-muted-foreground',
-                  actionButton:
-                    'rounded-[10px] bg-primary text-primary-foreground',
+                  actionButton: 'rounded bg-primary text-primary-foreground',
                   cancelButton:
-                    'rounded-[10px] border border-border bg-secondary text-secondary-foreground',
+                    'rounded border border-border bg-secondary text-secondary-foreground',
                 },
               }}
             />

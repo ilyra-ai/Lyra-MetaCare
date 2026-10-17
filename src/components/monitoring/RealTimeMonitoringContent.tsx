@@ -217,7 +217,7 @@ export function RealTimeMonitoringContent({
                 </Badge>
                 <Badge variant="outline">plano {currentPlanKey}</Badge>
               </div>
-              <div className="rounded-[10px] border border-border bg-background px-4 py-2 text-sm text-muted-foreground">
+              <div className="rounded border border-border bg-background px-4 py-2 text-sm text-muted-foreground">
                 Última sincronização:{' '}
                 <span className="font-display font-medium tabular-nums text-foreground">
                   {lastSyncLabel}

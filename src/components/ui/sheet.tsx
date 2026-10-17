@@ -18,7 +18,7 @@ const SheetOverlay = React.forwardRef<
   <SheetPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-50 bg-foreground/40 data-[state=open]:animate-fade-in',
+      'fixed inset-0 z-50 bg-overlay/55 data-[state=open]:animate-fade-in',
       className
     )}
     {...props}
@@ -62,7 +62,7 @@ const SheetContent = React.forwardRef<
       className={cn(sheetVariants({ side }), className)}
       {...props}
     >
-      <SheetPrimitive.Close className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-[10px] text-muted-foreground hover:bg-muted transition-colors hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring">
+      <SheetPrimitive.Close className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring">
         <X className="h-[18px] w-[18px]" strokeWidth={1.8} />
         <span className="sr-only">Fechar painel</span>
       </SheetPrimitive.Close>

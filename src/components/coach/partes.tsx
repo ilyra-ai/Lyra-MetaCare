@@ -259,7 +259,7 @@ export function AnelDeProntidao({
         <span className="font-display text-2xl font-semibold leading-none tracking-tight text-foreground">
           {valor ?? '—'}
         </span>
-        <span className="mt-1 text-[0.6875rem] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+        <span className="mt-1 text-micro font-medium uppercase tracking-[0.08em] text-muted-foreground">
           Prontidão
         </span>
       </div>
@@ -337,7 +337,7 @@ export function FaixaDoDia({
         ) : null}
       </div>
       <div
-        className="flex justify-between text-[0.6875rem] tabular-nums text-muted-foreground"
+        className="flex justify-between text-micro tabular-nums text-muted-foreground"
         aria-hidden="true"
       >
         <span>0h</span>
@@ -553,10 +553,10 @@ export function CartaoDoPeriodo({
     <article
       aria-label={`${periodo.nome}, ${periodo.horario}${atual ? ', agora' : ''}`}
       className={cn(
-        'relative flex min-w-0 flex-col gap-3 overflow-hidden rounded-2xl border bg-card/80 p-5 backdrop-blur-sm transition-shadow',
-        atual
-          ? 'border-primary/50 shadow-lg ring-1 ring-primary/30'
-          : 'border-border'
+        // O período atual se destaca pela borda e pelo anel na cor primária,
+        // sem sombra nem vidro fosco (tarefa 59).
+        'relative flex min-w-0 flex-col gap-3 overflow-hidden rounded-2xl border bg-card p-5 transition-colors duration-(--duracao-media)',
+        atual ? 'border-primary ring-1 ring-primary/40' : 'border-border'
       )}
     >
       <span
@@ -578,7 +578,7 @@ export function CartaoDoPeriodo({
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1">
           {atual ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-2 py-0.5 text-[0.6875rem] font-semibold text-primary-foreground">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-2 py-0.5 text-micro font-semibold text-primary-foreground">
               <span
                 aria-hidden="true"
                 className="h-1.5 w-1.5 rounded-full bg-primary-foreground motion-safe:animate-pulse"

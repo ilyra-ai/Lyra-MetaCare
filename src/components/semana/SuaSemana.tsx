@@ -198,7 +198,7 @@ function LeituraDaSemanaSecao({ semana }: { semana: SemanaDaPessoa }) {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-24 right-[-10%] h-64 w-[70%] rounded-full bg-gradient-to-br from-cosmic/15 via-golden/10 to-transparent blur-3xl"
+        className="pointer-events-none absolute -top-24 right-[-10%] h-64 w-[70%] rounded-full bg-linear-to-br from-cosmic/15 via-golden/10 to-transparent blur-3xl"
       />
       <div className="relative flex flex-col gap-6">
         <header className="flex flex-wrap items-start justify-between gap-3">

@@ -331,7 +331,7 @@ export function GoalTrackingContent() {
           <h3 className="mt-4 font-display text-xl font-semibold text-foreground">
             Seu mapa de metas ainda está vazio
           </h3>
-          <p className="mt-2 max-w-md text-[15px] leading-relaxed text-muted-foreground">
+          <p className="mt-2 max-w-md text-body leading-relaxed text-muted-foreground">
             Crie uma meta automática (passos, sono, água, meditação, minutos
             ativos ou peso) e ela avança sozinha com o seu registro do dia, ou
             uma meta manual para qualquer outro objetivo.
@@ -395,7 +395,7 @@ export function GoalTrackingContent() {
                 </div>
                 <span
                   className={cn(
-                    'flex items-center gap-1.5 text-[13px] font-medium',
+                    'flex items-center gap-1.5 text-caption font-medium',
                     tone
                   )}
                 >
@@ -490,11 +490,11 @@ export function GoalTrackingContent() {
         <CreateAutoGoalModal onCreated={fetchGoals}>
           <button
             type="button"
-            className="flex min-h-60 flex-col items-center justify-center gap-2.5 rounded-xl border border-dashed border-control/50 bg-transparent px-6 text-center text-[15px] font-medium text-foreground/80 transition-colors hover:border-primary hover:bg-card focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex min-h-60 flex-col items-center justify-center gap-2.5 rounded-xl border border-dashed border-control/50 bg-transparent px-6 text-center text-body font-medium text-foreground/80 transition-colors hover:border-primary hover:bg-card focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           >
             <Plus className="h-5 w-5 text-primary" aria-hidden="true" />
             Criar outra meta automática
-            <span className="text-[13px] font-normal text-muted-foreground">
+            <span className="text-caption font-normal text-muted-foreground">
               Avança sozinha com o seu registro do dia
             </span>
           </button>

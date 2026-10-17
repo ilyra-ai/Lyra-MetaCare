@@ -117,7 +117,7 @@ export function AvatarUploader({
 
         <div
           className={cn(
-            'absolute inset-0 flex items-center justify-center rounded-full bg-foreground/60 opacity-0 transition-opacity duration-200',
+            'absolute inset-0 flex items-center justify-center rounded-full bg-overlay/60 opacity-0 transition-opacity duration-200',
             !uploading && 'group-hover:opacity-100'
           )}
           aria-hidden="true"

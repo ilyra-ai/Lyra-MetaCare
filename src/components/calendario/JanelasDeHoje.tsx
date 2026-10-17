@@ -166,7 +166,7 @@ export function JanelasDeHoje({ agora }: { agora: number }) {
                   <span className="block text-sm font-medium text-foreground">
                     {nomeDaJanela(janela)}
                     {ativa ? (
-                      <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-[0.6875rem] font-semibold text-primary-foreground">
+                      <span className="ml-2 rounded-full bg-primary px-2 py-0.5 text-micro font-semibold text-primary-foreground">
                         Agora
                       </span>
                     ) : null}

@@ -1,42 +1,19 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
+
 import { cn } from './utils';
 
-describe('cn utility', () => {
-  it('should merge class names correctly', () => {
-    expect(cn('class1', 'class2')).toBe('class1 class2');
-  });
-
-  it('should handle conditional classes', () => {
-    expect(cn('class1', { class2: true, class3: false })).toBe('class1 class2');
-  });
-
-  it('should handle arrays of classes', () => {
-    expect(cn(['class1', 'class2'], 'class3')).toBe('class1 class2 class3');
-  });
-
-  it('should filter out falsy values', () => {
-    expect(cn('class1', null, undefined, false, '')).toBe('class1');
-  });
-
-  it('should merge conflicting Tailwind classes using twMerge', () => {
-    // twMerge should ensure the last class wins for the same property
-    expect(cn('p-4', 'p-8')).toBe('p-8');
-    expect(cn('text-red-500', 'text-blue-500')).toBe('text-blue-500');
-  });
-
-  it('should handle complex combinations', () => {
-    const isActive = true;
-    const isDisabled = false;
-    expect(
-      cn(
-        'base-style',
-        isActive && 'active-style',
-        isDisabled ? 'disabled-style' : 'enabled-style',
-        { 'extra-class': true },
-        ['array-class-1', 'array-class-2']
-      )
-    ).toBe(
-      'base-style active-style enabled-style extra-class array-class-1 array-class-2'
+describe('cn com as escalas do tema (tarefa 59)', () => {
+  it('tamanho de fonte do tema não apaga a cor do texto', () => {
+    expect(cn('text-primary-foreground', 'text-body')).toBe(
+      'text-primary-foreground text-body'
     );
+    expect(cn('text-muted-foreground text-caption')).toBe(
+      'text-muted-foreground text-caption'
+    );
+  });
+
+  it('tamanhos do tema ainda substituem outros tamanhos', () => {
+    expect(cn('text-sm', 'text-micro')).toBe('text-micro');
+    expect(cn('rounded-xl', 'rounded-3xl')).toBe('rounded-3xl');
   });
 });

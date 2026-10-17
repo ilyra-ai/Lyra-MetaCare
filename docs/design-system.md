@@ -63,14 +63,31 @@ frio (matiz 346) justamente para não se confundir com o coral de destaque.
 
 ## Forma e tipografia
 
-- Raios: controles 10 px (`rounded-[10px]`), blocos internos 12 px
-  (`rounded-md`), cartões 16 px (`rounded-xl`), chips e avatares
-  `rounded-full`. Nada acima de 20 px.
+- Raios (escala completa desde a tarefa 59): caixa de seleção 6 px
+  (`rounded-xs`), controles 10 px (`rounded`), blocos internos 12 px
+  (`rounded-md`), cartões 16 px (`rounded-xl`), seções 20 px (`rounded-2xl`),
+  chips e avatares `rounded-full`. `rounded-3xl` e `rounded-4xl` ficam no teto
+  de 20 px. Nada de valores soltos como `rounded-[10px]`.
 - Sombras: cartões sem sombra (a borda separa); popovers, menus e modais com
-  `shadow-lg`.
+  `shadow-lg`. A cor e a força vêm de `--sombra-cor` e `--sombra-forca`, que
+  mudam no tema escuro (o Tailwind 4 copia o valor da sombra para a classe,
+  então redefinir `--shadow-*` no `.dark` não tinha efeito).
+- Véu de modais e sobreposições: `bg-overlay/55`, escuro nos dois temas.
+- Contorno de campo (`--input`) e de controle (`--control`) com 3:1 ou mais
+  sobre cartão, fundo, muted, secondary e popover nos dois temas
+  (`src/app/tema.test.ts`).
 - Títulos em Space Grotesk semibold (`font-display`), texto em Inter.
   Rótulos pequenos em `text-sm font-medium text-muted-foreground`, sem caixa
   alta. Métricas em `font-display` (não `font-mono`).
+- Escala de texto do tema além da do Tailwind: `text-micro` (11 px),
+  `text-caption` (13 px) e `text-body` (15 px). O `cn()` conhece essas escalas
+  (`src/lib/utils.ts`) para não apagar a cor do texto ao juntar classes.
+- Movimento: `--duracao-rapida` (150 ms), `--duracao-media` (220 ms),
+  `--duracao-lenta` (320 ms) e as curvas `ease-saida` e `ease-entrada`; tudo
+  desligado com `prefers-reduced-motion`.
+- Foco: anel de 2 px na cor `--ring` em todo elemento focável, inclusive
+  regiões roláveis; o link "Pular para o conteúdo principal" aparece no
+  primeiro Tab.
 
 ## Estrutura das telas
 

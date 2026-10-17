@@ -211,7 +211,7 @@ export function SeletorDeCidade({
               )}
             </CommandList>
           </Command>
-          <p className="border-t border-border px-3 py-2 text-[11px] text-muted-foreground">
+          <p className="border-t border-border px-3 py-2 text-micro text-muted-foreground">
             Dados de cidades © GeoNames (CC BY 4.0)
           </p>
         </PopoverContent>

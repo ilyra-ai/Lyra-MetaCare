@@ -504,7 +504,7 @@ export function ChatAssistantContent() {
           maxLength={LIMITE_DA_PERGUNTA}
           placeholder={chatConfig.inputPlaceholder}
         />
-        <p className="mt-2 text-center text-[0.6875rem] leading-4 text-muted-foreground">
+        <p className="mt-2 text-center text-micro leading-4 text-muted-foreground">
           {chatConfig.emptyStateHint}
         </p>
       </div>

@@ -101,7 +101,9 @@ const CORES_COM_TOM_CLARO = [
   'golden',
 ];
 
-function paresDoTema(tokens: Record<string, Hsl>, nome: 'claro' | 'escuro') {
+// Os mesmos pares valem nos dois temas (o nome do tema só identifica a
+// falha na mensagem do teste).
+function paresDoTema(tokens: Record<string, Hsl>) {
   const pares: Array<[string, string, number]> = [];
   for (const fundo of SUPERFICIES) {
     for (const texto of TEXTOS) pares.push([texto, fundo, 4.5]);
@@ -123,11 +125,12 @@ function paresDoTema(tokens: Record<string, Hsl>, nome: 'claro' | 'escuro') {
     ['ring', 'background', 3],
     ['ring', 'card', 3]
   );
-  if (nome === 'escuro') {
-    // No escuro o contorno dos campos de texto é o que os separa do cartão.
-    for (const fundo of ['card', 'popover', 'muted', 'secondary']) {
-      pares.push(['input', fundo, 3]);
-    }
+  // Nos dois temas o contorno dos campos é o que os separa do cartão
+  // (WCAG 1.4.11; tarefa 59: no claro dava 1,37:1). Vale também para o
+  // contorno dos controles (caixa de seleção, trilho do switch).
+  for (const fundo of ['card', 'popover', 'muted', 'secondary', 'background']) {
+    pares.push(['input', fundo, 3]);
+    pares.push(['control', fundo, 3]);
   }
   return pares.map(([texto, fundo, minimo]) => {
     const a = tokens[texto];
@@ -142,7 +145,7 @@ describe.each([
   ['escuro', escuro],
 ] as const)('tema %s', (nome, tokens) => {
   it('todos os pares de texto e contorno atingem o mínimo da WCAG', () => {
-    const falhas = paresDoTema(tokens, nome)
+    const falhas = paresDoTema(tokens)
       .filter((par) => par.valor < par.minimo)
       .map(
         (par) =>

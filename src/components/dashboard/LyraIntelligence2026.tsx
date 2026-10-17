@@ -286,7 +286,7 @@ function BiologicalAgeCard({
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-4">
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-[13px] text-muted-foreground">
+          <div className="flex items-center justify-between text-caption text-muted-foreground">
             <span>Vitalidade fenotípica</span>
             <span className="font-display font-semibold text-foreground">
               {result.vitalityScore}/100
@@ -297,7 +297,7 @@ function BiologicalAgeCard({
             value={result.vitalityScore}
             className="h-1.5"
           />
-          <div className="flex items-center justify-between text-[13px] text-muted-foreground">
+          <div className="flex items-center justify-between text-caption text-muted-foreground">
             <span>Ritmo de envelhecimento</span>
             <span className="font-display font-semibold text-foreground">
               {result.paceOfAging.toFixed(2)}×
@@ -318,7 +318,7 @@ function BiologicalAgeCard({
                 <span className="truncate text-foreground">{driver.label}</span>
                 <span
                   className={cn(
-                    'shrink-0 font-display text-[13px] font-semibold',
+                    'shrink-0 font-display text-caption font-semibold',
                     driver.impactYears < 0 ? 'text-success' : 'text-warning'
                   )}
                 >
@@ -407,7 +407,7 @@ function EarlyWarningCard({ result }: { result: EarlyWarningResult }) {
                   {signal.actionLabel}
                 </Badge>
               </div>
-              <p className="mt-1 text-[13px] leading-5 text-foreground/80">
+              <p className="mt-1 text-caption leading-5 text-foreground/80">
                 {signal.detail}
               </p>
               {signal.contributors.length ? (
@@ -447,7 +447,7 @@ function CycleCard({ result }: { result: MenstrualCycleResult }) {
         {result.trackable && result.cycleDay ? (
           <>
             <div className="space-y-1.5">
-              <div className="flex flex-wrap items-center justify-between gap-2 text-[13px] text-muted-foreground">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-caption text-muted-foreground">
                 <span>
                   Dia {result.cycleDay} de {result.cycleLength}
                 </span>
@@ -540,7 +540,7 @@ function PrivacyCard({
             aria-label="Alternar modo privacidade"
           />
         </div>
-        <ul className="mt-auto space-y-2 text-[13px] leading-5 text-muted-foreground">
+        <ul className="mt-auto space-y-2 text-caption leading-5 text-muted-foreground">
           <li className="flex items-start gap-2">
             <ShieldCheck
               aria-hidden="true"
@@ -650,14 +650,14 @@ export function LyraIntelligence2026({
           <h2 className="font-display text-2xl font-semibold tracking-[-0.02em] text-foreground">
             Inteligência Lyra 2026
           </h2>
-          <p className="max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
+          <p className="max-w-2xl text-body leading-relaxed text-muted-foreground">
             Assistente proativo, idade biológica, detecção precoce e saúde da
             mulher — calculados no seu dispositivo a partir de dados reais.
           </p>
         </div>
         <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2">
           <Settings2 aria-hidden="true" className="h-4 w-4 text-primary" />
-          <span className="text-[13px] font-medium text-muted-foreground">
+          <span className="text-caption font-medium text-muted-foreground">
             Modo Privacidade
           </span>
           <Switch

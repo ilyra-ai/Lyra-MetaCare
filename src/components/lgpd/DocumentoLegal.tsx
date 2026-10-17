@@ -41,7 +41,7 @@ export function DocumentoLegal({
             href="/"
             className="inline-flex min-h-11 items-center gap-2.5 rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-primary">
               <ShieldCheck
                 className="h-5 w-5 text-primary-foreground"
                 aria-hidden

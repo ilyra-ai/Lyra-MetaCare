@@ -121,7 +121,7 @@ export function GraficoDaSemana({
               <span
                 aria-hidden="true"
                 className={cn(
-                  'text-[0.6875rem] capitalize',
+                  'text-micro capitalize',
                   ativo
                     ? 'font-semibold text-foreground'
                     : 'text-muted-foreground'

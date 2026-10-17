@@ -523,7 +523,7 @@ function Escolha({
               <ToggleGroupItem
                 key={opcao}
                 value={String(opcao)}
-                className="h-10 min-w-16 rounded-[10px] border border-border px-4 data-[state=on]:border-primary data-[state=on]:bg-sidebar-accent data-[state=on]:text-sidebar-accent-foreground"
+                className="h-10 min-w-16 rounded border border-border px-4 data-[state=on]:border-primary data-[state=on]:bg-sidebar-accent data-[state=on]:text-sidebar-accent-foreground"
               >
                 {opcao} min
               </ToggleGroupItem>
@@ -681,7 +681,7 @@ function Sessao({
         id="titulo-sessao"
         ref={titulo}
         tabIndex={-1}
-        className="scroll-mt-24 text-center font-display text-lg font-semibold text-foreground focus-visible:outline-none"
+        className="scroll-mt-24 text-center font-display text-lg font-semibold text-foreground focus-visible:outline-hidden"
       >
         {definicao.nome}
         <span className="block text-sm font-normal text-muted-foreground">

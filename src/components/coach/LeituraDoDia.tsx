@@ -66,7 +66,7 @@ function SeloDoAutor({ briefing }: { briefing: BriefingDoDia }) {
         Escrito por {autor.provedor} · {autor.modelo}
       </span>
       {autor.local ? (
-        <span className="shrink-0 rounded-full bg-success-light px-1.5 py-px text-[0.6875rem] font-semibold text-foreground">
+        <span className="shrink-0 rounded-full bg-success-light px-1.5 py-px text-micro font-semibold text-foreground">
           local
         </span>
       ) : null}
@@ -105,7 +105,7 @@ export function LeituraDoDia({
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-24 right-[-10%] h-64 w-[70%] rounded-full bg-gradient-to-br from-cosmic/15 via-golden/10 to-transparent blur-3xl"
+        className="pointer-events-none absolute -top-24 right-[-10%] h-64 w-[70%] rounded-full bg-linear-to-br from-cosmic/15 via-golden/10 to-transparent blur-3xl"
       />
       <div className="relative flex flex-col gap-7">
         <header className="flex flex-wrap items-start justify-between gap-3">
@@ -165,7 +165,7 @@ export function LeituraDoDia({
                       />
                       {p.nome}
                       {atual?.chave === p.chave ? (
-                        <span className="rounded-full bg-primary px-1.5 py-px text-[0.6875rem] font-semibold text-primary-foreground">
+                        <span className="rounded-full bg-primary px-1.5 py-px text-micro font-semibold text-primary-foreground">
                           agora
                         </span>
                       ) : null}

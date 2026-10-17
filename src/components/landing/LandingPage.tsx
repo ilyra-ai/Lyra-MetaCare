@@ -757,7 +757,7 @@ export function LandingPage({
               }
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex min-w-0 items-center gap-2.5 rounded-[10px] px-1 py-1 text-left focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex min-w-0 items-center gap-2.5 rounded px-1 py-1 text-left focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           >
             <MarcaLyra tamanho="40px" prioridade />
             <span className="min-w-0">

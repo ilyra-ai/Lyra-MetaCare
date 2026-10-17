@@ -196,7 +196,7 @@ export function VedicDashboard({ featureEnabled = true }: VedicDashboardProps) {
         >
           Insights Védicos-Quânticos
         </h2>
-        <p className="max-w-3xl text-[15px] leading-relaxed text-muted-foreground">
+        <p className="max-w-3xl text-body leading-relaxed text-muted-foreground">
           Leitura integrativa dos seus sinais do dia com a astrologia védica e o
           ayurveda. Cada índice só aparece quando há sinais suficientes medidos;
           os números são orientações de autoconhecimento, não avaliação de
@@ -362,7 +362,7 @@ export function VedicDashboard({ featureEnabled = true }: VedicDashboardProps) {
               <p className="text-sm font-medium text-muted-foreground">
                 Nutrição recomendada
               </p>
-              <p className="mt-1.5 text-[15px] leading-relaxed text-foreground/80">
+              <p className="mt-1.5 text-body leading-relaxed text-foreground/80">
                 {dosha.resultado.recommendations.nutrition}
               </p>
             </div>
@@ -408,7 +408,7 @@ export function VedicDashboard({ featureEnabled = true }: VedicDashboardProps) {
                   className="h-1.5"
                 />
                 <CoberturaDoIndice cobertura={coherence.cobertura} />
-                <p className="text-[15px] leading-relaxed text-foreground/80">
+                <p className="text-body leading-relaxed text-foreground/80">
                   {coherence.resultado.description}
                 </p>
                 <dl className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2">
@@ -494,7 +494,7 @@ export function VedicDashboard({ featureEnabled = true }: VedicDashboardProps) {
               <>
                 <CoberturaDoIndice cobertura={koshas.cobertura} />
                 <div className="rounded-md border border-border bg-background p-4">
-                  <p className="text-[15px] leading-relaxed text-foreground/80">
+                  <p className="text-body leading-relaxed text-foreground/80">
                     {koshas.resultado.dharmaAlignment}
                   </p>
                 </div>
@@ -653,7 +653,7 @@ export function VedicDashboard({ featureEnabled = true }: VedicDashboardProps) {
             {prana.resultado ? (
               <>
                 <CoberturaDoIndice cobertura={prana.cobertura} />
-                <p className="text-[15px] leading-relaxed text-foreground/80">
+                <p className="text-body leading-relaxed text-foreground/80">
                   {prana.resultado.description}
                 </p>
                 <ul className="grid gap-3 sm:grid-cols-3 lg:grid-cols-5">

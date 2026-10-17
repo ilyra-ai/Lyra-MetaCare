@@ -256,7 +256,7 @@ export function NotificationsMenu({ iconScale }: { iconScale: number }) {
           {total > 0 ? (
             <span
               aria-hidden="true"
-              className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[0.6875rem] font-semibold leading-none text-primary-foreground"
+              className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-micro font-semibold leading-none text-primary-foreground"
             >
               {total}
             </span>

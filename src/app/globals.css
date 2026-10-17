@@ -24,6 +24,8 @@
   --color-input: hsl(var(--input));
   --color-control: hsl(var(--control));
   --color-ring: hsl(var(--ring));
+  /* Véu dos modais e das sobreposições de imagem (ex.: `bg-overlay/55`). */
+  --color-overlay: hsl(var(--overlay));
 
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
@@ -91,29 +93,67 @@
 }
 
 /*
-  Escalas de raio e sombra da identidade Lyra (fonte única de verdade). Em
-  `static` porque também são lidas diretamente via `var(--radius-*)` e
-  `var(--shadow-*)` pelas utilidades e pelo CSS do calendário abaixo.
+  Escalas de raio, sombra, tipografia e movimento da identidade Lyra (fonte
+  única de verdade). Em `static` para os valores existirem como variáveis
+  CSS mesmo sem uso de utilitário (o calendário lê `var(--radius-*)`).
 */
 @theme static {
   /*
     Sistema "Lyra Clean" (aprovado em 2026-10-09): controles com 10–12px,
-    cartões com 16px e nada acima de 20px. Sombras neutras e discretas: a
-    separação vem da borda de 1px, não de brilho colorido.
+    cartões com 16px e nada acima de 20px. A escala é completa (tarefa 59):
+    antes `rounded-3xl` e `rounded-xs` caíam no padrão do Tailwind (24px e
+    2px), fora da identidade; agora `3xl` e `4xl` ficam no teto de 20px.
   */
+  --radius-xs: 6px;
   --radius-sm: 8px;
   --radius: 10px;
   --radius-md: 12px;
   --radius-lg: 14px;
   --radius-xl: 16px;
   --radius-2xl: 20px;
+  --radius-3xl: 20px;
+  --radius-4xl: 20px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px rgba(14, 30, 36, 0.04);
-  --shadow: 0 1px 3px rgba(14, 30, 36, 0.06);
-  --shadow-md: 0 4px 12px rgba(14, 30, 36, 0.06);
-  --shadow-lg: 0 8px 24px rgba(14, 30, 36, 0.08);
-  --shadow-xl: 0 16px 40px rgba(14, 30, 36, 0.1);
+  /*
+    Sombras neutras e discretas: a separação vem da borda de 1px, não de
+    brilho colorido. O Tailwind 4 copia o valor da sombra para dentro de cada
+    classe, então redefinir `--shadow-*` no tema escuro não tinha efeito; a
+    cor e a força vêm de `--sombra-cor` e `--sombra-forca`, trocadas por tema.
+  */
+  --shadow-2xs: 0 1px 1px
+    hsl(var(--sombra-cor) / calc(0.03 * var(--sombra-forca)));
+  --shadow-xs: 0 1px 2px
+    hsl(var(--sombra-cor) / calc(0.04 * var(--sombra-forca)));
+  --shadow-sm: 0 1px 2px
+    hsl(var(--sombra-cor) / calc(0.04 * var(--sombra-forca)));
+  --shadow: 0 1px 3px hsl(var(--sombra-cor) / calc(0.06 * var(--sombra-forca)));
+  --shadow-md: 0 4px 12px
+    hsl(var(--sombra-cor) / calc(0.06 * var(--sombra-forca)));
+  --shadow-lg: 0 8px 24px
+    hsl(var(--sombra-cor) / calc(0.08 * var(--sombra-forca)));
+  --shadow-xl: 0 16px 40px
+    hsl(var(--sombra-cor) / calc(0.1 * var(--sombra-forca)));
+  --shadow-2xl: 0 24px 56px
+    hsl(var(--sombra-cor) / calc(0.12 * var(--sombra-forca)));
+
+  /*
+    Tamanhos de texto que faltavam na escala (tarefa 59): antes eram valores
+    soltos (`text-[13px]`, `text-[15px]`, `text-[0.6875rem]`) espalhados.
+  */
+  --text-micro: 0.6875rem;
+  --text-micro--line-height: 1rem;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.25rem;
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.6;
+
+  /* Movimento: durações e curvas nomeadas para todos os componentes. */
+  --duracao-rapida: 150ms;
+  --duracao-media: 220ms;
+  --duracao-lenta: 320ms;
+  --ease-saida: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-entrada: cubic-bezier(0.7, 0, 0.84, 0);
 }
 
 @theme {
@@ -209,8 +249,11 @@
   .skip-nav {
     @apply sr-only;
 
+    /* `not-sr-only` desfaz o recorte de 1px (tarefa 59): antes o link
+       recebia foco mas continuava invisível (WCAG 2.4.1 e 2.4.7). */
+    &:focus,
     &:focus-visible {
-      @apply fixed left-4 top-4 z-120 rounded-[10px] px-4 py-2 text-sm font-semibold;
+      @apply not-sr-only fixed left-4 top-4 z-120 rounded px-4 py-2 text-sm font-semibold shadow-lg;
       background: hsl(var(--primary));
       color: hsl(var(--primary-foreground));
     }
@@ -294,6 +337,13 @@
     passam de 4,5:1 sobre branco e sobre os tons neutros (WCAG 1.4.3).
   */
   :root {
+    /* Cor e força das sombras (#0E1E24, discreta) e do véu dos modais, que
+       escurece a página nos dois temas (antes `bg-foreground/40`, que no
+       escuro clareava a tela). */
+    --sombra-cor: 196 44% 10%;
+    --sombra-forca: 1;
+    --overlay: 200 30% 4%;
+
     /* #F6F8F9 */
     --background: 195 20% 97%;
     /* #121C21 */
@@ -338,7 +388,9 @@
 
     /* #E1E8EA */
     --border: 195 16% 90%;
-    --input: 195 14% 86%;
+    /* Contorno dos campos: ≥ 3:1 sobre cartão, fundo, muted e popover
+       (WCAG 1.4.11; antes 1,37:1 e o campo sumia dentro do cartão). */
+    --input: 200 10% 54%;
     /* Contorno de checkbox e trilho de switch desligado (3:1 também sobre os
        tons neutros, WCAG 1.4.11) */
     --control: 200 8% 52%;
@@ -460,11 +512,9 @@
     --golden-foreground: 200 26% 6%;
     --golden-light: 43 36% 18%;
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
-    --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.5);
+    /* Sombras do escuro: preto e mais fortes (ver --shadow-* no @theme). */
+    --sombra-cor: 0 0% 0%;
+    --sombra-forca: 6;
 
     --chart-1: 178 62% 52%;
     --chart-2: 16 92% 68%;
@@ -518,13 +568,18 @@
     color: hsl(var(--foreground));
   }
 
-  a,
-  button,
-  input,
-  textarea,
-  select,
-  [role='button'],
-  [tabindex]:not([tabindex='-1']) {
+  /* `:where` zera a especificidade (tarefa 59): com `[tabindex]` (0,2,0)
+     esta regra vencia `:focus-visible` (0,1,0) e o foco ficava invisível
+     nas regiões roláveis e nos painéis de abas (WCAG 2.4.7). */
+  :where(
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    [role='button'],
+    [tabindex]:not([tabindex='-1'])
+  ) {
     outline-color: transparent;
   }
 

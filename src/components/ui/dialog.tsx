@@ -17,7 +17,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-50 bg-foreground/40 data-[state=open]:animate-fade-in',
+      'fixed inset-0 z-50 bg-overlay/55 data-[state=open]:animate-fade-in',
       className
     )}
     {...props}
@@ -41,7 +41,7 @@ const DialogContent = React.forwardRef<
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-[10px] text-muted-foreground hover:bg-muted transition-colors hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring">
+      <DialogPrimitive.Close className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring">
         <X className="h-[18px] w-[18px]" strokeWidth={1.8} />
         <span className="sr-only">Fechar modal</span>
       </DialogPrimitive.Close>

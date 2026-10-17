@@ -156,7 +156,7 @@ export function AssessmentCard() {
           <h3 className="font-display text-xl font-semibold tracking-tight text-foreground">
             Avaliações Concluídas!
           </h3>
-          <p className="max-w-md text-[15px] leading-relaxed text-muted-foreground">
+          <p className="max-w-md text-body leading-relaxed text-muted-foreground">
             Sua coerência biológica e espiritual agradece. Seus dados refinam
             nossos algoritmos cósmicos de inteligência artificial.
           </p>
@@ -178,7 +178,7 @@ export function AssessmentCard() {
               Refinamento diário de bem-estar quântico
             </CardDescription>
           </div>
-          <div className="flex flex-wrap gap-1 rounded-[10px] border border-border bg-background p-1">
+          <div className="flex flex-wrap gap-1 rounded border border-border bg-background p-1">
             <Button
               variant={activeTab === 'mood' ? 'secondary' : 'ghost'}
               size="sm"
@@ -293,7 +293,7 @@ export function AssessmentCard() {
                       />
                       <Label
                         htmlFor={`q${q.id}-${o.val}`}
-                        className="flex cursor-pointer items-center justify-center rounded-full border border-border bg-background px-3 py-1.5 text-[13px] transition-colors hover:bg-muted peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-sidebar-accent peer-data-[state=checked]:text-primary"
+                        className="flex cursor-pointer items-center justify-center rounded-full border border-border bg-background px-3 py-1.5 text-caption transition-colors hover:bg-muted peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-sidebar-accent peer-data-[state=checked]:text-primary"
                       >
                         {o.label}
                       </Label>
@@ -323,7 +323,7 @@ export function AssessmentCard() {
                     aria-pressed={npsScore === num}
                     onClick={() => setNpsScore(num)}
                     className={cn(
-                      'flex h-9 w-full items-center justify-center rounded-[10px] border font-display text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                      'flex h-9 w-full items-center justify-center rounded border font-display text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring',
                       npsScore === num
                         ? 'border-primary bg-primary text-primary-foreground'
                         : 'border-border bg-background text-foreground hover:border-primary hover:bg-sidebar-accent'

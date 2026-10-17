@@ -182,7 +182,7 @@ export function Header() {
             <span className="flex-1 truncate text-left">
               {appConfig.header.commandPlaceholder}
             </span>
-            <kbd className="rounded-[6px] border border-border bg-card px-1.5 py-0.5 font-sans text-xs text-muted-foreground">
+            <kbd className="rounded-xs border border-border bg-card px-1.5 py-0.5 font-sans text-xs text-muted-foreground">
               {appConfig.header.commandShortcutLabel}
             </kbd>
           </button>

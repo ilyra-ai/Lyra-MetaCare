@@ -18,9 +18,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
             'group toast rounded-xl border border-border bg-card text-card-foreground shadow-lg',
           title: 'text-sm font-semibold text-foreground',
           description: 'text-sm text-muted-foreground',
-          actionButton: 'rounded-[10px] bg-primary text-primary-foreground',
+          actionButton: 'rounded bg-primary text-primary-foreground',
           cancelButton:
-            'rounded-[10px] border border-border bg-secondary text-secondary-foreground',
+            'rounded border border-border bg-secondary text-secondary-foreground',
           success: 'border-success/20 bg-success-light text-success',
           error: 'border-destructive/20 bg-destructive-light text-destructive',
           warning: 'border-warning/20 bg-warning-light text-warning',

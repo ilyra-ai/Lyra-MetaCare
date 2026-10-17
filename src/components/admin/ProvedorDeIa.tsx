@@ -486,7 +486,7 @@ export function ProvedorDeIa() {
                           {ehLyra ? 'Motor da Lyra' : p.nome}
                         </span>
                         {!ehLyra && selecionado(p.id) ? (
-                          <span className="ml-auto rounded-full bg-success-light px-2 py-px text-[0.6875rem] font-semibold text-foreground">
+                          <span className="ml-auto rounded-full bg-success-light px-2 py-px text-micro font-semibold text-foreground">
                             {selecionado(p.id)?.modelos.length ?? 0} modelo(s)
                           </span>
                         ) : null}

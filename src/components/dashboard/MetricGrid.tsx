@@ -139,7 +139,7 @@ function MetricTile({ metric }: { metric: PillarMetric }) {
             {metric.value}
           </p>
         </div>
-        <p className="text-[13px] leading-5 text-muted-foreground">
+        <p className="text-caption leading-5 text-muted-foreground">
           {metric.description}
         </p>
       </div>

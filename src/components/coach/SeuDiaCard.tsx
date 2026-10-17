@@ -54,20 +54,19 @@ export function MolduraDoDia({
     <section
       aria-labelledby={rotulo}
       className={cn(
-        'relative isolate overflow-hidden rounded-3xl border border-border bg-card/85 p-5 shadow-sm backdrop-blur-xl sm:p-7',
+        // Superfície chapada com borda de 1px, como todos os cartões (tarefa
+        // 59): sem vidro fosco, sombra nem aura pulsando sem parar.
+        'relative isolate overflow-hidden rounded-2xl border border-border bg-card p-5 sm:p-7',
         className
       )}
     >
+      {/* Um único brilho estático e suave, no tom do dia. */}
       <div
         aria-hidden="true"
         className={cn(
-          'pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80 rounded-full bg-gradient-to-br to-transparent blur-3xl motion-safe:animate-[pulse_9s_ease-in-out_infinite]',
+          'pointer-events-none absolute -right-24 -top-28 -z-10 h-80 w-80 rounded-full bg-linear-to-br to-transparent opacity-70 blur-3xl',
           tom ? TOM[tom].aura : 'from-cosmic/20 via-primary/10'
         )}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-32 -left-20 -z-10 h-72 w-72 rounded-full bg-gradient-to-tr from-primary/10 to-transparent blur-3xl"
       />
       {children}
     </section>
@@ -235,7 +234,7 @@ export function SeuDiaCard() {
           <FaixaDoDia briefing={briefing} agora={agora} />
           {atual ? (
             <p className="text-sm leading-relaxed text-foreground">
-              <span className="mr-2 inline-flex items-center gap-1.5 rounded-full bg-primary px-2 py-0.5 text-[0.6875rem] font-semibold text-primary-foreground">
+              <span className="mr-2 inline-flex items-center gap-1.5 rounded-full bg-primary px-2 py-0.5 text-micro font-semibold text-primary-foreground">
                 Agora · {atual.nome}
               </span>
               <span className="sr-only">
@@ -257,7 +256,7 @@ export function SeuDiaCard() {
                   key={rotulo}
                   className="min-w-0 rounded-xl border border-border bg-card/80 px-3 py-2"
                 >
-                  <dt className="text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+                  <dt className="text-micro font-semibold uppercase tracking-[0.06em] text-muted-foreground">
                     {rotulo}
                   </dt>
                   <dd className="mt-0.5 line-clamp-3 text-xs leading-relaxed text-foreground">

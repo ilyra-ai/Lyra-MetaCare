@@ -215,7 +215,7 @@ function MiniMetricCard({
         </p>
 
         <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-          <p className="min-w-0 text-[13px] leading-5 text-muted-foreground">
+          <p className="min-w-0 text-caption leading-5 text-muted-foreground">
             {description}
           </p>
           {delta !== null && deltaVisual && DeltaIcon ? (
@@ -226,7 +226,7 @@ function MiniMetricCard({
               )}
             >
               <DeltaIcon aria-hidden="true" className="size-4" />
-              <span className="text-[13px] font-medium">
+              <span className="text-caption font-medium">
                 {formatDelta(delta)}
                 <span className="sr-only"> em relação a ontem</span>
               </span>
@@ -553,7 +553,7 @@ export function Dashboard() {
                 ) : null}
               </p>
               {pulseValue === null ? (
-                <p className="text-[13px] text-muted-foreground">
+                <p className="text-caption text-muted-foreground">
                   Sem VFC nem prontidão hoje: faça o check-in ou conecte a
                   pulseira.
                 </p>
@@ -568,7 +568,7 @@ export function Dashboard() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <div className="rounded-full border border-border bg-background px-3 py-1.5 text-[13px] text-foreground">
+              <div className="rounded-full border border-border bg-background px-3 py-1.5 text-caption text-foreground">
                 FC repouso:{' '}
                 <span className="font-semibold">
                   {todayMetrics?.resting_heart_rate
@@ -578,7 +578,7 @@ export function Dashboard() {
                       : 'Sem leitura'}
                 </span>
               </div>
-              <div className="rounded-full border border-border bg-background px-3 py-1.5 text-[13px] text-foreground">
+              <div className="rounded-full border border-border bg-background px-3 py-1.5 text-caption text-foreground">
                 Longevidade:{' '}
                 <span className="font-semibold">{rotuloDaLongevidade}</span>
               </div>
@@ -692,7 +692,7 @@ export function Dashboard() {
             </div>
             <div className="flex flex-col gap-2">
               <CardTitle className="text-2xl">{astroTitle}</CardTitle>
-              <p className="text-[15px] leading-relaxed text-foreground/80">
+              <p className="text-body leading-relaxed text-foreground/80">
                 {astroDetail}
               </p>
             </div>
@@ -706,7 +706,7 @@ export function Dashboard() {
                   .map((chip, index) => (
                     <span
                       key={`${index}-${chip}`}
-                      className="rounded-full bg-cosmic-light px-2.5 py-1 text-[13px] font-medium text-cosmic-strong"
+                      className="rounded-full bg-cosmic-light px-2.5 py-1 text-caption font-medium text-cosmic-strong"
                     >
                       {chip}
                     </span>
@@ -718,7 +718,7 @@ export function Dashboard() {
               <p className="text-sm font-medium text-muted-foreground">
                 {appConfig.dashboard.astroInsightLabel}
               </p>
-              <p className="mt-2 text-[15px] leading-relaxed text-foreground/80">
+              <p className="mt-2 text-body leading-relaxed text-foreground/80">
                 {astrology?.impactOnHealth.stress ??
                   appConfig.dashboard.astroInsightFallback}
               </p>
@@ -766,7 +766,7 @@ export function Dashboard() {
                 value={sleepProgress}
               />
               {metaDeSono.origem === 'sugestao' ? (
-                <p className="text-[13px] leading-5 text-muted-foreground">
+                <p className="text-caption leading-5 text-muted-foreground">
                   Crie a meta “Sono por noite” em Metas para usar o seu alvo.
                 </p>
               ) : null}
@@ -795,7 +795,7 @@ export function Dashboard() {
               </div>
             </div>
 
-            <p className="text-[13px] leading-5 text-muted-foreground">
+            <p className="text-caption leading-5 text-muted-foreground">
               {astrology?.impactOnHealth.sleep ??
                 appConfig.dashboard.sleepInsightFallback}
             </p>
@@ -831,7 +831,7 @@ export function Dashboard() {
                 {appConfig.dashboard.weeklyDescription}
               </CardDescription>
             </div>
-            <div className="flex flex-wrap items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-[13px] text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-caption text-muted-foreground">
               <Bot aria-hidden="true" className="size-4 text-accent" />
               {appConfig.dashboard.aiUnlockedLabel}:{' '}
               <span className="font-semibold text-foreground">
@@ -917,7 +917,7 @@ export function Dashboard() {
                 ) : null}
               </p>
               {readinessScore === null ? (
-                <p className="text-[13px] text-muted-foreground">
+                <p className="text-caption text-muted-foreground">
                   Registre ao menos dois sinais hoje (sono, energia, humor,
                   estresse ou a pulseira).
                 </p>
@@ -937,7 +937,7 @@ export function Dashboard() {
               <p className="font-display text-4xl font-semibold tracking-[-0.03em] text-foreground">
                 {rotuloDaLongevidade}
               </p>
-              <p className="text-[13px] text-muted-foreground">
+              <p className="text-caption text-muted-foreground">
                 {detalheDaLongevidade}
               </p>
             </div>
@@ -945,7 +945,7 @@ export function Dashboard() {
               <p className="text-sm font-medium text-muted-foreground">
                 {appConfig.dashboard.liveContextLabel}
               </p>
-              <p className="text-[15px] leading-relaxed text-foreground/80">
+              <p className="text-body leading-relaxed text-foreground/80">
                 {astrology?.impactOnHealth.energy ??
                   appConfig.dashboard.liveContextFallback}
               </p>
@@ -971,7 +971,7 @@ export function Dashboard() {
             <h2 className="font-display text-2xl font-semibold tracking-[-0.02em] text-foreground">
               {appConfig.dashboard.pillarsTitle}
             </h2>
-            <p className="max-w-3xl text-[15px] leading-relaxed text-muted-foreground">
+            <p className="max-w-3xl text-body leading-relaxed text-muted-foreground">
               {appConfig.dashboard.pillarsDescription}
             </p>
           </div>
